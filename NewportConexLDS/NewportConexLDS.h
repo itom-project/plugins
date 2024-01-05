@@ -82,6 +82,13 @@ private:
     int m_requestTimeOutMS;
     int m_controllerAddress = 1;
 
+    enum ConfigurationState
+    {
+        MEASURE = 28,
+        READY = 32,
+        CONFIGURATION = 14
+    };
+
     // SeralIO functions
     ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal readString(QByteArray& result, int& len);
@@ -97,6 +104,7 @@ private:
     ito::RetVal getLaserPowerState(int& state);
     ito::RetVal getFactoryCalibrationState(QString& state);
     ito::RetVal getGain(ito::float64* gain);
+    ito::RetVal getOffset(ito::float64* offset);
     ito::RetVal getFrequency(ito::float64& frequency);
     ito::RetVal getPositionAndLaserPower(ito::float64* values);
     ito::RetVal getCalibrationCoefficients(ito::float64* calibrationCoefficients);
@@ -105,22 +113,27 @@ private:
     ito::RetVal getHighLevelPowerThreshold(int& level);
     ito::RetVal getUnit(QString& unit);
     ito::RetVal getError(QString& error);
+    ito::RetVal getConfigurationState(ConfigurationState& state);
 
     // Conex set functions
     ito::RetVal setLaserPowerState(const int state);
     ito::RetVal setGain(const ito::float64* gain);
+    ito::RetVal setOffset(const ito::float64* offset);
     ito::RetVal setFrequency(const ito::float64 frequency);
     ito::RetVal setCalibrationCoefficients(const ito::float64* calibrationCoefficients);
     ito::RetVal setRange(const int& range);
     ito::RetVal setLowLevelPowerThreshold(const int& level);
     ito::RetVal setHighLevelPowerThreshold(const int& level);
     ito::RetVal setUnit(const QString& unit);
+    ito::RetVal setConfigurationState(const int& state);
 
     // exec functions
     ito::RetVal execGetPositionAndPower(
         ito::ParamBase& positionAndPower, ito::ParamBase& timeStemp);
     ito::RetVal execGetPositionAndPowerArray(
         ito::DataObject& data, ito::ParamBase& timeStemps, const int& delay);
+
+    QString configurationEnumToString(const ConfigurationState& state);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);

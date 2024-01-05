@@ -66,5 +66,5 @@ void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> para
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetNewportConexLDS::identifierChanged(const QString& identifier)
 {
-    ui.lblIdentifier->setText(identifier);
+    ui.labelDevice->setText(identifier);
 }
