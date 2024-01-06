@@ -153,26 +153,10 @@ NewportConexLDS::NewportConexLDS() :
 
     //-------------------------------------------------
     paramVal = ito::Param(
-        "enableConfiguration",
-        ito::ParamBase::Int,
-        0,
-        new ito::IntMeta(0, 1, 1, "Device parameter"),
-        tr("Enable/Disable configuration (0==OFF, 1==ON). Laser power must be OFF for "
-           "configuration. Use boolean parameter 'laserPowerState' for laser power.")
-            .toLatin1()
-            .data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    //-------------------------------------------------
-    paramVal = ito::Param(
         "configurationState",
-        ito::ParamBase::String | ito::ParamBase::Readonly,
+        ito::ParamBase::String,
         "",
-        tr("Configuration state (MEASURE if laser is ON, READY, CONFIGURATION). Laser power must "
-           "be OFF for configuration! Use boolean parameter 'enableConfiguration' for "
-           "configuration.")
-            .toLatin1()
-            .data());
+        tr("Configuration state (MEASURE, READY, CONFIGURATION).").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String);
     sm.addItem("MEASURE");
     sm.addItem("READY");
@@ -424,6 +408,21 @@ ito::RetVal NewportConexLDS::init(
             m_params["configurationState"].setVal<char*>(
                 configurationEnumToString(state).toUtf8().data());
         }
+
+        switch (state)
+        {
+        case NewportConexLDS::MEASURE:
+            m_params["laserPowerState"].setVal<int>(0);
+            break;
+        case NewportConexLDS::READY:
+            m_params["laserPowerState"].setVal<int>(0);
+            break;
+        case NewportConexLDS::CONFIGURATION:
+            m_params["laserPowerState"].setVal<int>(0);
+            break;
+        default:
+            break;
+        }
     }
 
     if (!retValue.containsError())
@@ -445,16 +444,6 @@ ito::RetVal NewportConexLDS::init(
         if (!retValue.containsError())
         {
             m_params["factoryCalibrationState"].setVal<char*>(state.toUtf8().data());
-        }
-    }
-
-    if (!retValue.containsError())
-    {
-        int state;
-        retValue += getLaserPowerState(state);
-        if (!retValue.containsError())
-        {
-            m_params["laserPowerState"].setVal<int>(state);
         }
     }
 
@@ -630,38 +619,29 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (!retValue.containsError())
     {
-        ConfigurationState config;
-        retValue += getConfigurationState(config);
-
-        // if ((key != "configurationState" || key != "laserPowerState") and config !=
-        // CONFIGURATION)
-        //{
-        //     switch (config)
-        //     {
-        //     case NewportConexLDS::MEASURE:
-        //         retValue += ito::RetVal(
-        //             ito::retError,
-        //             0,
-        //             tr("Laser power is ON. It must be OFF to change the state into "
-        //                "'configuration'. Use the parameter 'laserPowerState' first.")
-        //                 .toUtf8()
-        //                 .data());
-        //         break;
-        //     case NewportConexLDS::READY:
-        //         retValue = ito::retOk;
-        //         break;
-        //     default:
-        //         break;
-        //     }
-        //     return retValue;
-        // }
-
         if (key == "laserPowerState")
         {
-            int state;
-            retValue += getLaserPowerState(state);
+            int laser = 0;
+            ConfigurationState state;
+            retValue += getConfigurationState(state);
+
+
             if (!retValue.containsError())
             {
+                switch (state)
+                {
+                case NewportConexLDS::MEASURE:
+                    laser = 1;
+                    break;
+                case NewportConexLDS::READY:
+                    laser = 0;
+                    break;
+                case NewportConexLDS::CONFIGURATION:
+                    laser = 0;
+                    break;
+                default:
+                    break;
+                }
                 it->setVal<int>(state);
             }
         }
@@ -792,12 +772,60 @@ ito::RetVal NewportConexLDS::setParam(
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
+    ConfigurationState config = READY;
+    retValue += getConfigurationState(config);
+
+    if (config == CONFIGURATION and key == "laserPowerState")
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The parameter '%1' cannot be set since the configuration state is "
+               "'%2'.")
+                .arg(key)
+                .arg(configurationEnumToString(config))
+                .toUtf8()
+                .data());
+    }
+
+    if (config != CONFIGURATION)
+    {
+        if (!(key == "laserPowerState" or key == "configurationState"))
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The parameter '%1' cannot be set since the configuration state is "
+                   "'%2'.")
+                    .arg(key)
+                    .arg(configurationEnumToString(config))
+                    .toUtf8()
+                    .data());
+        }
+    }
+
     if (!retValue.containsError())
     {
         if (key == "laserPowerState")
         {
-            retValue += setLaserPowerState(val->getVal<int>());
-            retValue += it->copyValueFrom(&(*val));
+            if (config == CONFIGURATION)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("The parameter '%1' cannot be set since the configuration state is "
+                       "'%2'.")
+                        .arg(key)
+                        .arg(configurationEnumToString(config))
+                        .toUtf8()
+                        .data());
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += setLaserPowerState(val->getVal<int>());
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "gain")
         {
@@ -829,10 +857,29 @@ ito::RetVal NewportConexLDS::setParam(
             retValue += setHighLevelPowerThreshold(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "enableConfiguration")
+        else if (key == "configurationState")
         {
-            retValue += setConfigurationState(val->getVal<int>());
-            retValue += it->copyValueFrom(&(*val));
+            QByteArray requiredState = val->getVal<char*>();
+            int intState = (requiredState == "CONFIGURATION") ? 1 : 0;
+
+            if (requiredState == "CONFIGURATION" and config == MEASURE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("The parameter '%1' cannot be set since the configuration state is "
+                       "'%2'.")
+                        .arg(key)
+                        .arg(configurationEnumToString(config))
+                        .toUtf8()
+                        .data());
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += setConfigurationState(intState);
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else
         {
@@ -1156,7 +1203,12 @@ ito::RetVal NewportConexLDS::getVersion(QString& version, QString& deviceName)
 ito::RetVal NewportConexLDS::getLaserPowerState(int& state)
 {
     ito::RetVal retVal = ito::retOk;
-    retVal += sendQuestionWithAnswerInteger("LB?", state);
+
+    ConfigurationState config;
+    retVal += getConfigurationState(config);
+
+    state = (config == MEASURE) ? 1 : 0;
+
     if (retVal.containsError())
     {
         retVal +=
@@ -1366,15 +1418,6 @@ ito::RetVal NewportConexLDS::getConfigurationState(ConfigurationState& state)
         state = static_cast<ConfigurationState>(answer);
     }
 
-    if (state == CONFIGURATION)
-    {
-        m_params["enableConfiguration"].setVal<int>(1);
-    }
-    else
-    {
-        m_params["enableConfiguration"].setVal<int>(0);
-    }
-
     return retVal;
 }
 
@@ -1383,19 +1426,6 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 {
     ito::RetVal retVal = ito::retOk;
 
-    ConfigurationState config;
-    retVal += getConfigurationState(config);
-
-    if (config == CONFIGURATION)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Laser cannot be ON during configuration state. Disable configuration state using "
-               "parameter 'enableConfiguration'.")
-                .toUtf8()
-                .data());
-    }
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "LB" + QString::number(state).toUtf8();
     retVal += sendCommand(sendStr);
@@ -1551,21 +1581,6 @@ ito::RetVal NewportConexLDS::setUnit(const QString& unit)
 ito::RetVal NewportConexLDS::setConfigurationState(const int& state)
 {
     ito::RetVal retVal = ito::retOk;
-
-    int laser;
-    retVal += getLaserPowerState(laser);
-
-    if (laser)
-    {
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("To enable configuration state laser power must be OFF by using parameter "
-               "'laserPowerState'.")
-                .toUtf8()
-                .data());
-    }
-
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "PW" + QString::number(state).toUtf8();
     retVal += sendCommand(sendStr);
@@ -1583,12 +1598,18 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
 {
     ito::RetVal retValue(ito::retOk);
 
-    int laser;
-    retValue += getLaserPowerState(laser);
-
-    if (laser == 0)
+    ConfigurationState state;
+    retValue += getConfigurationState(state);
+    if (state != MEASURE)
     {
-        return ito::RetVal(ito::retError, 0, tr("Laser power is not ON.").toUtf8().data());
+        return ito::RetVal(
+            ito::retError,
+            0,
+            tr("Measurement cannot be executed since laser power is not ON. Disable configuration "
+               "state using the parameter 'configurationState' and enable the laser using "
+               "'laserPowerState'")
+                .toUtf8()
+                .data());
     }
 
     ito::float64* values = new double[3]{0.0, 0.0, 0.0};
@@ -1631,12 +1652,18 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             tr("first axis of dObj must be 3 of shape [x, y, power level].").toLatin1().data());
     }
 
-    int laser;
-    retValue += getLaserPowerState(laser);
-
-    if (laser == 0)
+    ConfigurationState state;
+    retValue += getConfigurationState(state);
+    if (state != MEASURE)
     {
-        return ito::RetVal(ito::retError, 0, tr("Laser power is not ON.").toUtf8().data());
+        return ito::RetVal(
+            ito::retError,
+            0,
+            tr("Measurement cannot be executed since laser power is not ON. Disable configuration "
+               "state using the parameter 'configurationState' and enable the laser using "
+               "'laserPowerState")
+                .toUtf8()
+                .data());
     }
 
     if (!retValue.containsError())
