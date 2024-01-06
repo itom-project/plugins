@@ -29,14 +29,23 @@
 #include <qvector.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogNewportConexLDS::DialogNewportConexLDS(ito::AddInBase* grabber) :
-    AbstractAddInConfigDialog(grabber), m_firstRun(true)
+DialogNewportConexLDS::DialogNewportConexLDS(ito::AddInBase* rawIO) :
+    AbstractAddInConfigDialog(rawIO), m_firstRun(true), m_pluginPointer(rawIO)
 {
     ui.setupUi(this);
 
     // disable dialog, since no parameters are known yet. Parameters will immediately be sent by the
     // slot parametersChanged.
     enableDialog(false);
+
+    ui.paramEditorWidget->setPlugin(m_pluginPointer);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogNewportConexLDS::~DialogNewportConexLDS()
+{
+    QSharedPointer<ito::ParamBase> p(
+        new ito::ParamBase("configurationState", ito::ParamBase::String, "READY"));
 };
 
 
@@ -51,13 +60,17 @@ void DialogNewportConexLDS::parametersChanged(QMap<QString, ito::Param> params)
         setWindowTitle(
             QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        // this is the first time that parameters are sent to this dialog,
-        // therefore you can add some initialization work here
+        QString config = params["configurationState"].getVal<char*>();
         m_firstRun = false;
 
-        // now activate group boxes, since information is available now (at startup, information is
-        // not available, since parameters are sent by a signal)
-        enableDialog(true);
+        if (config != "CONFIGURATION")
+        {
+            enableDialog(false);
+        }
+        else
+        {
+            enableDialog(true);
+        }
     }
 
     // set the status of all widgets depending on the values of params
@@ -66,20 +79,10 @@ void DialogNewportConexLDS::parametersChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogNewportConexLDS::applyParameters()
 {
-    ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase>> values;
-    bool success = false;
+    QVector<QSharedPointer<ito::ParamBase>> values =
+        ui.paramEditorWidget->getAndResetChangedParameters();
 
-    // foreach widget, do:
-    //    check if the current value of the widget is different than the corresponding
-    //    parameter in m_currentParameters.
-    //    If so, write something like:
-    //    values.append(QSharedPointer<ito::ParamBase>(new
-    //    ito::ParamBase("name",ito::ParamBase::Int, newValue)))
-
-    retValue += setPluginParameters(values, msgLevelWarningAndError);
-
-    return retValue;
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -107,6 +110,18 @@ void DialogNewportConexLDS::on_buttonBox_clicked(QAbstractButton* btn)
 void DialogNewportConexLDS::enableDialog(bool enabled)
 {
     // e.g.
-    ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
+    ui.paramEditorWidget->setEnabled(enabled);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogNewportConexLDS::on_btnConfig_clicked()
+{
+    QSharedPointer<ito::ParamBase> p1(
+        new ito::ParamBase("laserPowerState", ito::ParamBase::Int, 0));
+    setPluginParameter(p1, msgLevelWarningAndError);
+    QSharedPointer<ito::ParamBase> p2(
+        new ito::ParamBase("configurationState", ito::ParamBase::String, "CONFIGURATION"));
+    setPluginParameter(p2, msgLevelWarningAndError);
+
+    enableDialog(true);
 }

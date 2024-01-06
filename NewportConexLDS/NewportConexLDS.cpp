@@ -130,7 +130,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Device name.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- device parameter
@@ -139,7 +139,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Command error string.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     //-------------------------------------------------
@@ -148,7 +148,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Controller version.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     //-------------------------------------------------
@@ -166,7 +166,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::String,
         "",
         tr("Configuration state (MEASURE, READY, CONFIGURATION).").toLatin1().data());
-    ito::StringMeta sm(ito::StringMeta::String);
+    ito::StringMeta sm(ito::StringMeta::String, "", "Device parameter");
     sm.addItem("MEASURE");
     sm.addItem("READY");
     sm.addItem("CONFIGURATION");
@@ -179,7 +179,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
         tr("Factory calibration information.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     //-------------------------------------------------
@@ -200,7 +200,11 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::DoubleArray,
         2,
         gain,
-        new ito::DoubleArrayMeta(0.0, std::numeric_limits<ito::float64>::max(), 0.0, "Measurement"),
+        new ito::DoubleArrayMeta(
+            -std::numeric_limits<ito::float64>::max(),
+            std::numeric_limits<ito::float64>::max(),
+            0.0,
+            "Measurement"),
         tr("Offset values of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -254,7 +258,7 @@ NewportConexLDS::NewportConexLDS() :
     //------------------------------------------------- Measurement
     paramVal = ito::Param(
         "unit", ito::ParamBase::String, "unknown", tr("Measurement unit.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Measurement"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Measurement"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- EXEC functions
@@ -819,16 +823,19 @@ ito::RetVal NewportConexLDS::setParam(
     ConfigurationState config = READY;
     retValue += getConfigurationState(config);
 
-    if (config == CONFIGURATION and (key != "laserPowerState" and key != "configurationState"))
+    if (config != CONFIGURATION)
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("The parameter '%1' cannot be set since the configuration state is '%2'.")
-                .arg(key)
-                .arg(configurationEnumToString(config))
-                .toUtf8()
-                .data());
+        if (!(key == "laserPowerState" or key == "configurationState"))
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The parameter '%1' cannot be set since the configuration state is '%2'.")
+                    .arg(key)
+                    .arg(configurationEnumToString(config))
+                    .toUtf8()
+                    .data());
+        }
     }
 
 

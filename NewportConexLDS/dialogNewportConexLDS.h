@@ -27,8 +27,8 @@ class DialogNewportConexLDS : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
 public:
-    DialogNewportConexLDS(ito::AddInBase* grabber);
-    ~DialogNewportConexLDS(){};
+    DialogNewportConexLDS(ito::AddInBase* rawIO);
+    ~DialogNewportConexLDS();
 
     ito::RetVal applyParameters();
 
@@ -37,12 +37,14 @@ private:
     bool m_firstRun;
 
     Ui::DialogNewportConexLDS ui;
+    QPointer<ito::AddInBase> m_pluginPointer;
 
 public slots:
     void parametersChanged(QMap<QString, ito::Param> params);
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
+    void on_btnConfig_clicked();
 };
 
 #endif
