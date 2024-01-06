@@ -133,6 +133,15 @@ NewportConexLDS::NewportConexLDS() :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------------------------- device parameter
+    paramVal = ito::Param(
+        "commandError",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Command error string.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
     //-------------------------------------------------
     paramVal = ito::Param(
         "version",
@@ -326,7 +335,7 @@ NewportConexLDS::NewportConexLDS() :
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
     // plugin does not have a dock widget.
-    DockWidgetNewportConexLDS* dw = new DockWidgetNewportConexLDS(this);
+    DockWidgetNewportConexLDS* dw = new DockWidgetNewportConexLDS(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable |
@@ -434,6 +443,16 @@ ito::RetVal NewportConexLDS::init(
         {
             m_params["deviceName"].setVal<char*>(version.toUtf8().data());
             m_params["version"].setVal<char*>(deviceName.toUtf8().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        QString error;
+        retValue += getError(error);
+        if (!retValue.containsError())
+        {
+            m_params["commandError"].setVal<char*>(error.toUtf8().data());
         }
     }
 
@@ -597,6 +616,22 @@ ito::RetVal NewportConexLDS::execFunc(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal NewportConexLDS::autoGrabbing(
+    QSharedPointer<ito::float64> values, ItomSharedSemaphore* waitCond)
+{
+    ito::RetVal retval(ito::retOk);
+    retval += getPositionAndLaserPower(values.data());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -730,6 +765,15 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
                 it->setVal<char*>(unit.toUtf8().data());
             }
         }
+        else if (key == "commandError")
+        {
+            QString error;
+            retValue += getError(error);
+            if (!retValue.containsError())
+            {
+                it->setVal<char*>(error.toUtf8().data());
+            }
+        }
         *val = it.value();
     }
 
@@ -775,34 +819,18 @@ ito::RetVal NewportConexLDS::setParam(
     ConfigurationState config = READY;
     retValue += getConfigurationState(config);
 
-    if (config == CONFIGURATION and key == "laserPowerState")
+    if (config == CONFIGURATION and (key != "laserPowerState" and key != "configurationState"))
     {
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("The parameter '%1' cannot be set since the configuration state is "
-               "'%2'.")
+            tr("The parameter '%1' cannot be set since the configuration state is '%2'.")
                 .arg(key)
                 .arg(configurationEnumToString(config))
                 .toUtf8()
                 .data());
     }
 
-    if (config != CONFIGURATION)
-    {
-        if (!(key == "laserPowerState" or key == "configurationState"))
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("The parameter '%1' cannot be set since the configuration state is "
-                   "'%2'.")
-                    .arg(key)
-                    .arg(configurationEnumToString(config))
-                    .toUtf8()
-                    .data());
-        }
-    }
 
     if (!retValue.containsError())
     {
@@ -1047,6 +1075,7 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDouble(
     int readSigns;
     QByteArray answerStr;
     bool ok;
+
     ito::RetVal retValue = sendCommand(questionCommand_);
     retValue += readString(answerStr, readSigns);
 
@@ -1172,6 +1201,7 @@ void NewportConexLDS::filterCommand(const QByteArray& questionCommand, QByteArra
 ito::RetVal NewportConexLDS::getVersion(QString& version, QString& deviceName)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray answer;
     retVal += sendQuestionWithAnswerString("VE", answer);
 
@@ -1225,6 +1255,7 @@ ito::RetVal NewportConexLDS::getLaserPowerState(int& state)
 ito::RetVal NewportConexLDS::getFactoryCalibrationState(QString& state)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray answer;
     retVal += sendQuestionWithAnswerString("CD?", answer);
 
@@ -1254,10 +1285,12 @@ ito::RetVal NewportConexLDS::getFactoryCalibrationState(QString& state)
 ito::RetVal NewportConexLDS::getGain(ito::float64* gain)
 {
     ito::RetVal retVal = ito::retOk;
+
     retVal += sendQuestionWithAnswerDouble("GX?", gain[0]);
 
     QString error;
     retVal += getError(error);
+
     retVal += sendQuestionWithAnswerDouble("GY?", gain[1]);
 
     retVal += getError(error);
@@ -1275,6 +1308,7 @@ ito::RetVal NewportConexLDS::getGain(ito::float64* gain)
 ito::RetVal NewportConexLDS::getOffset(ito::float64* offset)
 {
     ito::RetVal retVal = ito::retOk;
+
     retVal += sendQuestionWithAnswerDouble("OX?", offset[0]);
 
     QString error;
@@ -1282,6 +1316,7 @@ ito::RetVal NewportConexLDS::getOffset(ito::float64* offset)
     retVal += sendQuestionWithAnswerDouble("OY?", offset[1]);
 
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1354,10 +1389,12 @@ ito::RetVal NewportConexLDS::getCalibrationCoefficients(ito::float64* calibratio
 ito::RetVal NewportConexLDS::getRange(int& range)
 {
     ito::RetVal retVal = ito::retOk;
+
     retVal += sendQuestionWithAnswerInteger("RG?", range);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal +=
@@ -1370,10 +1407,12 @@ ito::RetVal NewportConexLDS::getRange(int& range)
 ito::RetVal NewportConexLDS::getLowLevelPowerThreshold(int& level)
 {
     ito::RetVal retVal = ito::retOk;
+
     retVal += sendQuestionWithAnswerInteger("SL?", level);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1388,10 +1427,12 @@ ito::RetVal NewportConexLDS::getLowLevelPowerThreshold(int& level)
 ito::RetVal NewportConexLDS::getHighLevelPowerThreshold(int& level)
 {
     ito::RetVal retVal = ito::retOk;
+
     retVal += sendQuestionWithAnswerInteger("SR?", level);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1406,12 +1447,14 @@ ito::RetVal NewportConexLDS::getHighLevelPowerThreshold(int& level)
 ito::RetVal NewportConexLDS::getUnit(QString& unit)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray answer;
     QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + "SU?";
     retVal += sendQuestionWithAnswerString("SU?", answer);
 
     QString error;
     retVal += getError(error);
+
     if (!retVal.containsError())
     {
         if (questionCommand_.contains("?"))
@@ -1456,6 +1499,7 @@ ito::RetVal NewportConexLDS::getConfigurationState(ConfigurationState& state)
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1480,6 +1524,7 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal +=
@@ -1499,11 +1544,13 @@ ito::RetVal NewportConexLDS::setGain(const ito::float64* gain)
 
     QString error;
     retVal += getError(error);
+
     sendStr =
         QString::number(m_controllerAddress).toUtf8() + "GY" + QString::number(gain[1]).toUtf8();
     retVal += sendCommand(sendStr);
 
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during gain setting.").toUtf8().data());
@@ -1523,11 +1570,13 @@ ito::RetVal NewportConexLDS::setOffset(const ito::float64* offset)
 
     QString error;
     retVal += getError(error);
+
     sendStr =
         QString::number(m_controllerAddress).toUtf8() + "OY" + QString::number(offset[1]).toUtf8();
     retVal += sendCommand(sendStr);
 
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during offset setting.").toUtf8().data());
@@ -1540,12 +1589,14 @@ ito::RetVal NewportConexLDS::setOffset(const ito::float64* offset)
 ito::RetVal NewportConexLDS::setFrequency(const ito::float64 frequency)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "LF" + QString::number(frequency).toUtf8();
     retVal += sendCommand(sendStr);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal +=
@@ -1565,11 +1616,13 @@ ito::RetVal NewportConexLDS::setCalibrationCoefficients(const ito::float64* cali
 
     QString error;
     retVal += getError(error);
+
     sendStr = QString::number(m_controllerAddress).toUtf8() + "PY" +
         QString::number(calibrationCoefficients[1]).toUtf8();
     retVal += sendCommand(sendStr);
 
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1583,12 +1636,14 @@ ito::RetVal NewportConexLDS::setCalibrationCoefficients(const ito::float64* cali
 ito::RetVal NewportConexLDS::setRange(const int& range)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "RG" + QString::number(range).toUtf8();
     retVal += sendCommand(sendStr);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during range setting.").toUtf8().data());
@@ -1600,12 +1655,14 @@ ito::RetVal NewportConexLDS::setRange(const int& range)
 ito::RetVal NewportConexLDS::setLowLevelPowerThreshold(const int& level)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "SL" + QString::number(level).toUtf8();
     retVal += sendCommand(sendStr);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1620,12 +1677,14 @@ ito::RetVal NewportConexLDS::setLowLevelPowerThreshold(const int& level)
 ito::RetVal NewportConexLDS::setHighLevelPowerThreshold(const int& level)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "SR" + QString::number(level).toUtf8();
     retVal += sendCommand(sendStr);
 
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1640,10 +1699,13 @@ ito::RetVal NewportConexLDS::setHighLevelPowerThreshold(const int& level)
 ito::RetVal NewportConexLDS::setUnit(const QString& unit)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr = QString::number(m_controllerAddress).toUtf8() + "SU" + unit.toUtf8();
     retVal += sendCommand(sendStr);
+
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during unit setting.").toUtf8().data());
@@ -1655,11 +1717,14 @@ ito::RetVal NewportConexLDS::setUnit(const QString& unit)
 ito::RetVal NewportConexLDS::setConfigurationState(const int& state)
 {
     ito::RetVal retVal = ito::retOk;
+
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "PW" + QString::number(state).toUtf8();
     retVal += sendCommand(sendStr);
+
     QString error;
     retVal += getError(error);
+
     if (retVal.containsError())
     {
         retVal += ito::RetVal(
@@ -1688,7 +1753,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
                 .data());
     }
 
-    ito::float64* values = new double[3]{0.0, 0.0, 0.0};
+    ito::float64* values = new ito::float64[3]{0.0, 0.0, 0.0};
     retValue += getPositionAndLaserPower(values);
 
     if (!retValue.containsError())
@@ -1744,7 +1809,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
 
     if (!retValue.containsError())
     {
-        ito::float64* values = new double[3]{0.0, 0.0, 0.0};
+        ito::float64* values = new ito::float64[3]{0.0, 0.0, 0.0};
         int planeID = dObj.seekMat(0);
         ito::float64* xPtr = dObj.rowPtr<ito::float64>(0, 0);
         ito::float64* yPtr = dObj.rowPtr<ito::float64>(0, 1);

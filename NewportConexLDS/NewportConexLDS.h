@@ -151,6 +151,8 @@ public slots:
         QSharedPointer<QVector<ito::ParamBase>> paramsOut,
         ItomSharedSemaphore* waitCond = NULL);
 
+    ito::RetVal autoGrabbing(QSharedPointer<ito::float64> values, ItomSharedSemaphore* waitCond);
+
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
 };

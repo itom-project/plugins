@@ -23,10 +23,17 @@
 #include "dockWidgetNewportConexLDS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetNewportConexLDS::DockWidgetNewportConexLDS(ito::AddInDataIO* grabber) :
-    AbstractAddInDockWidget(grabber), m_inEditing(false), m_firstRun(true)
+DockWidgetNewportConexLDS::DockWidgetNewportConexLDS(int uniqueID, ito::AddInDataIO* rawIO) :
+    AbstractAddInDockWidget(rawIO), m_inEditing(false), m_firstRun(true), m_plugin(rawIO)
 {
     ui.setupUi(this);
+    identifierChanged(QString::number(uniqueID));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetNewportConexLDS::~DockWidgetNewportConexLDS()
+{
+    killTimer(m_timerId);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -34,11 +41,28 @@ void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> para
 {
     if (m_firstRun)
     {
-        // first time call
-        // get all given parameters and adjust all widgets according to them (min, max, stepSize,
-        // values...)
+        m_inEditing = true;
+        ui.lblVersion->setText(params["version"].getVal<char*>());
+        QString config = params["configurationState"].getVal<char*>();
+        ui.lblConfiguration->setText(config);
+
+        if (config == "MEASURE")
+        {
+            ui.btnLaserPower->setChecked(true);
+        }
+        int range = params["range"].getVal<int>();
+        ui.doubleSpinBoxXAxis->setMinimum(-range);
+        ui.doubleSpinBoxXAxis->setMaximum(range);
+
+        ui.doubleSpinBoxYAxis->setMinimum(-range);
+        ui.doubleSpinBoxYAxis->setMaximum(range);
+
+
+        ui.lblXAxis->setText(QString("x axis [%1]").arg(params["unit"].getVal<char*>()));
+        ui.lblYAxis->setText(QString("y axis [%1]").arg(params["unit"].getVal<char*>()));
 
         m_firstRun = false;
+        m_inEditing = false;
     }
 
     if (!m_inEditing)
@@ -52,19 +76,60 @@ void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> para
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// void DockWidgetNewportConexLDS::on_contrast_valueChanged(int i)
-// {
-// if (!m_inEditing)
-// {
-// m_inEditing = true;
-// QSharedPointer<ito::ParamBase> p(new ito::ParamBase("contrast",ito::ParamBase::Int,d));
-// setPluginParameter(p, msgLevelWarningAndError);
-// m_inEditing = false;
-// }
-// }
+void DockWidgetNewportConexLDS::timerEvent(QTimerEvent* event)
+{
+    ito::RetVal retval(ito::retOk);
+    ItomSharedSemaphore* waitCond = new ItomSharedSemaphore();
+
+    QSharedPointer<ito::float64> values =
+        QSharedPointer<ito::float64>(new ito::float64[3]{0.0, 0.0, 0.0});
+
+    QMetaObject::invokeMethod(
+        m_plugin,
+        "autoGrabbing",
+        Q_ARG(QSharedPointer<ito::float64>, values),
+        Q_ARG(ItomSharedSemaphore*, waitCond));
+
+
+    if (waitCond)
+    {
+        observeInvocation(waitCond, msgLevelWarningAndError);
+    }
+
+    if (values)
+    {
+        ui.doubleSpinBoxXAxis->setValue(values.data()[0]);
+        ui.doubleSpinBoxYAxis->setValue(values.data()[1]);
+        ui.sliderWidgetPowerLevel->setValue(values.data()[2]);
+    }
+
+    if (waitCond)
+    {
+        waitCond->deleteSemaphore();
+        waitCond = NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetNewportConexLDS::on_btnLaserPower_toggled(bool state)
+{
+    if (state)
+    {
+        m_timerId = startTimer(200);
+        m_timerIsRunning = true;
+        ui.btnLaserPower->setText("LASER ON");
+    }
+    else if (m_timerIsRunning)
+    {
+        killTimer(m_timerId);
+        m_timerIsRunning = false;
+        ui.btnLaserPower->setText("LASER OFF");
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetNewportConexLDS::identifierChanged(const QString& identifier)
 {
-    ui.labelDevice->setText(identifier);
+    ui.lblIdentifier->setText(identifier);
 }

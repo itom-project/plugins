@@ -36,14 +36,21 @@ class DockWidgetNewportConexLDS : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
+protected:
+    void timerEvent(QTimerEvent* event);
+
 public:
-    DockWidgetNewportConexLDS(ito::AddInDataIO* grabber);
-    ~DockWidgetNewportConexLDS(){};
+    DockWidgetNewportConexLDS(int uniqueID, ito::AddInDataIO* rawIO);
+    ~DockWidgetNewportConexLDS();
 
 private:
     Ui::DockWidgetNewportConexLDS ui;
+    ito::AddInDataIO* m_plugin;
     bool m_inEditing;
     bool m_firstRun;
+
+    int m_timerId;
+    bool m_timerIsRunning;
 
 public slots:
     void parametersChanged(QMap<QString, ito::Param> params);
@@ -53,6 +60,7 @@ private slots:
     // add here slots connected to changes of any widget
     // example:
     // void on_contrast_valueChanged(int i);
+    void on_btnLaserPower_toggled(bool state);
 };
 
 #endif
