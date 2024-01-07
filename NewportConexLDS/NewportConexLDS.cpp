@@ -213,7 +213,12 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::Double,
         0.20,
         new ito::DoubleMeta(0.0, std::numeric_limits<ito::float64>::max(), 0.20, "Measurement"),
-        tr("Low pass filter frequency.").toLatin1().data());
+        tr("Low pass filter frequency as response time before ouputing measurement that is "
+           "inversely proportional to the low pass filter frequency. Following frequencies [Hz] "
+           "corresponds to a resolution [µrad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == 0.021, "
+           "100 == 0.030, 200 == 0.042, 500 == 0.067, 1000 == 0.095, 2000 == 0.134.")
+            .toLatin1()
+            .data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //-------------------------------------------------
@@ -310,11 +315,11 @@ NewportConexLDS::NewportConexLDS() :
     pMand.append(paramVal);
 
     paramVal = ito::Param(
-        "delay",
+        "interval",
         ito::ParamBase::Int | ito::ParamBase::In,
         200,
         new ito::IntMeta(200, std::numeric_limits<int>::max(), 1, "Measurement"),
-        tr("Delay between measruement points in ms.").toLatin1().data());
+        tr("Interval between measruement points in ms.").toLatin1().data());
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
@@ -330,7 +335,8 @@ NewportConexLDS::NewportConexLDS() :
         pOpt,
         pOut,
         tr("Measure the position and laser power. "
-           "It will fill the input dataObject with positions, laser power and timestemps.")
+           "It will fill the input dataObject with positions, laser power and timestemps. Please "
+           "note that this function blocks itom until the entire measurement has been carried out.")
             .toLatin1()
             .data());
     pMand.clear();
@@ -600,11 +606,11 @@ ito::RetVal NewportConexLDS::execFunc(
     {
         ito::DataObject* dObj = (ito::DataObject*)(*paramsMand)[0].getVal<ito::DataObject*>();
         ito::ParamBase* timeStemps = ito::getParamByName(&(*paramsOut), "timeStemps", &retValue);
-        int delay = (*paramsOpt)[0].getVal<int>();
+        int interval = (*paramsOpt)[0].getVal<int>();
 
         if (!retValue.containsError())
         {
-            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps, delay);
+            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps, interval);
         }
     }
 
@@ -897,20 +903,22 @@ ito::RetVal NewportConexLDS::setParam(
             QByteArray requiredState = val->getVal<char*>();
             int intState = (requiredState == "CONFIGURATION") ? 1 : 0;
 
-            if (requiredState == "CONFIGURATION" and config == MEASURE)
+            if ((requiredState == "CONFIGURATION" or requiredState == "READY") and
+                config == MEASURE)
             {
                 retValue += ito::RetVal(
                     ito::retError,
                     0,
                     tr("The parameter '%1' cannot be set since the configuration state is "
-                       "'%2'.")
+                       "'%2'. Disable the laser using paramter 'laserPowerState'.")
                         .arg(key)
                         .arg(configurationEnumToString(config))
                         .toUtf8()
                         .data());
             }
 
-            if (!retValue.containsError())
+            if (!(configurationEnumToString(config) == val->getVal<char*>()) and
+                !retValue.containsError())
             {
                 retValue += setConfigurationState(intState);
                 retValue += it->copyValueFrom(&(*val));
@@ -1776,7 +1784,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
-    ito::DataObject& dObj, ito::ParamBase& timeStemps, const int& delay)
+    ito::DataObject& dObj, ito::ParamBase& timeStemps, const int& interval)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -1829,7 +1837,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
         timer.start();
 
         int elapsed = timer.elapsed();
-        int remaining = delay - elapsed;
+        int remaining = interval - elapsed;
 
         for (int i = 0; i < dObj.getSize(1); i++)
         {
@@ -1842,7 +1850,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
             setAlive();
 
             elapsed = timer.elapsed();
-            remaining = delay - elapsed;
+            remaining = interval - elapsed;
             if (remaining > 0)
                 QThread::msleep(remaining);
 

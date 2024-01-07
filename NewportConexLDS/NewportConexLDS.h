@@ -131,7 +131,7 @@ private:
     ito::RetVal execGetPositionAndPower(
         ito::ParamBase& positionAndPower, ito::ParamBase& timeStemp);
     ito::RetVal execGetPositionAndPowerArray(
-        ito::DataObject& data, ito::ParamBase& timeStemps, const int& delay);
+        ito::DataObject& data, ito::ParamBase& timeStemps, const int& interval);
 
     QString configurationEnumToString(const ConfigurationState& state);
 

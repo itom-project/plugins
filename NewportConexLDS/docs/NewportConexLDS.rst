@@ -111,13 +111,21 @@ The plugin execFunctions are:
     :return: timeStemp - Timestemp of measurement.
     :rtype: str
 
-.. py:function::  instance.exec('getPositionAndPowerMeasurement', data [,delay])
+.. py:function::  instance.exec('getPositionAndPowerMeasurement', data [,interval])
 
     Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestemps.
+... Please note that this function blocks itom until the entire measurement has been carried out.
 
     :param data: Measruement data X, Y, position and laser power.
     :type data: itom.dataObject
-    :param delay: Delay between measruement points in ms.
-    :type delay: int - optional
+    :param interval: Interval between measruement points in ms.
+    :type interval: int - optional
     :return: timeStemps - Timestemps corresponding to the measruement data.
     :rtype: Sequence[str]
+
+Exemplary usage from Python
+=======================================
+
+
+Changelog
+==========
