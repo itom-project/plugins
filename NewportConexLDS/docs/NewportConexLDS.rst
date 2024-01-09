@@ -39,36 +39,43 @@ These parameters are available and can be used to configure the ``NewportConexLD
     Command error string.
 
     *Match: "", Default: "No error"*
-**configurationState**: str
+**configurationState**: str, read-only
     Configuration state (MEASURE, READY, CONFIGURATION).
 
-    *Match: ["", "MEASURE", "READY", "CONFIGURATION"], Default: "CONFIGURATION"*
+    *Match: ["", "MEASURE", "READY", "CONFIGURATION"], Default: "MEASURE"*
 **deviceName**: str, read-only
     Device name.
 
     *Match: "", Default: "CONEX-LDS"*
+**enableConfiguration**: int
+    Enable/Disable configuration (0==OFF, 1==ON). Laser is disabled when it is on.
+
+    *Value range: [0, 1], Default: 0*
 **factoryCalibrationState**: str, read-only
     Factory calibration information.
 
     *Match: "", Default: "14-214-
     009;02/05/2022;02/05/2023;5325.69;5393.00;16.0;19.0;31.0;29.0;-62.00;26.00;2000.0"*
 **frequency**: float
-    Low pass filter frequency.
+    Low pass filter frequency as response time before ouputing measurement that is inversely
+    proportional to the low pass filter frequency. Following frequencies [Hz] corresponds to
+    a resolution [µrad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == 0.021, 100 == 0.030, 200
+    == 0.042, 500 == 0.067, 1000 == 0.095, 2000 == 0.134.
 
-    *Value range: [0:0.2:inf], Default: 0.2*
+    *Value range: [0:0.2:inf], Default: 2000*
 **gain**: Sequence[float]
     Gain of x and y axis.
 
-    *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 200], Default:
-    [200, 4]*
+    *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 200], Default: [1,
+    1]*
 **highLevelPowerThreshold**: int
     High level power threshold for valid measurement.
 
-    *Value range: [0, 2000], Default: 95*
+    *Value range: [0, 2000], Default: 100*
 **laserPowerState**: int
     Enable/Disable laser power (0==OFF, 1==ON).
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **lowLevelPowerThreshold**: int
     Low level power threshold for valid measurement.
 
@@ -78,7 +85,8 @@ These parameters are available and can be used to configure the ``NewportConexLD
 **offset**: Sequence[float]
     Offset values of x and y axis.
 
-    *Allowed number of values: 0 - 18446744073709551615, All values allowed, Default: [1, -5]*
+    *Allowed number of values: 0 - 18446744073709551615, All values allowed, Default: [-4.3,
+    5.4]*
 **range**: int
     Value range.
 
@@ -125,6 +133,111 @@ The plugin execFunctions are:
 
 Exemplary usage from Python
 =======================================
+
+In the following examples, it is shown how to use this Plugin.
+First an instance must be initialized using the ``SerialIO`` Plugin.
+COM port must be adapted.
+
+.. code-block:: python
+
+    from datetime import datetime
+    from itom import dataIO
+    import numpy as np
+
+    comPort = 5
+    try:
+        conex
+    except NameError:
+        serial = dataIO("SerialIO", comPort, 921600, "\r\n", enableDebug=True)
+        conex = dataIO("NewportConexLDS", serial)
+
+    conex.getParamListInfo()
+
+Laser must be disabled before parameter can be set using ``setParam``.
+Before changing parameter the ``configurationState`` must be enabled using ``enableConfiguration``.
+
+.. code-block:: python
+
+    # Disable laser
+    conex.setParam("laserPowerState", 0)
+
+    # To set parameter the configuration state must be 'CONFIGURATION'
+    conex.setParam("enableConfiguration", 1)
+
+    conex.setParam("frequency", 20.0)
+    conex.setParam("offset", (-4.3, 5.4))
+    conex.setParam("gain", (1.0, 1.0))
+    conex.setParam("lowLevelPowerThreshold", 10)
+    conex.setParam("highLevelPowerThreshold", 100)
+    conex.setParam("frequency", 2000)
+    conex.setParam("range", 2000)
+
+    # get parameters
+    conex.getParam("configurationState")
+    conex.getParam("frequency")
+    conex.getParam("offset")
+    conex.getParam("gain")
+    conex.getParam("lowLevelPowerThreshold")
+    conex.getParam("highLevelPowerThreshold")
+    conex.getParam("range")
+    conex.getParam("unit")
+
+Before the laser can be turn ON ``configurationState`` must be disabled.
+
+.. code-block:: python
+
+    # Leave configuration mode. Configuration must be OFF before laser can be set ON.
+    conex.setParam("enableConfiguration", 0)
+
+    # Get all parameter information
+    conex.getParamListInfo()
+
+    # Enable laser
+    conex.setParam("laserPowerState", 1)
+
+
+A measurement is performed using the execFunction ``getPositionAndPower``.
+In this example 100 data points are acquired.
+
+.. code-block:: python
+
+    # Perform a measurement of 10 data points
+    data = []
+    timeStemps = []
+    for _idx in range(100):
+        values, timeStemp = conex.exec("getPositionAndPower")
+        data.append(values)
+        timeStemps.append(timeStemp)
+
+Create plot with measured data over time.
+
+.. code-block:: python
+
+    # convert to dataObject and set metainformation
+    data = dataObject(np.array(data).transpose())
+    data.setTag("legendTitle0", "x axis")
+    data.setTag("legendTitle1", "y axis")
+    data.setTag("legendTitle2", "level")
+
+    # convert timeStemps string into datetime
+    timeStemps = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f") for ts in timeStemps]
+    dateScale = dataObject([1, len(timeStemps)], "datetime", data=timeStemps)
+
+    # plot Measurement over time
+    [i, h] = plot1(data, dateScale, properties={"legendPosition": "Right", "lineWidth": 2, "grid": "GridMajorXY"})
+
+Create 2 dimensional plot of data. First data points below a laser power level of 10% are deleted which are no valid.
+
+.. code-block:: python
+
+    # filter data by laser levels below 1%
+    position = np.array(data.copy())
+    columsToRemove = np.where(position[2] <= 10)[0]
+    position = np.delete(position, columsToRemove, axis=1)
+
+    x = position[0, :]
+    y = position[1, :]
+    plot1(y, x, properties={"lineSymbol": "Ellipse", "lineStyle": "NoPen", "grid": "GridMajorXY"})
 
 
 Changelog

@@ -46,10 +46,6 @@ void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> para
         QString config = params["configurationState"].getVal<char*>();
         ui.lblConfiguration->setText(config);
 
-        if (config == "MEASURE")
-        {
-            ui.btnLaserPower->setChecked(true);
-        }
         int range = params["range"].getVal<int>();
         ui.doubleSpinBoxXAxis->setMinimum(-range);
         ui.doubleSpinBoxXAxis->setMaximum(range);
@@ -60,6 +56,11 @@ void DockWidgetNewportConexLDS::parametersChanged(QMap<QString, ito::Param> para
 
         ui.lblXAxis->setText(QString("x axis [%1]").arg(params["unit"].getVal<char*>()));
         ui.lblYAxis->setText(QString("y axis [%1]").arg(params["unit"].getVal<char*>()));
+
+        if (config == "MEASURE")
+        {
+            ui.btnLaserPower->setChecked(true);
+        }
 
         m_firstRun = false;
         m_inEditing = false;
@@ -84,23 +85,38 @@ void DockWidgetNewportConexLDS::timerEvent(QTimerEvent* event)
     QSharedPointer<ito::float64> values =
         QSharedPointer<ito::float64>(new ito::float64[3]{0.0, 0.0, 0.0});
 
-    QMetaObject::invokeMethod(
-        m_plugin,
-        "autoGrabbing",
-        Q_ARG(QSharedPointer<ito::float64>, values),
-        Q_ARG(ItomSharedSemaphore*, waitCond));
-
-
-    if (waitCond)
+    if (m_plugin)
     {
-        observeInvocation(waitCond, msgLevelWarningAndError);
+        QMetaObject::invokeMethod(
+            m_plugin,
+            "autoGrabbing",
+            Q_ARG(QSharedPointer<ito::float64>, values),
+            Q_ARG(ItomSharedSemaphore*, waitCond));
+
+
+        if (waitCond)
+        {
+            retval += observeInvocation(waitCond, msgLevelWarningAndError);
+            if (retval.containsError())
+            {
+                killTimer(m_timerId);
+                retval = ito::retOk;
+            }
+        }
+
+        if (values)
+        {
+            ui.doubleSpinBoxXAxis->setValue(values.data()[0]);
+            ui.doubleSpinBoxYAxis->setValue(values.data()[1]);
+            ui.sliderWidgetPowerLevel->setValue(values.data()[2]);
+        }
     }
-
-    if (values)
+    else
     {
-        ui.doubleSpinBoxXAxis->setValue(values.data()[0]);
-        ui.doubleSpinBoxYAxis->setValue(values.data()[1]);
-        ui.sliderWidgetPowerLevel->setValue(values.data()[2]);
+        killTimer(m_timerId);
+        ui.doubleSpinBoxXAxis->setValue(0);
+        ui.doubleSpinBoxYAxis->setValue(0);
+        ui.sliderWidgetPowerLevel->setValue(0);
     }
 
     if (waitCond)
@@ -115,14 +131,26 @@ void DockWidgetNewportConexLDS::on_btnLaserPower_toggled(bool state)
 {
     if (state)
     {
+        ui.btnLaserPower->setText("LASER IS ENABLING");
+        QSharedPointer<ito::ParamBase> p(
+            new ito::ParamBase("laserPowerState", ito::ParamBase::Int, 1));
+        setPluginParameter(p, msgLevelWarningAndError);
+
         m_timerId = startTimer(200);
         m_timerIsRunning = true;
         ui.btnLaserPower->setText("LASER ON");
     }
     else if (m_timerIsRunning)
     {
+        ui.btnLaserPower->setText("LASER IS DISABLING");
         killTimer(m_timerId);
+        QSharedPointer<ito::ParamBase> p(
+            new ito::ParamBase("laserPowerState", ito::ParamBase::Int, 0));
+        setPluginParameter(p, msgLevelWarningAndError);
         m_timerIsRunning = false;
+        ui.doubleSpinBoxXAxis->setValue(0);
+        ui.doubleSpinBoxYAxis->setValue(0);
+        ui.sliderWidgetPowerLevel->setValue(0);
         ui.btnLaserPower->setText("LASER OFF");
     }
 }

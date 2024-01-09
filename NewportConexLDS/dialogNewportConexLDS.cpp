@@ -45,7 +45,8 @@ DialogNewportConexLDS::DialogNewportConexLDS(ito::AddInBase* rawIO) :
 DialogNewportConexLDS::~DialogNewportConexLDS()
 {
     QSharedPointer<ito::ParamBase> p(
-        new ito::ParamBase("configurationState", ito::ParamBase::String, "READY"));
+        new ito::ParamBase("enableConfiguration", ito::ParamBase::Int, 0));
+    setPluginParameter(p, msgLevelWarningAndError);
 };
 
 
@@ -120,7 +121,7 @@ void DialogNewportConexLDS::on_btnConfig_clicked()
         new ito::ParamBase("laserPowerState", ito::ParamBase::Int, 0));
     setPluginParameter(p1, msgLevelWarningAndError);
     QSharedPointer<ito::ParamBase> p2(
-        new ito::ParamBase("configurationState", ito::ParamBase::String, "CONFIGURATION"));
+        new ito::ParamBase("enableConfiguration", ito::ParamBase::Int, 1));
     setPluginParameter(p2, msgLevelWarningAndError);
 
     enableDialog(true);

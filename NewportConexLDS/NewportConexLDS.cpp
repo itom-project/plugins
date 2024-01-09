@@ -109,7 +109,7 @@ ito::RetVal NewportConexLDSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 NewportConexLDS::NewportConexLDS() :
-    AddInDataIO(), m_pSerialIO(nullptr), m_delayAfterSendCommandMS(100), m_requestTimeOutMS(5000)
+    AddInDataIO(), m_pSerialIO(nullptr), m_delayAfterSendCommandMS(10), m_requestTimeOutMS(5000)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", nullptr);
@@ -163,7 +163,7 @@ NewportConexLDS::NewportConexLDS() :
     //-------------------------------------------------
     paramVal = ito::Param(
         "configurationState",
-        ito::ParamBase::String,
+        ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
         tr("Configuration state (MEASURE, READY, CONFIGURATION).").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String, "", "Device parameter");
@@ -171,6 +171,17 @@ NewportConexLDS::NewportConexLDS() :
     sm.addItem("READY");
     sm.addItem("CONFIGURATION");
     paramVal.setMeta(&sm, false);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //-------------------------------------------------
+    paramVal = ito::Param(
+        "enableConfiguration",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, 1, 1, "Device parameter"),
+        tr("Enable/Disable configuration (0==OFF, 1==ON). Laser is disabled when it is on.")
+            .toLatin1()
+            .data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //-------------------------------------------------
@@ -215,8 +226,10 @@ NewportConexLDS::NewportConexLDS() :
         new ito::DoubleMeta(0.0, std::numeric_limits<ito::float64>::max(), 0.20, "Measurement"),
         tr("Low pass filter frequency as response time before ouputing measurement that is "
            "inversely proportional to the low pass filter frequency. Following frequencies [Hz] "
-           "corresponds to a resolution [µrad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == 0.021, "
+           "corresponds to a resolution [%1rad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == "
+           "0.021, "
            "100 == 0.030, 200 == 0.042, 500 == 0.067, 1000 == 0.095, 2000 == 0.134.")
+            .arg(QLatin1String("\u00B5"))
             .toLatin1()
             .data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -431,7 +444,7 @@ ito::RetVal NewportConexLDS::init(
         switch (state)
         {
         case NewportConexLDS::MEASURE:
-            m_params["laserPowerState"].setVal<int>(0);
+            m_params["laserPowerState"].setVal<int>(1);
             break;
         case NewportConexLDS::READY:
             m_params["laserPowerState"].setVal<int>(0);
@@ -570,6 +583,8 @@ ito::RetVal NewportConexLDS::close(ItomSharedSemaphore* waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    dockWidgetVisibilityChanged(false);
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -669,7 +684,6 @@ ito::RetVal NewportConexLDS::getParam(QSharedPointer<ito::Param> val, ItomShared
             int laser = 0;
             ConfigurationState state;
             retValue += getConfigurationState(state);
-
 
             if (!retValue.containsError())
             {
@@ -831,7 +845,7 @@ ito::RetVal NewportConexLDS::setParam(
 
     if (config != CONFIGURATION)
     {
-        if (!(key == "laserPowerState" or key == "configurationState"))
+        if (!(key == "laserPowerState" or key == "enableConfiguration"))
         {
             retValue += ito::RetVal(
                 ito::retError,
@@ -843,7 +857,6 @@ ito::RetVal NewportConexLDS::setParam(
                     .data());
         }
     }
-
 
     if (!retValue.containsError())
     {
@@ -862,10 +875,19 @@ ito::RetVal NewportConexLDS::setParam(
                         .data());
             }
 
-            if (!retValue.containsError())
+            int state = val->getVal<int>();
+            if (!(state and config == MEASURE))
             {
-                retValue += setLaserPowerState(val->getVal<int>());
-                retValue += it->copyValueFrom(&(*val));
+                if (!retValue.containsError())
+                {
+                    retValue += setLaserPowerState(state);
+                    ConfigurationState config;
+
+                    retValue += getConfigurationState(config);
+                    m_params["configurationState"].setVal<char*>(
+                        configurationEnumToString(config).toUtf8().data());
+                    retValue += it->copyValueFrom(&(*val));
+                }
             }
         }
         else if (key == "gain")
@@ -898,31 +920,15 @@ ito::RetVal NewportConexLDS::setParam(
             retValue += setHighLevelPowerThreshold(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "configurationState")
+        else if (key == "enableConfiguration")
         {
-            QByteArray requiredState = val->getVal<char*>();
-            int intState = (requiredState == "CONFIGURATION") ? 1 : 0;
-
-            if ((requiredState == "CONFIGURATION" or requiredState == "READY") and
-                config == MEASURE)
+            int requiredState = val->getVal<int>();
+            if (config == MEASURE)
             {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    tr("The parameter '%1' cannot be set since the configuration state is "
-                       "'%2'. Disable the laser using paramter 'laserPowerState'.")
-                        .arg(key)
-                        .arg(configurationEnumToString(config))
-                        .toUtf8()
-                        .data());
+                retValue += setLaserPowerState(0);
             }
-
-            if (!(configurationEnumToString(config) == val->getVal<char*>()) and
-                !retValue.containsError())
-            {
-                retValue += setConfigurationState(intState);
-                retValue += it->copyValueFrom(&(*val));
-            }
+            retValue += setConfigurationState(requiredState);
+            retValue += it->copyValueFrom(&(*val));
         }
         else
         {
@@ -985,6 +991,7 @@ ito::RetVal NewportConexLDS::sendCommand(const QByteArray& command)
 {
     ito::RetVal retVal;
     retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
+
     if (m_delayAfterSendCommandMS > 0)
     {
         QMutex mutex;
@@ -993,7 +1000,7 @@ ito::RetVal NewportConexLDS::sendCommand(const QByteArray& command)
         waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
         mutex.unlock();
     }
-
+    setAlive();
     return retVal;
 }
 
@@ -1537,6 +1544,9 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
         QString::number(m_controllerAddress).toUtf8() + "LB" + QString::number(state).toUtf8();
     retVal += sendCommand(sendStr);
 
+    _sleep(5000);
+    setAlive();
+
     QString error;
     retVal += getError(error);
 
@@ -1735,7 +1745,14 @@ ito::RetVal NewportConexLDS::setConfigurationState(const int& state)
 
     QByteArray sendStr =
         QString::number(m_controllerAddress).toUtf8() + "PW" + QString::number(state).toUtf8();
+
     retVal += sendCommand(sendStr);
+
+    if (!state)
+    {
+        _sleep(5000);
+        setAlive();
+    }
 
     QString error;
     retVal += getError(error);
