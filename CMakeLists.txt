@@ -4,7 +4,7 @@ project(itom_plugins)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
- 
+
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
@@ -286,6 +286,12 @@ option(PLUGIN_NEWPORT_2936 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_NEWPORT_2936)
     add_subdirectory(Newport2936)
 endif(PLUGIN_NEWPORT_2936)
+
+# Newport Conex LDS
+option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ON)
+if(PLUGIN_NEWPORT_CONEXLDS)
+    add_subdirectory(NewportConexLDS)
+endif(PLUGIN_NEWPORT_CONEXLDS)
 
 # NewportSMC100
 option(PLUGIN_NEWPORT_SMC100 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
