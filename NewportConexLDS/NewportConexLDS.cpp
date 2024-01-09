@@ -228,8 +228,8 @@ NewportConexLDS::NewportConexLDS() :
     paramVal = ito::Param(
         "frequency",
         ito::ParamBase::Double,
-        0.20,
-        new ito::DoubleMeta(0.0, 2000, 0.20, "Measurement"),
+        1.0,
+        new ito::DoubleMeta(1.0, 2000, 1, "Measurement"),
         tr("Low pass filter frequency as response time before ouputing measurement that is "
            "inversely proportional to the low pass filter frequency. Following frequencies [Hz] "
            "corresponds to a resolution [%1rad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == "

@@ -120,7 +120,7 @@ The plugin execFunctions are:
 .. py:function::  instance.exec('getPositionAndPowerMeasurement', data [,interval])
 
     Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestemps.
-... Please note that this function blocks itom until the entire measurement has been carried out.
+    ... Please note that this function blocks itom until the entire measurement has been carried out.
 
     :param data: Measruement data X, Y, position and laser power.
     :type data: itom.dataObject
