@@ -271,3 +271,4 @@ Changelog
 
 * itom 1.2.0 is shipped with version 0.0.2 of serialIO
 * parameters 'readline' and 'endlineRead' are available in serialIO version >= 1.0.0
+* serialIO version 1.1.1 bug fix in command history with empty commands
