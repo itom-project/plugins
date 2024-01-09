@@ -111,8 +111,11 @@ ito::RetVal NewportConexLDSInterface::closeThisInst(ito::AddInBase** addInInst)
 NewportConexLDS::NewportConexLDS() :
     AddInDataIO(), m_pSerialIO(nullptr), m_delayAfterSendCommandMS(10), m_requestTimeOutMS(5000)
 {
-    ito::Param paramVal(
-        "name", ito::ParamBase::String | ito::ParamBase::Readonly, "NewportConexLDS", nullptr);
+    ito::Param paramVal = ito::Param(
+        "name",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "NewportConexLDS",
+        tr("Plugin name.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- SerialIO parameter
@@ -200,7 +203,7 @@ NewportConexLDS::NewportConexLDS() :
         ito::ParamBase::DoubleArray,
         2,
         gain,
-        new ito::DoubleArrayMeta(0.0, 200.0, 0.0, "Device parameter"),
+        new ito::DoubleArrayMeta(0.0, 200.0, 0.0, 0, 2, 2, "Device parameter"),
         tr("Gain of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -215,6 +218,9 @@ NewportConexLDS::NewportConexLDS() :
             -std::numeric_limits<ito::float64>::max(),
             std::numeric_limits<ito::float64>::max(),
             0.0,
+            0,
+            2,
+            2,
             "Measurement"),
         tr("Offset values of x and y axis.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -223,7 +229,7 @@ NewportConexLDS::NewportConexLDS() :
         "frequency",
         ito::ParamBase::Double,
         0.20,
-        new ito::DoubleMeta(0.0, std::numeric_limits<ito::float64>::max(), 0.20, "Measurement"),
+        new ito::DoubleMeta(0.0, 2000, 0.20, "Measurement"),
         tr("Low pass filter frequency as response time before ouputing measurement that is "
            "inversely proportional to the low pass filter frequency. Following frequencies [Hz] "
            "corresponds to a resolution [%1rad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == "
@@ -356,8 +362,6 @@ NewportConexLDS::NewportConexLDS() :
     pOpt.clear();
     pOut.clear();
 
-    // the following lines create and register the plugin's dock widget. Delete these lines if the
-    // plugin does not have a dock widget.
     DockWidgetNewportConexLDS* dw = new DockWidgetNewportConexLDS(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;

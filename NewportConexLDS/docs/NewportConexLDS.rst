@@ -6,8 +6,8 @@
 **Summary**:    :pluginsummary:`NewportConexLDS`
 **Type**:       :plugintype:`NewportConexLDS`
 **License**:    :pluginlicense:`NewportConexLDS`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
+**Platforms**:  Windows, Linux
+**Devices**:    Newport Conex-LDS
 **Author**:     :pluginauthor:`NewportConexLDS`
 =============== ========================================================================================================
 
@@ -62,12 +62,11 @@ These parameters are available and can be used to configure the ``NewportConexLD
     a resolution [µrad] (RMS noise): 1 == 0.03, 20 == 0.013, 50 == 0.021, 100 == 0.030, 200
     == 0.042, 500 == 0.067, 1000 == 0.095, 2000 == 0.134.
 
-    *Value range: [0:0.2:inf], Default: 2000*
+    *Value range: [0:0.2:inf], Default: 0.2*
 **gain**: Sequence[float]
     Gain of x and y axis.
 
-    *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 200], Default: [1,
-    1]*
+    *Allowed number of values: 0 - 2, step: 2, Value range: [0, 200], Default: [1, 1]*
 **highLevelPowerThreshold**: int
     High level power threshold for valid measurement.
 
@@ -81,12 +80,11 @@ These parameters are available and can be used to configure the ``NewportConexLD
 
     *Value range: [0, 2000], Default: 10*
 **name**: str, read-only
-
+    Plugin name.
 **offset**: Sequence[float]
     Offset values of x and y axis.
 
-    *Allowed number of values: 0 - 18446744073709551615, All values allowed, Default: [-4.3,
-    5.4]*
+    *Allowed number of values: 0 - 2, step: 2, All values allowed, Default: [-4.3, 5.4]*
 **range**: int
     Value range.
 

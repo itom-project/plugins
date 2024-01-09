@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name NewportConexLDS)
 
-#this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
     HINTS "$ENV{ITOM_SDK_ROOT}"
@@ -83,7 +82,7 @@ if(NEWPORT_CONEX_LDS_DIRECTORY)
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
 
-    itom_configure_plugin_documentation(${target_name} NewPortConexLDS)
+    itom_configure_plugin_documentation(${target_name} NewportConexLDS)
 
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
@@ -92,9 +91,6 @@ if(NEWPORT_CONEX_LDS_DIRECTORY)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
-    #if you want to copy one or more files to the lib-folder of
-    # the itom build directory, use the following macro:
     set(BINARY_FILES "${NEWPORT_CONEX_LDS_DIRECTORY}/Bin/64-bit/Newport.XPS.CommandInterface.dll")
 
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
