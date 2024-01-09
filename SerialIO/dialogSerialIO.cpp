@@ -624,7 +624,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
         {
             if (qstr.compare(m_historyList.at(i), Qt::CaseInsensitive) == 0)
             {
-                m_historyList.removeOne(m_historyList.at(i));
+                m_historyList.removeAt(i);
                 break;
             }
         }
