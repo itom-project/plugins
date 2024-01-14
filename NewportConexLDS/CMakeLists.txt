@@ -88,6 +88,3 @@ itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATION
 itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-set(BINARY_FILES "${NEWPORT_CONEX_LDS_DIRECTORY}/Bin/64-bit/Newport.XPS.CommandInterface.dll")
-
-itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
