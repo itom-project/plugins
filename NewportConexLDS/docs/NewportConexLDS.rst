@@ -114,19 +114,19 @@ The plugin execFunctions are:
 
     :return: positionAndPower - Positions of x and y axis.
     :rtype: Sequence[float]
-    :return: timeStemp - Timestemp of measurement.
+    :return: timeStamp - Timestamp of measurement.
     :rtype: str
 
 .. py:function::  instance.exec('getPositionAndPowerMeasurement', data [,interval])
 
-    Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestemps.
+    Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestamps.
     ... Please note that this function blocks itom until the entire measurement has been carried out.
 
     :param data: Measruement data X, Y, position and laser power.
     :type data: itom.dataObject
     :param interval: Interval between measruement points in ms.
     :type interval: int - optional
-    :return: timeStemps - Timestemps corresponding to the measruement data.
+    :return: timestamps - Timestamps corresponding to the measruement data.
     :rtype: Sequence[str]
 
 Exemplary usage from Python
@@ -201,11 +201,11 @@ In this example 100 data points are acquired.
 
     # Perform a measurement of 10 data points
     data = []
-    timeStemps = []
+    timeStamps = []
     for _idx in range(100):
-        values, timeStemp = conex.exec("getPositionAndPower")
+        values, timeStamp = conex.exec("getPositionAndPower")
         data.append(values)
-        timeStemps.append(timeStemp)
+        timeStamps.append(timeStamp)
 
 Create plot with measured data over time.
 
@@ -217,9 +217,9 @@ Create plot with measured data over time.
     data.setTag("legendTitle1", "y axis")
     data.setTag("legendTitle2", "level")
 
-    # convert timeStemps string into datetime
-    timeStemps = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f") for ts in timeStemps]
-    dateScale = dataObject([1, len(timeStemps)], "datetime", data=timeStemps)
+    # convert timeStamps string into datetime
+    timeStamps = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f") for ts in timeStamps]
+    dateScale = dataObject([1, len(timeStamps)], "datetime", data=timeStamps)
 
     # plot Measurement over time
     [i, h] = plot1(data, dateScale, properties={"legendPosition": "Right", "lineWidth": 2, "grid": "GridMajorXY"})
@@ -240,3 +240,5 @@ Create 2 dimensional plot of data. First data points below a laser power level o
 
 Changelog
 ==========
+
+* Plugin version 1.1.0: Renam timeStemp to timeStamp

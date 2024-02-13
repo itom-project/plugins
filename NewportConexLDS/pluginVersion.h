@@ -11,7 +11,7 @@
 #include "itom_sdk.h"
 
 #define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 0
+#define PLUGIN_VERSION_MINOR 1
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION                                                                             \
