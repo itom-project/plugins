@@ -161,6 +161,14 @@ if(PLUGIN_DemoAlgorithms)
     add_subdirectory(DemoAlgorithms)
 endif(PLUGIN_DemoAlgorithms)
 
+# FaulhaberMCS
+if(WIN32)
+    option(PLUGIN_FaulhaberMCS "Build with this plugin." ON)
+    if(PLUGIN_FaulhaberMCS)
+        add_subdirectory(FaulhaberMCS)
+    endif(PLUGIN_FaulhaberMCS)
+endif()
+
 # FFTW-Wrapper
 option(PLUGIN_FFTWFilters "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_FFTWFilters)
