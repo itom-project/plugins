@@ -95,7 +95,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(3)
+FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", NULL);
@@ -110,6 +110,22 @@ FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(3)
             1,
             m_async,
             tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+
+    paramVal = ito::Param(
+        "serialNumber",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 0, 1, "Device parameter"),
+        tr("Serial number of device.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "deviceName",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Name of device.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0, m_nrOfAxes);
@@ -143,6 +159,7 @@ ito::RetVal FaulhaberMCS::init(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+    eMomanprot error;
 
     m_isComOpen = false;
     m_hProtocolDll = LoadLibraryA("CO_RS232.dll");
@@ -181,6 +198,12 @@ ito::RetVal FaulhaberMCS::init(
         mmProtGetAbortMessage =
             (tdmmProtGetAbortMessage)GetProcAddress(m_hProtocolDll, "mmProtGetAbortMessage");
         ok &= mmProtGetAbortMessage != nullptr;
+        mmProtGetErrorMessage =
+            (tdmmProtGetErrorMessage)GetProcAddress(m_hProtocolDll, "mmProtGetErrorMessage");
+        ok &= mmProtGetErrorMessage != nullptr;
+        mmProtGetObj = (tdmmProtGetObj)GetProcAddress(m_hProtocolDll, "mmProtGetObj");
+        ok &= mmProtGetObj != nullptr;
+
         if (!ok)
         {
             retValue += ito::RetVal(
@@ -194,20 +217,31 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        eMomanprot error = mmProtInitInterface((char*)"Mocom.dll", nullptr, nullptr);
+        error = mmProtInitInterface((char*)"Mocom.dll", nullptr, nullptr);
         if (error != eMomanprot_ok)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("Error during loading MC3USB.dll!").toLatin1().data());
+                ito::retError,
+                0,
+                tr("Error during loading MC3USB.dll with error message: '%1'!")
+                    .arg(mmProtGetErrorMessage(error))
+                    .toLatin1()
+                    .data());
         }
     }
 
     if (!retValue.containsError())
     {
-        if (mmProtOpenCom(1, 0, 0) != eMomanprot_ok)
+        error = mmProtOpenCom(0, 6, 115200);
+        if (error != eMomanprot_ok)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("Error during opening COM Port!").toLatin1().data());
+                ito::retError,
+                0,
+                tr("Error during opening COM Port with error message: '%1'!")
+                    .arg(mmProtGetErrorMessage(error))
+                    .toLatin1()
+                    .data());
         }
         if (!retValue.containsError())
         {
@@ -215,6 +249,19 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
+    int serial;
+    retValue += getSerialNumber(serial);
+    if (!retValue.containsError())
+    {
+        m_params["serialNumber"].setVal<int>(serial);
+    }
+
+    const char* name = nullptr;
+    retValue += getDeviceName(name);
+    if (!retValue.containsError())
+    {
+        m_params["deviceName"].setVal<char*>(const_cast<char*>(name));
+    }
 
     if (!retValue.containsError())
     {
@@ -242,6 +289,7 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
     ito::RetVal retValue(ito::retOk);
 
     mmProtCloseCom();
+    mmProtCloseInterface();
     m_hProtocolDll = nullptr;
 
     if (waitCond)
@@ -766,6 +814,44 @@ ito::RetVal FaulhaberMCS::setPosRel(
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetObj(1, 0x1018, 0x04, serialNum);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get serial number method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetStrObj(1, 0x1008, 0x00, &name);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get serial number method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

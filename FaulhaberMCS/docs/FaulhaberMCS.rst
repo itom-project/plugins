@@ -24,3 +24,5 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: MyActuator
+
+:download:`Communication Library MomanLib <https://www.faulhaber.com/en/support/drive-electronics/#c65284>`

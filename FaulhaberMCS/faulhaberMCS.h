@@ -120,6 +120,8 @@ private:
     tdmmProtGetStrObj mmProtGetStrObj;
     tdmmProtSetObj mmProtSetObj;
     tdmmProtGetAbortMessage mmProtGetAbortMessage;
+    tdmmProtGetErrorMessage mmProtGetErrorMessage;
+    tdmmProtGetObj mmProtGetObj;
     tdmmProtDataCallback SignalDataReceived;
 
     bool m_isComOpen;
@@ -159,6 +161,9 @@ public slots:
     ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond = NULL);
     ito::RetVal setPosRel(
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
+
+    ito::RetVal getSerialNumber(int& serialNum);
+    ito::RetVal getDeviceName(const char*& name);
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
