@@ -37,10 +37,6 @@
 #include "dockWidgetFaulhaberMCS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 FaulhaberMCSInterface::FaulhaberMCSInterface()
 {
     m_type = ito::typeActuator;
@@ -48,7 +44,6 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
 
     m_description = QObject::tr("FaulhaberMCS");
 
-    // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] =
         "This template can be used for implementing a new type of actuator plugin \n\
 \n\
@@ -62,15 +57,24 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_license = QObject::tr("The plugin's license string");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    // add mandatory and optional parameters for the initialization here.
-    // append them to m_initParamsMand or m_initParamsOpt.
+    ito::Param paramVal = ito::Param(
+        "COMPort",
+        ito::ParamBase::Int,
+        1,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Communication"),
+        tr("COM port of device.").toLatin1().data());
+    m_initParamsMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "baudrate",
+        ito::ParamBase::Int,
+        112500,
+        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Communication"),
+        tr("Baudrate in Bit/s of COM port.").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Destructor of Interface Class.
-/*!
-
-*/
 FaulhaberMCSInterface::~FaulhaberMCSInterface()
 {
 }
@@ -78,23 +82,18 @@ FaulhaberMCSInterface::~FaulhaberMCSInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCSInterface::getAddInInst(ito::AddInBase** addInInst)
 {
-    NEW_PLUGININSTANCE(FaulhaberMCS) // the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(FaulhaberMCS)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 {
-    REMOVE_PLUGININSTANCE(FaulhaberMCS) // the argument of the macro is the classname of the plugin
+    REMOVE_PLUGININSTANCE(FaulhaberMCS)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
-   remove entries from m_params in this constructor or later in the init method
-*/
 FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 {
     ito::Param paramVal(
@@ -113,17 +112,41 @@ FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 
     paramVal = ito::Param(
         "serialNumber",
-        ito::ParamBase::Int | ito::ParamBase::Readonly,
-        0,
-        new ito::IntMeta(0, 0, 1, "Device parameter"),
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
         tr("Serial number of device.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "deviceName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
-        "unknown",
+        "",
         tr("Name of device.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "vendorID",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        tr("Vendor ID of device.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "productCode",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        tr("Product code number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "revisionNumber",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        tr("Revision number.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -148,10 +171,6 @@ FaulhaberMCS::~FaulhaberMCS()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal FaulhaberMCS::init(
     QVector<ito::ParamBase>* paramsMand,
     QVector<ito::ParamBase>* paramsOpt,
@@ -161,7 +180,6 @@ ito::RetVal FaulhaberMCS::init(
     ito::RetVal retValue(ito::retOk);
     eMomanprot error;
 
-    m_isComOpen = false;
     m_hProtocolDll = LoadLibraryA("CO_RS232.dll");
     if (m_hProtocolDll == nullptr)
     {
@@ -232,7 +250,10 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        error = mmProtOpenCom(0, 6, 115200);
+        int port = paramsMand->at(0).getVal<int>();
+        int baud = paramsOpt->at(0).getVal<int>();
+
+        error = mmProtOpenCom(0, port, baud);
         if (error != eMomanprot_ok)
         {
             retValue += ito::RetVal(
@@ -245,22 +266,60 @@ ito::RetVal FaulhaberMCS::init(
         }
         if (!retValue.containsError())
         {
-            m_isComOpen = true;
+            m_COMPort = port;
         }
     }
 
-    int serial;
-    retValue += getSerialNumber(serial);
     if (!retValue.containsError())
     {
-        m_params["serialNumber"].setVal<int>(serial);
+        int serial;
+        retValue += getSerialNumber(serial);
+        if (!retValue.containsError())
+        {
+            m_params["serialNumber"].setVal<char*>(
+                const_cast<char*>(std::to_string(serial).c_str()));
+        }
     }
 
-    const char* name = nullptr;
-    retValue += getDeviceName(name);
     if (!retValue.containsError())
     {
-        m_params["deviceName"].setVal<char*>(const_cast<char*>(name));
+        const char* name = nullptr;
+        retValue += getDeviceName(name);
+        if (!retValue.containsError())
+        {
+            m_params["deviceName"].setVal<char*>(const_cast<char*>(name));
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int id;
+        retValue += getVendorID(id);
+        if (!retValue.containsError())
+        {
+            m_params["vendorID"].setVal<char*>(const_cast<char*>(std::to_string(id).c_str()));
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int code;
+        retValue += getProductCode(code);
+        if (!retValue.containsError())
+        {
+            m_params["productCode"].setVal<char*>(const_cast<char*>(std::to_string(code).c_str()));
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int num;
+        retValue += getRevisionNumber(num);
+        if (!retValue.containsError())
+        {
+            m_params["revisionNumber"].setVal<char*>(
+                const_cast<char*>(std::to_string(num).c_str()));
+        }
     }
 
     if (!retValue.containsError())
@@ -274,15 +333,11 @@ ito::RetVal FaulhaberMCS::init(
         waitCond->release();
     }
 
-    setInitialized(true); // init method has been finished (independent on retval)
+    setInitialized(true);
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -836,6 +891,62 @@ ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVendorID(int& id)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetObj(1, 0x1018, 0x01, id);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get vendor id method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getProductCode(int& code)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetObj(1, 0x1018, 0x02, code);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get product code method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getRevisionNumber(int& num)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetObj(1, 0x1018, 0x03, num);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get revision number method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
 {
     ito::RetVal retVal(ito::retOk);
@@ -846,7 +957,7 @@ ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
         retVal += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during get serial number method with error message: '%1'!")
+            tr("Error during get device name method with error message: '%1'!")
                 .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());

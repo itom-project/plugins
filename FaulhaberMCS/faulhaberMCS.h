@@ -124,9 +124,7 @@ private:
     tdmmProtGetObj mmProtGetObj;
     tdmmProtDataCallback SignalDataReceived;
 
-    bool m_isComOpen;
-    int m_Statusword;
-    std::string m_abortMessage;
+    int m_COMPort;
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -163,6 +161,9 @@ public slots:
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
 
     ito::RetVal getSerialNumber(int& serialNum);
+    ito::RetVal getVendorID(int& id);
+    ito::RetVal getProductCode(int& code);
+    ito::RetVal getRevisionNumber(int& num);
     ito::RetVal getDeviceName(const char*& name);
 
 private slots:
