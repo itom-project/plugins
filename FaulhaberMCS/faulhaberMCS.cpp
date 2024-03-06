@@ -94,7 +94,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1)
+FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1), m_node(1)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", NULL);
@@ -147,6 +147,14 @@ FaulhaberMCS::FaulhaberMCS() : AddInActuator(), m_async(0), m_nrOfAxes(1)
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
         tr("Revision number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "softwareVersion",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        tr("Manufacturer software version.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device parameter"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -221,6 +229,9 @@ ito::RetVal FaulhaberMCS::init(
         ok &= mmProtGetErrorMessage != nullptr;
         mmProtGetObj = (tdmmProtGetObj)GetProcAddress(m_hProtocolDll, "mmProtGetObj");
         ok &= mmProtGetObj != nullptr;
+        mmProtFindConnection =
+            (tdmmProtFindConnection)GetProcAddress(m_hProtocolDll, "mmProtFindConnection");
+        ok &= mmProtFindConnection != nullptr;
 
         if (!ok)
         {
@@ -253,7 +264,7 @@ ito::RetVal FaulhaberMCS::init(
         int port = paramsMand->at(0).getVal<int>();
         int baud = paramsOpt->at(0).getVal<int>();
 
-        error = mmProtOpenCom(0, port, baud);
+        error = mmProtOpenCom(m_node, port, baud);
         if (error != eMomanprot_ok)
         {
             retValue += ito::RetVal(
@@ -288,6 +299,16 @@ ito::RetVal FaulhaberMCS::init(
         if (!retValue.containsError())
         {
             m_params["deviceName"].setVal<char*>(const_cast<char*>(name));
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        const char* version = nullptr;
+        retValue += getSoftwareVersion(version);
+        if (!retValue.containsError())
+        {
+            m_params["softwareVersion"].setVal<char*>(const_cast<char*>(version));
         }
     }
 
@@ -876,7 +897,7 @@ ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error;
-    error = mmProtGetObj(1, 0x1018, 0x04, serialNum);
+    error = mmProtGetObj(m_node, 0x1018, 0x04, serialNum);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -895,7 +916,7 @@ ito::RetVal FaulhaberMCS::getVendorID(int& id)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error;
-    error = mmProtGetObj(1, 0x1018, 0x01, id);
+    error = mmProtGetObj(m_node, 0x1018, 0x01, id);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -914,7 +935,7 @@ ito::RetVal FaulhaberMCS::getProductCode(int& code)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error;
-    error = mmProtGetObj(1, 0x1018, 0x02, code);
+    error = mmProtGetObj(m_node, 0x1018, 0x02, code);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -933,7 +954,7 @@ ito::RetVal FaulhaberMCS::getRevisionNumber(int& num)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error;
-    error = mmProtGetObj(1, 0x1018, 0x03, num);
+    error = mmProtGetObj(m_node, 0x1018, 0x03, num);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -951,13 +972,31 @@ ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error;
-    error = mmProtGetStrObj(1, 0x1008, 0x00, &name);
+    error = mmProtGetStrObj(m_node, 0x1008, 0x00, &name);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
             ito::retError,
             0,
             tr("Error during get device name method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+ito::RetVal FaulhaberMCS::getSoftwareVersion(const char*& version)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error;
+    error = mmProtGetStrObj(m_node, 0x100A, 0x00, &version);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get software version method with error message: '%1'!")
                 .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());
@@ -1103,14 +1142,6 @@ ito::RetVal FaulhaberMCS::updateStatus()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the
-   parametersChanged signal of the plugin with the dock widget once its becomes visible such that no
-   resources are used if the dock widget is not visible. Right after a re-connection emit
-   parametersChanged(m_params) in order to send the current status of all plugin parameters to the
-   dock widget.
-*/
 void FaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1160,65 +1191,7 @@ void FaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of
-   the plugin. If the instance of the configuration dialog has been created, its slot
-   'parametersChanged' is connected to the signal 'parametersChanged' of the plugin. By invoking the
-   slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately
-   emitted with m_params as argument. Therefore the configuration dialog obtains the current set of
-   parameters and can be adjusted to its values.
-
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close
-   the dialog using the ok or cancel button. If ok has been clicked (accept()), this method calls
-   applyParameters of the configuration dialog in order to force the dialog to send all changed
-   parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself
-   must call applyParameters.
-
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function
-   apiShowConfigurationDialog that does all the things mentioned in this description.
-
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to
-   signalize itom that the plugin has a configuration dialog.
-
-    \sa hasConfDialog
-*/
 const ito::RetVal FaulhaberMCS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogFaulhaberMCS(this));
-}
-
-bool FaulhaberMCS::Init(tdmmProtDataCallback SignalDataReceived)
-{
-    return false;
-}
-
-bool FaulhaberMCS::GetStrObj(int nodeNr, int index, int subIndex, std::string& value)
-{
-    return false;
-}
-
-bool FaulhaberMCS::SendCommand(int nodeNr, eMomancmd cmd)
-{
-    return false;
-}
-
-bool FaulhaberMCS::ReadReceivedData(std::string& data, std::string& cmd)
-{
-    return false;
-}
-
-bool FaulhaberMCS::SetObj(int nodeNr, int index, int subIndex, int value, int len)
-{
-    return false;
-}
-
-int FaulhaberMCS::GetStatusword(void)
-{
-    return 0;
-}
-
-std::string FaulhaberMCS::GetAbortMessage(void)
-{
-    return std::string();
 }

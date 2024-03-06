@@ -85,16 +85,6 @@ public:
         return 1;
     }; //!< indicates that this plugin has got a configuration dialog
 
-    bool Init(tdmmProtDataCallback SignalDataReceived);
-    bool GetStrObj(int nodeNr, int index, int subIndex, std::string& value);
-    bool SendCommand(int nodeNr, eMomancmd cmd);
-    bool ReadReceivedData(std::string& data, std::string& cmd);
-    bool SetObj(int nodeNr, int index, int subIndex, int value, int len);
-    int GetStatusword(void);
-    std::string GetAbortMessage(void);
-
-    HANDLE hReceiveEvent = nullptr;
-
 private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
@@ -122,9 +112,10 @@ private:
     tdmmProtGetAbortMessage mmProtGetAbortMessage;
     tdmmProtGetErrorMessage mmProtGetErrorMessage;
     tdmmProtGetObj mmProtGetObj;
-    tdmmProtDataCallback SignalDataReceived;
+    tdmmProtFindConnection mmProtFindConnection;
 
     int m_COMPort;
+    int m_node;
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -160,11 +151,13 @@ public slots:
     ito::RetVal setPosRel(
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
 
+    // Faulhaber MCS methods
     ito::RetVal getSerialNumber(int& serialNum);
     ito::RetVal getVendorID(int& id);
     ito::RetVal getProductCode(int& code);
     ito::RetVal getRevisionNumber(int& num);
     ito::RetVal getDeviceName(const char*& name);
+    ito::RetVal getSoftwareVersion(const char*& version);
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
