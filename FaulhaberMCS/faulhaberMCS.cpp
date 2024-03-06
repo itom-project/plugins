@@ -1,8 +1,23 @@
 /* ********************************************************************
-    Template for an actuator plugin for the software itom
+    Plugin "FaulhaberMCS" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+    This file is part of a plugin for the measurement software itom.
+
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
@@ -129,20 +144,76 @@ ito::RetVal FaulhaberMCS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // steps todo:
-    //  - get all initialization parameters
-    //  - try to detect your device
-    //  - establish a connection to the device
-    //  - synchronize the current parameters of the device with the current values of parameters
-    //  inserted in m_params
-    //  - if an identifier string of the device is available, set it via
-    //  setIdentifier("yourIdentifier")
-    //  - set m_nrOfAxes to the number of axes
-    //  - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding
-    //  values
-    //  - call emit parametersChanged(m_params) in order to propagate the current set of parameters
-    //  in m_params to connected dock widgets...
-    //  - call setInitialized(true) to confirm the end of the initialization (even if it failed)
+    m_isComOpen = false;
+    m_hProtocolDll = LoadLibraryA("CO_RS232.dll");
+    if (m_hProtocolDll == nullptr)
+    {
+        retValue +=
+            ito::RetVal(ito::retError, 0, tr("CO_RS232.dll cannot be loaded!").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        // Needed functions of the communication library:
+        bool ok = true;
+        mmProtInitInterface =
+            (tdmmProtInitInterface)GetProcAddress(m_hProtocolDll, "mmProtInitInterface");
+        ok &= mmProtInitInterface != nullptr;
+        mmProtCloseInterface =
+            (tdmmProtCloseInterface)GetProcAddress(m_hProtocolDll, "mmProtCloseInterface");
+        ok &= mmProtCloseInterface != nullptr;
+        mmProtOpenCom = (tdmmProtOpenCom)GetProcAddress(m_hProtocolDll, "mmProtOpenCom");
+        ok &= mmProtOpenCom != nullptr;
+        mmProtCloseCom = (tdmmProtCloseCom)GetProcAddress(m_hProtocolDll, "mmProtCloseCom");
+        ok &= mmProtCloseCom != nullptr;
+        mmProtSendCommand =
+            (tdmmProtSendCommand)GetProcAddress(m_hProtocolDll, "mmProtSendCommand");
+        ok &= mmProtSendCommand != nullptr;
+        mmProtReadAnswer = (tdmmProtReadAnswer)GetProcAddress(m_hProtocolDll, "mmProtReadAnswer");
+        ok &= mmProtReadAnswer != nullptr;
+        mmProtDecodeAnswStr =
+            (tdmmProtDecodeAnswStr)GetProcAddress(m_hProtocolDll, "mmProtDecodeAnswStr");
+        ok &= mmProtDecodeAnswStr != nullptr;
+        mmProtGetStrObj = (tdmmProtGetStrObj)GetProcAddress(m_hProtocolDll, "mmProtGetStrObj");
+        ok &= mmProtGetStrObj != nullptr;
+        mmProtSetObj = (tdmmProtSetObj)GetProcAddress(m_hProtocolDll, "mmProtSetObj");
+        ok &= mmProtSetObj != nullptr;
+        mmProtGetAbortMessage =
+            (tdmmProtGetAbortMessage)GetProcAddress(m_hProtocolDll, "mmProtGetAbortMessage");
+        ok &= mmProtGetAbortMessage != nullptr;
+        if (!ok)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during definition of function forcommunication library!")
+                    .toLatin1()
+                    .data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        eMomanprot error = mmProtInitInterface((char*)"Mocom.dll", nullptr, nullptr);
+        if (error != eMomanprot_ok)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Error during loading MC3USB.dll!").toLatin1().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        if (mmProtOpenCom(1, 0, 0) != eMomanprot_ok)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Error during opening COM Port!").toLatin1().data());
+        }
+        if (!retValue.containsError())
+        {
+            m_isComOpen = true;
+        }
+    }
 
 
     if (!retValue.containsError())
@@ -170,9 +241,8 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // todo:
-    //  - disconnect the device if not yet done
-    //  - this funtion is considered to be the "inverse" of init.
+    mmProtCloseCom();
+    m_hProtocolDll = nullptr;
 
     if (waitCond)
     {
@@ -919,4 +989,39 @@ void FaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
 const ito::RetVal FaulhaberMCS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogFaulhaberMCS(this));
+}
+
+bool FaulhaberMCS::Init(tdmmProtDataCallback SignalDataReceived)
+{
+    return false;
+}
+
+bool FaulhaberMCS::GetStrObj(int nodeNr, int index, int subIndex, std::string& value)
+{
+    return false;
+}
+
+bool FaulhaberMCS::SendCommand(int nodeNr, eMomancmd cmd)
+{
+    return false;
+}
+
+bool FaulhaberMCS::ReadReceivedData(std::string& data, std::string& cmd)
+{
+    return false;
+}
+
+bool FaulhaberMCS::SetObj(int nodeNr, int index, int subIndex, int value, int len)
+{
+    return false;
+}
+
+int FaulhaberMCS::GetStatusword(void)
+{
+    return 0;
+}
+
+std::string FaulhaberMCS::GetAbortMessage(void)
+{
+    return std::string();
 }
