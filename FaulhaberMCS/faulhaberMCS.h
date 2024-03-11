@@ -114,6 +114,7 @@ private:
     tdmmProtGetObj mmProtGetObj;
     tdmmProtFindConnection mmProtFindConnection;
     tdmmProtSendMotionCommand mmProtSendMotionCommand;
+    tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
 
     int m_COMPort;
     int m_node;
@@ -159,6 +160,9 @@ public slots:
     ito::RetVal getRevisionNumber(int& num);
     ito::RetVal getDeviceName(const char*& name);
     ito::RetVal getSoftwareVersion(const char*& version);
+    ito::RetVal getPosMCS(int& pos);
+    ito::RetVal setPosRelMCS(int& pos);
+    ito::RetVal homingMCS();
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);

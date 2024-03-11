@@ -235,6 +235,9 @@ ito::RetVal FaulhaberMCS::init(
         mmProtSendMotionCommand =
             (tdmmProtSendMotionCommand)GetProcAddress(m_hProtocolDll, "mmProtSendMotionCommand");
         ok &= mmProtSendMotionCommand != nullptr;
+        mmProtCheckMotionCommand =
+            (tdmmProtCheckMotionCommand)GetProcAddress(m_hProtocolDll, "mmProtCheckMotionCommand");
+        ok &= mmProtCheckMotionCommand != nullptr;
 
         if (!ok)
         {
@@ -349,9 +352,9 @@ ito::RetVal FaulhaberMCS::init(
     // start device
     if (!retValue.containsError())
     {
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
+        Sleep(100);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
     }
@@ -536,6 +539,7 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
     if (!retValue.containsError())
     {
+        retValue += homingMCS();
         // todo:
         // start calibrating the given axes and don't forget to regularily call setAlive().
         // this is important if the calibration needs more time than the timeout time of itom (e.g.
@@ -671,10 +675,13 @@ ito::RetVal FaulhaberMCS::getPos(
     {
         if (i >= 0 && i < m_nrOfAxes)
         {
-            // obtain current position of axis i
-            // transform tempPos to angle
-            m_currentPos[i] = 0.0; // set m_currentPos[i] to the obtained position
-            (*pos)[i] = m_currentPos[i];
+            int intPos;
+            retValue += getPosMCS(intPos);
+            if (!retValue.containsError())
+            {
+                m_currentPos[i] = intPos; // set m_currentPos[i] to the obtained position
+                (*pos)[i] = m_currentPos[i];
+            }
         }
         else
         {
@@ -754,8 +761,6 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             // switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
-            // todo: start the movement
-
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
             // slots gets informed about new targets
             sendTargetUpdate();
@@ -776,7 +781,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
+            retValue += waitForDone(100, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -861,13 +866,26 @@ ito::RetVal FaulhaberMCS::setPosRel(
         {
             // set status of all given axes to moving and keep all flags related to the status and
             // switches
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-
-            // todo: start the movement
+            for (int naxis = 0; naxis < axis.size(); naxis++)
+            {
+                setStatus(
+                    m_currentStatus[naxis],
+                    ito::actuatorMoving,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                sendStatusUpdate(false);
+                m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]] + pos[naxis];
+            }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
             // slots gets informed about new targets
             sendTargetUpdate();
+
+            for (int naxis = 0; naxis < axis.size(); naxis++)
+            {
+                int intPos;
+                retValue += setPosRelMCS(intPos);
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+            }
 
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
             // changes in m_currentStatus and m_currentPos.
@@ -885,7 +903,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
+            // retValue += waitForDone(100, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -912,8 +930,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
 ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetObj(m_node, 0x1018, 0x04, serialNum);
+    eMomanprot error = mmProtGetObj(m_node, 0x1018, 0x04, serialNum);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -931,8 +948,7 @@ ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
 ito::RetVal FaulhaberMCS::getVendorID(int& id)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetObj(m_node, 0x1018, 0x01, id);
+    eMomanprot error = mmProtGetObj(m_node, 0x1018, 0x01, id);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -950,8 +966,7 @@ ito::RetVal FaulhaberMCS::getVendorID(int& id)
 ito::RetVal FaulhaberMCS::getProductCode(int& code)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetObj(m_node, 0x1018, 0x02, code);
+    eMomanprot error = mmProtGetObj(m_node, 0x1018, 0x02, code);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -969,8 +984,7 @@ ito::RetVal FaulhaberMCS::getProductCode(int& code)
 ito::RetVal FaulhaberMCS::getRevisionNumber(int& num)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetObj(m_node, 0x1018, 0x03, num);
+    eMomanprot error = mmProtGetObj(m_node, 0x1018, 0x03, num);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -987,8 +1001,7 @@ ito::RetVal FaulhaberMCS::getRevisionNumber(int& num)
 ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetStrObj(m_node, 0x1008, 0x00, &name);
+    eMomanprot error = mmProtGetStrObj(m_node, 0x1008, 0x00, &name);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -1005,8 +1018,7 @@ ito::RetVal FaulhaberMCS::getDeviceName(const char*& name)
 ito::RetVal FaulhaberMCS::getSoftwareVersion(const char*& version)
 {
     ito::RetVal retVal(ito::retOk);
-    eMomanprot error;
-    error = mmProtGetStrObj(m_node, 0x100A, 0x00, &version);
+    eMomanprot error = mmProtGetStrObj(m_node, 0x100A, 0x00, &version);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -1017,6 +1029,40 @@ ito::RetVal FaulhaberMCS::getSoftwareVersion(const char*& version)
                 .toLatin1()
                 .data());
     }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x6064, 0x00, pos);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get position method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPosRelMCS(int& pos)
+{
+    ito::RetVal retVal(ito::retOk);
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::homingMCS()
+{
+    ito::RetVal retVal(ito::retOk);
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_HS, 0, 0);
     return retVal;
 }
 
