@@ -113,6 +113,7 @@ private:
     tdmmProtGetErrorMessage mmProtGetErrorMessage;
     tdmmProtGetObj mmProtGetObj;
     tdmmProtFindConnection mmProtFindConnection;
+    tdmmProtSendMotionCommand mmProtSendMotionCommand;
 
     int m_COMPort;
     int m_node;

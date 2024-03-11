@@ -232,6 +232,9 @@ ito::RetVal FaulhaberMCS::init(
         mmProtFindConnection =
             (tdmmProtFindConnection)GetProcAddress(m_hProtocolDll, "mmProtFindConnection");
         ok &= mmProtFindConnection != nullptr;
+        mmProtSendMotionCommand =
+            (tdmmProtSendMotionCommand)GetProcAddress(m_hProtocolDll, "mmProtSendMotionCommand");
+        ok &= mmProtSendMotionCommand != nullptr;
 
         if (!ok)
         {
@@ -343,6 +346,16 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
+    // start device
+    if (!retValue.containsError())
+    {
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+    }
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
@@ -363,6 +376,9 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
 
     mmProtCloseCom();
     mmProtCloseInterface();
