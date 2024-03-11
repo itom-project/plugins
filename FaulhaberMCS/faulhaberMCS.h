@@ -61,7 +61,6 @@ private:
     ito::RetVal closeThisInst(ito::AddInBase** addInInst);
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
  *\class    FaulhaberMCS
@@ -69,7 +68,7 @@ private:
  */
 class FaulhaberMCS : public ito::AddInActuator
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 protected:
     //! Destructor
@@ -84,6 +83,7 @@ public:
     {
         return 1;
     }; //!< indicates that this plugin has got a configuration dialog
+
 
 private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do

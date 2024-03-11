@@ -252,6 +252,7 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        // error = mmProtInitInterface((char*)"Mocom.dll", mmProtDataCallback, nullptr);
         error = mmProtInitInterface((char*)"Mocom.dll", nullptr, nullptr);
         if (error != eMomanprot_ok)
         {
@@ -354,7 +355,6 @@ ito::RetVal FaulhaberMCS::init(
     {
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
-        Sleep(100);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
     }
@@ -882,7 +882,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
-                int intPos;
+                int intPos = int(std::round(pos[naxis] * 100) / 100);
                 retValue += setPosRelMCS(intPos);
                 mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
             }
@@ -890,6 +890,11 @@ ito::RetVal FaulhaberMCS::setPosRel(
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
             // changes in m_currentStatus and m_currentPos.
             sendStatusUpdate();
+            foreach (const int& a, axis)
+            {
+                replaceStatus(m_currentStatus[a], ito::actuatorMoving, ito::actuatorInterrupted);
+            }
+            sendStatusUpdate(false);
 
             // release the wait condition now, if async is true (itom considers this method to be
             // finished now due to the threaded call)
@@ -1054,7 +1059,33 @@ ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
 ito::RetVal FaulhaberMCS::setPosRelMCS(int& pos)
 {
     ito::RetVal retVal(ito::retOk);
-    mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);
+    // mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);
+    bool err = true;
+    unsigned int abortMessage;
+    // Modes of Operation = Profile Position Mode (1):
+    if (mmProtSetObj(m_node, 0x6060, 0x00, 1, 1, abortMessage) == eMomanprot_ok)
+    {
+        // Target Position = 1000:
+        if (mmProtSetObj(m_node, 0x607A, 0x00, pos, sizeof(pos), abortMessage) == eMomanprot_ok)
+        {
+            // Enable Operation:
+            if (mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage) == eMomanprot_ok)
+            {
+                // Move relative:
+                if (mmProtSetObj(m_node, 0x6040, 0x00, 0x007F, 2, abortMessage) == eMomanprot_error)
+                {
+                    retVal += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Error during setPosRel MCS method with error message: '%1'!")
+                            .arg(mmProtGetErrorMessage(err))
+                            .toLatin1()
+                            .data());
+                }
+            }
+        }
+    }
+
     return retVal;
 }
 
