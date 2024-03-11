@@ -161,8 +161,11 @@ public slots:
     ito::RetVal getDeviceName(const char*& name);
     ito::RetVal getSoftwareVersion(const char*& version);
     ito::RetVal getPosMCS(int& pos);
-    ito::RetVal setPosRelMCS(int& pos);
+    ito::RetVal setPosAbsMCS(double& pos);
+    ito::RetVal setPosRelMCS(double& pos);
     ito::RetVal homingMCS();
+
+    int doubleToInteger(double& value);
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);

@@ -759,15 +759,33 @@ ito::RetVal FaulhaberMCS::setPosAbs(
         {
             // set status of all given axes to moving and keep all flags related to the status and
             // switches
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            for (int naxis = 0; naxis < axis.size(); naxis++)
+            {
+                setStatus(
+                    m_currentStatus[naxis],
+                    ito::actuatorMoving,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                sendStatusUpdate(false);
+                m_targetPos[axis[naxis]] = pos[naxis];
+            }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
             // slots gets informed about new targets
             sendTargetUpdate();
 
+            for (int naxis = 0; naxis < axis.size(); naxis++)
+            {
+                retValue += setPosAbsMCS(m_targetPos[axis[naxis]]);
+            }
+
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
             // changes in m_currentStatus and m_currentPos.
             sendStatusUpdate();
+            foreach (const int& a, axis)
+            {
+                replaceStatus(m_currentStatus[a], ito::actuatorMoving, ito::actuatorInterrupted);
+            }
+            sendStatusUpdate(false);
 
             // release the wait condition now, if async is true (itom considers this method to be
             // finished now due to the threaded call)
@@ -781,7 +799,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(100, axis); // WaitForAnswer(60000, axis);
+            // retValue += waitForDone(100, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -882,9 +900,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
-                int intPos = int(std::round(pos[naxis] * 100) / 100);
-                retValue += setPosRelMCS(intPos);
-                mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+                retValue += setPosRelMCS(pos[naxis]);
             }
 
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
@@ -1056,17 +1072,54 @@ ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setPosRelMCS(int& pos)
+ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
 {
     ito::RetVal retVal(ito::retOk);
-    // mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);
-    bool err = true;
+    /*mmProtSendCommand(m_node, 0x0000, eMomancmd_MA, sizeof(intPos), intPos);
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0x00, 0);*/
+
     unsigned int abortMessage;
     // Modes of Operation = Profile Position Mode (1):
     if (mmProtSetObj(m_node, 0x6060, 0x00, 1, 1, abortMessage) == eMomanprot_ok)
     {
-        // Target Position = 1000:
-        if (mmProtSetObj(m_node, 0x607A, 0x00, pos, sizeof(pos), abortMessage) == eMomanprot_ok)
+        int intPos = doubleToInteger(pos);
+        if (mmProtSetObj(m_node, 0x607A, 0x00, intPos, sizeof(intPos), abortMessage) ==
+            eMomanprot_ok)
+        {
+            // Enable Operation:
+            if (mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage) == eMomanprot_ok)
+            {
+                // Move relative:
+                if (mmProtSetObj(m_node, 0x6040, 0x00, 0x003F, 2, abortMessage) == eMomanprot_error)
+                {
+                    retVal += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Error during get position method with error message: '%1'!")
+                            .arg(mmProtGetErrorMessage(abortMessage))
+                            .toLatin1()
+                            .data());
+                }
+            }
+        }
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPosRelMCS(double& pos)
+{
+    ito::RetVal retVal(ito::retOk);
+    /*mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);
+    mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0x00, 0);*/
+
+    unsigned int abortMessage;
+    // Modes of Operation = Profile Position Mode (1):
+    if (mmProtSetObj(m_node, 0x6060, 0x00, 1, 1, abortMessage) == eMomanprot_ok)
+    {
+        int intPos = doubleToInteger(pos);
+        if (mmProtSetObj(m_node, 0x607A, 0x00, intPos, sizeof(intPos), abortMessage) ==
+            eMomanprot_ok)
         {
             // Enable Operation:
             if (mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage) == eMomanprot_ok)
@@ -1077,15 +1130,14 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(int& pos)
                     retVal += ito::RetVal(
                         ito::retError,
                         0,
-                        tr("Error during setPosRel MCS method with error message: '%1'!")
-                            .arg(mmProtGetErrorMessage(err))
+                        tr("Error during get position method with error message: '%1'!")
+                            .arg(mmProtGetErrorMessage(abortMessage))
                             .toLatin1()
                             .data());
                 }
             }
         }
     }
-
     return retVal;
 }
 
@@ -1095,6 +1147,12 @@ ito::RetVal FaulhaberMCS::homingMCS()
     ito::RetVal retVal(ito::retOk);
     mmProtSendCommand(m_node, 0x0000, eMomancmd_HS, 0, 0);
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int FaulhaberMCS::doubleToInteger(double& value)
+{
+    return int(std::round(value * 100) / 100);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
