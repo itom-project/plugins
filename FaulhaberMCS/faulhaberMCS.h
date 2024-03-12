@@ -1,4 +1,3 @@
-#pragma once
 /* ********************************************************************
     Plugin "FaulhaberMCS" for itom software
     URL: http://www.uni-stuttgart.de/ito
@@ -33,14 +32,6 @@
 #include <windows.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- *\class    FaulhaberMCSInterface
- *
- *\brief    Interface-Class for FaulhaberMCS-Class
- *
- *    \sa    AddInActuator, FaulhaberMCS
- *
- */
 class FaulhaberMCSInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
@@ -62,10 +53,6 @@ private:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- *\class    FaulhaberMCS
-
- */
 class FaulhaberMCS : public ito::AddInActuator
 {
     Q_OBJECT;
@@ -83,7 +70,6 @@ public:
     {
         return 1;
     }; //!< indicates that this plugin has got a configuration dialog
-
 
 private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
@@ -116,8 +102,9 @@ private:
     tdmmProtSendMotionCommand mmProtSendMotionCommand;
     tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
 
-    int m_COMPort;
     int m_node;
+    int m_statusWord;
+    bool m_isComOpen;
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -161,9 +148,12 @@ public slots:
     ito::RetVal getDeviceName(const char*& name);
     ito::RetVal getSoftwareVersion(const char*& version);
     ito::RetVal getPosMCS(int& pos);
+    ito::RetVal getTargetPosMCS(int& pos);
+    ito::RetVal getAmbientTemperature(int& temp);
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(double& pos);
-    ito::RetVal homingMCS();
+    ito::RetVal quickstop();
+    ito::RetVal getStatusword(std::string& data, std::string& cmd);
 
     int doubleToInteger(double& value);
 
