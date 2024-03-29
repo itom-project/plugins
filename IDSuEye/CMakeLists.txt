@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name IDSuEye)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
@@ -35,6 +34,8 @@ if(NOT EXISTS ${IDS_DEVELOP_DIRECTORY})
         set(IDS_DEVELOP_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/IDSDevLibs" CACHE PATH "path to develop directory of IDS SDK")
     endif(EXISTS $ENV{IDS_UEYE_ROOT})
 endif()
+
+message(status "IDS_DEVELOP_DIRECTORY: ${IDS_DEVELOP_DIRECTORY}")
 
 if(IDS_DEVELOP_DIRECTORY)
     if(WIN32)

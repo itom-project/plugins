@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name LeicaMotorFocus)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -52,8 +51,6 @@ if(QT5_FOUND)
     QT5_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
 elseif(QT6_FOUND)
     QT6_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
-#else(QT5_FOUND)
-#    message(SEND_ERROR "Currently only Qt5 is supported")
 endif(QT5_FOUND)
 
 set(PLUGIN_SOURCES

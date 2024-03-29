@@ -56,3 +56,5 @@ Changelog
 
 * itom setup 3.1.0: This plugin has been compiled
 * itom setup 4.1.0: This plugin has been compiled
+* itom setup 4.2.0: This plugin has been compiled
+* itom setup 4.3.0: This plugin has been compiled

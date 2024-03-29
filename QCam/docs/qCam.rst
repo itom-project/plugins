@@ -73,3 +73,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the QImaging 2.0.13.1
 * itom setup 4.0.0: This plugin has been compiled using the QImaging 2.0.13.1
 * itom setup 4.1.0: This plugin has been compiled using the QImaging 2.0.13.1
+* itom setup 4.2.0: This plugin has been compiled using the QImaging 2.0.13.1
+* itom setup 4.3.0: This plugin has been compiled using the QImaging 2.0.13.1

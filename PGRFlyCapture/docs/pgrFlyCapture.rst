@@ -210,7 +210,7 @@ The tags are:
 If 'metadata' is 0 or if the camera model does not support this additional information,
 no tags are appended to each data object.
 Please consider, that the image information is embedded in the first pixels of
-each image (see https://www.ptgrey.com/tan/10563).
+each image.
 
 When camera property settings take effect
 ===========================================
