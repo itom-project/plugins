@@ -48,14 +48,6 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGWInstekPSP.ui
 )
 
-if(QT6_FOUND)
-    QT6_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
-elseif(QT5_FOUND)
-    QT5_WRAP_UI(PLUGIN_UI_MOC ${PLUGIN_UI})
-else()
-    message(SEND_ERROR "Currently only Qt5 and Qt6 are supported")
-endif()
-
 set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogGWInstekPSP.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGWInstekPSP.cpp
@@ -71,7 +63,7 @@ add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_U
 # Qt: enable all automoc, autouic and autorcc.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-target_link_libraries(${target_name} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
 
 #translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
