@@ -38,7 +38,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
-#include <qelapsedtimer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QuantumComposerInterface::QuantumComposerInterface()
@@ -2461,7 +2460,7 @@ void QuantumComposer::dockWidgetVisibilityChanged(bool visible)
     }
 }
 
-   //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal QuantumComposer::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogQuantumComposer(this));

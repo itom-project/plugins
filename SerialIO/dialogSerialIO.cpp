@@ -26,10 +26,10 @@
 #include <QMessageBox>
 
 #ifndef WIN32
-    #include <unistd.h>
-    #include <string.h>
+#include <string.h>
+#include <unistd.h>
 #else
-    #include <WinBase.h>
+#include <WinBase.h>
 #endif
 //----------------------------------------------------------------------------------------------------------------------------------
 QString dialogSerialIO::interpretAnswer(const char* temp, const int templen)
@@ -95,7 +95,9 @@ QString dialogSerialIO::interpretAnswer(const char* temp, const int templen)
                     ret.append(" ");
                 }
 
-                ret.append(QString("%1").arg(QString::number(temp[n], base), len, QLatin1Char('0')).toUpper());
+                ret.append(QString("%1")
+                               .arg(QString::number(temp[n], base), len, QLatin1Char('0'))
+                               .toUpper());
             }
         }
         ret.append(QString(" [%1]").arg(templen));
@@ -187,7 +189,7 @@ void dialogSerialIO::parametersChanged(QMap<QString, ito::Param> params)
         ui.checkBox_debug->setChecked((params)["debug"].getVal<int>());
     }
 
-    char *endline = (params)["endline"].getVal<char *>(); //borrowed reference
+    char* endline = (params)["endline"].getVal<char*>(); // borrowed reference
     if (strcmp(endline, "\r") == 0)
     {
         ui.combo_endline->setCurrentIndex(0);
@@ -214,7 +216,7 @@ void dialogSerialIO::parametersChanged(QMap<QString, ito::Param> params)
         ui.combo_endline->setCurrentIndex(4);
     }
 
-    endline = (params)["endlineRead"].getVal<char *>(); //borrowed reference
+    endline = (params)["endlineRead"].getVal<char*>(); // borrowed reference
     if (strcmp(endline, "\r") == 0)
     {
         ui.combo_endlineRead->setCurrentIndex(0);
@@ -272,57 +274,61 @@ void dialogSerialIO::parametersChanged(QMap<QString, ito::Param> params)
 ito::RetVal dialogSerialIO::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase> > values;
+    QVector<QSharedPointer<ito::ParamBase>> values;
     bool success = false;
 
-    //only send parameters which are changed
+    // only send parameters which are changed
 
     int i = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
     if (m_currentParameters["baud"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, i)));
     }
 
     i = ui.checkBox_debug->isChecked() ? 1 : 0;
     if (m_currentParameters["debug"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, i)));
     }
 
     i = ui.checkBox_readline->isChecked() ? 1 : 0;
     if (m_currentParameters["readline"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline", ito::ParamBase::Int, i)));
     }
 
     char endline[3] = {0, 0, 0};
     switch (ui.combo_endline->currentIndex())
     {
-        case 0:
-            endline[0] = '\r';
+    case 0:
+        endline[0] = '\r';
         break;
-        case 1:
-            endline[0] = '\n';
+    case 1:
+        endline[0] = '\n';
         break;
-        case 2:
-            endline[0] = '\r';
-            endline[1] = '\n';
+    case 2:
+        endline[0] = '\r';
+        endline[1] = '\n';
         break;
-        case 3:
-            endline[0] = 0;
+    case 3:
+        endline[0] = 0;
         break;
-        case 4:
+    case 4:
 #if QT_VERSION < 0x050200
-            QByteArray var = ui.combo_endline->itemData(ui.combo_endline->currentIndex()).toByteArray();
+        QByteArray var = ui.combo_endline->itemData(ui.combo_endline->currentIndex()).toByteArray();
 #else
-            QByteArray var = ui.combo_endline->currentData().toByteArray();
+        QByteArray var = ui.combo_endline->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
+        memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endline"].getVal<char*>(), endline) != 0)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("endline", ito::ParamBase::String, endline)));
     }
 
     endline[0] = 0;
@@ -330,71 +336,77 @@ ito::RetVal dialogSerialIO::applyParameters()
     endline[2] = 0;
     switch (ui.combo_endlineRead->currentIndex())
     {
-        case 0:
-            endline[0] = '\r';
+    case 0:
+        endline[0] = '\r';
         break;
-        case 1:
-            endline[0] = '\n';
+    case 1:
+        endline[0] = '\n';
         break;
-        case 2:
-            endline[0] = '\r';
-            endline[1] = '\n';
+    case 2:
+        endline[0] = '\r';
+        endline[1] = '\n';
         break;
-        case 3:
-            endline[0] = 0;
+    case 3:
+        endline[0] = 0;
         break;
-        case 4:
+    case 4:
 #if QT_VERSION < 0x050200
-            QByteArray var = ui.combo_endlineRead->itemData(ui.combo_endlineRead->currentIndex()).toByteArray();
+        QByteArray var =
+            ui.combo_endlineRead->itemData(ui.combo_endlineRead->currentIndex()).toByteArray();
 #else
-            QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
+        QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
 #endif
-            memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
+        memcpy(endline, var.data(), std::min(3, (int)var.size()) * sizeof(char));
         break;
     }
     if (strcmp(m_currentParameters["endlineRead"].getVal<char*>(), endline) != 0)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endlineRead", ito::ParamBase::String, endline)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("endlineRead", ito::ParamBase::String, endline)));
     }
 
     i = ui.combo_bits->currentIndex() + 5;
     if (m_currentParameters["bits"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, i)));
     }
 
     i = ui.combo_stopbits->currentIndex() + 1;
     if (m_currentParameters["stopbits"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, i)));
     }
 
     i = ui.combo_parity->currentIndex();
     if (m_currentParameters["parity"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, i)));
     }
 
-    i = ui.combo_flow_xonxoff->currentIndex() +
-        ui.combo_flow_rts->currentIndex() * 2 +
-        ui.combo_flow_cts->currentIndex() * 8 +
-        ui.combo_flow_dtr->currentIndex() * 16 +
+    i = ui.combo_flow_xonxoff->currentIndex() + ui.combo_flow_rts->currentIndex() * 2 +
+        ui.combo_flow_cts->currentIndex() * 8 + ui.combo_flow_dtr->currentIndex() * 16 +
         ui.combo_flow_dsr->currentIndex() * 64;
     if (m_currentParameters["flow"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, i)));
+        values.append(
+            QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, i)));
     }
 
     double v = (double)ui.spinBox_timeout->value() / 1000.0;
     if (m_currentParameters["timeout"].getVal<double>() != v)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, v)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("timeout", ito::ParamBase::Double, v)));
     }
 
     i = ui.spinBox_sendDelay->value();
     if (m_currentParameters["sendDelay"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sendDelay", ito::ParamBase::Int, i)));
+        values.append(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("sendDelay", ito::ParamBase::Int, i)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
@@ -403,7 +415,8 @@ ito::RetVal dialogSerialIO::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-/*int dialogSerialIO::getVals(int &baud, QString &endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug)
+/*int dialogSerialIO::getVals(int &baud, QString &endline, int &bits, int &stopbits, int &parity,
+unsigned int &flow, int &sendDelay, double &timeout, bool &debug)
 {
     baud = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
 
@@ -435,9 +448,10 @@ ito::RetVal dialogSerialIO::applyParameters()
 }*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
+// dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
 //    m_psport(sport)
-dialogSerialIO::dialogSerialIO(ito::AddInBase *dataIO, void *sport, QString identifier, int baudRatesSize) :
+dialogSerialIO::dialogSerialIO(
+    ito::AddInBase* dataIO, void* sport, QString identifier, int baudRatesSize) :
     AbstractAddInConfigDialog(dataIO),
     m_psport(sport)
 {
@@ -446,7 +460,7 @@ dialogSerialIO::dialogSerialIO(ito::AddInBase *dataIO, void *sport, QString iden
     memset(m_endline, 0, 3 * sizeof(char));
     ui.setupUi(this);
 
-//    ui.combo_baud->clear();
+    //    ui.combo_baud->clear();
     for (int i = 0; i < baudRatesSize; i++)
     {
         ui.combo_baud->addItem(QString::number(SerialPort::baudRates[i]));
@@ -454,99 +468,116 @@ dialogSerialIO::dialogSerialIO(ito::AddInBase *dataIO, void *sport, QString iden
 
     ui.lineEditSend->installEventFilter(this);
 
-    SerialIO *sio = (SerialIO *)m_psport;
+    SerialIO* sio = (SerialIO*)m_psport;
 
-    QMap<QString, ito::Param> *paramList = NULL;
+    QMap<QString, ito::Param>* paramList = NULL;
 
     sio->getParamList(&paramList);
-    setWindowTitle(QString((*paramList)["name"].getVal<char*>()) + ": " + identifier + " - " + tr("Configuration Dialog"));
+    setWindowTitle(
+        QString((*paramList)["name"].getVal<char*>()) + ": " + identifier + " - " +
+        tr("Configuration Dialog"));
     m_baud = (*paramList)["baud"].getVal<int>();
     m_bits = (*paramList)["bits"].getVal<int>();
     m_stopbits = (*paramList)["stopbits"].getVal<int>();
     m_parity = (*paramList)["parity"].getVal<int>();
     m_flow = (unsigned int)(*paramList)["flow"].getVal<int>();
     m_timeout = (*paramList)["timeout"].getVal<double>();
-    char *buf = (*paramList)["endline"].getVal<char*>();  //borrowed reference
+    char* buf = (*paramList)["endline"].getVal<char*>(); // borrowed reference
     sprintf(m_endline, "%s", buf);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 dialogSerialIO::~dialogSerialIO()
-{ }
+{
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal dialogSerialIO::parseOutString(char *buf, int *length)
+ito::RetVal dialogSerialIO::parseOutString(char* buf, int* length)
 {
     ito::RetVal ret = ito::retOk;
     int len = (int)strlen(buf);
-    char *buf1 = NULL;
-    char *buf2 = NULL;
-    char *out = NULL;
-    char *outbuf = (char*)calloc(len + 1, sizeof(char));
+    char* buf1 = NULL;
+    char* buf2 = NULL;
+    char* out = NULL;
+    char* outbuf = (char*)calloc(len + 1, sizeof(char));
     out = outbuf;
 
     buf1 = buf;
     buf2 = strstr(buf1, "$");
+
     if (ui.checkAsciiParsing->isChecked())
     {
-
         while (buf2 && ((buf2 - buf) < (len - 1)))
         {
             if (*(buf2 + 1) == '$')
             {
-                strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
+                strncpy(outbuf, buf1, buf2 - buf1); // copy preceding string
                 outbuf += strlen(outbuf);
                 buf2++;
-                buf2++;                                 // eat the $$
+                buf2++; // eat the $$
                 buf1 = buf2;
-                buf2 = strstr(buf2, "$");               // search for next
+                buf2 = strstr(buf2, "$"); // search for next
             }
             else if (*(buf2 + 1) == '(')
             {
-                strncpy(outbuf, buf1, buf2 - buf1);     // copy preceding string
+                strncpy(outbuf, buf1, buf2 - buf1); // copy preceding string
                 outbuf += strlen(outbuf);
                 // try to read number
                 buf2++;
-                buf2++;                                 // eat the $(
+                buf2++; // eat the $(
                 int charnum = 0;
                 char charbuf[4] = {0, 0, 0, 0};
 
-                // read character number until either the character token is closed, three numbers are read
-                // or the end of the string is reached
+                // read character number until either the character token is closed, three numbers
+                // are read or the end of the string is reached
                 while ((charnum < 3) && (*buf2 != ')') && ((buf2 - buf) < len - 1))
                 {
                     charbuf[charnum] = *buf2;
                     charnum++;
                     buf2++;
                 }
-                if ((*buf2 != ')') || (atoi(charbuf) > 255))    // char token not closed correctly or number to big -> end with error
+                if ((*buf2 != ')') ||
+                    (atoi(charbuf) >
+                     255)) // char token not closed correctly or number to big -> end with error
                 {
                     free(out);
-                    return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toLatin1().data());
-                    //return ito::retError;
+                    return ito::RetVal(
+                        ito::retError,
+                        0,
+                        QObject::tr("Char token not closed correctly or number to big.")
+                            .toLatin1()
+                            .data());
+                    // return ito::retError;
                 }
 
                 *outbuf = atoi(charbuf);
                 outbuf++;
-                buf2++;                                 // eat the closing ')'
+                buf2++; // eat the closing ')'
                 buf1 = buf2;
-                buf2 = strstr(buf2, "$");               // search for next $
+                buf2 = strstr(buf2, "$"); // search for next $
             }
             else
             {
                 free(out);
-                return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toLatin1().data());
+                return ito::RetVal(
+                    ito::retError, 0, QObject::tr("Undefined error.").toLatin1().data());
             }
         }
     }
 
     *length = outbuf - out + len - (buf1 - buf);
-    memcpy(outbuf, buf1, len - (buf1 - buf));
-//    strncpy(outbuf, buf1, len - (buf1 - buf));  // copy remaining string
-    memcpy(buf, out, *length);
-//    memcpy(buf, out, strlen(out));
-    buf[*length] = 0;
-//    buf[strlen(out)] = 0;
+    // Check if buf is not empty before accessing its elements
+    if (*length > 0)
+    {
+        memcpy(outbuf, buf1, len - (buf1 - buf));
+        memcpy(buf, out, *length);
+        buf[*length] = 0;
+    }
+    else
+    {
+        // If buf is empty, set length to 0 and return without further processing
+        *length = 0;
+    }
     free(out);
 
     return ret;
@@ -582,22 +613,31 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
     QSharedPointer<int> len(new int);
     *len = maxlen;
     QByteArray qb;
-    char *tmpChar;
+    char* tmpChar;
 
     qstr = ui.lineEditSend->text();
     ui.lineEditSend->setText("");
-    if (!m_historyList.filter(qstr).empty())
+
+    if (!qstr.isEmpty())
     {
-        m_historyList.removeAt(m_historyList.indexOf(qstr));
+        for (int i = 0; i < m_historyList.count(); ++i)
+        {
+            if (qstr.compare(m_historyList.at(i), Qt::CaseInsensitive) == 0)
+            {
+                m_historyList.removeAt(i);
+                break;
+            }
+        }
+
+        m_historyList.append(qstr);
+        m_historyListPointer = m_historyList.count();
     }
-    m_historyList.append(qstr);
-    m_historyListPointer = m_historyList.count();
     qout = "> ";
 
-    SerialIO *sio = (SerialIO *)m_psport;
-    QMap<QString, ito::Param> *paramList = NULL;
+    SerialIO* sio = (SerialIO*)m_psport;
+    QMap<QString, ito::Param>* paramList = NULL;
     ret += sio->getParamList(&paramList);
-    char *buf = (*paramList)["endline"].getVal<char*>(); //borrowed reference
+    char* buf = (*paramList)["endline"].getVal<char*>(); // borrowed reference
     sprintf(endline, "%s", buf);
     bool test = false;
     test = strcmp(endline, "\0");
@@ -627,11 +667,10 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
         }
         else if (strcmp(endline, ""))
         {
-
             bool isprintable = true;
             for (int i = 0; i < 3; ++i)
             {
-                if ((endline[i] <= 32 || endline[i] > 126) && endline[i]!= 0)
+                if ((endline[i] <= 32 || endline[i] > 126) && endline[i] != 0)
                 {
                     if (isprintable)
                     {
@@ -695,7 +734,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
                     }
                     else
                     {
-                        qb.append(char (tmpInt));
+                        qb.append(char(tmpInt));
                     }
                 }
 
@@ -706,7 +745,9 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 
                 if (ok)
                 {
-                    qout.append(QString("%1").arg(QString::number(tmpInt, base), len, QLatin1Char('0')).toUpper());
+                    qout.append(QString("%1")
+                                    .arg(QString::number(tmpInt, base), len, QLatin1Char('0'))
+                                    .toUpper());
                 }
                 else
                 {
@@ -718,7 +759,8 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
         if (err != "")
         {
             ui.text_transfer->append(qout);
-            ui.text_transfer->append(tr("Error: '%1' could not be interpreted - not send").arg(err));
+            ui.text_transfer->append(
+                tr("Error: '%1' could not be interpreted - not send").arg(err));
             return;
         }
 
@@ -729,28 +771,32 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 
         if (strcmp(endline, "\n") == 0)
         {
-            qout.append(QString("%1").arg(QString::number(10, base), len, QLatin1Char('0')).toUpper());
+            qout.append(
+                QString("%1").arg(QString::number(10, base), len, QLatin1Char('0')).toUpper());
         }
         else if (strcmp(endline, "\r") == 0)
         {
-            qout.append(QString("%1").arg(QString::number(13, base), len, QLatin1Char('0')).toUpper());
+            qout.append(
+                QString("%1").arg(QString::number(13, base), len, QLatin1Char('0')).toUpper());
         }
         else if (strcmp(endline, "\r\n") == 0)
         {
-            qout.append(QString("%1").arg(QString::number(10, base), len, QLatin1Char('0')).toUpper());
+            qout.append(
+                QString("%1").arg(QString::number(10, base), len, QLatin1Char('0')).toUpper());
             qout.append(" ");
-            qout.append(QString("%1").arg(QString::number(13, base), len, QLatin1Char('0')).toUpper());
+            qout.append(
+                QString("%1").arg(QString::number(13, base), len, QLatin1Char('0')).toUpper());
         }
 
         tmpChar = qb.data();
     }
-    //ui.text_transfer->insertHtml(qout);
+    // ui.text_transfer->insertHtml(qout);
     ui.text_transfer->append(qout);
 
-    //ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    //QMetaObject::invokeMethod(sio, "setVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(const void*, (const void*)tmpChar), Q_ARG(ItomSharedSemaphore *, waitCond));
-    //waitCond->wait(15000);
-    //ItomSharedSemaphore::deleteSemaphore(waitCond);
+    // ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    // QMetaObject::invokeMethod(sio, "setVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(const void*, (const
+    // void*)tmpChar), Q_ARG(ItomSharedSemaphore *, waitCond)); waitCond->wait(15000);
+    // ItomSharedSemaphore::deleteSemaphore(waitCond);
     ret += sio->setVal(tmpChar, length, 0);
 
     if (ui.checkReadAfterSend->isChecked())
@@ -759,10 +805,11 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
         {
             Sleep(ui.spinBox_readdelay->value());
 
-            //waitCond = new ItomSharedSemaphore();
-            //QMetaObject::invokeMethod(sio, "getVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(char*, readBuf), Q_ARG(int *, &len), Q_ARG(ItomSharedSemaphore *, waitCond));
-            //waitCond->wait(15000);
-            //ItomSharedSemaphore::deleteSemaphore(waitCond);
+            // waitCond = new ItomSharedSemaphore();
+            // QMetaObject::invokeMethod(sio, "getVal", Q_ARG(ito::RetVal*, &ret), Q_ARG(char*,
+            // readBuf), Q_ARG(int *, &len), Q_ARG(ItomSharedSemaphore *, waitCond));
+            // waitCond->wait(15000);
+            // ItomSharedSemaphore::deleteSemaphore(waitCond);
             ret += sio->getVal(readBuf, len, 0);
         }
 
@@ -788,29 +835,33 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 void dialogSerialIO::on_pushButtonSet_clicked()
 {
     applyParameters();
-/*    int baud;
-    int bits;
-    int stopbits;
-    int parity;
-    unsigned int flow;
-    int sendDelay;
-    double timeout;
-    bool enableDebug;
-    ito::RetVal ret;
-    char endline[3] = {0, 0, 0};
+    /*    int baud;
+        int bits;
+        int stopbits;
+        int parity;
+        unsigned int flow;
+        int sendDelay;
+        double timeout;
+        bool enableDebug;
+        ito::RetVal ret;
+        char endline[3] = {0, 0, 0};
 
-    SerialIO *sio = (SerialIO *)m_psport;
-    getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
+        SerialIO *sio = (SerialIO *)m_psport;
+        getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
 
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, bits)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, stopbits)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, parity)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)flow)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sendDelay", ito::ParamBase::Int, sendDelay)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));*/
+        ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",
+       ito::ParamBase::String, endline))); ret += sio->setParam(QSharedPointer<ito::ParamBase>(new
+       ito::ParamBase("baud", ito::ParamBase::Int, baud))); ret +=
+       sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int,
+       bits))); ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",
+       ito::ParamBase::Int, stopbits))); ret += sio->setParam(QSharedPointer<ito::ParamBase>(new
+       ito::ParamBase("parity", ito::ParamBase::Int, parity))); ret +=
+       sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int,
+       (int)flow))); ret += sio->setParam(QSharedPointer<ito::ParamBase>(new
+       ito::ParamBase("sendDelay", ito::ParamBase::Int, sendDelay))); ret +=
+       sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout",
+       ito::ParamBase::Double, timeout))); ret += sio->setParam(QSharedPointer<ito::ParamBase>(new
+       ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -819,8 +870,8 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     char txt[150];
     ito::RetVal ret;
 
-    SerialIO *sio = (SerialIO *)m_psport;
-    QMap<QString, ito::Param> *paramList = NULL;
+    SerialIO* sio = (SerialIO*)m_psport;
+    QMap<QString, ito::Param>* paramList = NULL;
     sio->getParamList(&paramList);
 
     int baud = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
@@ -839,19 +890,20 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     int parity = ui.combo_parity->currentIndex();
 
     unsigned int flow = ui.combo_flow_xonxoff->currentIndex() +
-        ui.combo_flow_rts->currentIndex() * 2 +
-        ui.combo_flow_cts->currentIndex() * 8 +
-        ui.combo_flow_dtr->currentIndex() * 16 +
-        ui.combo_flow_dsr->currentIndex() * 64;
+        ui.combo_flow_rts->currentIndex() * 2 + ui.combo_flow_cts->currentIndex() * 8 +
+        ui.combo_flow_dtr->currentIndex() * 16 + ui.combo_flow_dsr->currentIndex() * 64;
 
     double timeout = (double)ui.spinBox_timeout->value() / 1000.0;
 
     int sendDelay = ui.spinBox_sendDelay->value();
 
-    char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
-    if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n")|| endline.compare("")) //all those are standard endline characters all other wiil be displayed as hex
+    char* deviceName = (*paramList)["name"].getVal<char*>(); // borrowed reference
+    if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n") ||
+        endline.compare(
+            "")) // all those are standard endline characters all other wiil be displayed as hex
     {
-        sprintf(txt,
+        sprintf(
+            txt,
             "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%.3f)",
             deviceName,
             (*paramList)["port"].getVal<int>(),
@@ -866,7 +918,8 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     }
     else
     {
-        sprintf(txt,
+        sprintf(
+            txt,
             "dataIO(\"%s\",%d,%d,chr(%s),%d,%d,%d,%d,%d,%.3f)",
             deviceName,
             (*paramList)["port"].getVal<int>(),
@@ -881,8 +934,8 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     }
     ui.lineEditCommandStr->setText(txt);
 
-//    QClipboard *clipboard = QApplication::clipboard();
-//    clipboard->setText(txt);
+    //    QClipboard *clipboard = QApplication::clipboard();
+    //    clipboard->setText(txt);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -901,7 +954,7 @@ void dialogSerialIO::on_pushReadButton_clicked()
     QSharedPointer<int> len(new int);
     *len = maxlen;
 
-    SerialIO *sio = (SerialIO *)m_psport;
+    SerialIO* sio = (SerialIO*)m_psport;
     ret += sio->getVal(readBuf, len, 0);
 
     if (!ret.containsError())
@@ -924,18 +977,25 @@ void dialogSerialIO::on_pushReadButton_clicked()
 void dialogSerialIO::on_cancelButton_clicked()
 {
     ito::RetVal ret;
-    SerialIO *sio = (SerialIO *)m_psport;
+    SerialIO* sio = (SerialIO*)m_psport;
 
     if (m_endline)
     {
-        ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, m_endline)));
+        ret += sio->setParam(QSharedPointer<ito::ParamBase>(
+            new ito::ParamBase("endline", ito::ParamBase::String, m_endline)));
     }
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, m_baud)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, m_bits)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, m_stopbits)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, m_parity)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)m_flow)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, m_timeout)));
+    ret += sio->setParam(
+        QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, m_baud)));
+    ret += sio->setParam(
+        QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, m_bits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(
+        new ito::ParamBase("stopbits", ito::ParamBase::Int, m_stopbits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(
+        new ito::ParamBase("parity", ito::ParamBase::Int, m_parity)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(
+        new ito::ParamBase("flow", ito::ParamBase::Int, (int)m_flow)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(
+        new ito::ParamBase("timeout", ito::ParamBase::Double, m_timeout)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -952,7 +1012,7 @@ void dialogSerialIO::on_pushButton_clear_clicked()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool dialogSerialIO::eventFilter(QObject *obj, QEvent *event)
+bool dialogSerialIO::eventFilter(QObject* obj, QEvent* event)
 {
     if (obj == ui.lineEditSend)
     {
