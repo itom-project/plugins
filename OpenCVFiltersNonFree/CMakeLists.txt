@@ -20,13 +20,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-
-message(STATUS "OpenCV_VERSION_MAJOR: ${OpenCV_VERSION_MAJOR}")
-#if(${OpenCV_VERSION_MAJOR} STRGREATER "2")
-    find_package(OpenCV 4.5.3 COMPONENTS core features2d REQUIRED)
-#else()
-#    find_package(OpenCV COMPONENTS core nonfree features2d REQUIRED)
-#endif()
+find_package(OpenCV 4.5.3 COMPONENTS core features2d REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
