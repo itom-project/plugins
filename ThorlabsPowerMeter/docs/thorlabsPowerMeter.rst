@@ -84,6 +84,8 @@ It is possible to use the Thorlabs power meter with the legacy Thorlabs software
 Alternatively you can use the Thorlabs Optical Power Meter Monitor Software **Thorlabs.OpticalPowerMonitor_v1.1.0**
 (see https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM).
 
+https://www.thorlabs.de/software_pages/ViewSoftwarePage.cfm?Code=OPM
+
 Install this software and set the CMake variable **THORLABS_PM100D_VISA_DIR** or the environment variable **NI_VISA_ROOT**
 to the install directory of Thorlabs PM100D Visa (e.g. C:/Program Files/IVI Foundation/VISA/Win64).
 
@@ -146,4 +148,4 @@ Changelog
 * itom 3.2.1: plugin uses the driver PM100x_Instrument_Driver in version 1.1.2317.102
 * itom 4.0.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2
 * itom 4.1.0: plugin uses the driver in Optical Power Monitor in version 4.0.41
-* itom 4.3.0: plugin uses the driver in Optical Power Monitor in version 4.0.41
+* itom 4.3.0: plugin uses the driver in Optical Power Monitor in version 5.1.4

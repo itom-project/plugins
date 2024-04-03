@@ -121,3 +121,4 @@ Changelog
 ===========
 
 * itom > 3.0.0: PIHexapodCtrl published for the first time
+* itom setup 4.3.0
