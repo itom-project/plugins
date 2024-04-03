@@ -30,14 +30,6 @@ message(
     STATUS "------------------- Version = ${itom_plugins_VERSION} -----------------------\n")
 
 
-message(STATUS "GIT_TAG: ${GIT_TAG}")
-message(STATUS "GIT_SEMVER: ${GIT_SEMVER}")
-message(STATUS "GIT_VERSION: ${GIT_VERSION}")
-message(STATUS "GIT_VERSION_MAJOR: ${GIT_VERSION_MAJOR}")
-message(STATUS "GIT_VERSION_MINOR: ${GIT_VERSION_MINOR}")
-message(STATUS "GIT_VERSION_PATCH: ${GIT_VERSION_PATCH}")
-message(STATUS "GIT_IDENTIFIERS: ${GIT_IDENTIFIERS}")
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)

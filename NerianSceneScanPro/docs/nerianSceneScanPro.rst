@@ -131,13 +131,13 @@ In visiontransfer 7.0 there is unfortunately a bug in the DLL, so the applicatio
 
 Since both debug and release dll have the same name and are not compatible, the dll must be added to the paths depending on the compilation mode.
 
-* itom setup >4.3.0: This plugin has been compiled using the NerianSceneScanPro API 7.0.0
 
-Set the Windows Environment Variable NERIAN_ROOT to the installation directory (e.g. C:\Program Files (x86)\Nerian Vision Software 7.0.0\)
+Set the Windows Environment Variable NERIAN_ROOT to the installation directory (e.g. C:\Program Files\Nerian Vision Software 10.6.0)
 
 
 Changelog
 =========
 
 * itom setup 3.2.1: This plugin has been compiled using the NerianSceneScanPro API 7.0
-* itom setup >4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 4.3.0: This plugin has been compiled using the NerianSceneScanPro API 10.6.0

@@ -6,7 +6,7 @@
 #    copy it and distribute it without any license restrictions.
 ###################################################################
 ###################################################################
-cmake_minimum_required(VERSION 3.8...3.24)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 set(target_name DIC) #->replace PCI6115 by the name of your plugin (one word)
 
