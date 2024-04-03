@@ -33,7 +33,7 @@ An instance of this plugin has the following parameters:
 **color**: {int}
     0: Red, 1: Green, 2: Blue, 3: White
 **currentIdx**: {int}
-    Index of currently displayed image [0..]
+    Index of currently displayed image [0..)
 **gamma**: {int}
     0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')
 **lut**: {seq. of int (char)}
