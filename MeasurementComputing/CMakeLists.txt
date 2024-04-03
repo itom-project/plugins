@@ -53,7 +53,7 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.h
     )
@@ -66,6 +66,9 @@ if(MeasurementComputing_DAQ_C_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
         ${CMAKE_CURRENT_SOURCE_DIR}/MeasurementComputing.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMeasurementComputing.cpp
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     set(PLUGIN_RCC
         #add absolute pathes to any *.qrc resource files here

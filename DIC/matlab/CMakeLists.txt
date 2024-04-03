@@ -157,6 +157,9 @@ set(plugin_SOURCES
 	#add further source files here
 )
 
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
 if (CUDA_FOUND)
     list(APPEND plugin_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.hu)
     list(APPEND plugin_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.cu)

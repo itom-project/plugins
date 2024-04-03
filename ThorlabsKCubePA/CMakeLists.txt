@@ -54,7 +54,7 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsKCubePA.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsKCubePA.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsKCubePA.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -79,6 +79,9 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)

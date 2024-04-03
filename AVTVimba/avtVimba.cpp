@@ -63,7 +63,7 @@ The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0. \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");
 
-    m_author = "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
+    m_author = PLUGIN_AUTHOR;
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -172,7 +172,7 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
+    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in ï¿½C").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("trigger mode (0: Off, 1: On)").toLatin1().data());

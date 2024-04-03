@@ -40,7 +40,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogSuperlumBS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSuperlumBS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/SuperlumBS.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -64,6 +64,9 @@ set(PLUGIN_RCC
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_HEADERS_MOC} ${PLUGIN_UI_MOC} ${PLUGIN_RCC_MOC} ${PLUGIN_RCC} ${EXISTING_TRANSLATION_FILES})
 

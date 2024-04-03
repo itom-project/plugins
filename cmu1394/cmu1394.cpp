@@ -98,7 +98,7 @@ Together with this plugin parts of the drivers (some header files and static lib
 at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
 of this plugin.");
 
-    m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author            = PLUGIN_AUTHOR;
     m_license           = QObject::tr("itom-plugin under LGPL / CMU1394 driver under LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;

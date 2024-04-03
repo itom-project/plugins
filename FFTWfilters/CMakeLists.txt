@@ -39,7 +39,7 @@ if(FFTW_FOUND)
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/FFTWfilters.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -49,6 +49,9 @@ if(FFTW_FOUND)
     set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/FFTWfilters.cpp
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)

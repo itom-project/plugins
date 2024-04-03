@@ -36,7 +36,7 @@ include_directories(
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetOphirPowermeter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirPowermeter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirLMMeasurement.h
 )
@@ -50,6 +50,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirPowermeter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/OphirLMMeasurement.cpp
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)

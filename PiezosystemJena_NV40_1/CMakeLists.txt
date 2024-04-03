@@ -35,7 +35,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPiezosystemJena_NV40_1.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPiezosystemJena_NV40_1.h
     ${CMAKE_CURRENT_SOURCE_DIR}/piezosystemJena_NV40_1.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -58,6 +58,9 @@ endif()
 set(PLUGIN_RCC
     #add absolute pathes to any *.qrc resource files here
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

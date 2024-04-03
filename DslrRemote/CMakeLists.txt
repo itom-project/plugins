@@ -65,7 +65,7 @@ endif(WIN32)
         )
 
     set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
     )
@@ -76,6 +76,9 @@ endif(WIN32)
     set(PLUGIN_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     set(PLUGIN_RCC
         #add absolute pathes to any *.qrc resource files here

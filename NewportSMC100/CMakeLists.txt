@@ -40,7 +40,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSMC100.h
     ${CMAKE_CURRENT_SOURCE_DIR}/SMC100.h
     ${CMAKE_CURRENT_SOURCE_DIR}/SMC100Interface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -55,6 +55,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SMC100.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SMC100Interface.cpp
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 set(PLUGIN_RCC
     #add absolute pathes to any *.qrc resource files here

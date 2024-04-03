@@ -70,7 +70,7 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPCOSensicam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPCOSensicam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOSensicam.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -96,6 +96,9 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
     set(PLUGIN_RCC
         #add absolute pathes to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

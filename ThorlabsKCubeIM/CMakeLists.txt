@@ -55,7 +55,7 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsKCubeIM.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsKCubeIM.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsKCubeIM.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -78,6 +78,9 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

@@ -58,7 +58,7 @@ if(XIMEA_SDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -83,6 +83,9 @@ if(XIMEA_SDK_FOUND)
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     set(TRANSLATION_OUTPUT_FILES)
     set(TRANSLATIONS_FILES)
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

@@ -126,7 +126,7 @@ You can initialize this camera either as a 2D sensor with a width and height >= 
 \n\
 This plugin can also be used as template for other grabber.");
 
-    m_author = "Universidade Federal de Alagoas (UFAL)";
+    m_author = PLUGIN_AUTHOR;
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;

@@ -76,7 +76,7 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
 \n\
 This plugin does not have any unusual dependencies.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author = PLUGIN_AUTHOR;
     m_license = QObject::tr("LGPL");
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;

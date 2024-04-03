@@ -42,7 +42,7 @@ set(PLUGIN_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/DataObject/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DataObjectIO.h
     ${CMAKE_CURRENT_SOURCE_DIR}/transformations.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -53,6 +53,10 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/nanoscopeIII.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/keyence.cpp
 )
+
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 set(PLUGIN_UI
 )

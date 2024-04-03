@@ -37,7 +37,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPCOPixelFly.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPCOPixelFly.h
     ${CMAKE_CURRENT_SOURCE_DIR}/PCOPixelFly.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -54,6 +54,9 @@ set(PLUGIN_UI
 
 set(PLUGIN_RCC
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 #Add version information to the plugIn-dll unter MSVC
 if(MSVC)

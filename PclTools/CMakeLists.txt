@@ -94,7 +94,7 @@ if(ITOM_SDK_PCL_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.h
             ${CMAKE_CURRENT_SOURCE_DIR}/pcl/filters/cylinder_clipper3D.h
             ${CMAKE_CURRENT_SOURCE_DIR}/xyzFormat.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+            ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
             ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         )
 
@@ -120,6 +120,9 @@ if(ITOM_SDK_PCL_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pcl/filters/impl/cylinder_clipper3D.hpp
         )
+
+        #Define Version in pluginVersion.h
+        configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
         #Add version information to the plugIn-dll unter MSVC
         if(MSVC)

@@ -54,7 +54,7 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -85,6 +85,9 @@ if(HIDAPI_REQUIREMENTS_FOUND)
         )
         set(HIDAPI_LIBRARIES )
     endif(WIN32)
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
