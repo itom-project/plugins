@@ -38,7 +38,7 @@
 #define PLUGIN_COMPANY          "IPROM, TU Braunschweig; ITO, University Stuttgart"
 #define PLUGIN_AUTHOR           "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)"
 #define PLUGIN_COPYRIGHT        "(C) 2018, IPROM + ITO"
-#define PLUGIN_NAME          s   "AVTVimba"
+#define PLUGIN_NAME             "AVTVimba"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

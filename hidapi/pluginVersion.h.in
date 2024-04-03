@@ -37,8 +37,8 @@
 #define PLUGIN_VERSION_STRING   CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY          "ITO, University of Stuttgart"
 #define PLUGIN_AUTHOR           "M. Gronle (ITO Uni Stuttgart)"
-#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, University of Stuttgart"
-#define PLUGIN_NAME           "hidApi"
+#define PLUGIN_COPYRIGHT        "(C) 2014, ITO, University of Stuttgart"
+#define PLUGIN_NAME             "hidApi"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
