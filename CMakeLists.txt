@@ -23,6 +23,8 @@ version_from_git(
 
 # define cmake project and version number
 project(itom_plugins VERSION ${GIT_VERSION})
+set(itom_plugins_VERSION_IDENTIFIERS ${GIT_IDENTIFIERS})
+
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 

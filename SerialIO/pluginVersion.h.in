@@ -30,14 +30,15 @@
 
 #include "itom_sdk.h"
 
-#define PLUGIN_VERSION_MAJOR    ${itom_plugins_VERSION_MAJOR}
-#define PLUGIN_VERSION_MINOR    ${itom_plugins_VERSION_MINOR}
-#define PLUGIN_VERSION_PATCH    ${itom_plugins_VERSION_PATCH}
-#define PLUGIN_VERSION          CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_VERSION_STRING   CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY          "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT        "(C) 2017, ITO, University Stuttgart"
-#define PLUGIN_NAME             "SerialIO"
+#define PLUGIN_VERSION_MAJOR         ${itom_plugins_VERSION_MAJOR}
+#define PLUGIN_VERSION_MINOR         ${itom_plugins_VERSION_MINOR}
+#define PLUGIN_VERSION_PATCH         ${itom_plugins_VERSION_PATCH}
+#define PLUGIN_VERSION_IDENTIFIERS   "${itom_plugins_VERSION_IDENTIFIERS}"
+#define PLUGIN_VERSION               CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING        CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY               "Institut fuer Technische Optik, University Stuttgart"
+#define PLUGIN_COPYRIGHT             "(C) 2017, ITO, University Stuttgart"
+#define PLUGIN_NAME                  "SerialIO"
 //----------------------------------------------------------------------------------------------------------------------------------
 
 #endif // PLUGINVERSION_H
