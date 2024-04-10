@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -30,17 +30,17 @@
 
 #include "itom_sdk.h"
 
-#define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 10
-#define PLUGIN_VERSION_PATCH 2
-#define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION                                                                             \
-    CREATE_VERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
-#define PLUGIN_VERSION_STRING                                                                      \
-    CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT "(C) 2022, ITO, University Stuttgart"
-#define PLUGIN_NAME "DataObjectIO"
+//Change ${itom_VERSION_MAJOR} etc. to your project definition (eg. itom_designerPlugin_VERSION_MAJOR)
+#define PLUGIN_VERSION_MAJOR        ${itom_VERSION_MAJOR}
+#define PLUGIN_VERSION_MINOR        ${itom_VERSION_MINOR}
+#define PLUGIN_VERSION_PATCH        ${itom_VERSION_PATCH}
+#define PLUGIN_VERSION_IDENTIFIERS  "${itom_VERSION_IDENTIFIERS}"
+#define PLUGIN_VERSION              CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING       CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY              "Institut fuer Technische Optik, University Stuttgart"
+#define PLUGIN_AUTHOR               "J. Krauter, TRUMPF SE + Co. KG"
+#define PLUGIN_COPYRIGHT            "(C) 2024, ITO, University Stuttgart"
+#define PLUGIN_NAME                 "FaulhaberMCS"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

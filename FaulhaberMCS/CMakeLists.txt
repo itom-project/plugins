@@ -46,7 +46,7 @@ if(FAULHABER_MOMANLIB_ROOT)
         ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
         #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -57,6 +57,9 @@ if(FAULHABER_MOMANLIB_ROOT)
         ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.cpp
         #add further source files here
     )
+
+    #Define Version in pluginVersion.h
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
