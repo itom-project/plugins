@@ -3,19 +3,19 @@
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`AVTVimba`
-**Type**:       :plugintype:`AVTVimba`
-**License**:    :pluginlicense:`AVTVimba`
+**Summary**:    :pluginsummary:`AVTVimbaX`
+**Type**:       :plugintype:`AVTVimbaX`
+**License**:    :pluginlicense:`AVTVimbaX`
 **Platforms**:  Windows (Firewire + GigE + USB3), Linux only supports GigE (not tested yet)
 **Devices**:    AVT Cameras driven by Vimba interface
-**Author**:     :pluginauthor:`AVTVimba`
+**Author**:     :pluginauthor:`AVTVimbaX`
 =============== ========================================================================================================
 
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: AVTVimba
+    :plugin: AVTVimbaX
 
 
 Initialization
@@ -24,7 +24,7 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
 
     .. plugininitparams::
-        :plugin: AVTVimba
+        :plugin: AVTVimbaX
 
 Parameters
 ===========
@@ -77,9 +77,9 @@ done using the AVT cameras within **itom**. If this is not the case, copy both l
 the 64bit versions for 64bit itom and vice versa).
 
 If you want to build this plugin from the sources, you need to make sure that you installed the C++ component of the Vimba SDK (select this component during the install process).
-In CMake enable the checkbox of the variable **PLUGIN_AVTVimba** and re-configure CMake. Then set the variable **AVTVIMBA_INCLUDE_DIR** or the Environment Variable **AVTVIMBA_ROOT**
+In CMake enable the checkbox of the variable **PLUGIN_AVTVimbaX** and re-configure CMake. Then set the variable **AVTVimbaX_INCLUDE_DIR** or the Environment Variable **AVTVimbaX_ROOT**
 to anything similar like **C:\Program Files\Allied Vision\Vimba_6.0\VimbaCPP\Include** (subfolder of the Vimba installation path) and generate your CMake project again.
-The variables **AVTVIMBA_API_DIR**, AVTVIMBA_LIBRARY**... should now be found automatically if you indicated a right Vimba installation directory in the step before.
+The variables **AVTVimbaX_API_DIR**, AVTVimbaX_LIBRARY**... should now be found automatically if you indicated a right Vimba installation directory in the step before.
 
 Known issues
 ==============

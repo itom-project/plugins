@@ -21,7 +21,7 @@ You should have received a copy of the GNU Library General Public License
 along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dialogAvtVimba.h"
+#include "dialogAVTVimbaX.h"
 
 #include "common/addInInterface.h"
 
@@ -30,7 +30,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/) :
+DialogAVTVimbaX::DialogAVTVimbaX(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
@@ -48,7 +48,7 @@ DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
+void DialogAVTVimbaX::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
@@ -303,7 +303,7 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogAvtVimba::applyParameters()
+ito::RetVal DialogAVTVimbaX::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -440,7 +440,7 @@ ito::RetVal DialogAvtVimba::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogAvtVimba::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogAVTVimbaX::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -461,7 +461,7 @@ void DialogAvtVimba::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogAvtVimba::enableDialog(bool enabled)
+void DialogAVTVimbaX::enableDialog(bool enabled)
 {
     //e.g.
     ui.groupBoxBinning->setEnabled(enabled);
@@ -472,19 +472,19 @@ void DialogAvtVimba::enableDialog(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogAvtVimba::on_rangeX01_valuesChanged(int minValue, int maxValue)
+void DialogAVTVimbaX::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
     ui.spinSizeX->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogAvtVimba::on_rangeY01_valuesChanged(int minValue, int maxValue)
+void DialogAVTVimbaX::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
     ui.spinSizeY->setValue(maxValue - minValue + 1);
 }
 
 //------------------------------------------------------------------------------
-void DialogAvtVimba::on_btnFullROI_clicked()
+void DialogAVTVimbaX::on_btnFullROI_clicked()
 {
     if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
     {

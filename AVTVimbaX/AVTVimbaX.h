@@ -21,12 +21,12 @@ You should have received a copy of the GNU Library General Public License
 along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef AVTVIMBA_H
-#define AVTVIMBA_H
+#ifndef AVTVimbaX_H
+#define AVTVimbaX_H
 
 #include "common/addInGrabber.h"
 #include <qsharedpointer.h>
-#include "dialogAvtVimba.h"
+#include "dialogAVTVimbaX.h"
 #include <VimbaCPP/Include/VimbaCPP.h>
 #include "avtEnums.h"
 #include <qtimer.h>
@@ -42,7 +42,7 @@ using namespace AVT::VmbAPI;
   *    \sa    AddInDataIO, MyGrabber
   *
   */
-class AvtVimbaInterface : public ito::AddInInterfaceBase
+class AVTVimbaXInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
@@ -50,8 +50,8 @@ class AvtVimbaInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
     public:
-        AvtVimbaInterface();
-        ~AvtVimbaInterface();
+        AVTVimbaXInterface();
+        ~AVTVimbaXInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:
@@ -64,20 +64,20 @@ class AvtVimbaInterface : public ito::AddInInterfaceBase
   *\class    MyGrabber
 
   */
-class AvtVimba : public ito::AddInGrabber
+class AVTVimbaX : public ito::AddInGrabber
 {
     Q_OBJECT
 
     protected:
         //! Destructor
-        ~AvtVimba();
+        ~AVTVimbaX();
         //! Constructor
-        AvtVimba();
+        AVTVimbaX();
 
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
     public:
-        friend class AvtVimbaInterface;
+        friend class AVTVimbaXInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
@@ -162,4 +162,4 @@ class AvtVimba : public ito::AddInGrabber
         void aliveTimer_fire();
 };
 
-#endif // AVTVIMBA_H
+#endif // AVTVimbaX_H

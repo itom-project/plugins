@@ -24,7 +24,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "avtVimba.h"
+#include "AVTVimbaX.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
@@ -33,7 +33,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 
-#include "dockWidgetAvtVimba.h"
+#include "dockWidgetAVTVimbaX.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -44,10 +44,10 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized Cameras (max = 5) */
 static char Initnum = 0;    /*!< Number of successfull initialized Cameras */
 
-AvtVimbaInterface::AvtVimbaInterface()
+AVTVimbaXInterface::AVTVimbaXInterface()
 {
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
-    setObjectName("AVTVimba");
+    setObjectName("AVTVimbaX");
 
     m_description = QObject::tr("AVT GigE, firewire and USB cameras using Vimba interface");
 
@@ -84,21 +84,21 @@ Color formats are not supported.");
 /*!
 
 */
-AvtVimbaInterface::~AvtVimbaInterface()
+AVTVimbaXInterface::~AVTVimbaXInterface()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimbaInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal AVTVimbaXInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(AvtVimba) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(AVTVimbaX) //the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimbaInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal AVTVimbaXInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(AvtVimba) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(AVTVimbaX) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
 
@@ -110,14 +110,14 @@ ito::RetVal AvtVimbaInterface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-AvtVimba::AvtVimba() :
+AVTVimbaX::AVTVimbaX() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_camera(CameraPtr()),
     m_aliveTimer(NULL),
     m_aliveTimerThread(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimba", tr("Name of plugin").toLatin1().data());
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimbaX", tr("Name of plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Interface type (Firewire, GigE)").toLatin1().data());
@@ -172,7 +172,7 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
+    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in ï¿½C").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("trigger mode (0: Off, 1: On)").toLatin1().data());
@@ -185,7 +185,7 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(),paramVal);
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetAvtVimba *dw = new DockWidgetAvtVimba(this);
+    DockWidgetAVTVimbaX *dw = new DockWidgetAVTVimbaX(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -193,12 +193,12 @@ AvtVimba::AvtVimba() :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AvtVimba::~AvtVimba()
+AVTVimbaX::~AVTVimbaX()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::checkError(VmbErrorType errCode, const char* prefix /*= NULL*/)
+ito::RetVal AVTVimbaX::checkError(VmbErrorType errCode, const char* prefix /*= NULL*/)
 {
     if (errCode == VmbErrorSuccess)
     {
@@ -226,7 +226,7 @@ ito::RetVal AvtVimba::checkError(VmbErrorType errCode, const char* prefix /*= NU
 /*!
     \sa close
 */
-ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -629,7 +629,7 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 /*!
     \sa init
 */
-ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -680,7 +680,7 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value)
+ito::RetVal AVTVimbaX::getIntFeatureByName(const char *name, VmbInt64_t &value)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -696,7 +696,7 @@ ito::RetVal AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal  AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
+ito::RetVal  AVTVimbaX::getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -714,7 +714,7 @@ ito::RetVal  AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value)
+ito::RetVal AVTVimbaX::getDblFeatureByName(const char *name, double &value)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -730,7 +730,7 @@ ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value, double &min, double &max)
+ito::RetVal AVTVimbaX::getDblFeatureByName(const char *name, double &value, double &min, double &max)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -747,7 +747,7 @@ ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value, doubl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx)
+ito::RetVal AVTVimbaX::getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -764,7 +764,7 @@ ito::RetVal AvtVimba::getEnumFeatureByName(const char *name, std::string &value,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::setDblFeature(const char *name, const double &fValue)
+ito::RetVal AVTVimbaX::setDblFeature(const char *name, const double &fValue)
 {
     FeaturePtr pFeature;
     ito::RetVal retValue;
@@ -783,7 +783,7 @@ ito::RetVal AvtVimba::setDblFeature(const char *name, const double &fValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::setIntFeature(const char *name, const int &iValue)
+ito::RetVal AVTVimbaX::setIntFeature(const char *name, const int &iValue)
 {
     FeaturePtr pFeature;
     ito::RetVal retValue;
@@ -802,7 +802,7 @@ ito::RetVal AvtVimba::setIntFeature(const char *name, const int &iValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::setEnumFeature(const char *name, const char *eValue)
+ito::RetVal AVTVimbaX::setEnumFeature(const char *name, const char *eValue)
 {
     FeaturePtr pFeature;
     ito::RetVal retValue;
@@ -818,7 +818,7 @@ ito::RetVal AvtVimba::setEnumFeature(const char *name, const char *eValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::setEnumFeature(const char *name, VmbInt64_t value)
+ito::RetVal AVTVimbaX::setEnumFeature(const char *name, VmbInt64_t value)
 {
     FeaturePtr pFeature;
     ito::RetVal retValue;
@@ -834,7 +834,7 @@ ito::RetVal AvtVimba::setEnumFeature(const char *name, VmbInt64_t value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
+ito::RetVal AVTVimbaX::getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -851,7 +851,7 @@ ito::RetVal AvtVimba::getRange(const char *name, VmbInt64_t &max, VmbInt64_t &mi
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getRange(const char *name, double &max, double &min)
+ito::RetVal AVTVimbaX::getRange(const char *name, double &max, double &min)
 {
     ito::RetVal retValue;
     FeaturePtr pFeature;
@@ -867,7 +867,7 @@ ito::RetVal AvtVimba::getRange(const char *name, double &max, double &min)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -912,7 +912,7 @@ ito::RetVal AvtVimba::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1144,7 +1144,7 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::startDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1165,7 +1165,7 @@ ito::RetVal AvtVimba::startDevice(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::stopDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1191,7 +1191,7 @@ ito::RetVal AvtVimba::stopDevice(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::acquire(const int trigger, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1233,7 +1233,7 @@ ito::RetVal AvtVimba::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::retrieveData(ito::DataObject *externalDataObject)
+ito::RetVal AVTVimbaX::retrieveData(ito::DataObject *externalDataObject)
 {
     //todo: this is just a basic example for getting the buffered image to m_data or the externally given data object
     //enhance it and adjust it for your needs
@@ -1339,7 +1339,7 @@ ito::RetVal AvtVimba::retrieveData(ito::DataObject *externalDataObject)
 
     \sa retrieveImage, copyVal
 */
-ito::RetVal AvtVimba::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1383,7 +1383,7 @@ ito::RetVal AvtVimba::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \sa retrieveImage, getVal
 */
-ito::RetVal AvtVimba::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal AVTVimbaX::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -1423,7 +1423,7 @@ ito::RetVal AvtVimba::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
     a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
 */
-void AvtVimba::dockWidgetVisibilityChanged(bool visible)
+void AVTVimbaX::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -1461,19 +1461,19 @@ void AvtVimba::dockWidgetVisibilityChanged(bool visible)
 
     \sa hasConfDialog
 */
-const ito::RetVal AvtVimba::showConfDialog(void)
+const ito::RetVal AVTVimbaX::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogAvtVimba(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
+    return apiShowConfigurationDialog(this, new DialogAVTVimbaX(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::synchronizeParameters(int features)
+ito::RetVal AVTVimbaX::synchronizeParameters(int features)
 {
     ito::RetVal retval, ret_;
     VmbInt64_t enumIdx;
     std::string enumVal;
 
-    if (features & AvtVimba::fBpp)
+    if (features & AVTVimbaX::fBpp)
     {
         ret_ += getEnumFeatureByName("PixelFormat", enumVal, enumIdx);
         if (!ret_.containsError())
@@ -1729,7 +1729,7 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AvtVimba::aliveTimer_fire()
+void AVTVimbaX::aliveTimer_fire()
 {
     //this method is regularly called from m_awakeTimer if an acquisition is in process whose timeout is > 2sec.
     setAlive();

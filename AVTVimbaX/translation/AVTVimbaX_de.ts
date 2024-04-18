@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>AvtVimba</name>
+    <name>AVTVimbaX</name>
     <message>
         <source>Interface type (Firewire, GigE)</source>
         <translation type="unfinished"></translation>
@@ -121,7 +121,7 @@
     </message>
 </context>
 <context>
-    <name>DialogAvtVimba</name>
+    <name>DialogAVTVimbaX</name>
     <message>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
@@ -248,7 +248,7 @@
     </message>
 </context>
 <context>
-    <name>DockWidgetAvtVimba</name>
+    <name>DockWidgetAVTVimbaX</name>
     <message>
         <source>Form</source>
         <translation type="unfinished"></translation>

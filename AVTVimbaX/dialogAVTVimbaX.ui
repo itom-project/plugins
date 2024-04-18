@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogAvtVimba</class>
- <widget class="QDialog" name="DialogAvtVimba">
+ <class>DialogAVTVimbaX</class>
+ <widget class="QDialog" name="DialogAVTVimbaX">
   <property name="geometry">
    <rect>
     <x>0</x>

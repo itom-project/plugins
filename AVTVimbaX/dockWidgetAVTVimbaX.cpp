@@ -21,13 +21,13 @@ You should have received a copy of the GNU Library General Public License
 along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetAvtVimba.h"
+#include "dockWidgetAVTVimbaX.h"
 
 #include <qmetaobject.h>
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetAvtVimba::DockWidgetAvtVimba(ito::AddInDataIO *grabber) :
+DockWidgetAVTVimbaX::DockWidgetAVTVimbaX(ito::AddInDataIO *grabber) :
     AbstractAddInDockWidget(grabber),
     m_inEditing(false),
     m_firstRun(true)
@@ -37,7 +37,7 @@ DockWidgetAvtVimba::DockWidgetAvtVimba(ito::AddInDataIO *grabber) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetAVTVimbaX::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
@@ -118,7 +118,7 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-void DockWidgetAvtVimba::on_sW_Gain_valueChanged(double d)
+void DockWidgetAVTVimbaX::on_sW_Gain_valueChanged(double d)
 {
     if (!m_inEditing)
     {
@@ -130,7 +130,7 @@ void DockWidgetAvtVimba::on_sW_Gain_valueChanged(double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::on_sW_IntTime_valueChanged(double d)
+void DockWidgetAVTVimbaX::on_sW_IntTime_valueChanged(double d)
 {
     if (!m_inEditing)
     {
@@ -142,7 +142,7 @@ void DockWidgetAvtVimba::on_sW_IntTime_valueChanged(double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::on_sW_Offset_valueChanged(double d)
+void DockWidgetAVTVimbaX::on_sW_Offset_valueChanged(double d)
 {
     if (!m_inEditing)
     {
@@ -154,7 +154,7 @@ void DockWidgetAvtVimba::on_sW_Offset_valueChanged(double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::on_check_GainAuto_toggled(bool checked)
+void DockWidgetAVTVimbaX::on_check_GainAuto_toggled(bool checked)
 {
     if (!m_inEditing)
     {
@@ -167,7 +167,7 @@ void DockWidgetAvtVimba::on_check_GainAuto_toggled(bool checked)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::identifierChanged(const QString &identifier)
+void DockWidgetAVTVimbaX::identifierChanged(const QString &identifier)
 {
     ui.lblIdentifier->setText(identifier);
 }

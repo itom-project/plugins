@@ -2,7 +2,7 @@
 itom software
 URL: http://www.uni-stuttgart.de/ito
 Copyright (C) 2018, Institut fuer Technische Optik (ITO),,
-Universität Stuttgart, Germany
+Universitï¿½t Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut für Technische
+In addition, as a special exception, the Institut fï¿½r Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -38,7 +38,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY        "IPROM, TU Braunschweig; ITO, University Stuttgart"
 #define PLUGIN_COPYRIGHT      "(C) 2018, IPROM + ITO"
-#define PLUGIN_NAME           "AVTVimba"
+#define PLUGIN_NAME           "AVTVimbaX"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

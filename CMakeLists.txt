@@ -60,10 +60,18 @@ endif(PLUGIN_AvantesAvaSpec)
 
 # AVTVimba
 if(WIN32)
-    option(PLUGIN_AVTVimba "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+    option(PLUGIN_AVTVimba "Build with this plugin." ON)
     if(PLUGIN_AVTVimba)
         add_subdirectory(AVTVimba)
     endif(PLUGIN_AVTVimba)
+endif()
+
+# AVTVimbaX
+if(WIN32)
+    option(PLUGIN_AVTVimbaX "Build with this plugin." ON)
+    if(PLUGIN_AVTVimbaX)
+        add_subdirectory(AVTVimbaX)
+    endif(PLUGIN_AVTVimbaX)
 endif()
 
 # BasicFilters
