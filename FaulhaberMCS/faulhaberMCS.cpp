@@ -134,6 +134,7 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+
     //------------------------------- category device parameter ---------------------------//
     paramVal = ito::Param(
         "serialNumber",
@@ -187,10 +188,22 @@ FaulhaberMCS::FaulhaberMCS() :
         "ambientTemperature",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        1,
-        m_async,
         tr("Ambient Temperature.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device parameter"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------- category Torque control ---------------------------//
+    paramVal =
+        ito::Param("torqueGain", ito::ParamBase::Int, 0, tr("Torque gain K_pi.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Torque control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "torqueIntegralTime",
+        ito::ParamBase::Int,
+        0,
+        tr("Torque integral time T_NI in \u00B5s.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Torque control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
@@ -392,6 +405,20 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        int gain, time, temp;
+        retValue += getTorqueGain(gain);
+        retValue += getTorqueIntegralTime(time);
+        retValue += getAmbientTemperature(temp);
+        if (!retValue.containsError())
+        {
+            m_params["torqueGain"].setVal<int>(gain);
+            m_params["torqueIntegralTime"].setVal<int>(time);
+            m_params["ambientTemperature"].setVal<int>(temp);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -459,8 +486,30 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         {
             int temp;
             retValue += getAmbientTemperature(temp);
-            it->setVal<int>(temp);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(temp);
+            }
         }
+        else if (key == "torqueGain")
+        {
+            int gain;
+            retValue += getTorqueGain(gain);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(gain);
+            }
+        }
+        else if (key == "torqueIntegralTime")
+        {
+            int gain;
+            retValue += getTorqueGain(gain);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(gain);
+            }
+        }
+
         *val = it.value();
     }
 
@@ -562,6 +611,18 @@ ito::RetVal FaulhaberMCS::setParam(
                         .toLatin1()
                         .data());
             }
+        }
+        else if (key == "torqueGain")
+        {
+            int gain = val->getVal<int>();
+            retValue += setTorqueGain(gain);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "torqueIntegralTime")
+        {
+            int time = val->getVal<int>();
+            retValue += setTorqueIntegralTime(time);
+            retValue += it->copyValueFrom(&(*val));
         }
         else
         {
@@ -1192,8 +1253,6 @@ ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
 ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
 {
     ito::RetVal retVal(ito::retOk);
-    /*mmProtSendCommand(m_node, 0x0000, eMomancmd_MA, sizeof(intPos), intPos);*/
-    mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0x00, 0);
 
     unsigned int abortMessage;
     // Modes of Operation = Profile Position Mode (1):
@@ -1206,7 +1265,7 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
             // Enable Operation:
             if (mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage) == eMomanprot_ok)
             {
-                // Move relative:
+                // Move absolute:
                 if (mmProtSetObj(m_node, 0x6040, 0x00, 0x003F, 2, abortMessage) != eMomanprot_ok)
                 {
                     retVal += ito::RetVal(
@@ -1227,8 +1286,6 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
 ito::RetVal FaulhaberMCS::setPosRelMCS(double& pos)
 {
     ito::RetVal retVal(ito::retOk);
-    /*mmProtSendCommand(m_node, 0x0000, eMomancmd_MR, sizeof(pos), pos);*/
-    mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0x00, 0);
 
     unsigned int abortMessage;
     // Modes of Operation = Profile Position Mode (1):
@@ -1318,6 +1375,82 @@ ito::RetVal FaulhaberMCS::getStatusword(std::string& data, std::string& cmd)
             0,
             tr("Error during getStatusword with error message: '%1'!")
                 .arg(mmProtGetErrorMessage(ret))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTorqueGain(int& gain)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2342, 0x01, gain);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get torque gain method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setTorqueGain(int& gain)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x2342, 0x01, gain, sizeof(gain), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set torque gain method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTorqueIntegralTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2342, 0x02, time);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get torque integral time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setTorqueIntegralTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    char16_t utf16Value = static_cast<char16_t>(time);
+    eMomanprot error =
+        mmProtSetObj(m_node, 0x2342, 0x02, utf16Value, sizeof(utf16Value), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set torque integral time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());
     }

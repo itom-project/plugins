@@ -154,6 +154,10 @@ public slots:
     ito::RetVal setPosRelMCS(double& pos);
     ito::RetVal quickstop();
     ito::RetVal getStatusword(std::string& data, std::string& cmd);
+    ito::RetVal getTorqueGain(int& gain);
+    ito::RetVal setTorqueGain(int& gain);
+    ito::RetVal getTorqueIntegralTime(int& time);
+    ito::RetVal setTorqueIntegralTime(int& time);
 
     int doubleToInteger(double& value);
 
