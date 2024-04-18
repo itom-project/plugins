@@ -1,12 +1,12 @@
 ===================
- AVT Vimba
+ AVT Vimba X
 ===================
 
 =============== ========================================================================================================
 **Summary**:    :pluginsummary:`AVTVimbaX`
 **Type**:       :plugintype:`AVTVimbaX`
 **License**:    :pluginlicense:`AVTVimbaX`
-**Platforms**:  Windows (Firewire + GigE + USB3), Linux only supports GigE (not tested yet)
+**Platforms**:  Windows (GigE + USB3 [+CSI2]), Linux only supports GigE (not tested yet)
 **Devices**:    AVT Cameras driven by Vimba interface
 **Author**:     :pluginauthor:`AVTVimbaX`
 =============== ========================================================================================================
@@ -72,13 +72,13 @@ Usage
 =============
 
 In order to use this plugin, please install the Vimba SDK from Allied Vision in version 2.0 or higher (see https://www.alliedvision.com/de/support/software-downloads/).
-During the installation, the necessary Vimba DLLs (VimbaC.dll and VimbaCPP.dll) should be copied into the system directory of Windows, such that no further steps need to be
+During the installation, the necessary Vimba DLLs (VmbC.dll and VmbCPP.dll) should be copied into the system directory of Windows, such that no further steps need to be
 done using the AVT cameras within **itom**. If this is not the case, copy both libraries from the Vimba installation folder to the lib-folder of itom (make sure that you use
 the 64bit versions for 64bit itom and vice versa).
 
 If you want to build this plugin from the sources, you need to make sure that you installed the C++ component of the Vimba SDK (select this component during the install process).
 In CMake enable the checkbox of the variable **PLUGIN_AVTVimbaX** and re-configure CMake. Then set the variable **AVTVimbaX_INCLUDE_DIR** or the Environment Variable **AVTVimbaX_ROOT**
-to anything similar like **C:\Program Files\Allied Vision\Vimba_6.0\VimbaCPP\Include** (subfolder of the Vimba installation path) and generate your CMake project again.
+to anything similar like **C:\Program Files\Allied Vision\Vimba X\api\include** (subfolder of the Vimba installation path) and generate your CMake project again.
 The variables **AVTVimbaX_API_DIR**, AVTVimbaX_LIBRARY**... should now be found automatically if you indicated a right Vimba installation directory in the step before.
 
 Known issues
