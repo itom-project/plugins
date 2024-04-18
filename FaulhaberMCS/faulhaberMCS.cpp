@@ -103,6 +103,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------- category movement ---------------------------//
     paramVal = ito::Param(
         "async",
         ito::ParamBase::Int,
@@ -113,6 +114,27 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "operation",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Enable (1) or Disable (0) operation.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "power",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Enable (1) or Disable (0) device power.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------- category device parameter ---------------------------//
     paramVal = ito::Param(
         "serialNumber",
         ito::ParamBase::String | ito::ParamBase::Readonly,
@@ -163,12 +185,12 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "ambientTemperature",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
         m_async,
         tr("Ambient Temperature.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Integrate drive system"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device parameter"));
     m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
@@ -303,10 +325,7 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
     }
 
     if (!retValue.containsError())
@@ -397,9 +416,6 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
         if (m_isComOpen)
         {
             mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_DiOp, 0, 0);
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
-
             mmProtCloseCom();
             mmProtCloseInterface();
         }
@@ -502,6 +518,50 @@ ito::RetVal FaulhaberMCS::setParam(
             m_async = val->getVal<int>();
             // check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "operation")
+        {
+            int operation = val->getVal<int>();
+            if (operation == 0)
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_DiOp, 0, 0); // disable operation
+            }
+            else if (operation == 1)
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0); // enable operation
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Value (%1) of parameter 'operation' must be 0 or 1.")
+                        .arg(operation)
+                        .toLatin1()
+                        .data());
+            }
+        }
+        else if (key == "power")
+        {
+            int operation = val->getVal<int>();
+            if (operation == 0)
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0); // shutdown
+            }
+            else if (operation == 1)
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0); // switch on
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Value (%1) of parameter 'power' must be 0 or 1.")
+                        .arg(operation)
+                        .toLatin1()
+                        .data());
+            }
         }
         else
         {
