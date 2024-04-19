@@ -202,8 +202,57 @@ FaulhaberMCS::FaulhaberMCS() :
         "torqueIntegralTime",
         ito::ParamBase::Int,
         0,
-        tr("Torque integral time T_NI in \u00B5s.").toLatin1().data());
+        tr("Torque integral time T_NI in %1s.").arg(QLatin1String("\u00B5")).toLatin1().data());
     paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Torque control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------- category velocity control ---------------------------//
+    paramVal = ito::Param(
+        "velocityGain", ito::ParamBase::Int, 0, tr("Velocity gain K_p.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Velocity control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityIntegralTime",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity integral time TN in %1s.").arg(QLatin1String("\u00B5")).toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Velocity control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityDeviationThreshold",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity deviation threshold.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Velocity control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityDeviationTime",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity deviation time.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Velocity control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityWarningThreshold",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity warning threshold.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Velocity control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityIntegralPartOption",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity integral part option. 0: Integral part activated, 1: Stopped integral part, "
+           "2: Integral part deactivated.")
+            .toLatin1()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 2, 1, "Velocity control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
@@ -338,7 +387,10 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
     }
 
     if (!retValue.containsError())
@@ -405,15 +457,34 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        int gain, time, temp;
-        retValue += getTorqueGain(gain);
-        retValue += getTorqueIntegralTime(time);
-        retValue += getAmbientTemperature(temp);
+        int torqueGain, torqueTime;
+        int velocityGain, velocityTime, velocityDeviationThreshold, velocityDeviationTime,
+            velocityWarningThreshold, velocityIntegralPartOption;
+        int ambientTemp;
+        retValue += getTorqueGain(torqueGain);
+        retValue += getTorqueIntegralTime(torqueTime);
+
+        retValue += getVelocityGain(velocityGain);
+        retValue += getVelocityIntegralTime(velocityTime);
+        retValue += getVelocityDeviationThreshold(velocityDeviationThreshold);
+        retValue += getVelocityDeviationTime(velocityDeviationTime);
+        retValue += getVelocityWarningThreshold(velocityWarningThreshold);
+        retValue += getVelocityIntegralPartOption(velocityIntegralPartOption);
+
+        retValue += getAmbientTemperature(ambientTemp);
         if (!retValue.containsError())
         {
-            m_params["torqueGain"].setVal<int>(gain);
-            m_params["torqueIntegralTime"].setVal<int>(time);
-            m_params["ambientTemperature"].setVal<int>(temp);
+            m_params["torqueGain"].setVal<int>(torqueGain);
+            m_params["torqueIntegralTime"].setVal<int>(torqueTime);
+
+            m_params["velocityGain"].setVal<int>(velocityGain);
+            m_params["velocityIntegralTime"].setVal<int>(velocityTime);
+            m_params["velocityDeviationThreshold"].setVal<int>(velocityDeviationThreshold);
+            m_params["velocityDeviationTime"].setVal<int>(velocityDeviationTime);
+            m_params["velocityWarningThreshold"].setVal<int>(velocityWarningThreshold);
+            m_params["velocityIntegralPartOption"].setVal<int>(velocityIntegralPartOption);
+
+            m_params["ambientTemperature"].setVal<int>(ambientTemp);
         }
     }
 
@@ -502,11 +573,65 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "torqueIntegralTime")
         {
+            int time;
+            retValue += getTorqueGain(time);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(time);
+            }
+        }
+        else if (key == "velocityGain")
+        {
             int gain;
-            retValue += getTorqueGain(gain);
+            retValue += getVelocityGain(gain);
             if (!retValue.containsError())
             {
                 it->setVal<int>(gain);
+            }
+        }
+        else if (key == "velocityIntegralTime")
+        {
+            int time;
+            retValue += getVelocityGain(time);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(time);
+            }
+        }
+        else if (key == "velocityDeviationThreshold")
+        {
+            int thres;
+            retValue += getVelocityDeviationThreshold(thres);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(thres);
+            }
+        }
+        else if (key == "velocityDeviationTime")
+        {
+            int time;
+            retValue += getVelocityDeviationTime(time);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(time);
+            }
+        }
+        else if (key == "velocityWarningThreshold")
+        {
+            int thres;
+            retValue += getVelocityWarningThreshold(thres);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(thres);
+            }
+        }
+        else if (key == "velocityIntegralPartOption")
+        {
+            int option;
+            retValue += getVelocityIntegralPartOption(option);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(option);
             }
         }
 
@@ -622,6 +747,42 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             int time = val->getVal<int>();
             retValue += setTorqueIntegralTime(time);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityGain")
+        {
+            int gain = val->getVal<int>();
+            retValue += setVelocityGain(gain);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityIntegralTime")
+        {
+            int time = val->getVal<int>();
+            retValue += setVelocityIntegralTime(time);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityDeviationThreshold")
+        {
+            int thres = val->getVal<int>();
+            retValue += setVelocityDeviationThreshold(thres);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityDeviationTime")
+        {
+            int time = val->getVal<int>();
+            retValue += setVelocityDeviationTime(time);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityWarningThreshold")
+        {
+            int thres = val->getVal<int>();
+            retValue += setVelocityWarningThreshold(thres);
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "velocityIntegralPartOption")
+        {
+            int option = val->getVal<int>();
+            retValue += setVelocityIntegralPartOption(option);
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -1450,6 +1611,235 @@ ito::RetVal FaulhaberMCS::setTorqueIntegralTime(int& time)
             ito::retError,
             0,
             tr("Error during set torque integral time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityGain(int& gain)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x01, gain);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity gain method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityGain(int& gain)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x2344, 0x01, gain, sizeof(gain), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity gain method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityIntegralTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x02, time);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity integral time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityIntegralTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    char16_t utf16Value = static_cast<char16_t>(time);
+    eMomanprot error =
+        mmProtSetObj(m_node, 0x2344, 0x02, utf16Value, sizeof(utf16Value), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity integral time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityDeviationThreshold(int& thres)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x03, thres);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity deviation threshold method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityDeviationThreshold(int& thres)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    char16_t utf16Value = static_cast<char16_t>(thres);
+    eMomanprot error =
+        mmProtSetObj(m_node, 0x2344, 0x03, utf16Value, sizeof(utf16Value), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity deviation threshold method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityDeviationTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x04, time);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity deviation time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityDeviationTime(int& time)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    char16_t utf16Value = static_cast<char16_t>(time);
+    eMomanprot error =
+        mmProtSetObj(m_node, 0x2344, 0x04, utf16Value, sizeof(utf16Value), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity deviation time method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityWarningThreshold(int& thres)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x05, thres);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity warning threshold method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityWarningThreshold(int& thres)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x2344, 0x05, thres, sizeof(thres), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity warning threshold method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityIntegralPartOption(int& option)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x2344, 0x06, option);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during get velocity integral part option method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(int& option)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    char utfValue = static_cast<char>(option);
+    eMomanprot error = mmProtSetObj(m_node, 0x2344, 0x06, utfValue, sizeof(utfValue), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set velocity integral part option method with error message: '%1'!")
                 .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());

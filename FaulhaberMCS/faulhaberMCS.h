@@ -158,6 +158,18 @@ public slots:
     ito::RetVal setTorqueGain(int& gain);
     ito::RetVal getTorqueIntegralTime(int& time);
     ito::RetVal setTorqueIntegralTime(int& time);
+    ito::RetVal getVelocityGain(int& gain);
+    ito::RetVal setVelocityGain(int& gain);
+    ito::RetVal getVelocityIntegralTime(int& time);
+    ito::RetVal setVelocityIntegralTime(int& time);
+    ito::RetVal getVelocityDeviationThreshold(int& thres);
+    ito::RetVal setVelocityDeviationThreshold(int& thres);
+    ito::RetVal getVelocityDeviationTime(int& time);
+    ito::RetVal setVelocityDeviationTime(int& time);
+    ito::RetVal getVelocityWarningThreshold(int& thres);
+    ito::RetVal setVelocityWarningThreshold(int& thres);
+    ito::RetVal getVelocityIntegralPartOption(int& option);
+    ito::RetVal setVelocityIntegralPartOption(int& option);
 
     int doubleToInteger(double& value);
 
