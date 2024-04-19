@@ -5,10 +5,10 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#include "dockWidgetMyActuator.h"
+#include "dockWidgetThorlabsDMH.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
+DockWidgetThorlabsDMH::DockWidgetThorlabsDMH(ito::AddInActuator *actuator) :
     AbstractAddInDockWidget(actuator),
     m_inEditing(false),
     m_firstRun(true)
@@ -51,13 +51,13 @@ DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetThorlabsDMH::parametersChanged(QMap<QString, ito::Param> params)
 {
 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::targetChanged(QVector<double> targetPos)
+void DockWidgetThorlabsDMH::targetChanged(QVector<double> targetPos)
 {
     for (int i = 0; i < targetPos.size(); i++)
     {
@@ -66,7 +66,7 @@ void DockWidgetMyActuator::targetChanged(QVector<double> targetPos)
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
+void DockWidgetThorlabsDMH::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
 {
     bool running = false;
     QString style;
@@ -103,7 +103,7 @@ void DockWidgetMyActuator::actuatorStatusChanged(QVector<int> status, QVector<do
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
+void DockWidgetThorlabsDMH::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
 {
     double dpos = ui.spinStepSize->value() / -1e3;
 
@@ -119,7 +119,7 @@ void DockWidgetMyActuator::btnRelDecClicked()                //slot if any butto
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
+void DockWidgetThorlabsDMH::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
 {
     double dpos = ui.spinStepSize->value() / 1e3;
 
@@ -135,13 +135,13 @@ void DockWidgetMyActuator::btnRelIncClicked()                //slot if any butto
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::on_btnStop_clicked()
+void DockWidgetThorlabsDMH::on_btnStop_clicked()
 {
     setActuatorInterrupt();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::on_btnStart_clicked()
+void DockWidgetThorlabsDMH::on_btnStart_clicked()
 {
     QVector<int> axis;
     QVector<double> dpos;
@@ -156,13 +156,13 @@ void DockWidgetMyActuator::on_btnStart_clicked()
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::on_btnRefresh_clicked()
+void DockWidgetThorlabsDMH::on_btnRefresh_clicked()
 {
     requestActuatorStatusAndPositions(true, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::enableWidgets(bool enabled)
+void DockWidgetThorlabsDMH::enableWidgets(bool enabled)
 {
     for (int i = 0; i < m_btnRelDec.size(); i++)
     {
@@ -175,7 +175,7 @@ void DockWidgetMyActuator::enableWidgets(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMyActuator::identifierChanged(const QString &identifier)
+void DockWidgetThorlabsDMH::identifierChanged(const QString &identifier)
 {
     ui.lblIdentifier->setText(identifier);
 }

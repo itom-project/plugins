@@ -5,8 +5,8 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETMYACTUATOR_H
-#define DOCKWIDGETMYACTUATOR_H
+#ifndef DOCKWIDGETTHORLABSDMH_H
+#define DOCKWIDGETTHORLABSDMH_H
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
@@ -15,18 +15,18 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetMyActuator.h"
+#include "ui_dockWidgetThorlabsDMH.h"
 
-class DockWidgetMyActuator : public ito::AbstractAddInDockWidget
+class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetMyActuator(ito::AddInActuator *actuator);
-        ~DockWidgetMyActuator() {};
+        DockWidgetThorlabsDMH(ito::AddInActuator *actuator);
+        ~DockWidgetThorlabsDMH() {};
 
     private:
-        Ui::DockWidgetMyActuator ui; //! Handle to the ui
+        Ui::DockWidgetThorlabsDMH ui; //! Handle to the ui
         bool m_inEditing;
         bool m_firstRun;
 

@@ -5,7 +5,7 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#include "dialogMyActuator.h"
+#include "dialogThorlabsDMH.h"
 
 #include "common/addInInterface.h"
 
@@ -14,7 +14,7 @@
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogMyActuator::DialogMyActuator(ito::AddInBase *grabber) :
+DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
@@ -26,7 +26,7 @@ DialogMyActuator::DialogMyActuator(ito::AddInBase *grabber) :
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogMyActuator::parametersChanged(QMap<QString, ito::Param> params)
+void DialogThorlabsDMH::parametersChanged(QMap<QString, ito::Param> params)
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
@@ -48,7 +48,7 @@ void DialogMyActuator::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogMyActuator::applyParameters()
+ito::RetVal DialogThorlabsDMH::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -66,7 +66,7 @@ ito::RetVal DialogMyActuator::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogMyActuator::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogThorlabsDMH::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -87,7 +87,7 @@ void DialogMyActuator::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogMyActuator::enableDialog(bool enabled)
+void DialogThorlabsDMH::enableDialog(bool enabled)
 {
     //e.g.
     ui.group1->setEnabled(enabled);

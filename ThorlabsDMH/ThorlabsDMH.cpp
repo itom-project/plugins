@@ -8,7 +8,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "myActuator.h"
+#include "ThorlabsDMH.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
@@ -19,19 +19,19 @@
 #include <qdatetime.h>
 #include <qwaitcondition.h>
 
-#include "dockWidgetMyActuator.h"
+#include "dockWidgetThorlabsDMH.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
     \todo add necessary information about your plugin here.
 */
-MyActuatorInterface::MyActuatorInterface()
+ThorlabsDMHInterface::ThorlabsDMHInterface()
 {
     m_type = ito::typeActuator;
-    setObjectName("MyActuator");
+    setObjectName("ThorlabsDMH");
 
-    m_description = QObject::tr("MyActuator");
+    m_description = QObject::tr("ThorlabsDMH");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
@@ -56,27 +56,27 @@ Put a detailed description about what the plugin is doing, what is needed to get
 /*!
 
 */
-MyActuatorInterface::~MyActuatorInterface()
+ThorlabsDMHInterface::~ThorlabsDMHInterface()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyActuatorInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal ThorlabsDMHInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(MyActuator) //the argument of the macro is the classname of the plugin
+    NEW_PLUGININSTANCE(ThorlabsDMH) //the argument of the macro is the classname of the plugin
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyActuatorInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal ThorlabsDMHInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   REMOVE_PLUGININSTANCE(MyActuator) //the argument of the macro is the classname of the plugin
+   REMOVE_PLUGININSTANCE(ThorlabsDMH) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(myactuatorinterface, MyActuatorInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
+    Q_EXPORT_PLUGIN2(thorlabsdmhinterface, ThorlabsDMHInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
 
@@ -88,9 +88,9 @@ ito::RetVal MyActuatorInterface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-MyActuator::MyActuator() : AddInActuator(), m_async(0), m_nrOfAxes(3)
+ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0), m_nrOfAxes(3)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyActuator", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsDMH", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
     m_params.insert( "async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
@@ -101,7 +101,7 @@ MyActuator::MyActuator() : AddInActuator(), m_async(0), m_nrOfAxes(3)
     m_targetPos.fill(0.0,m_nrOfAxes);
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetMyActuator *dw = new DockWidgetMyActuator(this);
+    DockWidgetThorlabsDMH *dw = new DockWidgetThorlabsDMH(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -109,7 +109,7 @@ MyActuator::MyActuator() : AddInActuator(), m_async(0), m_nrOfAxes(3)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MyActuator::~MyActuator()
+ThorlabsDMH::~ThorlabsDMH()
 {
 }
 
@@ -118,7 +118,7 @@ MyActuator::~MyActuator()
 /*!
     \sa close
 */
-ito::RetVal MyActuator::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -155,7 +155,7 @@ ito::RetVal MyActuator::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 /*!
     \sa init
 */
-ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -174,7 +174,7 @@ ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyActuator::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -211,7 +211,7 @@ ito::RetVal MyActuator::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyActuator::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -283,7 +283,7 @@ ito::RetVal MyActuator::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 /*!
     the given axis should be calibrated (e.g. by moving to a reference switch).
 */
-ito::RetVal MyActuator::calib(const int axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
     return calib(QVector<int>(1,axis), waitCond);
 }
@@ -293,7 +293,7 @@ ito::RetVal MyActuator::calib(const int axis, ItomSharedSemaphore *waitCond)
 /*!
     the given axes should be calibrated (e.g. by moving to a reference switch).
 */
-ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
@@ -328,7 +328,7 @@ ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     considered to be the new origin (zero-position). If this operation is not possible, return a
     warning.
 */
-ito::RetVal MyActuator::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
 {
     return setOrigin(QVector<int>(1,axis), waitCond);
 }
@@ -340,7 +340,7 @@ ito::RetVal MyActuator::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
     considered to be the new origin (zero-position). If this operation is not possible, return a
     warning.
 */
-ito::RetVal MyActuator::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -380,7 +380,7 @@ ito::RetVal MyActuator::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCo
     re-checks the status (current position, available, end switch reached, moving, at target...) of all axes and
     returns the status of each axis as vector. Each status is an or-combination of the enumeration ito::tActuatorStatus.
 */
-ito::RetVal MyActuator::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -401,7 +401,7 @@ ito::RetVal MyActuator::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 /*!
     returns the current position (in mm or degree) of the given axis
 */
-ito::RetVal MyActuator::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     QSharedPointer<QVector<double> > pos2(new QVector<double>(1,0.0));
@@ -422,7 +422,7 @@ ito::RetVal MyActuator::getPos(const int axis, QSharedPointer<double> pos, ItomS
 /*!
     returns the current position (in mm or degree) of all given axes
 */
-ito::RetVal MyActuator::getPos(QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::getPos(QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -461,7 +461,7 @@ ito::RetVal MyActuator::getPos(QVector<int> axis, QSharedPointer<QVector<double>
     In some cases only relative movements are possible, then get the current position, determine the
     relative movement and call the method relatively move the axis.
 */
-ito::RetVal MyActuator::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosAbs(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
 }
@@ -477,7 +477,7 @@ ito::RetVal MyActuator::setPosAbs(const int axis, const double pos, ItomSharedSe
     In some cases only relative movements are possible, then get the current position, determine the
     relative movement and call the method relatively move the axis.
 */
-ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -557,7 +557,7 @@ ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSh
     In some cases only absolute movements are possible, then get the current position, determine the
     new absolute target position and call setPosAbs with this absolute target position.
 */
-ito::RetVal MyActuator::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosRel(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
 }
@@ -573,7 +573,7 @@ ito::RetVal MyActuator::setPosRel(const int axis, const double pos, ItomSharedSe
     In some cases only absolute movements are possible, then get the current positions, determine the
     new absolute target positions and call setPosAbs with these absolute target positions.
 */
-ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal ThorlabsDMH::setPosRel(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -649,7 +649,7 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
     WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
     occurred. The timeout can be given in milliseconds, or -1 if no timeout should be considered. The flag-parameter can be used for your own purpose.
 */
-ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
+ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
     bool done = false;
@@ -742,7 +742,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
 /*!
     This is a helper function, it is not necessary to implement a function like this, but it might help.
 */
-ito::RetVal MyActuator::updateStatus()
+ito::RetVal ThorlabsDMH::updateStatus()
 {
     for (int i=0;i<m_nrOfAxes;i++)
     {
@@ -772,7 +772,7 @@ ito::RetVal MyActuator::updateStatus()
     with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
     a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
 */
-void MyActuator::dockWidgetVisibilityChanged(bool visible)
+void ThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -816,7 +816,7 @@ void MyActuator::dockWidgetVisibilityChanged(bool visible)
 
     \sa hasConfDialog
 */
-const ito::RetVal MyActuator::showConfDialog(void)
+const ito::RetVal ThorlabsDMH::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogMyActuator(this));
+    return apiShowConfigurationDialog(this, new DialogThorlabsDMH(this));
 }
