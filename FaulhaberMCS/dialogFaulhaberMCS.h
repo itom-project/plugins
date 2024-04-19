@@ -20,13 +20,14 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGMYACTUATOR_H
-#define DIALOGMYACTUATOR_H
+#ifndef DIALOGFAULHABERMCS_H
+#define DIALOGFAULHABERMCS_H
 
 #include "common/abstractAddInConfigDialog.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 
+#include "common/addInInterface.h"
 #include "ui_dialogFaulhaberMCS.h"
 
 #include <qabstractbutton.h>
@@ -42,8 +43,8 @@ class DialogFaulhaberMCS : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
 public:
-    DialogFaulhaberMCS(ito::AddInBase* grabber);
-    ~DialogFaulhaberMCS(){};
+    DialogFaulhaberMCS(ito::AddInActuator* actuator);
+    ~DialogFaulhaberMCS();
 
     ito::RetVal applyParameters();
 
@@ -51,6 +52,7 @@ private:
     void enableDialog(bool enabled);
     bool m_firstRun;
 
+    QPointer<ito::AddInBase> m_pluginPointer;
     Ui::DialogFaulhaberMCS ui;
 
 public slots:

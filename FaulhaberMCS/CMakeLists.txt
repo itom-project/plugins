@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 set(target_name FaulhaberMCS)
 
@@ -35,6 +35,7 @@ if(FAULHABER_MOMANLIB_ROOT)
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
+        ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${FAULHABER_MOMANLIB_INCLUDE_DIR}
     )
 

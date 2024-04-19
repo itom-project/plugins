@@ -29,16 +29,24 @@
 #include <qvector.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogFaulhaberMCS::DialogFaulhaberMCS(ito::AddInBase* grabber) :
-    AbstractAddInConfigDialog(grabber), m_firstRun(true)
+DialogFaulhaberMCS::DialogFaulhaberMCS(ito::AddInActuator* actuator) :
+    AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pluginPointer(actuator)
 {
     ui.setupUi(this);
 
     // disable dialog, since no parameters are known yet. Parameters will immediately be sent by the
     // slot parametersChanged.
     enableDialog(false);
+    ui.ParamEditorWidget->setPlugin(m_pluginPointer);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogFaulhaberMCS::~DialogFaulhaberMCS()
+{
+    QSharedPointer<ito::ParamBase> p(
+        new ito::ParamBase("enableConfiguration", ito::ParamBase::Int, 0));
+    setPluginParameter(p, msgLevelWarningAndError);
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
@@ -106,7 +114,4 @@ void DialogFaulhaberMCS::on_buttonBox_clicked(QAbstractButton* btn)
 //---------------------------------------------------------------------------------------------------------------------
 void DialogFaulhaberMCS::enableDialog(bool enabled)
 {
-    // e.g.
-    ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
 }
