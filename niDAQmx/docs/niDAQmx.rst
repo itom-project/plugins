@@ -2172,4 +2172,5 @@ Changelog
 * itom setup 4.0.0: Complete renewed plugin implementation. This plugin is incompatible to earlier version of
   this plugin and provides much more features. It has been compiled using NI-DAQmx 19.6.0 (Windows)
 * itom setup 4.1.0: This plugin has been compiled using the NI-DAQmx 19.6.0 (Windows)
-* itom setup 4.3.0: This plugin has been compiled using the NI-DAQmx 22.5.0 (Windows)
+* itom setup 4.3.0: This plugin has been compiled using the NI-DAQmx 2024 Q1 (Windows)
+

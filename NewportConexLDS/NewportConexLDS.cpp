@@ -308,10 +308,10 @@ NewportConexLDS::NewportConexLDS() :
     pOut.append(paramVal);
 
     paramVal = ito::Param(
-        "timeStemp",
+        "timeStamp",
         ito::ParamBase::String | ito::ParamBase::Out,
         "unknown",
-        tr("Timestemp of measurement.").toLatin1().data());
+        tr("TimeStamp of measurement.").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "Measurement"), true);
     pOut.append(paramVal);
 
@@ -342,10 +342,10 @@ NewportConexLDS::NewportConexLDS() :
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
-        "timeStemps",
+        "timeStamps",
         ito::ParamBase::StringList | ito::ParamBase::Out,
         nullptr,
-        tr("Timestemps corresponding to the measruement data.").toLatin1().data());
+        tr("TimeStamps corresponding to the measruement data.").toLatin1().data());
     pOut.append(paramVal);
 
     registerExecFunc(
@@ -354,7 +354,7 @@ NewportConexLDS::NewportConexLDS() :
         pOpt,
         pOut,
         tr("Measure the position and laser power. "
-           "It will fill the input dataObject with positions, laser power and timestemps. Please "
+           "It will fill the input dataObject with positions, laser power and timestamps. Please "
            "note that this function blocks itom until the entire measurement has been carried out.")
             .toLatin1()
             .data());
@@ -614,22 +614,22 @@ ito::RetVal NewportConexLDS::execFunc(
         ito::ParamBase* positionAndPower =
             ito::getParamByName(&(*paramsOut), "positionAndPower", &retValue);
 
-        ito::ParamBase* timeStemp = ito::getParamByName(&(*paramsOut), "timeStemp", &retValue);
+        ito::ParamBase* timeStamp = ito::getParamByName(&(*paramsOut), "timeStamp", &retValue);
 
         if (!retValue.containsError())
         {
-            retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower, *timeStemp);
+            retValue += NewportConexLDS::execGetPositionAndPower(*positionAndPower, *timeStamp);
         }
     }
     else if (funcName == "getPositionAndPowerMeasurement")
     {
         ito::DataObject* dObj = (ito::DataObject*)(*paramsMand)[0].getVal<ito::DataObject*>();
-        ito::ParamBase* timeStemps = ito::getParamByName(&(*paramsOut), "timeStemps", &retValue);
+        ito::ParamBase* timeStamps = ito::getParamByName(&(*paramsOut), "timeStamps", &retValue);
         int interval = (*paramsOpt)[0].getVal<int>();
 
         if (!retValue.containsError())
         {
-            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStemps, interval);
+            retValue += NewportConexLDS::execGetPositionAndPowerArray(*dObj, *timeStamps, interval);
         }
     }
 
@@ -849,7 +849,7 @@ ito::RetVal NewportConexLDS::setParam(
 
     if (config != CONFIGURATION)
     {
-        if (!(key == "laserPowerState" or key == "enableConfiguration"))
+        if (!(key == "laserPowerState" || key == "enableConfiguration"))
         {
             retValue += ito::RetVal(
                 ito::retError,
@@ -880,7 +880,7 @@ ito::RetVal NewportConexLDS::setParam(
             }
 
             int state = val->getVal<int>();
-            if (!(state and config == MEASURE))
+            if (!(state && config == MEASURE))
             {
                 if (!retValue.containsError())
                 {
@@ -1046,7 +1046,7 @@ ito::RetVal NewportConexLDS::readString(QByteArray& result, int& len)
     {
         len = 0;
         timer.start();
-        _sleep(m_delayAfterSendCommandMS);
+        QThread::msleep(m_delayAfterSendCommandMS);
 
         while (!done && !retValue.containsError())
         {
@@ -1151,7 +1151,7 @@ ito::RetVal NewportConexLDS::sendQuestionWithAnswerDoubleArray(
     int n = 0;
     QRegularExpressionMatch match;
     QString matchedValue;
-    while (matchIterator.hasNext() and ok)
+    while (matchIterator.hasNext() && ok)
     {
         match = matchIterator.next();
         matchedValue = match.captured();
@@ -1548,7 +1548,7 @@ ito::RetVal NewportConexLDS::setLaserPowerState(const int state)
         QString::number(m_controllerAddress).toUtf8() + "LB" + QString::number(state).toUtf8();
     retVal += sendCommand(sendStr);
 
-    _sleep(5000);
+    QThread::msleep(5000);
     setAlive();
 
     QString error;
@@ -1754,7 +1754,7 @@ ito::RetVal NewportConexLDS::setConfigurationState(const int& state)
 
     if (!state)
     {
-        _sleep(5000);
+        QThread::msleep(5000);
         setAlive();
     }
 
@@ -1771,7 +1771,7 @@ ito::RetVal NewportConexLDS::setConfigurationState(const int& state)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPower(
-    ito::ParamBase& positionAndPower, ito::ParamBase& timeStemp)
+    ito::ParamBase& positionAndPower, ito::ParamBase& timeStamp)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -1795,7 +1795,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
     if (!retValue.containsError())
     {
         positionAndPower.setVal<ito::float64*>(values, 3);
-        timeStemp.setVal<char*>(
+        timeStamp.setVal<char*>(
             QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz").toUtf8().data());
     }
     DELETE_AND_SET_NULL_ARRAY(values);
@@ -1805,7 +1805,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPower(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
-    ito::DataObject& dObj, ito::ParamBase& timeStemps, const int& interval)
+    ito::DataObject& dObj, ito::ParamBase& timeStamps, const int& interval)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -1881,7 +1881,7 @@ ito::RetVal NewportConexLDS::execGetPositionAndPowerArray(
         dObj.setTag("legendTitle1", "y position");
         dObj.setTag("legendTitle2", "laser power");
 
-        timeStemps.setVal<ito::ByteArray*>(time, length);
+        timeStamps.setVal<ito::ByteArray*>(time, length);
         DELETE_AND_SET_NULL_ARRAY(values);
         DELETE_AND_SET_NULL_ARRAY(time);
     }

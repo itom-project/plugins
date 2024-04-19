@@ -75,3 +75,4 @@ Changelog
 
 * 2015-06-15: The XiLab SDK currently delivered with the source files of the itom plugin has the version 2.3.2.
 * itom setup 4.1.0: plugin uses the XiLab SDK in version 2.3.2.
+* itom setup 4.3W.0: plugin uses the XiLab SDK in version 2.14.0.
