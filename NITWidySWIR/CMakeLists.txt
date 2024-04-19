@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name NITWidySWIR) #->replace NITWidySWIR by the name of your plugin (one word)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
@@ -28,13 +27,24 @@ itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
-set(NITLIBRARY_SDK_DIR "" CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
-
 if(NOT NITLIBRARY_SDK_DIR)
-	set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT})
+	set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT} CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
 endif(NOT NITLIBRARY_SDK_DIR)
 
 find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include /inc DOC "NITLibrary include directory")
+
+set(_NIT_KNOWN_VERSIONS ${NIT_ADDITIONAL_VERSIONS} "3.6.0" "3.5.0" "3.4.2" "3.4.1" "3.2.1" "3.2.0" "3.1.0" "3.0.1" "3.0.0" "2.5.3" "2.5.2")
+
+if(BUILD_TARGET64)
+    set(_NIT_LIBRARY_NAME "NITLibrary_x64")
+else(BUILD_TARGET64)
+    set(_NIT_LIBRARY_NAME "NITLibrary_x32")
+endif(BUILD_TARGET64)
+
+set(_NIT_LIBRARY_NAMES "NITLibrary" ${_NIT_LIBRARY_NAME})
+foreach(VERSION ${_NIT_KNOWN_VERSIONS})
+    list(APPEND _NIT_LIBRARY_NAMES "${_NIT_LIBRARY_NAME}-${VERSION}")
+endforeach()
 
 if(NITLIBRARY_INCLUDE_DIR)
 
@@ -49,9 +59,9 @@ if(NITLIBRARY_INCLUDE_DIR)
     )
 
     if(BUILD_TARGET64)
-		find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
+		find_library(NITLIBRARY_LIB ${_NIT_LIBRARY_NAMES}  NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
     else(BUILD_TARGET64)
-        find_library(NITLIBRARY_LIB NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
+        find_library(NITLIBRARY_LIB ${_NIT_LIBRARY_NAMES}  NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
     endif(BUILD_TARGET64)
 
     set(PLUGIN_HEADERS

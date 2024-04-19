@@ -69,4 +69,6 @@ Changelog
 =========
 
 * itom setup 4.1.0: This plugin has been compiled using the libUSB Plugin
+* itom setup 4.2.0: This plugin has been compiled using the libUSB Plugin
+* itom setup 4.3.0: This plugin has been compiled using the libUSB Plugin
 * ONLY fully implemented for STS series, other spectrometers using OBP won't fully work.

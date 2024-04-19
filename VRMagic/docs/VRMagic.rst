@@ -95,3 +95,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the VRmagic SDK 4.5.0
 * itom setup 4.0.0: This plugin has been compiled using the VRmagic SDK 4.5.0
 * itom setup 4.1.0: This plugin has been compiled using the VRmagic SDK 4.5.0
+* itom setup 4.2.0: This plugin has been compiled using the VRmagic SDK 4.5.0
+* itom setup 4.3.0: This plugin has been compiled using the VRmagic SDK 4.5.0

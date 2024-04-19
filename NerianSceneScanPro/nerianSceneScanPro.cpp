@@ -33,7 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 #include <visiontransfer/deviceenumeration.h>
-#include <visiontransfer/scenescanparameters.h>
+#include <visiontransfer/deviceparameters.h>
 //include all 3rd Party which come with openCV funktions if CV_MAJOR_VERSION is defined. We wont use those functions since this would force the same openCV version of visiontransfer and itom
 #include<visiontransfer/imagetransfer.h>
 #include <visiontransfer/imagepair.h>
@@ -347,7 +347,7 @@ ito::RetVal NerianSceneScanPro::init(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     if (!retValue.containsError())
     {
-        m_pParamsObj = new SceneScanParameters(devices[deviceIdx]);
+        m_pParamsObj = new DeviceParameters(devices[deviceIdx]);
         m_pImageTransferObj = new ImageTransfer(devices[deviceIdx]);
         m_pImagePair = new ImagePair();
 
@@ -499,7 +499,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
     {
         if (key == "operationMode")
         {
-            SceneScanParameters::OperationMode mode =(SceneScanParameters::OperationMode) val->getVal<int>();
+            DeviceParameters::OperationMode mode =(DeviceParameters::OperationMode) val->getVal<int>();
             try {
                 m_pParamsObj->setOperationMode(mode);
             }
@@ -711,7 +711,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         }
         else if (key == "exposureGainMode")
         {
-            SceneScanParameters::AutoMode mode = (SceneScanParameters::AutoMode) val->getVal<int>();
+            DeviceParameters::AutoMode mode = (DeviceParameters::AutoMode) val->getVal<int>();
             try
             {
                 m_pParamsObj->setAutoMode(mode);
@@ -748,7 +748,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         }
         else if (key == "autoTargetFrame")
         {
-            SceneScanParameters::TargetFrame frame = (SceneScanParameters::TargetFrame) val->getVal<int>();
+            DeviceParameters::TargetFrame frame = (DeviceParameters::TargetFrame) val->getVal<int>();
             try {
                 m_pParamsObj->setAutoTargetFrame(frame);
             }
@@ -947,7 +947,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         {
             int enable = val->getVal<int>();
             try {
-                m_pParamsObj->setSaveAutoReclabration(enable == 0 ? false : true);
+                m_pParamsObj->setSaveAutoRecalibration(enable == 0 ? false : true);
             }
             catch (const std::exception& ex)
             {
