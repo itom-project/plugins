@@ -35,7 +35,6 @@ if(FAULHABER_MOMANLIB_ROOT)
         ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
         ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
-        ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${FAULHABER_MOMANLIB_INCLUDE_DIR}
     )
 
@@ -81,13 +80,11 @@ if(FAULHABER_MOMANLIB_ROOT)
 
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-
     target_link_libraries(${target_name}
         ${ITOM_SDK_LIBRARIES}
         ${QT5_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         )
-
 
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
     itom_library_translation(
@@ -95,7 +92,6 @@ if(FAULHABER_MOMANLIB_ROOT)
         TARGET ${target_name}
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
-
 
     itom_configure_plugin_documentation(${target_name} FaulhaberMCS)
 

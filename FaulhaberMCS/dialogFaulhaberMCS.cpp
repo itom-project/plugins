@@ -28,6 +28,8 @@
 #include <qsharedpointer.h>
 #include <qvector.h>
 
+#include "paramEditorWidget.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogFaulhaberMCS::DialogFaulhaberMCS(ito::AddInActuator* actuator) :
     AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pluginPointer(actuator)
@@ -37,7 +39,7 @@ DialogFaulhaberMCS::DialogFaulhaberMCS(ito::AddInActuator* actuator) :
     // disable dialog, since no parameters are known yet. Parameters will immediately be sent by the
     // slot parametersChanged.
     enableDialog(false);
-    ui.ParamEditorWidget->setPlugin(m_pluginPointer);
+    ui.paramEditor->setPlugin(m_pluginPointer);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -74,20 +76,8 @@ void DialogFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogFaulhaberMCS::applyParameters()
 {
-    ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase>> values;
-    bool success = false;
-
-    // foreach widget, do:
-    //    check if the current value of the widget is different than the corresponding
-    //    parameter in m_currentParameters.
-    //    If so, write something like:
-    //    values.append(QSharedPointer<ito::ParamBase>(new
-    //    ito::ParamBase("name",ito::ParamBase::Int, newValue)))
-
-    retValue += setPluginParameters(values, msgLevelWarningAndError);
-
-    return retValue;
+    QVector<QSharedPointer<ito::ParamBase>> values = ui.paramEditor->getAndResetChangedParameters();
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -114,4 +104,5 @@ void DialogFaulhaberMCS::on_buttonBox_clicked(QAbstractButton* btn)
 //---------------------------------------------------------------------------------------------------------------------
 void DialogFaulhaberMCS::enableDialog(bool enabled)
 {
+    ui.paramEditor->setEnabled(enabled);
 }

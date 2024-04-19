@@ -21,10 +21,11 @@
 *********************************************************************** */
 
 #include "dockWidgetFaulhaberMCS.h"
+#include "motorAxisController.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetFaulhaberMCS::DockWidgetFaulhaberMCS(ito::AddInActuator* actuator) :
-    AbstractAddInDockWidget(actuator), m_inEditing(false), m_firstRun(true)
+    AbstractAddInDockWidget(actuator), m_pActuator(actuator), m_inEditing(false), m_firstRun(true)
 {
     ui.setupUi(this);
 }
@@ -43,7 +44,7 @@ void DockWidgetFaulhaberMCS::identifierChanged(const QString& identifier)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetFaulhaberMCS::enableWidget(bool enabled)
 {
-    ui.MotorAxisController->setEnabled(enabled);
+    ui.axisController->setEnabled(enabled);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,10 +54,10 @@ void DockWidgetFaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
     {
         // to connect the signals
         QPointer<ito::AddInActuator> actuator(m_pActuator);
-        ui.MotorAxisController->setActuator(actuator);
+        ui.axisController->setActuator(actuator);
     }
     else
     {
-        ui.MotorAxisController->setActuator(QPointer<ito::AddInActuator>());
+        ui.axisController->setActuator(QPointer<ito::AddInActuator>());
     }
 }

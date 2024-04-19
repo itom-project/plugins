@@ -41,9 +41,12 @@ public:
     ~DockWidgetFaulhaberMCS(){};
 
 private:
-    void enableWidget(bool enabled);
     Ui::DockWidgetFaulhaberMCS ui; //! Handle to the ui
+
+    void enableWidget(bool enabled);
+
     ito::AddInActuator* m_pActuator;
+
     bool m_inEditing;
     bool m_firstRun;
 
