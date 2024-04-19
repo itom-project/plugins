@@ -130,7 +130,7 @@ Compilation
 ===========
 
 In order to compile this plugin, download the latest GenICam(TM) GenApi reference implementation from http://www.emva.org/standards-technology/genicam/genicam-downloads/.
-Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.0**).
+Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.1.1**).
 Open the Zip File and extract the **SDK** archive to a location of your licking ** (e.g. C:/Genicam/SDK).
 Open the Zip File and extract the **Release-Runtime** archive-sourcess to the same location.
 
@@ -223,7 +223,7 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using GenICam GenAPI 3.1.0
 * itom setup 4.0.0: This plugin has been compiled using GenICam GenAPI 3.2.0
 * itom setup 4.1.0: This plugin has been compiled using GenICam GenAPI 3.2.0
-* itom setup 4.3.0: This plugin has been compiled using GenICam GenAPI 3.4.0
+* itom setup 4.3.0: This plugin has been compiled using GenICam GenAPI 3.4.1.1
 
 Workaround
 ==========

@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 project(ISO5436_2)
 
 option(BUILD_X3P_ISO5436_SHARED "Build ISO5436-XML library as shared library (default: ON)." ON)

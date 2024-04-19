@@ -167,4 +167,8 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 ==========
 
-* v0.1.1: Fix bug of timeout during ``setPosAbs``.* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* itom setup 4.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.23;
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* Fix bug of timeout during ``setPosAbs``.* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.

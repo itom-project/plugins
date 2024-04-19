@@ -56,10 +56,10 @@ Compilation
 ===============
 
 This plugin requires the 3rd party libary CodeSynthesis XSD 3.3.0. which can be downloaded from:
-https://www.codesynthesis.com/products/xsd/
+https://www.codesynthesis.com/products/xsd/download.xhtml
 Other versions are not officially supported by the underlying x3p library (see www.opengps.eu), but XSD 4.0 also works (with the bugfix mentioned below).
-Please install CodeSynthesis XSD 3.3.0 or CodeSynthesis XSD 4.0.0 and indicate XSD_ROOT environment variable
-to the base directory of CodeSynthesis (e.g. C:\Program Files (x86)\CodeSynthesis XSD 4.0).
+Please install CodeSynthesis XSD 3.3.0 or CodeSynthesis XSD 4.0.0 and indicate **XSD_ROOT** environment variable
+to the base directory of C (e.g. C:\Program Files (x86)\CodeSynthesis XSD 4.0).
 All necessary system path information should then automatically be found.
 
 If not the Cmake **XERCESC_INCLUDE_DIR** variable must then point to the include directory.
