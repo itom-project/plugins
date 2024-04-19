@@ -5,23 +5,23 @@
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
 
-#ifndef MYACTUATOR_H
-#define MYACTUATOR_H
+#ifndef THORLABSDMH_H
+#define THORLABSDMH_H
 
 #include "common/addInInterface.h"
 #include <qsharedpointer.h>
-#include "dialogMyActuator.h"
+#include "dialogThorlabsDMH.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyActuatorInterface
+  *\class    ThorlabsDMHInterface
   *
-  *\brief    Interface-Class for MyActuator-Class
+  *\brief    Interface-Class for ThorlabsDMH-Class
   *
-  *    \sa    AddInActuator, MyActuator
+  *    \sa    AddInActuator, ThorlabsDMH
   *
   */
-class MyActuatorInterface : public ito::AddInInterfaceBase
+class ThorlabsDMHInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
@@ -29,8 +29,8 @@ class MyActuatorInterface : public ito::AddInInterfaceBase
     PLUGIN_ITOM_API
 
     public:
-        MyActuatorInterface();
-        ~MyActuatorInterface();
+        ThorlabsDMHInterface();
+        ~ThorlabsDMHInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:
@@ -40,21 +40,21 @@ class MyActuatorInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyActuator
+  *\class    ThorlabsDMH
 
   */
-class MyActuator : public ito::AddInActuator
+class ThorlabsDMH : public ito::AddInActuator
 {
     Q_OBJECT
 
     protected:
         //! Destructor
-        ~MyActuator();
+        ~ThorlabsDMH();
         //! Constructor
-        MyActuator();
+        ThorlabsDMH();
 
     public:
-        friend class MyActuatorInterface;
+        friend class ThorlabsDMHInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
@@ -96,4 +96,4 @@ class MyActuator : public ito::AddInActuator
         void dockWidgetVisibilityChanged(bool visible);
 };
 
-#endif // MYACTUATOR_H
+#endif // THORLABSDMH_H

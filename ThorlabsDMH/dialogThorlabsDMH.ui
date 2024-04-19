@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogMyActuator</class>
- <widget class="QDialog" name="DialogMyActuator">
+ <class>DialogThorlabsDMH</class>
+ <widget class="QDialog" name="DialogThorlabsDMH">
   <property name="geometry">
    <rect>
     <x>0</x>
