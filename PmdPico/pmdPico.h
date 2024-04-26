@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "PmdPico" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -116,7 +116,7 @@ class PmdPico : public ito::AddInGrabber
         ito::RetVal getCapturingState(bool &state) const;
         ito::RetVal updateParamsFromImage();
         ito::RetVal copyDataToBuffer();
-        char* bufferPtr;//this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
+        char* bufferPtr;//this can be a pointer holding the image array from the camera. This buffer is then copyd to the dataObject m_data (defined in AddInGrabber)
 
 
     private:

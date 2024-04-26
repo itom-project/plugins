@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "V4L2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -29,7 +29,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "libv4lconvert.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -181,7 +181,7 @@ V4L2::~V4L2()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Method to set and update data informations
+// Method to set and update data information
 ito::RetVal V4L2::checkCameraAbilities()
 {
     bool camRetVal = false;
@@ -226,7 +226,7 @@ ito::RetVal V4L2::checkCameraAbilities()
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -267,7 +267,7 @@ ito::RetVal V4L2::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -401,7 +401,7 @@ ito::RetVal V4L2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
     }
     else //valid m_deviceID
     {
-        //set the active device -> this is then accesible via  m_pDL.m_device
+        //set the active device -> this is then accessible via  m_pDL.m_device
         retValue +=m_pDL.set_active_dev(m_deviceID);
         QString deviceName = m_pDL.m_device.m_dev_name;
         if (deviceName == "Empty")
@@ -1041,7 +1041,7 @@ ito::RetVal V4L2::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

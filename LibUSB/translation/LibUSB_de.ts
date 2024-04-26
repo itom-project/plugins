@@ -177,13 +177,13 @@
     <name>ItomUSBDeviceInterface</name>
     <message>
         <location line="-676"/>
-        <source>itom-plugin for a usb port communication</source>
+        <source>itom-plugin for a usb port commonication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
-It can be used by plugins for communication analog to the serial port.
+It can be used by plugins for commonication analog to the serial port.
 The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.
 
 To connect to a device you need the vendor id and the product id.
@@ -203,7 +203,7 @@ The setVal and getVal functions will write and read on the specified endpoint.</
     </message>
     <message>
         <location line="+2"/>
-        <source>The endpoint to communicate with.</source>
+        <source>The endpoint to commonicate with.</source>
         <translation type="unfinished">Der &apos;Endpoint&apos; für die Kommunikation.</translation>
     </message>
     <message>
@@ -242,7 +242,7 @@ The setVal and getVal functions will write and read on the specified endpoint.</
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

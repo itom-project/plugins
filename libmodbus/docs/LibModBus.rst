@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`LibModBus`
 **License**:    :pluginlicense:`LibModBus`
 **Platforms**:  Windows, Linux
-**Devices**:    Modbus communication over TCP/IP and RTU
+**Devices**:    Modbus commonication over TCP/IP and RTU
 **Author**:     :pluginauthor:`LibModBus`
 =============== ========================================================================================================
 
@@ -46,32 +46,32 @@ parameters can be changed using *setParam*.
     IP-Address of the connected Modbus-TCP device or serial port for Modbus-RTU connection. Under Windows COM1-COM9 is supported, unix-based systems should use /dev/ttyS0.. or /dev/ttyUSB0..
 
 **port**: {int}, read-only
-    port used for IP communication or device ID for ModbusRTU
+    port used for IP commonication or device ID for ModbusRTU
 
 **baud**: {int}, read-only
-    The baudrate of the port for RTU communication
+    The baudrate of the port for RTU commonication
 
 **parity**: {str}, read-only
-    Parity for RTU communication (N->None, E->Even, O->Odd)
+    Parity for RTU commonication (N->None, E->Even, O->Odd)
 
 **databit**: {int}, read-only
-    Number of bits to be written in line for RTU communication
+    Number of bits to be written in line for RTU commonication
 
 **stopbit**: {int}, read-only
-    Stop bits after every n bits for RTU communication
+    Stop bits after every n bits for RTU commonication
 
 **output_mode**: {bool}
     if output_mode is true, multiple outputs will be sent to command line, e.g. register values of getVal function. Default is false
 
 **registers**: {str}
     fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function.
-    *registers* needs to be stored with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
+    *registers* needs to be stored with address and number of consecutive registers separated by ',' and different registers separated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
 
 
 Usage
 =====
 
-Values can be read or written via modbus communication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1,
+Values can be read or written via modbus commonication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1,
 the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj must be initialized as 'uint16' for modbus register values.
 To read or write coils, dObj must be initialized as 'uint8' as the decision for using read/write coil or read/write register only depends on the data type of the input data object.
 

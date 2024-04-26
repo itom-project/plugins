@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "LibModBus" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -25,7 +25,7 @@
 
 #include "LibModBus.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -60,23 +60,23 @@ LibModBusInterface::LibModBusInterface()
     m_type = ito::typeDataIO | ito::typeADDA;
     setObjectName("LibModBus");
 
-    m_description = tr("itom-plugin for a modbus communication");
+    m_description = tr("itom-plugin for a modbus commonication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
-The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers separated by ',' and different registers separated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr(
-"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
-The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers separated by ',' and different registers separated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.");
 
     m_author = "J.Nitsche, IPROM, TU Braunschweig";
@@ -86,20 +86,20 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_license = QObject::tr("licensed under GPL, since the libmodbus is also licensed under GPL");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
+    ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Address of the target device. IP-Address for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);
     m_initParamsMand.append(paramVal);
 
     paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU commonication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU commonication (N,E,O)").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[N,P,O]{1}"), true);
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU commonication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU commonication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -135,17 +135,17 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LibModBus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("target", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress or COM-Port of the target device").toLatin1().data());
+    paramVal = ito::Param("target", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Address or COM-Port of the target device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModbusTCP or slave ID for ModbusRTU").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU commonication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU commonication (N,E,O)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU commonication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU commonication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -472,7 +472,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
             {
                 regContent = registers.getVal_ToString().data();
             }
-            else                                                    // Register Adress taken from m_params as default fallback
+            else                                                    // Register Address taken from m_params as default fallback
             {
                 char* regchar = m_params["registers"].getVal<char*>();
                 regContent = QString(QLatin1String(regchar));
@@ -603,7 +603,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
             {
                 regContent = registers.getVal_ToString().data();
             }
-            else                                                    // Register Adress taken from m_params as default fallback
+            else                                                    // Register Address taken from m_params as default fallback
             {
                 char* regchar = m_params["registers"].getVal<char*>();
                 regContent = QString(QLatin1String(regchar));

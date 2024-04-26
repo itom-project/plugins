@@ -420,7 +420,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin allows communicating with controllers of type A3200 of company Aerotech.
+        <source>This plugin allows commonicating with controllers of type A3200 of company Aerotech.
 For details please check C:\A3200\MANUAL.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +527,7 @@ For details please check C:\A3200\MANUAL.</source>
     <name>ito::AddInBase</name>
     <message>
         <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Diese Funktion wurde im Plugin nicht benutzt</translation>
+        <translation type="obsolete">Diese Function wurde im Plugin nicht benutzt</translation>
     </message>
 </context>
 <context>

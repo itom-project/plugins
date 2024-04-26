@@ -29,7 +29,7 @@ Usually, the next free camera is opened by *camera_id* = 0. If you want to selec
 Then set *camera_id* to the desired camera ID (range 1..254).
 
 In the changelog below, you can see which uEye driver has been used to compile this plugin for several setup versions of itom. In order to
-guarantee a full working plugin, you should have the same driver installed on your computer. Else, a warning will be displayed at startup telling
+guarantee a full working plugin, you should have the same driver installed on your computer. Else, a warning will be displaid at startup telling
 that some faults may occur. Usually, the compatibility is given, if the major version number and the ten-digit of the minor is equal, e.g. 4.80 and 4.81 are compatible.
 
 Support for Thorlabs cameras
@@ -122,13 +122,13 @@ need to install any DirectShow or ActiveX components as well as additional drive
 Under linux, simply install the drivers from the IDS website. After an successful installation, the header file *ueye.h* and the library file is installed
 to the default directories under linux. The CMakeLists.txt file of this itom plugin will then automatically detect these files and compile the plugin.
 
-Acquisiton of image sequences
-==============================
+Acquisition of image sequences
+===============================
 
 If the number of buffers (num_buffer) is set to a value greater than 1, a sequence of images will be acquired with the acquire()-function (without frameloss). The sequence
 is retrieved by getVal() as usual, but the obtained dataObject will be 3D. The number of planes corresponds to the amount of images in the sequence (i.e. the number of buffers).
 Please be aware that the necessary memory for the sequence will be allocated and there is no dynamic limitation of the parameter. Choosing a high value for the number of buffers
-might crash the program, if the sytems memory is insufficient.
+might crash the program, if the systems memory is insufficient.
 
 Known problems
 ===============

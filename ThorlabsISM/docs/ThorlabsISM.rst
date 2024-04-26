@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **accel**: {float}
     Target acceleration in °/s^2 (travelMode == 2) or mm/s^2 (travelMode == 1)
 **async**: {int}
-    asychronous (1) or synchronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **deviceName**: {str}, read-only
     Description of the device
 **enabled**: {int}
@@ -79,7 +79,7 @@ driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
+The required libraries from Kinesis will automatically be copyd to the *lib* folder of itom.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 
@@ -95,4 +95,3 @@ Changelog
 * itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
 * itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
 * itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.
-

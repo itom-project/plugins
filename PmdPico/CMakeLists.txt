@@ -20,7 +20,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(PmdPico_ROYALE_DIR "" CACHE PATH "path to the install directory of Royale (e.g. C:/Program Files/royale/3.8.0.35) ")
 
 if(NOT PmdPico_ROYALE_DIR)
-	set(PmdPico_ROYALE_DIR $ENV{PMD_ROYALE_ROOT})
+    set(PmdPico_ROYALE_DIR $ENV{PMD_ROYALE_ROOT})
 endif(NOT PmdPico_ROYALE_DIR)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -81,7 +81,7 @@ set(PLUGIN_UI
 )
 
 set(PLUGIN_RCC
-    #add absolute pathes to any *.qrc resource files here
+    #add absolute paths to any *.qrc resource files here
 )
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

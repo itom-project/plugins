@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "BasicFilters" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -165,7 +165,7 @@ template<typename _Tp> ito::RetVal doLabeling(ito::DataObject *img, const double
                     */
                     pixPtr[y * lstep + x] = lbl1;
 
-                    labelPtr[0][(ito::int32)lbl1] = x;        // Label l1 als verwendet markieren
+                    labelPtr[0][(ito::int32)lbl1] = x;        // Label l1 marked as used
                     labelPtr[1][(ito::int32)lbl1] = y;
                 }
             }
@@ -492,7 +492,7 @@ ito::RetVal BasicFilters::labelingParams(QVector<ito::Param> *paramsMand, QVecto
         param = ito::Param("labelList", ito::ParamBase::DObjPtr, NULL, tr("list of found labels").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("invalids", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("inavlid pixels").toLatin1().data());
+        param = ito::Param("invalids", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("invalid pixels").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -707,7 +707,7 @@ template<typename _Tp> inline ito::float64 subPixEdgeFalling(_Tp *imgPtr, ito::i
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    find centers of ellipses in an image. A previous labeling of the ellipses is neccessary.
+*    find centers of ellipses in an image. A previous labeling of the ellipses is necessary.
 */
 
 ito::RetVal BasicFilters::findEllipsesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
@@ -742,7 +742,7 @@ ito::RetVal BasicFilters::findEllipsesParams(QVector<ito::Param> *paramsMand, QV
 *    @param [in]    paramsMand    mandatory parameters for cimap calculation
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
-*    find centers of ellipses in an image. A previous labeling of the ellipses is neccessary.
+*    find centers of ellipses in an image. A previous labeling of the ellipses is necessary.
 */
 ito::RetVal BasicFilters::findEllipses(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {

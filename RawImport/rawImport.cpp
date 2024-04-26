@@ -151,7 +151,7 @@ ito::RetVal RawImport::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling loadRawImage copied form the template "filterParams" and modified
+/** parameters for calling loadRawImage copyd form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
 *

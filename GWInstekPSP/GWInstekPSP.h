@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GWInstekPSP" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    GWInstekPSP
-  *\brief    This class can be used to communicate with PSP-405, PSP-603 and PSP-2010
+  *\brief    This class can be used to commonicate with PSP-405, PSP-603 and PSP-2010
   *
   *         This class can be used to work with PSP-405, PSP-603 and PSP-2010.
   *            This system needs a serial port which following settings:

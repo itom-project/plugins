@@ -2,7 +2,7 @@
     Plugin "x3pio" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -71,7 +71,7 @@
 using namespace OpenGPS::Schemas::ISO5436_2;
 
 /*!
-  @brief Helper function to return the current time properly formated.
+  @brief Helper function to return the current time properly formatted.
 
   @return A string containing the time stamp from now.
 
@@ -333,7 +333,7 @@ ito::RetVal parseLastOpenGpsError(const QString &prefix)
             case OGPS_ExNone:
                 break;
 
-            /*! A failure condition occured, but it has not been specified in detail. */
+            /*! A failure condition occurred, but it has not been specified in detail. */
             case OGPS_ExGeneral:
             /*! The value of at least one of the parameters passed to a function is invalid in the current context. */
             case OGPS_ExInvalidArgument:
@@ -341,7 +341,7 @@ ito::RetVal parseLastOpenGpsError(const QString &prefix)
             case OGPS_ExInvalidOperation:
             /*! A specific implementation of an interface does not implement this operation. */
             case OGPS_ExNotImplemented:
-            /*! An overflow occured. There is no guarantee of the integrity of further processing steps. */
+            /*! An overflow occurred. There is no guarantee of the integrity of further processing steps. */
             case OGPS_ExOverflow:
                 return ito::RetVal::format(ito::retError, 0, "%s%s", prefix.toLatin1().data(), message.toLatin1().data());
                 break;
@@ -1014,7 +1014,7 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         retval += parseUnit(unitString, valueUnitScale);
     }
 
-    // for simplicity we will store always as 2D data, even for vetor type data. X- and y-axis will
+    // for simplicity we will store always as 2D data, even for vector type data. X- and y-axis will
     // always be stored as incremental axes
     // Create RECORD1
     Record1Type::Revision_type revision(OGPS_ISO5436_2000_REVISION_NAME);

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "BasicGPLFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 3 of the Licence, or (at
     your option) any later version.
 
-    This plugin contains code and algorithms inspired or copied from other open
+    This plugin contains code and algorithms inspired or copyd from other open
     source projects under GNU General Public Licence, e.g.
 
         - GIMP 2.8 under GPL version 3.0 or higher
@@ -193,7 +193,7 @@ ito::RetVal BasicGPLFilters::close(ItomSharedSemaphore * /*waitCond*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Filter parameter for the despeckle algorithm
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
-   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[in|out]   paramsOpt   Optional parameters for the filter function
    \param[out]   outVals   Outputvalues, not implemented for this function
    \author W. Lyda, twip-os
    \date 04.2014
@@ -266,7 +266,7 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
         histogram.ymax = ymax;
         add_vals<_Tp>(filterSettings, histogram, src, cvMatIn->cols, histogram.xmin, histogram.ymin, histogram.xmax, histogram.ymax);
 
-        // iterate through all colums
+        // iterate through all columns
         for (x = 0; x < cvMatIn->cols; x++)
         {
             const ito::uint8 *pixel;
@@ -280,7 +280,7 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
             // update currently used histogramm to new kernel
             update_histogram<_Tp>(filterSettings, histogram, src, cvMatIn->cols, xmin, ymin, xmax, ymax);
 
-            // get the current source and destination position relativ to first pixel within the row
+            // get the current source and destination position relative to first pixel within the row
             pos = (x + y * cvMatIn->cols)* sizeof(_Tp);
             //pos = x * sizeof(_Tp);
 
@@ -310,7 +310,7 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Filter function wrapper for the despeckle algorithm
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
-   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[in|out]   paramsOpt   Optional parameters for the filter function
    \param[out]      paramsOut   Outputvalues, not implemented for this function
    \author W. Lyda, twip-os
    \date 04.2014
@@ -329,7 +329,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     // If input is equal to output, we need a temporary dataobject
     bool createdNewObject = false;
 
-    // Check wether source object is of right type and size abd a 2D plane object and return error if not
+    // Check whether source object is of right type and size abd a 2D plane object and return error if not
     retval += ito::dObjHelper::verify2DDataObject(dObjIn, "dObjIn", 1, std::numeric_limits<ito::uint16>::max(), 1, std::numeric_limits<ito::uint16>::max(),
                                                                     3, ito::tUInt8, ito::tUInt16, ito::tRGBA32);
     if (retval.containsError())
@@ -341,7 +341,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     int xsize = dObjIn->getSize(1);
     int ysize = dObjIn->getSize(0);
 
-    // check wether output object is of right type and size
+    // check whether output object is of right type and size
     ito::RetVal rettemp = ito::dObjHelper::verify2DDataObject(dObjDst, "dObjDst", ysize, ysize, xsize, xsize, 1, dObjIn->getType());
     if (rettemp.containsError() || dObjIn == dObjDst) // or if both dataObjects are the same
     {
@@ -376,7 +376,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     DespeckleSettings filterSettings;
     memset(&filterSettings, 0, sizeof(DespeckleSettings));
 
-    // The additional filter params are copied to the settings struct
+    // The additional filter params are copyd to the settings struct
     filterSettings.radiusMax    = (*paramsOpt)[2].getVal<int>();
     filterSettings.adaptRadius  = (*paramsOpt)[3].getVal<int>() == 1 ? true : false;
     filterSettings.blackLevel   = (*paramsOpt)[0].getVal<double>();

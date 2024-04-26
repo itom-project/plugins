@@ -193,7 +193,7 @@
 <context>
     <name>ItomCyUSBInterface</name>
     <message>
-        <source>itom-plugin for a usb port communication</source>
+        <source>itom-plugin for a usb port commonication</source>
         <translation type="vanished">itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
     <message>
@@ -205,7 +205,7 @@
         <translation type="obsolete">Die Produkt-ID des Geräts für die Verbindung</translation>
     </message>
     <message>
-        <source>The endpoint to communicate with.</source>
+        <source>The endpoint to commonicate with.</source>
         <translation type="obsolete">Der &apos;Endpoint&apos; für die Kommunikation.</translation>
     </message>
     <message>
@@ -226,13 +226,13 @@
     </message>
     <message>
         <location line="-698"/>
-        <source>itom-plugin for a USB port communication with Cypress Semiconductor USB chips.</source>
+        <source>itom-plugin for a USB port commonication with Cypress Semiconductor USB chips.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>ItomCyUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
-It can be used by plugins for communication analog to the USB port.
+It can be used by plugins for commonication analog to the USB port.
 The plugin is implemented for Window.
 
 To connect to a device you need the vendor ID and the product ID.
@@ -259,7 +259,7 @@ The setVal and getVal functions will write and read on the specified endpoint.
     </message>
     <message>
         <location line="+2"/>
-        <source>If true, all communication commands are printed to the dockWidget.</source>
+        <source>If true, all commonication commands are printed to the dockWidget.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -277,7 +277,7 @@ The setVal and getVal functions will write and read on the specified endpoint.
     </message>
     <message>
         <location line="+1"/>
-        <source>This plugin can be used for raw / lowlevel communication with USB-devices</source>
+        <source>This plugin can be used for raw / lowlevel commonication with USB-devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -289,7 +289,7 @@ The setVal and getVal functions will write and read on the specified endpoint.
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

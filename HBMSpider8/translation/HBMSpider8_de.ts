@@ -199,9 +199,9 @@
     </message>
     <message>
         <source>Parameter value out of range:
-	channel: %1 [0 ... 7]
-	mode: %2 [0 ... 3]
-	level: %3 [-32769 ... 32767]
+    channel: %1 [0 ... 7]
+    mode: %2 [0 ... 3]
+    level: %3 [-32769 ... 32767]
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -493,12 +493,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Warning occured while starting read task.
+        <source>Warning occurred while starting read task.
  Code: %i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error occured while starting read task.
+        <source>Error occurred while starting read task.
  Code: %i</source>
         <translation type="unfinished"></translation>
     </message>
@@ -519,7 +519,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The digital read mode is not supported yet, because an external clock source is neccesary</source>
+        <source>The digital read mode is not supported yet, because an external clock source is necessary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

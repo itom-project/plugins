@@ -3,8 +3,8 @@
 
     The fftw-plugin for itom is a wrapper for the FFTW package.
     The FFTW package was developed at MIT by Matteo Frigo and Steven G.
-    Johnson. It was published unter GNU General Public License and
-    can be downloaded unter http://www.fftw.org/.
+    Johnson. It was published under GNU General Public License and
+    can be downloaded under http://www.fftw.org/.
 
     The fftw-plugin is a free software: you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -81,7 +81,7 @@ FFTWFiltersInterface::FFTWFiltersInterface()
 - 2D inverse FFT (over the last two axes)\n\
 \n\
 The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
-It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
+It was published under GNU General Public License and can be downloaded under http://www.fftw.org/ .\n\
 \n\
 To build this plugin you will need the libs from the fftw.");
 
@@ -108,7 +108,7 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Parameters for fftw filter
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \author ITO, Boettcher
 \date
@@ -1099,7 +1099,7 @@ FFTWFilters::~FFTWFilters()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Parameters for fftw filter
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
-   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[in|out]   paramsOpt   Optional parameters for the filter function
    \param[out]   outVals   Outputvalues, not implemented for this function
    \author ITO, Boettcher
    \date
@@ -1140,7 +1140,7 @@ In short, if your program performs many transforms of the same size and initiali
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Parameters for fftw filter
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \author ITO, Boettcher
 \date
@@ -1196,7 +1196,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
+Meta and axes information are copyd to the output object. Only properties of the chosen axis are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1235,7 +1235,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
+Meta and axes information are copyd to the output object. Only properties of the chosen axis are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1275,7 +1275,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
+Meta and axes information are copyd to the output object. Only properties of the last two axes are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1314,7 +1314,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
+Meta and axes information are copyd to the output object. Only properties of the last two axes are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -2776,7 +2776,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         if (dObj_out->getType() == ito::tFloat64)
         {
-            // inplace is possilbe
+            // inplace is possible
             rough_out = *dObj_out;
         }
         else
@@ -3080,7 +3080,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Get the mandatory parameters "DataObject",
    \param[out]   paramsMand  Mandatory parameters for the filter function
-   \param[out]   paramsOpt   Optinal parameters for the filter function :
+   \param[out]   paramsOpt   Optional parameters for the filter function :
    \author ITO, Boettcher
    \sa  mcppfilters::calcGaussianFilterRough1D
    \date
@@ -3110,9 +3110,9 @@ ito::RetVal FFTWFilters::getGaussianRough1DParams(QVector<ito::Param> *paramsMan
     paramsOpt->append(param);
     param = ito::Param("lambda_s", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Short wavelength to filter").toLatin1().data());
     paramsOpt->append(param);
-    param = ito::Param("lambda_c", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Wavelength to seperate between roughness and waviness").toLatin1().data());
+    param = ito::Param("lambda_c", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Wavelength to separate between roughness and waviness").toLatin1().data());
     paramsOpt->append(param);
-    param = ito::Param("lambda_f", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Wavelength to seperate between waviness and form").toLatin1().data());
+    param = ito::Param("lambda_f", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Wavelength to separate between waviness and form").toLatin1().data());
     paramsOpt->append(param);
     param = ito::Param("DataObject_waviness_out", ito::ParamBase::DObjPtr, NULL, tr("see Algorithm-Doc").toLatin1().data());
     paramsOpt->append(param);

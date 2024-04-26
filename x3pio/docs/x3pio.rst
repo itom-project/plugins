@@ -55,7 +55,7 @@ Detailed overview about all defined filters:
 Compilation
 ===============
 
-This plugin requires the 3rd party libary CodeSynthesis XSD 3.3.0. which can be downloaded from:
+This plugin requires the 3rd party library CodeSynthesis XSD 3.3.0. which can be downloaded from:
 https://www.codesynthesis.com/products/xsd/download.xhtml
 Other versions are not officially supported by the underlying x3p library (see www.opengps.eu), but XSD 4.0 also works (with the bugfix mentioned below).
 Please install CodeSynthesis XSD 3.3.0 or CodeSynthesis XSD 4.0.0 and indicate **XSD_ROOT** environment variable
@@ -65,13 +65,13 @@ All necessary system path information should then automatically be found.
 If not the Cmake **XERCESC_INCLUDE_DIR** variable must then point to the include directory.
 The variables **XERCESC_LIBRARY**, **XERCESC_LIBRARY_DEBUG** should then be automatically found.
 
-After compilation, the following libraries and files are copied into the lib path of itom:
+After compilation, the following libraries and files are copyd into the lib path of itom:
 
 * iso5436-2.xsd
 * iso5436-2-xml.dll (x3p library)
 * xerces-c_3_1_vc100.dll (library from CodeSynthesis XSD)
 
-Since the xerces library is copied to the lib folder, CodeSynthesis must not be included into the Path environment variable. Therefore you can uncheck
+Since the xerces library is copyd to the lib folder, CodeSynthesis must not be included into the Path environment variable. Therefore you can uncheck
 the corresponding option in the setup of CodeSynthesis.
 
 If there is a problem with the compilation, saying that the option cxx-tree is not available within xsd.exe, then you should check the variable **XSD_EXECUTABLE**.
@@ -82,7 +82,7 @@ If xsd could not be found, set **XSD_ROOT_DIR** to the base directory of CodeSyn
 Bugfix for CodeSynthesis XSD 4.0.0
 =====================================
 
-If you get a compiler error telling that DOMDocument is an ambigious symbol (conflict with Windows SDK), then you need to change two lines in xsd/cxx/tree/serialization.txx:
+If you get a compiler error telling that DOMDocument is an ambiguous symbol (conflict with Windows SDK), then you need to change two lines in xsd/cxx/tree/serialization.txx:
 
 .. code-block:: c++
 

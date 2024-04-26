@@ -13,7 +13,7 @@
     <name>PiezosystemJena_NV40_1</name>
     <message>
         <location filename="../piezosystemJena_NV40_1.cpp" line="+95"/>
-        <source>asychronous (1) or synchronous (0) mode</source>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -151,7 +151,7 @@
     <name>PiezosystemJena_NV40_1Interface</name>
     <message>
         <location line="-1084"/>
-        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right commoncation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -164,7 +164,7 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.
+        <source>The PiezosystemJena is an itom-plugin, which can be used to commonicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.
 This system needs a serial port. The parameters are set automatically during initialization.
 It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance).</source>
         <translation type="unfinished"></translation>
@@ -324,7 +324,7 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
     </message>
     <message>
         <location line="+15"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

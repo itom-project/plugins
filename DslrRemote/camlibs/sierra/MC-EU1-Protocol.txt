@@ -72,7 +72,7 @@ Send                             	Receive				Informations
 					0x86
 
 0x9B, 0x01, 0x7F, 0x7F							Release the shutter button,
-									usefull in bulb mode
+									useful in bulb mode
 
 					0x8F
 

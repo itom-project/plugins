@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -60,7 +60,7 @@ CVBInterface::CVBInterface(QObject *parent)
  via the Stemmer configuration tool. If a bitdepth > 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file \n\
  from Stemmer GenICam and don't set the pixelFormat property to auto but Mono16. \n\
  \n\
- In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
+ In case of a slow connection, check the commonication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
  \n\
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.";
     m_detaildescription = tr(docstring);*/
@@ -72,7 +72,7 @@ CVBInterface::CVBInterface(QObject *parent)
  via the Stemmer configuration tool. If a bitdepth > 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file \n\
  from Stemmer GenICam and don't set the pixelFormat property to auto but Mono16. \n\
  \n\
- In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
+ In case of a slow connection, check the commonication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
  \n\
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.");
 

@@ -173,7 +173,7 @@
     </message>
     <message>
         <location line="+12"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

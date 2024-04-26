@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "limits": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "functional": "c",
+        "list": "cpp",
+        "xlocale": "cpp",
+        "bitset": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "map": "cpp",
+        "unordered_map": "cpp"
+    }
+}

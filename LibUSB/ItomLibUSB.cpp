@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ItomUSBDevice" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "ItomLibUSB.h"
 #include "dockWidgetLibUSB.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -67,20 +67,20 @@ ItomUSBDeviceInterface::ItomUSBDeviceInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("LibUSB");
 
-    m_description = tr("itom-plugin for a usb port communication");
+    m_description = tr("itom-plugin for a usb port commonication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for commonication analog to the serial port.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\
 The setVal and getVal functions will write and read on the specified endpoint.";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr(
-"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for commonication analog to the serial port.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\
@@ -97,7 +97,7 @@ The setVal and getVal functions will write and read on the specified endpoint.")
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toLatin1().data());
+    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to commonicate with.").toLatin1().data());
     m_initParamsMand.append(paramVal);
 
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());

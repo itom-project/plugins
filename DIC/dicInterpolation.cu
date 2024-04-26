@@ -182,106 +182,106 @@ __global__ void d_interpolBiCu(const float* __restrict__ pts, int numPts,
         float DXY1 = dxyp[sIdx1 * step + fIdx1 + 1];
         float DXY2 = dxyp[(sIdx1 + 1) * step + fIdx1];
         float DXY3 = dxyp[(sIdx1 + 1) * step + fIdx1 + 1];
-        coeffVec[0] = BMatBiCu0	* I0;
-        coeffVec[1] = BMatBiCu20	* DX0;
-        coeffVec[2] = BMatBiCu32	* I0
-            + BMatBiCu33	* I1
-            + BMatBiCu36	* DX0
-            + BMatBiCu37	* DX1;
-        coeffVec[3] = BMatBiCu48	* I0
-            + BMatBiCu49	* I1
-            + BMatBiCu52	* DX0
-            + BMatBiCu53	* DX1;
-        coeffVec[4] = BMatBiCu72	* DY0;
-        coeffVec[5] = BMatBiCu92	* DXY0;
-        coeffVec[6] = BMatBiCu104	* DY0
-            + BMatBiCu105	* DY1
-            + BMatBiCu108	* DXY0
-            + BMatBiCu109	* DXY1;
-        coeffVec[7] = BMatBiCu120	* DY0
-            + BMatBiCu121	* DY1
-            + BMatBiCu124	* DXY0
-            + BMatBiCu125	* DXY1;
-        coeffVec[8] = BMatBiCu128	* I0
-            + BMatBiCu130	* I2
-            + BMatBiCu136	* DY0
-            + BMatBiCu138	* DY2;
-        coeffVec[9] = BMatBiCu148	* DX0
-            + BMatBiCu150	* DX2
-            + BMatBiCu156	* DXY0
-            + BMatBiCu158	* DXY2;
-        coeffVec[10] = BMatBiCu160	* I0
-            + BMatBiCu161	* I1
-            + BMatBiCu162	* I2
-            + BMatBiCu163	* I3
-            + BMatBiCu164	* DX0
-            + BMatBiCu165	* DX1
-            + BMatBiCu166	* DX2
-            + BMatBiCu167	* DX3
-            + BMatBiCu168	* DY0
-            + BMatBiCu169	* DY1
-            + BMatBiCu170	* DY2
-            + BMatBiCu171	* DY3
-            + BMatBiCu172	* DXY0
-            + BMatBiCu173	* DXY1
-            + BMatBiCu174	* DXY2
-            + BMatBiCu175	* DXY3;
-        coeffVec[11] = BMatBiCu176	* I0
-            + BMatBiCu177	* I1
-            + BMatBiCu178	* I2
-            + BMatBiCu179	* I3
-            + BMatBiCu180	* DX0
-            + BMatBiCu181	* DX1
-            + BMatBiCu182	* DX2
-            + BMatBiCu183	* DX3
-            + BMatBiCu184	* DY0
-            + BMatBiCu185	* DY1
-            + BMatBiCu186	* DY2
-            + BMatBiCu187	* DY3
-            + BMatBiCu188	* DXY0
-            + BMatBiCu189	* DXY1
-            + BMatBiCu190	* DXY2
-            + BMatBiCu191	* DXY3;
-        coeffVec[12] = BMatBiCu192	* I0
-            + BMatBiCu194	* I2
-            + BMatBiCu200	* DY0
-            + BMatBiCu202	* DY2;
-        coeffVec[13] = BMatBiCu212	* DX0
-            + BMatBiCu214	* DX2
-            + BMatBiCu220	* DXY0
-            + BMatBiCu222	* DXY2;
-        coeffVec[14] = BMatBiCu224	* I0
-            + BMatBiCu225	* I1
-            + BMatBiCu226	* I2
-            + BMatBiCu227	* I3
-            + BMatBiCu228	* DX0
-            + BMatBiCu229	* DX1
-            + BMatBiCu230	* DX2
-            + BMatBiCu231	* DX3
-            + BMatBiCu232	* DY0
-            + BMatBiCu233	* DY1
-            + BMatBiCu234	* DY2
-            + BMatBiCu235	* DY3
-            + BMatBiCu236	* DXY0
-            + BMatBiCu237	* DXY1
-            + BMatBiCu238	* DXY2
-            + BMatBiCu239	* DXY3;
-        coeffVec[15] = BMatBiCu240	* I0
-            + BMatBiCu241	* I1
-            + BMatBiCu242	* I2
-            + BMatBiCu243	* I3
-            + BMatBiCu244	* DX0
-            + BMatBiCu245	* DX1
-            + BMatBiCu246	* DX2
-            + BMatBiCu247	* DX3
-            + BMatBiCu248	* DY0
-            + BMatBiCu249	* DY1
-            + BMatBiCu250	* DY2
-            + BMatBiCu251	* DY3
-            + BMatBiCu252	* DXY0
-            + BMatBiCu253	* DXY1
-            + BMatBiCu254	* DXY2
-            + BMatBiCu255	* DXY3;
+        coeffVec[0] = BMatBiCu0    * I0;
+        coeffVec[1] = BMatBiCu20    * DX0;
+        coeffVec[2] = BMatBiCu32    * I0
+            + BMatBiCu33    * I1
+            + BMatBiCu36    * DX0
+            + BMatBiCu37    * DX1;
+        coeffVec[3] = BMatBiCu48    * I0
+            + BMatBiCu49    * I1
+            + BMatBiCu52    * DX0
+            + BMatBiCu53    * DX1;
+        coeffVec[4] = BMatBiCu72    * DY0;
+        coeffVec[5] = BMatBiCu92    * DXY0;
+        coeffVec[6] = BMatBiCu104    * DY0
+            + BMatBiCu105    * DY1
+            + BMatBiCu108    * DXY0
+            + BMatBiCu109    * DXY1;
+        coeffVec[7] = BMatBiCu120    * DY0
+            + BMatBiCu121    * DY1
+            + BMatBiCu124    * DXY0
+            + BMatBiCu125    * DXY1;
+        coeffVec[8] = BMatBiCu128    * I0
+            + BMatBiCu130    * I2
+            + BMatBiCu136    * DY0
+            + BMatBiCu138    * DY2;
+        coeffVec[9] = BMatBiCu148    * DX0
+            + BMatBiCu150    * DX2
+            + BMatBiCu156    * DXY0
+            + BMatBiCu158    * DXY2;
+        coeffVec[10] = BMatBiCu160    * I0
+            + BMatBiCu161    * I1
+            + BMatBiCu162    * I2
+            + BMatBiCu163    * I3
+            + BMatBiCu164    * DX0
+            + BMatBiCu165    * DX1
+            + BMatBiCu166    * DX2
+            + BMatBiCu167    * DX3
+            + BMatBiCu168    * DY0
+            + BMatBiCu169    * DY1
+            + BMatBiCu170    * DY2
+            + BMatBiCu171    * DY3
+            + BMatBiCu172    * DXY0
+            + BMatBiCu173    * DXY1
+            + BMatBiCu174    * DXY2
+            + BMatBiCu175    * DXY3;
+        coeffVec[11] = BMatBiCu176    * I0
+            + BMatBiCu177    * I1
+            + BMatBiCu178    * I2
+            + BMatBiCu179    * I3
+            + BMatBiCu180    * DX0
+            + BMatBiCu181    * DX1
+            + BMatBiCu182    * DX2
+            + BMatBiCu183    * DX3
+            + BMatBiCu184    * DY0
+            + BMatBiCu185    * DY1
+            + BMatBiCu186    * DY2
+            + BMatBiCu187    * DY3
+            + BMatBiCu188    * DXY0
+            + BMatBiCu189    * DXY1
+            + BMatBiCu190    * DXY2
+            + BMatBiCu191    * DXY3;
+        coeffVec[12] = BMatBiCu192    * I0
+            + BMatBiCu194    * I2
+            + BMatBiCu200    * DY0
+            + BMatBiCu202    * DY2;
+        coeffVec[13] = BMatBiCu212    * DX0
+            + BMatBiCu214    * DX2
+            + BMatBiCu220    * DXY0
+            + BMatBiCu222    * DXY2;
+        coeffVec[14] = BMatBiCu224    * I0
+            + BMatBiCu225    * I1
+            + BMatBiCu226    * I2
+            + BMatBiCu227    * I3
+            + BMatBiCu228    * DX0
+            + BMatBiCu229    * DX1
+            + BMatBiCu230    * DX2
+            + BMatBiCu231    * DX3
+            + BMatBiCu232    * DY0
+            + BMatBiCu233    * DY1
+            + BMatBiCu234    * DY2
+            + BMatBiCu235    * DY3
+            + BMatBiCu236    * DXY0
+            + BMatBiCu237    * DXY1
+            + BMatBiCu238    * DXY2
+            + BMatBiCu239    * DXY3;
+        coeffVec[15] = BMatBiCu240    * I0
+            + BMatBiCu241    * I1
+            + BMatBiCu242    * I2
+            + BMatBiCu243    * I3
+            + BMatBiCu244    * DX0
+            + BMatBiCu245    * DX1
+            + BMatBiCu246    * DX2
+            + BMatBiCu247    * DX3
+            + BMatBiCu248    * DY0
+            + BMatBiCu249    * DY1
+            + BMatBiCu250    * DY2
+            + BMatBiCu251    * DY3
+            + BMatBiCu252    * DXY0
+            + BMatBiCu253    * DXY1
+            + BMatBiCu254    * DXY2
+            + BMatBiCu255    * DXY3;
 
         intensVals[ptId * 3] = coeffVec[0] + coeffVec[1] * t + coeffVec[2] * t2 + coeffVec[3] * t3
             + coeffVec[4] * h + coeffVec[5] * h * t + coeffVec[6] * h * t2 + coeffVec[7] * h * t3

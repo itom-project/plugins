@@ -25,7 +25,7 @@
         <item row="3" column="0">
          <widget class="QCheckBox" name="checkAsync">
           <property name="text">
-           <string>Asychronous</string>
+           <string>Asynchronous</string>
           </property>
          </widget>
         </item>

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -1401,7 +1401,7 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
     This method returns a reference to the recently acquired NiDAQmx data. Therefore this data must fit into the data structure of the
     DataObject.
 
-    This method returns a reference to the internal dataObject m_data of the NiDAQmx device where the currently acquired data is copied to (either
+    This method returns a reference to the internal dataObject m_data of the NiDAQmx device where the currently acquired data is copyd to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a set of data is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the NiDAQmx device.
@@ -1459,9 +1459,9 @@ ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     This method copies the recently grabbed NiDAQmx device data to the given DataObject.
 
     The given dataObject must either have an empty size (then it is resized to the size and type of the NiDAQmx device data) or its size or adjusted region of
-    interest must exactly fit to the size of the NiDAQmx device data. Then, the acquired data is copied inside of the given region of interest.
+    interest must exactly fit to the size of the NiDAQmx device data. Then, the acquired data is copyd inside of the given region of interest.
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is NiDAQmx device has not been started or no data has been acquired by the method acquire.
 
@@ -1763,7 +1763,7 @@ void NiDAQmx::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -2061,7 +2061,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// not supported yet, because an external clock source is neccesary, marc: todo: similar to readAnalog
+// not supported yet, because an external clock source is necessary, marc: todo: similar to readAnalog
 ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
 {
     // right now I only support 8 line Ports! Some devices have 16 or 32 lines per port!

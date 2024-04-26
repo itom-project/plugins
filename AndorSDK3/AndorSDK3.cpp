@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -126,7 +126,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("readout_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, std::numeric_limits<double>::max(), 0.0, tr("time to readout data from the sensor in the current configuration (0.0 if not implemented)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sensor_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("current temperature of sensor in �C (inf if not implemented)").toLatin1().data());
+    paramVal = ito::Param("sensor_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("current temperature of sensor in �C (inf if not implemented)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sensor_cooling", ito::ParamBase::Int, 0, 1, 0, tr("state of the sensor cooling. Cooling is disabled (0) by default at power up and must be enabled (1) for the camera to achieve its target temperature.").toLatin1().data());
@@ -191,7 +191,7 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (iNumberDevices <= 0)
         {
             retVal += ito::RetVal(ito::retError, 0, "no Andor SDK3 compatible cameras have been detected at this computer. Check all redistributable binaries \
-                                                    have been copied to the executable directory or are in the system path and check atdebug.log file");
+                                                    have been copyd to the executable directory or are in the system path and check atdebug.log file");
         }
     }
 
@@ -363,11 +363,11 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
         if (key == "readout_time")
         {
             AT_BOOL implemented;
-			AT_BOOL writable = false;
+            AT_BOOL writable = false;
             retValue = checkError(AT_IsImplemented(m_handle, L"ReadoutTime", &implemented));
             if (!retValue.containsError() && implemented)
             {
-				checkError(AT_IsWritable(m_handle, L"ReadoutTime", &writable));
+                checkError(AT_IsWritable(m_handle, L"ReadoutTime", &writable));
                 double dval;
                 it->setFlags(writable ? 0 : ito::ParamBase::Readonly);
                 retValue += checkError(AT_GetFloat(m_handle, L"ReadoutTime", &dval));
@@ -381,11 +381,11 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
         else if (key == "sensor_temperature")
         {
             AT_BOOL implemented;
-			AT_BOOL writable = false;
+            AT_BOOL writable = false;
             retValue = checkError(AT_IsImplemented(m_handle, L"SensorTemperature", &implemented));
             if (!retValue.containsError() && implemented)
             {
-				checkError(AT_IsWritable(m_handle, L"SensorTemperature", &writable));
+                checkError(AT_IsWritable(m_handle, L"SensorTemperature", &writable));
                 double dval;
                 it->setFlags(writable ? 0 : ito::ParamBase::Readonly);
                 retValue += checkError(AT_GetFloat(m_handle, L"SensorTemperature", &dval));
@@ -469,8 +469,8 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 #endif
     }
 
-	int grabberStartedCounter = grabberStartedCount();
-	bool restartCamera = false;
+    int grabberStartedCounter = grabberStartedCount();
+    bool restartCamera = false;
 
     if (!retValue.containsError())
     {
@@ -525,12 +525,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
         else if (key == "integration_time")
         {
-			if (grabberStartedCounter > 0)
-			{
-				setGrabberStarted(1);
-				stopDevice(NULL);
-				restartCamera = true;
-			}
+            if (grabberStartedCounter > 0)
+            {
+                setGrabberStarted(1);
+                stopDevice(NULL);
+                restartCamera = true;
+            }
 
             double timeSec = val->getVal<double>();
             retValue += checkError(AT_SetFloat(m_handle, L"ExposureTime", timeSec));
@@ -674,12 +674,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
         else if (key == "pixel_readout_rate")
         {
-			if (grabberStartedCounter > 0)
-			{
-				setGrabberStarted(1);
-				stopDevice(NULL);
-				restartCamera = true;
-			}
+            if (grabberStartedCounter > 0)
+            {
+                setGrabberStarted(1);
+                stopDevice(NULL);
+                restartCamera = true;
+            }
 
             QString speed = val->getVal<char*>();
             AT_WC speed_[100];
@@ -735,11 +735,11 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             it->copyValueFrom(val.data());
         }
 
-		if (restartCamera)
-		{
-			retValue += startDevice(NULL);
-			setGrabberStarted(grabberStartedCounter);
-		}
+        if (restartCamera)
+        {
+            retValue += startDevice(NULL);
+            setGrabberStarted(grabberStartedCounter);
+        }
     }
 
     if (!retValue.containsError())
@@ -770,12 +770,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the AndorSDK3, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the AndorSDK3, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal AndorSDK3::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -821,7 +821,7 @@ ito::RetVal AndorSDK3::stopDevice(ItomSharedSemaphore *waitCond)
     if (grabberStartedCount() == 0)
     {
 #ifdef WIN32
-		Sleep(10);
+        Sleep(10);
 #endif
         retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
         retValue += checkError(AT_Flush(m_handle));
@@ -942,7 +942,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
@@ -987,7 +987,7 @@ ito::RetVal AndorSDK3::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
@@ -1162,7 +1162,7 @@ ito::RetVal AndorSDK3::checkError(const int &code)
     case AT_ERR_INVALIDALIGNMENT:
         return ito::RetVal(ito::retError, AT_ERR_INVALIDALIGNMENT, "A queued buffer was not aligned on an 8-byte boundary");
     case AT_ERR_COMM:
-        return ito::RetVal(ito::retError, AT_ERR_COMM, "An error has occurred while communicating with hardware");
+        return ito::RetVal(ito::retError, AT_ERR_COMM, "An error has occurred while commonicating with hardware");
     case AT_ERR_STRINGNOTAVAILABLE:
         return ito::RetVal(ito::retError, AT_ERR_STRINGNOTAVAILABLE, "Index / String is not available");
     case AT_ERR_STRINGNOTIMPLEMENTED:

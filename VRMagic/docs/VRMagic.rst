@@ -74,7 +74,7 @@ Parameters
 Installation
 =============
 
-The VRMagic software is deprectated and will not be supported beyond version 4.5.0 and is not
+The VRMagic software is deprecated and will not be supported beyond version 4.5.0 and is not
 officially available via the webpage https://www.vrmagic.com/ and granted on demand solely.
 
 Download the software and run the installation. Please note that the SDK library is not

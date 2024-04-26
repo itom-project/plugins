@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -161,7 +161,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ito::RetVal retValue(ito::retOk);
 
     VRmDWORD device_num = paramsOpt->at(0).getVal<int>(); // first parameter is device number
-    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second paramtert is port number of device
+    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second parametert is port number of device
 
     if (!retValue.containsError())
     {
@@ -366,7 +366,7 @@ ito::RetVal VRMagic::checkError(const VRmRetVal &error, const char* command /*= 
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -408,7 +408,7 @@ ito::RetVal VRMagic::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -826,7 +826,7 @@ ito::RetVal VRMagic::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no data has been acquired by the method acquire.
     \sa DataObject, acquire

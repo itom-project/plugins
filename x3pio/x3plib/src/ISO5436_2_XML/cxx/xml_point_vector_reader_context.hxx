@@ -49,7 +49,7 @@ namespace OpenGPS
    /*!
     * Specialized OpenGPS::PointVectorReaderContext for point vectors stored as list of strings.
     * Each string in the list represents one point vector. The values of the three coordinates
-    * are seperated either by free space or a semicolon. If a value of a coordinate needs
+    * are separated either by free space or a semicolon. If a value of a coordinate needs
     * not to be stored in the string because its corresponding axis has an incremental axis
     * definition the value is completely omittet, i.e. no semicolon is written either.
     * If there is an empty string in the list, it is recognised as an invalid 3d point measurement.

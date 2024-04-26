@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2022, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -27,7 +27,7 @@
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -81,7 +81,7 @@ and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Wi
 \n\
 Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p, BayerRG8. \n\
 In order to operate framegrabber-based cameras (CoaXPress, Camera Link) with this plugin, please read the additional information in the \n\
-documenation of this plugin. \n\
+documentation of this plugin. \n\
 \n\
 This plugin has been tested with the following cameras: \n\
 \n\
@@ -142,7 +142,7 @@ a list of all auto-detected vendors and models is returned.");
 
     paramVal = ito::Param("verbose", ito::ParamBase::Int, 0, VERBOSE_ALL, VERBOSE_ERROR,
         tr("verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, "
-            "3: print errors, warnings, informations, 4: debug, 5: all (gives even information "
+            "3: print errors, warnings, information, 4: debug, 5: all (gives even information "
             "about parameter changes or buffer states), higher: special debug values).").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
@@ -266,7 +266,7 @@ const ito::RetVal GenICamClass::showConfDialog(void)
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -306,7 +306,7 @@ ito::RetVal GenICamClass::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -725,7 +725,7 @@ ito::RetVal GenICamClass::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 //----------------------------------------------------------------------------------------------------------------------------------
 void GenICamClass::parameterChangedTimerFired()
 {
-    //this method is called if the m_parameterChangedTimer emits the timout signal.
+    //this method is called if the m_parameterChangedTimer emits the timeout signal.
     //This is always the case, if the GenTLDevice::onParameterChanged method
     //is fired for the 'last' time. Whenever an parameter of the camera is changed,
     //its change callback method is called. However, the change of one parameter
@@ -1399,7 +1399,7 @@ ito::RetVal GenICamClass::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

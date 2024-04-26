@@ -141,13 +141,13 @@
     <name>ItomHidApiInterface</name>
     <message>
         <location line="-348"/>
-        <source>itom-plugin for a usb HID API communication</source>
+        <source>itom-plugin for a usb HID API commonication</source>
         <translation type="unfinished">itom-Plugin zur Nutzung einer USB-HID-API-Kommunikation</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>HidApi is a plugin which gives direct/raw access to HID compliant devices (e.g. via USB).
-It can be used by plugins for communication analog to the serial port.
+It can be used by plugins for commonication analog to the serial port.
 The plugin is implemented for Windows, Linux and Mac.
 
 To connect to a device you need the vendor id and the product id.
@@ -159,7 +159,7 @@ Das Plugin wurde für Windows, Linux und Mac entwickelt.
 
 Für die Verbindung mit einem Gerät wird die Hersteller-ID und die Produkt-ID benötigt.
 
-Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die Funktionen.</translation>
+Die setVal- und getVal-Functionen lesen und schreiben über die Konsole oder die Functionen.</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -280,7 +280,7 @@ Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <source>itom-plugin for a usb port communication</source>
+        <source>itom-plugin for a usb port commonication</source>
         <translation type="vanished">itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
     <message>
@@ -292,7 +292,7 @@ Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die
         <translation type="obsolete">Die Produkt-ID des Geräts für die Verbindung</translation>
     </message>
     <message>
-        <source>The endpoint to communicate with.</source>
+        <source>The endpoint to commonicate with.</source>
         <translation type="obsolete">Der &apos;Endpoint&apos; für die Kommunikation.</translation>
     </message>
     <message>
@@ -328,7 +328,7 @@ Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

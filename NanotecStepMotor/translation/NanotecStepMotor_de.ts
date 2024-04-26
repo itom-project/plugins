@@ -222,7 +222,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asychronous (1) or sychronous (0) [default] mode</source>
+        <source>asynchronous (1) or sychronous (0) [default] mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -332,7 +332,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>NanotecStepMotor is an itom-plugin, which can be used to communicate with the Nanotec controllers SMCP.
+        <source>NanotecStepMotor is an itom-plugin, which can be used to commonicate with the Nanotec controllers SMCP.
 It has been tested with one connected controller SMCP33 and 4 axis.</source>
         <translation type="unfinished"></translation>
     </message>

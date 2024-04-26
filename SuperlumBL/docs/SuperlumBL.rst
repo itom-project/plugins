@@ -20,19 +20,19 @@ Overview
 Applications:
 
 -   Optical coherence tomography
--	Characterization of optical components
--	Optical fiber metrology
--	Optical measurement
+-    Characterization of optical components
+-    Optical fiber metrology
+-    Optical measurement
 
 
 Features(S840-B-I-20):
 
--	50nm Bandwidth
--	840nm Center wavelength
--	15mW ex fiber (single-mode)
--	Built-in optical isolator
--  	Powered directly from a wall outlet.
--  	RS-232 remote control capability.
+-    50nm Bandwidth
+-    840nm Center wavelength
+-    15mW ex fiber (single-mode)
+-    Built-in optical isolator
+-      Powered directly from a wall outlet.
+-      RS-232 remote control capability.
 
 
 Description (from www.superlumdiodes.com):
@@ -47,7 +47,7 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: SuperlumBL
 
-To communicate with the device, you need to perform the following settings for the serial port communication using the Plugin **SerialIO**.
+To commonicate with the device, you need to perform the following settings for the serial port commonication using the Plugin **SerialIO**.
 
 The parameter are as follow:
 
@@ -67,7 +67,7 @@ Then create a new instance of the plugin **SuperlumBL** using the instance of th
     serial = dataIO("SerialIO", COM-Port, Baudrate, endline="\r\n")
     bs = dataIO("SuperlumBL", serial, deviceName)
 
-After the initialization of the plugin **SuperlumBL** the remote communication is set. The plugin works only, if the **remote access** is available.
+After the initialization of the plugin **SuperlumBL** the remote commonication is set. The plugin works only, if the **remote access** is available.
 If the instance of **SuperlumBL** is deleted, the remote access is switched to the local mode.
 
 Parameters
@@ -84,7 +84,7 @@ parameters can be changed using *setParam*.
 **name**: {str}, read-only
     Name of plugin.
 **optical_output**: {int}
-    ( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.
+    ( 0 ) optical output is disabled, ( 1 ) optical output is enabled.
 **power_mode**: {int}
     ( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.
 **serial_number**: {str}, read-only
@@ -121,6 +121,6 @@ The parameters can be queried by using the function **getParam**.
 
 .. code-block:: python
 
-	>>bs.getParam("optical_output")
-	1
-	>>
+    >>bs.getParam("optical_output")
+    1
+    >>

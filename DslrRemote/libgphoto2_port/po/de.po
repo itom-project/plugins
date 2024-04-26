@@ -43,7 +43,7 @@ msgstr "Falsche Parameter"
 
 #: libgphoto2_port/gphoto2-port-result.c:66
 msgid "Unsupported operation"
-msgstr "Nicht unterstützte Funktion"
+msgstr "Nicht unterstützte Function"
 
 #: libgphoto2_port/gphoto2-port-result.c:68
 msgid "Fixed limit exceeded"
@@ -120,7 +120,7 @@ msgstr "Unbekannter Fehler"
 #: libgphoto2_port/gphoto2-port.c:59
 #, c-format
 msgid "The operation '%s' is not supported by this device"
-msgstr "Die Funktion »%s« wird von diesem Gerät nicht unterstützt."
+msgstr "Die Function »%s« wird von diesem Gerät nicht unterstützt."
 
 #: libgphoto2_port/gphoto2-port.c:60
 msgid "The port has not yet been initialized"
@@ -392,7 +392,7 @@ msgstr "Konnte SCSI Kommando nicht an »%s« senden (%m)"
 #~ msgstr "Konnte »%s« nicht laden (%s)."
 
 #~ msgid "Could not find some functions in '%s': '%s'."
-#~ msgstr "Konnte einige Funktionen nicht in '%s' finden: '%s'."
+#~ msgstr "Konnte einige Functionen nicht in '%s' finden: '%s'."
 
 #~ msgid "'%s' already loaded"
 #~ msgstr "'%s' bereits geladen"

@@ -192,7 +192,7 @@ The position values are always in mm if the corresponding axis is in closed-loop
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>asynchronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

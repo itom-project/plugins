@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -46,7 +46,7 @@ void DockWidgetST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     QString suffix;
     if (params["unit"].getVal<int>() == 0)
     {
-        suffix = QLatin1String(" �");
+        suffix = QLatin1String(" �");
     }
     else
     {

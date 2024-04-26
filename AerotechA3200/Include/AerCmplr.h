@@ -91,7 +91,7 @@ extern "C" {
 //  - Line/char numbers returned as NULL_INDEX indicate a NULL, or invalid number.
 //  - All functions that can fail, return a AERERR_CODE, which is AERERR_NOERR if
 //      the functions was succesful, else the return is one of the errors listed below.
-//  - Functions with "Get" in thier name write data into a location indicated by a passed
+//  - Functions with "Get" in their name write data into a location indicated by a passed
 //      pointer. If they return AERCMPLR_GENERAL_BAD_PASSED_BUFFER the pointer was found
 //      to be suspect. Do not use the pointer.
 //  - Error data consists of two parts, the error condition data, and error location data.

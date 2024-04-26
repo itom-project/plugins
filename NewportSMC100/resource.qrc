@@ -4,7 +4,7 @@
     </qresource>
 
     <qresource prefix="/widget">
-		  <file>run.png</file>
+          <file>run.png</file>
       <file>run_multi.png</file>
     </qresource>
 </RCC>

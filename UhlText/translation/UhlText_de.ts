@@ -95,7 +95,7 @@
     </message>
     <message>
         <location line="+19"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation>Absolute Positionierung</translation>
     </message>
     <message>
@@ -321,7 +321,7 @@
     <message>
         <location line="+5"/>
         <source>No executable function!</source>
-        <translation type="unfinished">Keine ausführbare Funktion!</translation>
+        <translation type="unfinished">Keine ausführbare Function!</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -361,7 +361,7 @@
     <message>
         <location line="+5"/>
         <source>Function is not configured!</source>
-        <translation type="unfinished">Diese Funktion ist nicht konfiguriert!</translation>
+        <translation type="unfinished">Diese Function ist nicht konfiguriert!</translation>
     </message>
     <message>
         <location line="+5"/>

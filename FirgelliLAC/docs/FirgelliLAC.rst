@@ -38,7 +38,7 @@ parameters can be changed using *setParam*.
 **accuracy**: {float}
     Accuracy in %; range: 0.0..100.0 %
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **device_id**: {str}, read-only
     Name of controller
 **device_num**: {int}, read-only

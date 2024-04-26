@@ -19,7 +19,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series.
+        <source>QuantumComposer is an itom-plugin to commonicate with the pulse generator 9520 series.
 
 This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin
 which is a mandatory input argument of the QuantumComposer plugin.

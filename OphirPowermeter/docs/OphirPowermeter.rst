@@ -109,7 +109,7 @@ plot is opened that displays a moving graph of recent intensity values:
 
         if plotHandle.exists():
             try:
-                plotHandle["source"] = image  # update the displayed image
+                plotHandle["source"] = image  # update the displaid image
             except:
                 pass
         else:

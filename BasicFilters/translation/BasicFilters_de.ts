@@ -51,7 +51,7 @@
     </message>
     <message>
         <location line="-1445"/>
-        <source>if 0 NaN values in input image will be copied to output image (default)</source>
+        <source>if 0 NaN values in input image will be copyd to output image (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1013,7 +1013,7 @@ with
 
 A = 1 / (2 * pi * sigmaX * sigmaY))
 
-The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation:
+The size of the kernel is adjusted such that the limit values in x- and y-direction fulfill the following inequation:
 
 f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) &gt;= epsilonX
 f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) &gt;= epsilonY

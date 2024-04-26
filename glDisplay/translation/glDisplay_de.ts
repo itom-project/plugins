@@ -206,7 +206,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Index of currently displayed image [0..)</source>
+        <source>Index of currently displaid image [0..)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -326,7 +326,7 @@
 Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually.
 OpenGL allows a fast switch between all created textures.
 
-Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available -
+Per default, the window is either displaid in a second screen (fullscreen) or if only one screen is available -
 placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize
 parameter at initialization.
 

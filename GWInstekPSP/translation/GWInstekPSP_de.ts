@@ -251,7 +251,7 @@
     </message>
     <message>
         <location line="+8"/>
-        <source>This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. Therefore an opened connected via the serial port (using the plugin &apos;SerialIO&apos;) is required. You need to give a valid handle to this instance when initializing this plugin.</source>
+        <source>This itom-plugin allows commonicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. Therefore an opened connected via the serial port (using the plugin &apos;SerialIO&apos;) is required. You need to give a valid handle to this instance when initializing this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

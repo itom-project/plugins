@@ -211,7 +211,7 @@
     <message>
         <location line="+8"/>
         <source>Endline character, will be looking for during getVal by using readline</source>
-        <translation>Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Funktion in getVal() gesucht wird</translation>
+        <translation>Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Function in getVal() gesucht wird</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -260,7 +260,7 @@
     </message>
     <message>
         <location line="+20"/>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation>Optionaler Parameter ist NULL</translation>
     </message>
     <message>
@@ -293,13 +293,13 @@
     <name>SerialIOInterface</name>
     <message>
         <location line="-147"/>
-        <source>itom-plugin for a serial port communication</source>
+        <source>itom-plugin for a serial port commonication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
-It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
+It is used by different plugins for commonication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.
 
 flow bitmask

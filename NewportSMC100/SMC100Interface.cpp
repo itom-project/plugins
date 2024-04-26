@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport SMC100" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -65,13 +65,13 @@ SMC100Interface::SMC100Interface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.\
+"NewportSMC100 is an itom-plugin, which can be used to commonicate with the Newport controllers SMC100CC and SMC100PP.\
 \n\
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization.";
     m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr(
-"NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.\
+"NewportSMC100 is an itom-plugin, which can be used to commonicate with the Newport controllers SMC100CC and SMC100PP.\
 \n\
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization.");
@@ -83,7 +83,7 @@ The parameters of the serial port (besides port number) are set automatically du
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right commoncation parameters will be set by this piezo-controller).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 

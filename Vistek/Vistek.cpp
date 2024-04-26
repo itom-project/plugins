@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Vistek" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -29,7 +29,7 @@
 
 #include "dialogVistek.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -119,7 +119,7 @@ Vistek::Vistek(QObject *parent) :
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String), true);
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("cameraIP", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("IP adress of the camera").toLatin1().data());
+    paramVal = ito::Param("cameraIP", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("IP address of the camera").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String), true);
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
@@ -167,7 +167,7 @@ Vistek::Vistek(QObject *parent) :
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("logLevel", ito::ParamBase::Int, 0, 7, 0, tr("Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback").toLatin1().data());
+    paramVal = ito::Param("logLevel", ito::ParamBase::Int, 0, 7, 0, tr("Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera commonication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback").toLatin1().data());
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -681,14 +681,14 @@ ito::RetVal Vistek::checkError(const char *prependStr, SVGigE_RETURN returnCode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! With startDevice the camera aquisition is started.
+//! With startDevice the camera acquisition is started.
 /*!
     This method sets the acquisition mode of the camera to software triggering.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return ito::RetVal retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return ito::RetVal retOk if starting was successful, retWarning if startDevice has been calling at least twice.
     \sa stopDevice
 */
 ito::RetVal Vistek::startDevice(ItomSharedSemaphore *waitCond)
@@ -853,7 +853,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This method copies the acquired image data to externalDataObject or m_data.
 /*!
-    If *externalDataObject is NULL then it will be reassigned to &m_data so the image data is copied to m_data instead.
+    If *externalDataObject is NULL then it will be reassigned to &m_data so the image data is copyd to m_data instead.
 
     \param [in] *externalDataObject is the data object where the image is to be stored. (Defaults to NULL)
     \return ito::RetVal retOk if everything is ok, retError if camera has not been started or no image has been acquired.
@@ -988,7 +988,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no data has been acquired by the method acquire.
     \sa DataObject, acquire, retrieveData
@@ -1034,7 +1034,7 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
@@ -1286,7 +1286,7 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
         retval += stopStreamAndDeleteCallbacks();
     }
 
-    //2. sychronize current settings of camera with m_params
+    //2. synchronize current settings of camera with m_params
     // Obtain geometry data
     int width, height;
     SVGigERet = Camera_getSizeX(m_cam, &width);
@@ -1395,7 +1395,7 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
                                         m_pVistekContainer->getCameraContainerHandle(),                 // a valid camera container client handle
                                         m_cam,                                                          // a valid camera handle
                                         m_numBuf,                                                              // buffer count 0 => 3 buffers (big buffer is necessary in order to avoid huge timeouts)
-                                        &DataCallback,                                                  // callback function pointer where datas are delivered to
+                                        &DataCallback,                                                  // callback function pointer where data are delivered to
                                         this);                                                          // current class pointer will be passed through as context
         }
         catch(std::bad_alloc &/*ba*/)

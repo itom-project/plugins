@@ -67,7 +67,7 @@ else(BUILD_TARGET64)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()

@@ -211,7 +211,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>if 0 infinite values in input image will be copied to output</source>
+        <source>if 0 infinite values in input image will be copyd to output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -38,7 +38,7 @@ endif()
 if(IDS_DEVELOP_DIRECTORY)
     if(WIN32)
         message(STATUS "IDS SDK is located in ${IDS_DEVELOP_DIRECTORY}")
-		find_path(IDS_INCLUDE_DIRECTORY
+        find_path(IDS_INCLUDE_DIRECTORY
         NAMES ueye.h
         PATHS "${IDS_DEVELOP_DIRECTORY}/include"
               "${IDS_DEVELOP_DIRECTORY}/IDS")
@@ -112,7 +112,7 @@ if(IDS_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -135,7 +135,7 @@ if(IDS_HEADER_FILE)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

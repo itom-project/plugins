@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -127,7 +127,7 @@ const QString BasicFilters::swapByteOrderDoc= QObject::tr("Swap byte order for i
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString BasicFilters::mergeColorPlaneDoc= QObject::tr("Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane. \n\
 \n\
-If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 \n\
+If second object is tInt32 and of right size in x and y, the stack object will be converted to tInt32. In all other cases the object will be tRGBA32 \n\
 \n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ NaN and Inf values are replaced as well (floating point data objects only). This
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString BasicFilters::fillGeometricDoc = QObject::tr("fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value\n\
 \n\
-Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to \
+Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitive within (1) or outside (2) or both (3) to \
 the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitive.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ ito::RetVal BasicFilters::close(ItomSharedSemaphore * /*waitCond*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
-   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[in|out]   paramsOpt   Optional parameters for the filter function
    \param[out]   outVals   Outputvalues, not implemented for this function
    \author ITO
    \date

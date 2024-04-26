@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -66,7 +66,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/crop_box.h>
-#include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
+#include "random_sample_corrected.h" //corrected version for erroneous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
 #if PCL_VERSION_COMPARE(>, 1, 7, 0) && PCL_VERSION_COMPARE(<, 1, 10, 0)
@@ -679,7 +679,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
                     }
                     else
                     {
-                        retval += ito::RetVal(ito::retError, 0, tr("The loaded point cloud has an uncompatible format.").toLatin1().data());
+                        retval += ito::RetVal(ito::retError, 0, tr("The loaded point cloud has an incompatible format.").toLatin1().data());
                         pc = ito::PCLPointCloud(ito::pclInvalid);
                     }
                 }
@@ -732,7 +732,7 @@ This file format allows displaying volume data from the given 3D data object for
     opt1.setMeta(sm, true);
     paramsOpt->append(opt1);
 
-    paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displayed)...").toLatin1().data()));
+    paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displaid)...").toLatin1().data()));
     paramsOpt->append(ito::Param("scalarThreshold", ito::ParamBase::Int, 0, std::numeric_limits<ito::uint16>::max(), 0, tr("values <= threshold will be set to 0 (transparent values for scalar field name 'scalars')").toLatin1().data()));
 
     return retval;
@@ -1583,7 +1583,7 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
                 }
                 ne.compute(*normals);
 
-                retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copyd to the output point cloud [not supported]").toLatin1().data());
                 pcl::concatenateFields(rgbCloud, *normals, *(pclOut->toPointXYZRGBNormal()));
             }
             break;
@@ -1991,7 +1991,7 @@ const QString PclTools::pclPassThroughDOC = QObject::tr("\n\
 //------------------------------------------------------------------------------------------------------------------------------
 const QString PclTools::pclCropBoxDOC = QObject::tr("pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
 \n\
-Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to \n\
+Indicate the minimum and maximum values in x,y and z direction for the box and optionally translate and rotate the box to \n\
 adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3623,7 +3623,7 @@ const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygon mesh").toLatin1().data()));
-    paramsMand->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("vector with indices of polygons that will be copied into output mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("vector with indices of polygons that will be copyd into output mesh").toLatin1().data()));
 
     return retval;
 }

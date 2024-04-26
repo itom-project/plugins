@@ -35,7 +35,7 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*.
 
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **channel**: {seq. of int}, read-only
     Channel number of each axis.
 **controlMode**: {seq. of int}
@@ -100,7 +100,7 @@ driver package in the same bit-version than itom (32/64bit).
 It has been implemented using KINESIS version 1.14.32.
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
+The required libraries from Kinesis will automatically be copyd to the *lib* folder of itom.
 Do not use Kinesis 1.6.0 or below for compiling this plugin.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.

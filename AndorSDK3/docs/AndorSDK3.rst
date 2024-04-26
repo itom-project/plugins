@@ -90,7 +90,7 @@ Register as a user and Download the ANDOR SDK3.
 Enter your product details comprising the Product Model and Serial Number to request access to the SDK:
 
 The Andor SDK should be found via the default installation path (e.g. C:/Program Files/Andor SDK3).
-If not, pease the environmental variable **ANDOR_SDK_ROOT** accordingly.
+If not, place the environmental variable **ANDOR_SDK_ROOT** accordingly.
 
 
 Changelog

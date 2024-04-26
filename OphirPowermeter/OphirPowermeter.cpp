@@ -1,4 +1,4 @@
-﻿
+
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut f�r Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -100,7 +100,7 @@ Download page: https://www.ophiropt.com/laser--measurement/software/com-object")
         "serial",
         ito::ParamBase::HWRef | ito::ParamBase::In,
         NULL,
-        tr("An opened serial port (the right communication parameters will be set by this plugin).")
+        tr("An opened serial port (the right commonication parameters will be set by this plugin).")
             .toLatin1()
             .data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
@@ -551,7 +551,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());
@@ -605,7 +605,7 @@ ito::RetVal OphirPowermeter::init(
                     retval += ito::RetVal(
                         ito::retError,
                         0,
-                        tr("Cound not read instrument serial number.").toLatin1().data());
+                        tr("Could not read instrument serial number.").toLatin1().data());
                 }
 
                 if (!retval.containsError())
@@ -663,7 +663,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());
@@ -717,7 +717,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());

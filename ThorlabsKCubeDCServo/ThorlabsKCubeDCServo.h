@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ThorlabsISM" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -145,22 +145,22 @@ public slots:
         QSharedPointer<QVector<double>> pos,
         ItomSharedSemaphore* waitCond);
 
-    //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis=0 else
+    //! Set an absolute position and go there. Waits if m_async=0. Calls SMCSetPos of axis=0 else
     //! ito::retError
     ito::RetVal setPosAbs(
         const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
 
-    //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 &&
+    //! Set an absolute position and go there. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 &&
     //! axis.size()=1 else ito::retError
     ito::RetVal setPosAbs(
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
-    //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos
+    //! Set a relative offset of current position and go there. Waits if m_async=0. Calls SMCSetPos
     //! of axis=0 else ito::retError
     ito::RetVal setPosRel(
         const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
 
-    //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos
+    //! Set a relative offset of current position and go there. Waits if m_async=0. Calls SMCSetPos
     //! of axis[0]=0 && axis.size()=1 else ito::retError
     ito::RetVal setPosRel(
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);

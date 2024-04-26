@@ -34,8 +34,8 @@ An instance of this plugin has the following internal parameters:
     AerotechEnsemble
 **controller**: {str}, read-only
     name of the connected controller
-**communication**: {str}, read-only
-    type of the communication (USB, Ethernet)
+**commonication**: {str}, read-only
+    type of the commonication (USB, Ethernet)
 **libraryVersion**: {str}, read-only
     Version of the Ensemble C library
 **async**: {int}

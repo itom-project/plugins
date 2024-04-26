@@ -54,7 +54,7 @@ set(PLUGIN_HEADERS
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibModBus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-    #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(PLUGIN_SOURCES
@@ -74,7 +74,7 @@ set(PLUGIN_UI
 )
 
 set(PLUGIN_RCC
-    #add absolute pathes to any *.qrc resource files here
+    #add absolute paths to any *.qrc resource files here
 )
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})

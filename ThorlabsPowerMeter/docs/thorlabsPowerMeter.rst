@@ -33,7 +33,7 @@ Parameters
 **attenuation**: {float}
     attenuation [db]
 **auto_range**: {int}
-     shows if the auto power range is wether on (1) or off(2)
+     shows if the auto power range is whether on (1) or off(2)
 **average_number**: {int}
     defines the number of measurements to be averaged
 **bandwidth**: {int}
@@ -41,7 +41,7 @@ Parameters
 **calibration_message**: {str}, read-only
     calibration message
 **dark_offset**: {float}, read-only
-    setted dark offset [unknown]
+    set dark offset [unknown]
 **device_name**: {str}, read-only
     device name
 **firmware_revision**: {str}, read-only
@@ -91,7 +91,7 @@ to the install directory of Thorlabs PM100D Visa (e.g. C:/Program Files/IVI Foun
 
 Cmake should automatically detect the latest API Version installed and use it appropriately.
 
-The user can set legacy versions if neede by setting the Cmake variable **THORLABS_POWER_METER_API_VERSION** either to "1.0.2"
+The user can set legacy versions if needed by setting the Cmake variable **THORLABS_POWER_METER_API_VERSION** either to "1.0.2"
 or  "1.1.0" if needed.
 
 .. note::
@@ -128,7 +128,7 @@ plot is opened that displays a moving graph of recent intensity values:
 
         if plot_handle.exists():
             try:
-                plot_handle["source"] = image #update the displayed image
+                plot_handle["source"] = image #update the displaid image
             except:
                 pass
         else:

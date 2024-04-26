@@ -197,7 +197,7 @@
     </message>
     <message>
         <location filename="../SMC100Interface.cpp" line="73"/>
-        <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
+        <source>NewportSMC100 is an itom-plugin, which can be used to commonicate with the Newport controllers SMC100CC and SMC100PP.
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -226,14 +226,14 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     </message>
     <message>
         <location filename="../SMC100.cpp" line="91"/>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>asynchronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../SMC100.cpp" line="93"/>
         <location filename="../SMC100.cpp" line="95"/>
         <location filename="../SMC100.cpp" line="99"/>
-        <source>Calibration / Homing mode for each axis for further information refer to datasheet command HT</source>
+        <source>Calibration / Homing mode for each axis for further information refer to dataheet command HT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -311,7 +311,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     </message>
     <message>
         <location filename="../SMC100.cpp" line="1172"/>
-        <source>Array size doesn�t match the number of axis</source>
+        <source>Array size doesn't match the number of axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -459,7 +459,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     <name>SMC100Interface</name>
     <message>
         <location filename="../SMC100Interface.cpp" line="86"/>
-        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right commoncation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

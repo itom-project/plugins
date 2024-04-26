@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "demoAlgorithms" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -117,7 +117,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoMoveActuator,
         DemoAlgorithms::demoMoveActuatorParams,
-        tr("Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes "
+        tr("Demo algorithm (I) for plugin-developers - actuator commonication. Moves selected axes "
            "of an actuator."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -125,7 +125,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoSnapImage,
         DemoAlgorithms::demoSnapImageParams,
-        tr("Demo algorithm (II) for plugin-developers - camera communication. Snaps a single "
+        tr("Demo algorithm (II) for plugin-developers - camera commonication. Snaps a single "
            "image."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -133,7 +133,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoSnapMovie,
         DemoAlgorithms::demoSnapMovieParams,
-        tr("Demo algorithm (III) for plugin-developers - camera communication. Snaps a number of "
+        tr("Demo algorithm (III) for plugin-developers - camera commonication. Snaps a number of "
            "images to a stack."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -141,7 +141,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoTestActuator,
         DemoAlgorithms::demoTestActuatorParams,
-        tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis "
+        tr("Demo algorithm (IV) for plugin-developers - actuator commonication. Moves first axis "
            "of an actuator several time to test the actuator performance."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -249,16 +249,16 @@ QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
         //mandatory
         param = ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, "description");
         // Optional comment: if the param is a dataObject and it IS NOT modified but only input
-please use ito::ParamBase::DObjPtr | ito::ParamBase::In to the type for automatic documentaton
+please use ito::ParamBase::DObjPtr | ito::ParamBase::In to the type for automatic documentation
         // Optional comment: if the param is a dataObject and it IS modifiedif input + output add
-ito::ParamBase::DObjPtr | ito::ParamBase::In | | ito::ParamBase::Out for automatic documentaton
+ito::ParamBase::DObjPtr | ito::ParamBase::In | | ito::ParamBase::Out for automatic documentation
         paramsMand->append(param);
         param = ito::Param("doubleValue", ito::ParamBase::Double, 0.0, 65535.0, 10.0, "double value
 between 0.0 and 65535.0, default: 10.0"); paramsMand->append(param);
 
         //optional
         //param = ito::Param("integerValue", ito::ParamBase::Int, 0, 65535, 65535, "integer value
-beween 0 and 65535, default: 65535");
+between 0 and 65535, default: 65535");
         //paramsOpt->append(param);
     }
 
@@ -311,7 +311,7 @@ ito::RetVal DemoAlgorithms::dialogParams(
 
         // optional
         /*param = ito::Param("integerValue", ito::ParamBase::Int, 0, 65535, 65535, "integer value
-        beween 0 and 65535, default: 65535"); paramsOpt->append(param);*/
+        between 0 and 65535, default: 65535"); paramsOpt->append(param);*/
     }
 
     return retval;
@@ -320,7 +320,7 @@ ito::RetVal DemoAlgorithms::dialogParams(
 //----------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoMoveActuator copied form the template "filterParams" and modified
+/** parameters for calling demoMoveActuator copyd form the template "filterParams" and modified
  *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
  *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
  *
@@ -431,7 +431,7 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoSnapImage copied form the template "filterParams" and modified
+/** parameters for calling demoSnapImage copyd form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
 *
@@ -583,14 +583,14 @@ ito::RetVal DemoAlgorithms::demoSnapImage(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoSnapMovie copied form the template "filterParams" and modified
+/** parameters for calling demoSnapMovie copyd form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
 *
 *    mand. Params:
 *        - myCamera  --> Handle to the Camera
 *       - Movie     --> Empty object, will contain 3D image stack later
-*       - images    --> Number of images to aquire
+*       - images    --> Number of images to acquire
 *
 *   opt. Params: NONE
 
@@ -620,7 +620,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovieParams(
             0,
             1000000,
             1,
-            tr("Number of images to aquire").toLatin1().data());
+            tr("Number of images to acquire").toLatin1().data());
         paramsMand->append(param);
         paramsOpt->clear();
     }
@@ -707,14 +707,14 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(
                 1); // set a ROI of movie handled by dObj
 
             retval += myCamera.acquire(0);
-            if (retval.containsError()) // Stop of error occures no
+            if (retval.containsError()) // Stop of error occurs no
             {
                 break;
             }
 
             retval += myCamera.copyVal(
                 dObj); // Direct DeepCopy the image from grabber to the roi of movie (dObj)
-            if (retval.containsError()) // Stop of error occures no
+            if (retval.containsError()) // Stop of error occurs no
             {
                 break;
             }
@@ -723,7 +723,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(
 
     endtime = (double)(cv::getTickCount()) / cv::getTickFrequency();
 
-    retval += myCamera.stopDevice(); // Stop of error occures no
+    retval += myCamera.stopDevice(); // Stop of error occurs no
     std::cout << "\nAcquire: overall\t" << endtime - middletime << "\n";
 
     if (!retval.containsError())
@@ -737,7 +737,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoTestActuator copied form the template "filterParams" and modified
+/** parameters for calling demoTestActuator copyd form the template "filterParams" and modified
  *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
  *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
  *

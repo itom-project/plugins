@@ -28,22 +28,22 @@
     <name>DemoAlgorithms</name>
     <message>
         <location filename="../demoAlgorithms.cpp" line="+120"/>
-        <source>Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes of an actuator.</source>
+        <source>Demo algorithm (I) for plugin-developers - actuator commonication. Moves selected axes of an actuator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Demo algorithm (II) for plugin-developers - camera communication. Snaps a single image.</source>
+        <source>Demo algorithm (II) for plugin-developers - camera commonication. Snaps a single image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Demo algorithm (III) for plugin-developers - camera communication. Snaps a number of images to a stack.</source>
+        <source>Demo algorithm (III) for plugin-developers - camera commonication. Snaps a number of images to a stack.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance.</source>
+        <source>Demo algorithm (IV) for plugin-developers - actuator commonication. Moves first axis of an actuator several time to test the actuator performance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

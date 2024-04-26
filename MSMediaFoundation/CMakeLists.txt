@@ -64,7 +64,7 @@ if (WINDOWSSDK_FOUND)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     set(PLUGIN_SOURCES
@@ -82,7 +82,7 @@ if (WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoInput.cpp
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if (MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif ()

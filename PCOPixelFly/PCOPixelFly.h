@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PcoPixelFly" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -38,7 +38,7 @@
   *\class    PCOPixelFly
   *\brief    class to use a PCO Pixelfly QE CCD as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
-  *         This class can be used to work with a PCO Pixelfly QE CCD. It grabbes datas with 8 or 12 Bit.
+  *         This class can be used to work with a PCO Pixelfly QE CCD. It grabbes data with 8 or 12 Bit.
   *            The camera driver "pccam.dll" has to be installed in the system32-directory and the "pcocnv.dll" has to be in a subfolder .\PCO in the plugin directory
   *
   *    \sa    AddInDataIO, DummyGrabber
@@ -86,7 +86,7 @@ class PCOPixelFly : public ito::AddInGrabber
         int m_libraryMajor;
 
         bool m_isgrabbing; /*!< Check if acquire was called */
-        bool m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
+        bool m_saveParamsOnClose; /*!< Check if the parameters should be saved on close */
 
         bool m_waited[BUFFERNUMBER]; /*!< Checkvaraible for WaitGrab in getVal-function */
 
@@ -97,7 +97,7 @@ class PCOPixelFly : public ito::AddInGrabber
         ito::RetVal PCORemoveThisFromListIfError(int bufnr); /*!<Removes specific Buffer from list */
         ito::RetVal PCOAddToList(void);    /*!< Adds all buffers to bufferlist */
         ito::RetVal PCOResetEvents(void);    /*!< Resets the m_event-variable */
-        ito::RetVal PCOAllocateBuffer(void); /*!< Creates the buffers and get a handle to thier first pixel (m_pAdr[i]) */
+        ito::RetVal PCOAllocateBuffer(void); /*!< Creates the buffers and get a handle to their first pixel (m_pAdr[i]) */
         ito::RetVal PCOFreeAllocatedBuffer(void); /*!< Frees all buffers */
 
 

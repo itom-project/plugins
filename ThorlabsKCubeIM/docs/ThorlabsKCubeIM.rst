@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **acceleration**: {seq. of int}
     acceleration Steps/s
 **async**: {int}
-    sychronous (0, default) or asychronous (1) mode
+    synchronous (0, default) or asynchronous (1) mode
 **enableAxes**: {int}
     disable (0, default) or enable axis (1)
 **deviceName**: {str}, read-only
@@ -67,7 +67,7 @@ parameters can be changed using *setParam*.
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
 
@@ -106,7 +106,7 @@ https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=Motion_Control
 driver package in the same bit-version than itom (32/64bit).
 Then set the CMake variable **THORLABS_KINESIS_DIRECTORY** or the environment variable **THORLABS_KINESIS_ROOT**
 to the base directory of Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis).
-The required libraries from Kinesis will automatically be copied to the *lib* folder of itom.
+The required libraries from Kinesis will automatically be copyd to the *lib* folder of itom.
 
 Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 

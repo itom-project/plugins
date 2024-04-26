@@ -219,7 +219,7 @@
     </message>
     <message>
         <location line="+6"/>
-        <source>name of scalar field, e.g. &apos;scalars&apos; (zero values will be transparent), &apos;ImageScalars&apos; (zero values will be displayed)...</source>
+        <source>name of scalar field, e.g. &apos;scalars&apos; (zero values will be transparent), &apos;ImageScalars&apos; (zero values will be displaid)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -506,7 +506,7 @@
         <location line="+43"/>
         <location line="+42"/>
         <location line="+43"/>
-        <source>maximum divergence between (normal-)axis and model oriantation in radiant</source>
+        <source>maximum divergence between (normal-)axis and model orientation in radiant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -670,7 +670,7 @@
     <message>
         <location line="-42"/>
         <location line="+43"/>
-        <source>resulting oriantation vector</source>
+        <source>resulting orientation vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -830,7 +830,7 @@
     </message>
     <message>
         <location line="+104"/>
-        <source>the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]</source>
+        <source>the alpha values of the input point cloud cannot be copyd to the output point cloud [not supported]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1125,7 +1125,7 @@
     </message>
     <message>
         <location line="-140"/>
-        <source>vector with indices of polygons that will be copied into output mesh</source>
+        <source>vector with indices of polygons that will be copyd into output mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

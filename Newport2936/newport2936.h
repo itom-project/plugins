@@ -54,7 +54,7 @@ class Newport2936 : public ito::AddInGrabber
         Newport2936();
 
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     public:
         friend class Newport2936Interface;
@@ -62,25 +62,25 @@ class Newport2936 : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
 
-        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
+        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copyd to the dataObject m_data (defined in AddInGrabber)
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
-		ito::DataObject m_data;
+        ito::DataObject m_data;
         int m_faileIdx;
-		int devID;	//Device ID to communicate via USB Port
+        int devID;    //Device ID to commonicate via USB Port
 
-		enum SyncParams {
-			bWavelength = 0x0001,
-			bAttenuator = 0x0002,
+        enum SyncParams {
+            bWavelength = 0x0001,
+            bAttenuator = 0x0002,
             bFilterType = 0x0004,
-			bPowerRange = 0x0008,
-			bAutoRange = 0x0010,
-			bPowerOffset = 0x0020,
+            bPowerRange = 0x0008,
+            bAutoRange = 0x0010,
+            bPowerOffset = 0x0020,
 
-			bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset
-		};
-		ito::RetVal synchronizeParams(int what = bAll);
+            bAll = bWavelength | bAttenuator | bFilterType | bPowerRange | bAutoRange | bPowerOffset
+        };
+        ito::RetVal synchronizeParams(int what = bAll);
         ito::RetVal charToInt(const char* str, int &val);
         ito::RetVal charToDouble(const char* str, double &val);
 
@@ -108,8 +108,8 @@ class Newport2936 : public ito::AddInGrabber
         ito::RetVal zeroDevice(int channel, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal zeroDeviceTo(double val, int channel,ItomSharedSemaphore *waitCond = NULL);
 
-		ito::RetVal sendCommand(long DeviceID, const char* commandBuffer);
-		ito::RetVal readResponse(long DeviceID, char* responseBuffer, const unsigned long& length);
+        ito::RetVal sendCommand(long DeviceID, const char* commandBuffer);
+        ito::RetVal readResponse(long DeviceID, char* responseBuffer, const unsigned long& length);
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 
 

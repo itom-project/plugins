@@ -1,7 +1,7 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -32,7 +32,7 @@
 DialogVRMagic::DialogVRMagic(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
-	m_inEditing(false),
+    m_inEditing(false),
     timing_mode_changed(false)
 {
     ui.setupUi(this);
@@ -57,31 +57,31 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun)
     {
-		enableDialog(true);
-		setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+        enableDialog(true);
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-		ui.label_sensor->setText(params["vendor_id"].getVal<char*>());
-		ui.label_serial->setText(params["serial_number"].getVal<char*>());
-		/*
-		int binning = params["binning"].getVal<int>();
-		ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
-		ui.combo_bin->clear();
-		for (int i = binningMeta->getMin(); i <= binningMeta->getMax(); i += 101)
-		{
+        ui.label_sensor->setText(params["vendor_id"].getVal<char*>());
+        ui.label_serial->setText(params["serial_number"].getVal<char*>());
+        /*
+        int binning = params["binning"].getVal<int>();
+        ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
+        ui.combo_bin->clear();
+        for (int i = binningMeta->getMin(); i <= binningMeta->getMax(); i += 101)
+        {
             if (i != 303)
             {
-			    ui.combo_bin->addItem(QString("%1x%1").arg(i % 100), i);
+                ui.combo_bin->addItem(QString("%1x%1").arg(i % 100), i);
             }
-		}
-		ui.combo_bin->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
-		*/
-		int bpp = params["bpp"].getVal<int>();
-		ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
-		ui.combo_bpp->clear();
-		for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
-		{
-			ui.combo_bpp->addItem(QString("%1").arg(i), i);
-		}
+        }
+        ui.combo_bin->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
+        */
+        int bpp = params["bpp"].getVal<int>();
+        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
+        ui.combo_bpp->clear();
+        for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
+        {
+            ui.combo_bpp->addItem(QString("%1").arg(i), i);
+        }
 
         for (int i = 0; i < ui.combo_bpp->count(); ++i)
         {
@@ -92,8 +92,8 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
                 break;
             }
         }
-		/*
-		ui.btnFullROI->setEnabled(true);
+        /*
+        ui.btnFullROI->setEnabled(true);
 
         ui.checkTimingMode->setEnabled(!(params["timing_mode"].getFlags() & ito::ParamBase::Readonly));
         ui.comboTriggerMode->setEnabled(!(params["trigger_mode"].getFlags() & ito::ParamBase::Readonly));
@@ -103,37 +103,37 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboGPI2->setEnabled(numGPIs >= 2);
         ui.comboGPI3->setEnabled(numGPIs >= 3);
         ui.comboGPI4->setEnabled(numGPIs >= 4);
-		*/
+        */
         m_firstRun = false;
     }
 
     if (!m_inEditing)
     {
         m_inEditing = true;
-		/*
+        /*
         ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-		*/
-		ito::IntMeta *brightness = static_cast<ito::IntMeta*>(params["brightness"].getMeta());
-		ui.sliderWidget_brightness->setMinimum(brightness->getMin());
-		ui.sliderWidget_brightness->setMaximum(brightness->getMax());
-		ui.sliderWidget_brightness->setValue(params["brightness"].getVal<int>());
-		ui.sliderWidget_brightness->setEnabled(!(params["brightness"].getFlags() & ito::ParamBase::Readonly));
+        */
+        ito::IntMeta *brightness = static_cast<ito::IntMeta*>(params["brightness"].getMeta());
+        ui.sliderWidget_brightness->setMinimum(brightness->getMin());
+        ui.sliderWidget_brightness->setMaximum(brightness->getMax());
+        ui.sliderWidget_brightness->setValue(params["brightness"].getVal<int>());
+        ui.sliderWidget_brightness->setEnabled(!(params["brightness"].getFlags() & ito::ParamBase::Readonly));
 
-		ito::IntMeta *contrast = static_cast<ito::IntMeta*>(params["contrast"].getMeta());
-		ui.sliderWidget_contrast->setMinimum(contrast->getMin());
-		ui.sliderWidget_contrast->setMaximum(contrast->getMax());
-		ui.sliderWidget_contrast->setValue((params["contrast"].getVal<int>()));
-		ui.sliderWidget_contrast->setEnabled(!(params["contrast"].getFlags() & ito::ParamBase::Readonly));
-		/*
+        ito::IntMeta *contrast = static_cast<ito::IntMeta*>(params["contrast"].getMeta());
+        ui.sliderWidget_contrast->setMinimum(contrast->getMin());
+        ui.sliderWidget_contrast->setMaximum(contrast->getMax());
+        ui.sliderWidget_contrast->setValue((params["contrast"].getVal<int>()));
+        ui.sliderWidget_contrast->setEnabled(!(params["contrast"].getFlags() & ito::ParamBase::Readonly));
+        /*
         int timing_mode = params["timing_mode"].getVal<int>();
         ui.checkTimingMode->setChecked(timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE);
         ui.sliderWidget_framerate->setEnabled(timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE);
 
-		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
-		ui.sliderWidget_framerate->setMinimum(framerate->getMin());
-		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
-		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<double>());
-		ui.sliderWidget_framerate->setEnabled(!(params["framerate"].getFlags() & ito::ParamBase::Readonly));
+        ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
+        ui.sliderWidget_framerate->setMinimum(framerate->getMin());
+        ui.sliderWidget_framerate->setMaximum(framerate->getMax());
+        ui.sliderWidget_framerate->setValue(params["framerate"].getVal<double>());
+        ui.sliderWidget_framerate->setEnabled(!(params["framerate"].getFlags() & ito::ParamBase::Readonly));
 
         ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
         ui.rangeX->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
@@ -141,32 +141,32 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
         ui.rangeX->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly) && params["sizex"].getMax() > 1);
         ui.rangeY->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly) && params["sizey"].getMax() > 1);
 
-		int *roi = params["roi"].getVal<int*>();
-		ui.rangeX->setValues(roi[0], roi[0] + roi[2] - 1);
-		ui.rangeY->setValues(roi[1], roi[1] + roi[3] - 1);
+        int *roi = params["roi"].getVal<int*>();
+        ui.rangeX->setValues(roi[0], roi[0] + roi[2] - 1);
+        ui.rangeY->setValues(roi[1], roi[1] + roi[3] - 1);
 
-		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
-		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
+        ui.spinSizeX->setValue(params["sizex"].getVal<int>());
+        ui.spinSizeY->setValue(params["sizey"].getVal<int>());
 
-		int bin = params["binning"].getVal<int>();
-		for (int i = 0; i < ui.combo_bin->count(); ++i)
-		{
-			if (ui.combo_bin->itemData(i, Qt::UserRole).toInt() == bin)
-			{
-				ui.combo_bin->setCurrentIndex(i);
-				break;
-			}
-		}
+        int bin = params["binning"].getVal<int>();
+        for (int i = 0; i < ui.combo_bin->count(); ++i)
+        {
+            if (ui.combo_bin->itemData(i, Qt::UserRole).toInt() == bin)
+            {
+                ui.combo_bin->setCurrentIndex(i);
+                break;
+            }
+        }
 
-		int bpp = params["bpp"].getVal<int>();
-		for (int i = 0; i < ui.combo_bpp->count(); ++i)
-		{
-			if (ui.combo_bpp->itemData(i, 32).toInt() == bpp)
-			{
-				ui.combo_bpp->setCurrentIndex(i);
-				break;
-			}
-		}
+        int bpp = params["bpp"].getVal<int>();
+        for (int i = 0; i < ui.combo_bpp->count(); ++i)
+        {
+            if (ui.combo_bpp->itemData(i, 32).toInt() == bpp)
+            {
+                ui.combo_bpp->setCurrentIndex(i);
+                break;
+            }
+        }
 
         const int *gpi_mode = params["gpi_mode"].getVal<int*>();
         switch (std::min(4,params["gpi_mode"].getLen()))
@@ -196,7 +196,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
             ui.sliderFrameBurst->setMaximum(params["frame_burst_count"].getMax());
             ui.sliderFrameBurst->setValue(1);
         }
-		*/
+        */
         m_inEditing = false;
     }
 }
@@ -208,7 +208,7 @@ ito::RetVal DialogVRMagic::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
 
  //   //only send parameters which are changed
-	//if (ui.rangeX->isEnabled() || ui.rangeY->isEnabled())
+    //if (ui.rangeX->isEnabled() || ui.rangeY->isEnabled())
  //   {
  //       int x0, x1, y0, y1;
  //       ui.rangeX->values(x0,x1);
@@ -226,47 +226,47 @@ ito::RetVal DialogVRMagic::applyParameters()
  //       }
  //   }
  //
-	//if (ui.combo_bin->isEnabled())
-	//{
-	//	int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();
-	//	if (m_currentParameters["binning"].getVal<int>() != bin)
-	//	{
-	//		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, bin)));
-	//	}
-	//}
+    //if (ui.combo_bin->isEnabled())
+    //{
+    //    int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();
+    //    if (m_currentParameters["binning"].getVal<int>() != bin)
+    //    {
+    //        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, bin)));
+    //    }
+    //}
 
-	//if (ui.combo_bpp->isEnabled())
-	//{
-	//	int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
-	//	if (m_currentParameters["bpp"].getVal<int>() != bpp)
-	//	{
-	//		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
-	//	}
-	//}
+    //if (ui.combo_bpp->isEnabled())
+    //{
+    //    int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
+    //    if (m_currentParameters["bpp"].getVal<int>() != bpp)
+    //    {
+    //        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
+    //    }
+    //}
 
  //   if (ui.comboTriggerMode->isEnabled())
-	//{
-	//	int trigger_mode = ui.comboTriggerMode->currentIndex();
-	//	if (m_currentParameters["trigger_mode"].getVal<int>() != trigger_mode)
-	//	{
-	//		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, trigger_mode)));
-	//	}
-	//}
+    //{
+    //    int trigger_mode = ui.comboTriggerMode->currentIndex();
+    //    if (m_currentParameters["trigger_mode"].getVal<int>() != trigger_mode)
+    //    {
+    //        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, trigger_mode)));
+    //    }
+    //}
 
  //   if (ui.comboTriggerSelector->isEnabled())
-	//{
-	//	int trigger_selector = ui.comboTriggerSelector->currentIndex();
-	//	if (m_currentParameters["trigger_selector"].getVal<int>() != trigger_selector)
-	//	{
-	//		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_selector", ito::ParamBase::Int, trigger_selector)));
-	//	}
-	//}
+    //{
+    //    int trigger_selector = ui.comboTriggerSelector->currentIndex();
+    //    if (m_currentParameters["trigger_selector"].getVal<int>() != trigger_selector)
+    //    {
+    //        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_selector", ito::ParamBase::Int, trigger_selector)));
+    //    }
+    //}
 
-	//int frame_burst_count = (int)ui.sliderFrameBurst->value();
-	//if (m_currentParameters["frame_burst_count"].getVal<int>() != frame_burst_count)
-	//{
-	//	values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_burst_count", ito::ParamBase::Int, frame_burst_count)));
-	//}
+    //int frame_burst_count = (int)ui.sliderFrameBurst->value();
+    //if (m_currentParameters["frame_burst_count"].getVal<int>() != frame_burst_count)
+    //{
+    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_burst_count", ito::ParamBase::Int, frame_burst_count)));
+    //}
 
  //   if (ui.comboGPI1->isEnabled())
  //   {
@@ -302,17 +302,17 @@ ito::RetVal DialogVRMagic::applyParameters()
  //           values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timing_mode", ito::ParamBase::Int, timing_mode)));
  //       }
 
-	//    if (timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE && ui.sliderWidget_framerate->isEnabled())
-	//    {
-	//	    double framerate = ui.sliderWidget_framerate->value();
-	//	    if (qAbs(m_currentParameters["framerate"].getVal<double>() - framerate) > std::numeric_limits<double>::epsilon())
-	//	    {
-	//		    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("framerate", ito::ParamBase::Double, framerate)));
-	//	    }
-	//    }
+    //    if (timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE && ui.sliderWidget_framerate->isEnabled())
+    //    {
+    //        double framerate = ui.sliderWidget_framerate->value();
+    //        if (qAbs(m_currentParameters["framerate"].getVal<double>() - framerate) > std::numeric_limits<double>::epsilon())
+    //        {
+    //            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("framerate", ito::ParamBase::Double, framerate)));
+    //        }
+    //    }
  //   }
 
-	if (ui.sliderWidget_brightness->isEnabled())
+    if (ui.sliderWidget_brightness->isEnabled())
     {
         int brightness = ui.sliderWidget_brightness->value();
         if (qAbs(m_currentParameters["brightness"].getVal<int>() - brightness) > std::numeric_limits<int>::epsilon())
@@ -321,14 +321,14 @@ ito::RetVal DialogVRMagic::applyParameters()
         }
     }
 
-	if (ui.sliderWidget_contrast->isEnabled())
-	{
-		int contrast = ui.sliderWidget_contrast->value();
+    if (ui.sliderWidget_contrast->isEnabled())
+    {
+        int contrast = ui.sliderWidget_contrast->value();
         if (qAbs(m_currentParameters["contrast"].getVal<int>() - contrast) > std::numeric_limits<int>::epsilon())
-		{
-			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrast", ito::ParamBase::Int, contrast)));
-		}
-	}
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrast", ito::ParamBase::Int, contrast)));
+        }
+    }
 
     //check further parameters...
 

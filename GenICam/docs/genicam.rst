@@ -74,10 +74,10 @@ The following list contains all parameters, that are related to the GenICam plug
 **name**: {str}, read-only
     name of the plugin: 'GenICam'
 **sizex**: {int}, read-only
-    Current width of the acquired image; this parameter is sychronized with the standard parameter 'Width' of the GenICam transport layer.
+    Current width of the acquired image; this parameter is synchronized with the standard parameter 'Width' of the GenICam transport layer.
     This parameter is a mandatory parameter for dataIO-instances in itom.
 **sizey**: {int}, read-only
-    Current height of the acquired image; this parameter is sychronized with the standard parameter 'Height' of the GenICam transport layer.
+    Current height of the acquired image; this parameter is synchronized with the standard parameter 'Height' of the GenICam transport layer.
     This parameter is a mandatory parameter for dataIO-instances in itom.
 **bpp**: {int}, read-only
     Current bitdepth per pixel; this parameter is derived from the 'PixelFormat' standard parameter of the GenICam transport layer.
@@ -102,9 +102,9 @@ During the initialization of a GenICam camera instance, it is possible to select
 warning or error messages will be printed to the command line of itom. The different verbose levels are:
 
 * 0: nothing is printed to the command line
-* 1: error: only severe errors are displayed
-* 2: warning: errors and warnings are displayed
-* 3: info: errors, warnings and few information are displayed
+* 1: error: only severe errors are displaid
+* 2: warning: errors and warnings are displaid
+* 3: info: errors, warnings and few information are displaid
 * 4: debug: this level contains all levels above including detailed information about the startup process as well as detected parameters of the device
 * 5: all: all information is printed including details about the state of all image buffers and reported changes in device-specific parameters.
 
@@ -130,7 +130,7 @@ Compilation
 ===========
 
 In order to compile this plugin, download the latest GenICam(TM) GenApi reference implementation from http://www.emva.org/standards-technology/genicam/genicam-downloads/.
-Download the lastest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.1.1**).
+Download the latest GenICam Reference Implementation (e.g. **GenICamTM GenApi reference implementation v. 3.4.1.1**).
 Open the Zip File and extract the **SDK** archive to a location of your licking ** (e.g. C:/Genicam/SDK).
 Open the Zip File and extract the **Release-Runtime** archive-sourcess to the same location.
 
@@ -229,4 +229,4 @@ Workaround
 ==========
 
 * Vistek, GigE, Windows: It seems that the Camera Link transport layer library (cti-file) has to be loaded by itom before the GigE transport layer is loaded.
-  This is implicitely done, if a vistek cti file is loaded. It is also possible to load the CL cti file using a load library command in Python.
+  This is implicitly done, if a vistek cti file is loaded. It is also possible to load the CL cti file using a load library command in Python.

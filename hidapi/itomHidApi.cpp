@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "HidApi" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -54,12 +54,12 @@ ItomHidApiInterface::ItomHidApiInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("HidApi");
 
-    m_description = tr("itom-plugin for a usb HID API communication");
+    m_description = tr("itom-plugin for a usb HID API commonication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_detaildescription = tr( \
 "HidApi is a plugin which gives direct/raw access to HID compliant devices (e.g. via USB).\n\
-It can be used by plugins for communication analog to the serial port.\n\
+It can be used by plugins for commonication analog to the serial port.\n\
 The plugin is implemented for Windows, Linux and Mac.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
@@ -175,7 +175,7 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     }
 
     // Open the device using the VID, PID,
-	// and optionally the Serial number.
+    // and optionally the Serial number.
     wchar_t *serial = NULL;
     if (serialNumber)
     {
@@ -183,7 +183,7 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         memset(serial, 0, sizeof(wchar_t) * (strlen(serialNumber) + 4));
         QString(serialNumber).toWCharArray(serial);
     }
-	m_pDevice = hid_open(vendorId, productId, serial);
+    m_pDevice = hid_open(vendorId, productId, serial);
     delete serial;
     serial = NULL;
 
@@ -195,20 +195,20 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     {
         #define MAX_STR 255
         wchar_t wstr[MAX_STR];
-	    // Read the Manufacturer String
-	    if (hid_get_manufacturer_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Manufacturer String
+        if (hid_get_manufacturer_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["manufacturer"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }
 
-	    // Read the Product String
-	    if (hid_get_product_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Product String
+        if (hid_get_product_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["product"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }
 
-	    // Read the Serial Number String
-	    if (hid_get_serial_number_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Serial Number String
+        if (hid_get_serial_number_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["serial_number"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }

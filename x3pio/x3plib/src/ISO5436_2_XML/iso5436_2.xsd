@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://www.opengps.eu/2008/ISO5436_2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.opengps.eu/2008/ISO5436_2" elementFormDefault="unqualified">
    <xsd:annotation>
       <xsd:documentation>

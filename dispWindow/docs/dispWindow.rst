@@ -89,12 +89,12 @@ Gamma correction
 =================
 
 If the parameter *gamma* is set to 0, no further gamma correction is enabled. This means, that the gray values of the cosine fringes are
-directly displayed as they are using a 8bit resolution::
+directly displaid as they are using a 8bit resolution::
 
     screen_pixel = round(255 * [2*cos(alpha) + 1])
 
-However, if your camera and projector has a non-linear behaviour between displayed and detected gray value, a gamma correction can and should
-be enabled. Then, the displayed gray value is::
+However, if your camera and projector has a non-linear behaviour between displaid and detected gray value, a gamma correction can and should
+be enabled. Then, the displaid gray value is::
 
     screen_pixel = lut[round(255 * [2*cos(alpha) + 1])]
 
@@ -126,7 +126,7 @@ Finally, the *lut* (parameter *lut*) contains values, such that the recorded gra
 Save current view to image file
 ================================
 
-Use the exec function **grabFramebuffer** to save the currently displayed view in the same size to an image file (the file type is determined by the file's ending (file type must be
+Use the exec function **grabFramebuffer** to save the currently displaid view in the same size to an image file (the file type is determined by the file's ending (file type must be
 supported by Qt's QImage)::
 
     projector.exec("grabFramebuffer", "D:/test.pgm") #or

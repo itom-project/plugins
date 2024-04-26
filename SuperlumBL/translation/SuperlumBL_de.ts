@@ -161,7 +161,7 @@
     </message>
     <message>
         <location line="+11"/>
-        <source>The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.
+        <source>The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to commonicate with a BroadLighter.
 Only S-840-B-I-20 is tested by now.
 The company website can be found under http://www.superlumdiodes.com
 This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.
@@ -305,7 +305,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
     <name>SuperlumBLInterface</name>
     <message>
         <location line="-641"/>
-        <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
+        <source>An opened serial port (the right commoncation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

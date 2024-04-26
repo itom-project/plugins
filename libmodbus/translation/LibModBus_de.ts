@@ -36,8 +36,8 @@
     <name>LibModBus</name>
     <message>
         <location filename="../LibModBus.cpp" line="+138"/>
-        <source>IP Adress or COM-Port of the target device</source>
-        <translation type="unfinished">IP-Adresse oder COM-Port des Zielgeräts</translation>
+        <source>IP Address or COM-Port of the target device</source>
+        <translation type="unfinished">IP-Addresse oder COM-Port des Zielgeräts</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -46,22 +46,22 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>The baudrate of the port for RTU communication</source>
+        <source>The baudrate of the port for RTU commonication</source>
         <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Parity for RTU communication (N,E,O)</source>
+        <source>Parity for RTU commonication (N,E,O)</source>
         <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Number of bits to be written in line for RTU communication</source>
+        <source>Number of bits to be written in line for RTU commonication</source>
         <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Stop bits after every n bits for RTU communication</source>
+        <source>Stop bits after every n bits for RTU commonication</source>
         <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
@@ -72,7 +72,7 @@
     <message>
         <location line="+2"/>
         <source>Default string for register addressing. Coding is &apos;Reg1Address,Reg1Size;Reg2Address,Reg2Size...&apos;</source>
-        <translation type="unfinished">Standard-String für Registeradressierung. Die Kodierung ist &apos;Reg1Address, Reg1Size; Reg2Address, Reg2Size ...&apos;</translation>
+        <translation type="unfinished">Standard-String für Registeraddressierung. Die Kodierung ist &apos;Reg1Address, Reg1Size; Reg2Address, Reg2Size ...&apos;</translation>
     </message>
     <message>
         <location line="+176"/>
@@ -104,28 +104,28 @@
     <name>LibModBusInterface</name>
     <message>
         <location line="-362"/>
-        <source>itom-plugin for a modbus communication</source>
+        <source>itom-plugin for a modbus commonication</source>
         <translation type="unfinished">itom-Plugin für eine modbus-Komminikation</translation>
     </message>
     <message>
         <location line="+11"/>
-        <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.
+        <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions.
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written.
-The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers seperated by &apos;,&apos; and different registers seperated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos;
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers separated by &apos;,&apos; and different registers separated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos;
 If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be used for addressing.</source>
         <translation type="unfinished">LibModBus ist ein itom-Plugin, das eine Kommunikationsschnittstelle mit modbusTCP und modbusRTU bereitstellt.
 Das Plugin basiert auf der libmodbus v3.1.1 Bibliothek und wurde nur unter Windows getestet.
-Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus adressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
-Die genutzten Plugin-Funktionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll.
-Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Adressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Adresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Adressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
-Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Adressierung genutzt.</translation>
+Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Functionen von libmodbus addressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
+Die genutzten Plugin-Functionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll.
+Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Addressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Addresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Addressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
+Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Addressierung genutzt.</translation>
     </message>
     <message>
         <location line="+15"/>
-        <source>Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)</source>
-        <translation type="unfinished">Adresse des Zielgeräts: IP-Adresse für ModbusTCP (z.B. 127.0.0.1) oder COM-Port für ModbusRTU (z.B. COM1)</translation>
+        <source>Address of the target device. IP-Address for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)</source>
+        <translation type="unfinished">Addresse des Zielgeräts: IP-Addresse für ModbusTCP (z.B. 127.0.0.1) oder COM-Port für ModbusRTU (z.B. COM1)</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -134,22 +134,22 @@ Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&ap
     </message>
     <message>
         <location line="+2"/>
-        <source>The baudrate of the port for RTU communication</source>
+        <source>The baudrate of the port for RTU commonication</source>
         <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Parity for RTU communication (N,E,O)</source>
+        <source>Parity for RTU commonication (N,E,O)</source>
         <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Number of bits to be written in line for RTU communication</source>
+        <source>Number of bits to be written in line for RTU commonication</source>
         <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Stop bits after every n bits for RTU communication</source>
+        <source>Stop bits after every n bits for RTU commonication</source>
         <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
@@ -252,7 +252,7 @@ Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&ap
     </message>
     <message>
         <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
+It is used by different plugins for commonication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
 The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
         <translation type="obsolete">SerialIO ist ein ITOM-Plugin um einen direkten Zugriff auf die seriellen Ports zu bekommen.
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
@@ -370,14 +370,14 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     </message>
     <message>
         <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
+It is used by different plugins for commonication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
 The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
         <translation type="obsolete">SerialIO ist ein itom-Plugin um einen direkten Zugriff auf die serielle Schnittstelle zu bekommen.
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
     <message>
-        <source>itom-plugin for a serial port communication</source>
+        <source>itom-plugin for a serial port commonication</source>
         <translation type="vanished">Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
@@ -594,7 +594,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <name>ito::AddInBase</name>
     <message>
         <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
+        <translation type="obsolete">Function &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
     </message>
     <message>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
