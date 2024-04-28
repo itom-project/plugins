@@ -64,9 +64,9 @@ After that make shure that the bin folder of the royale software is added to you
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses royale software and driver (not covered by LPGL)");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");

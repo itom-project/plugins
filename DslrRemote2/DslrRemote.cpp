@@ -117,13 +117,12 @@ Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for i
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\
 ");
 
-    m_author = "Universidade Federal de Alagoas (UFAL)";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = CREATEVERSION(1,4,0);
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
-Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
 

@@ -78,11 +78,11 @@ Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
 For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.\
 Download page: https://www.ophiropt.com/laser--measurement/software/com-object");
 
-    m_author = "J. Krauter, TRUMPF SE + Co. KG";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param p(

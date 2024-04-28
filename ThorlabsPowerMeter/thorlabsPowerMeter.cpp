@@ -79,11 +79,11 @@ For compiling this plugin, you need to install the Thorlabs PM100x Instrument Dr
 Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directory (e.g. C:/Program Files/IVI Foundation/VISA/Win64/Include)";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Robin Hahn, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.

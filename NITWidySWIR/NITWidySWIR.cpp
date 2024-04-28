@@ -65,12 +65,12 @@ NITWidySWIRInterface::NITWidySWIRInterface()
         	NITLibrary defines the parameter **\"offset, gain, histogram threshold, pixel clock\"** as changable, but with the current version is does not! \n\
             	The parameter **pixel_clock** is set to *Readonly*, because the camera acquisition crash. This problem should be tested with the next NITLibrary version.\n";
     m_detaildescription = QObject::tr(docstring);
-
-    m_author = "J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL");
+    
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("printManual", ito::ParamBase::Int, 0, 1, 0, tr("If printManual is set to 1, the parameters of the camera are printed into the itom shelf.").toLatin1().data());

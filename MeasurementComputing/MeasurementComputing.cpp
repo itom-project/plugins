@@ -42,7 +42,7 @@ MeasurementComputingInterface::MeasurementComputingInterface() :
     m_numberOfInstances(0)
 {
     m_type = ito::typeDataIO | ito::typeADDA;
-    setObjectName("MeasurementComputing");
+    setObjectName(PLUGIN_NAME);
     m_description = tr("MeasurementComputing Digital-Analog Converter Plugin.");
     m_detaildescription = tr(
 "The MeasurementComputing is a itom-Plugin to give a direct access to the MeasurementComputing USB digital to analog converter (e. g. USB-1208LS). \n\
@@ -59,12 +59,12 @@ Digital I/O, counter and temperature ports can be used by the **exec**-functions
 \n\
 Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact information of each key executive at Measurement Computing. \n").toLatin1().data();
 
-    m_author = "J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("LGPL").toLatin1().data();
-    m_aboutThis = tr(GITVERSION).toLatin1().data();
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param = ito::Param("board_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 254, 0, tr("board number of the connected device. This number must be defined by the software 'InstaCal'").toLatin1().data());
     m_initParamsMand.append(param);

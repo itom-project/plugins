@@ -58,13 +58,13 @@ For compiling this plugin, you need to install the Thorlabs OSASW Instrumentatio
 Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where \n\
 subdirectories like include or bin are contained.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-
+    
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
     m_initParamsMand.append(ito::Param("device", ito::ParamBase::String, "", "device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices"));

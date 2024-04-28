@@ -24,3 +24,9 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: DslrRemote
+
+
+Changelog
+==========
+
+* itom setup 2.1.0: Release

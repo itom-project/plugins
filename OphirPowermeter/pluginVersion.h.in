@@ -30,16 +30,13 @@
 
 #include "itom_sdk.h"
 
-#define PLUGIN_VERSION_MAJOR         ${itom_plugins_VERSION_MAJOR}
-#define PLUGIN_VERSION_MINOR         ${itom_plugins_VERSION_MINOR}
-#define PLUGIN_VERSION_PATCH         ${itom_plugins_VERSION_PATCH}
-#define PLUGIN_VERSION_IDENTIFIERS   "${itom_plugins_VERSION_IDENTIFIERS}"
-#define PLUGIN_VERSION               CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_VERSION_STRING        CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY               "TRUMPF SE + Co. KG, Ditzingen"
-#define PLUGIN_COPYRIGHT             "(C) 2020, TRUMPF SE + Co. KG"
-#define PLUGIN_NAME                  "OphirPowermeter"
-
-//----------------------------------------------------------------------------------------------------------------------------------
+#define PLUGIN_VERSION              CREATE_VERSION(3, 9, 0)
+#define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(4, 1, 0)
+#define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_plugins_VERSION_MAJOR},${itom_plugins_VERSION_MINOR},${itom_plugins_VERSION_PATCH})
+#define PLUGIN_LICENCE              "Licensed under LGPL."
+#define PLUGIN_COMPANY              "TRUMPF SE + Co. KG, Ditzingen"
+#define PLUGIN_AUTHOR               "J. Krauter, TRUMPF SE + Co. KG"
+#define PLUGIN_COPYRIGHT            "(C) 2020, TRUMPF SE + Co. KG"
+#define PLUGIN_NAME                 "OphirPowermeter"
 
 #endif // PLUGINVERSION_H

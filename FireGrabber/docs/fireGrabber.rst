@@ -20,6 +20,7 @@ Overview
 For cameras from Allied Vision it is recommended to use the new Vimba interface and the itom plugin AVTVimba. This
 supports more types of cameras and features than the deprecated FirePackage driver from Allied Vision.
 
+
 Initialization
 ==============
 
@@ -71,3 +72,9 @@ An instance of this plugin has the following internal parameters:
     Startvalue for ROI
 **y1**: {int}
     Stopvalue for ROI
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

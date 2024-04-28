@@ -96,3 +96,9 @@ The parameter is useful if the same registers need to be read/written multiple t
     lmb.setVal(obj)                             #produces error, obj is of size [1,10] but only 8 registers (105..108,200..203) are requested
 
 The number of consecutive registers is generally used to read/write values that are bigger than 16bit (2 registers for 32bit, 4 registers for 64bit)and should be used that way. Please refer to the documentation of the modbus slave you will be using.
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

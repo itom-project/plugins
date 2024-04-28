@@ -123,11 +123,11 @@ Download the SDK and install it at any location. Additionally you need to instal
 \n\
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.");
 
-    m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();

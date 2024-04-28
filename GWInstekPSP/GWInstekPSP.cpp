@@ -92,11 +92,11 @@ instance when initializing this plugin.";
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.");
 
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());

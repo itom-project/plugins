@@ -17,6 +17,7 @@ Overview
 .. pluginsummaryextended::
     :plugin: DslrRemote2
 
+
 Initialization
 ==============
 
@@ -24,3 +25,9 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: DslrRemote2
+
+
+Changelog
+==========
+
+* itom setup 2.1.0: Release

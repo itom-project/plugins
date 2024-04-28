@@ -102,11 +102,11 @@ methods via the cv2 python package. The wrapped methods within this plugin can s
 In addition to the cv2 methods, they can sometimes operate on multi-plane dataObjects, preserve \n\
 the tags and meta information and save protocol data.");
 
-    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     NTHREADS = QThread::idealThreadCount();
@@ -1821,7 +1821,7 @@ ito::RetVal OpenCVFilters::cvFlip(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvRotP90Doc =
-    QObject::tr("This filter rotates the image by 90° count clock wise. \n\
+    QObject::tr("This filter rotates the image by 90ï¿½ count clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
@@ -1831,7 +1831,7 @@ if it fits to the size and type of the source data object and if not a new one i
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvRotM90Doc =
-    QObject::tr("This filter rotates the image by 90° clock wise. \n\
+    QObject::tr("This filter rotates the image by 90ï¿½ clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
@@ -2038,8 +2038,8 @@ ito::RetVal OpenCVFilters::cvRotate(
         }
 
         QString msg = rotClw
-            ? tr("Rotated object by 90° clockwise with cvRotateM90-Filter")
-            : tr("Rotated object by 90° counter clockwise with cvRotateP90-Filter");
+            ? tr("Rotated object by 90ï¿½ clockwise with cvRotateM90-Filter")
+            : tr("Rotated object by 90ï¿½ counter clockwise with cvRotateP90-Filter");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
@@ -2047,7 +2047,7 @@ ito::RetVal OpenCVFilters::cvRotate(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString OpenCVFilters::cvRot180Doc = QObject::tr("This filter rotates the image by 180°. \n\
+const QString OpenCVFilters::cvRot180Doc = QObject::tr("This filter rotates the image by 180ï¿½. \n\
 \n\
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The \
 result is contained in the destination object\n\
@@ -2206,7 +2206,7 @@ ito::RetVal OpenCVFilters::cvRot180(
             dObjImages->copyTagMapTo(*dObjDst);
         }
 
-        QString msg = tr("Rotated object by 180° using cvRotate180-Filter");
+        QString msg = tr("Rotated object by 180ï¿½ using cvRotate180-Filter");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 

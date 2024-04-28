@@ -88,21 +88,14 @@ firewire. \n\
 \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.");
-#ifndef WIN32
-    m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
-#else
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
-#endif
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
 
-#ifndef WIN32
-    m_license = QObject::tr("LGPL; you need an installed fireForLinux driver, which requires further licenses if you are not using any AVT camera (see fireForLinux documentation).");
-#else
-    m_license = QObject::tr("LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).");
-#endif
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
+
 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;

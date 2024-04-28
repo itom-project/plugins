@@ -132,11 +132,11 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
 
     m_description = QObject::tr("Point Grey FlyCapture2 Cameras");
 
-    m_author = "W. Lyda, M. Gronle, P. Wagner, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("GPL / this plugin needs to link agains the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();

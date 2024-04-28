@@ -68,9 +68,9 @@ The device has a web interface which allows access to further parameters.The int
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Lesser General Public License (LGPL)");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("device", ito::ParamBase::String, "", tr("device name (IP adress) that should be opened, an empty string opens the first device that is found (default). Pass '<scan>' for displaying all detected devices.").toLatin1().data()));

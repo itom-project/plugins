@@ -217,3 +217,8 @@ Affiliation
 ============
 
 This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License).
+
+Changelog
+==========
+
+* itom setup 1.3.0: Release

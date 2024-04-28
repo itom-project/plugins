@@ -121,13 +121,13 @@ Others most likely won't work properly yet.\n\
 Tested with: \
 \
 * OceanOptics STS-UV (25 um slit)");
-    m_author = "J. Drozella, ITO, University Stuttgart";
-    m_license = QObject::tr("LGPL");
-    m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer        = MINVERSION;
-    m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION);
 
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 

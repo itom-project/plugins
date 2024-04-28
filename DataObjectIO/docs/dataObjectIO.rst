@@ -43,3 +43,8 @@ Detailed overview about all defined algorithms:
 
 .. pluginfilterlist::
     :plugin: DataObjectIO
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

@@ -72,11 +72,12 @@ For details please check C:\\A3200\\MANUAL.";*/
     m_detaildescription = QObject::tr(
 "This plugin allows communicating with controllers of type A3200 of company Aerotech. \n\
 For details please check C:\\A3200\\MANUAL.");
+
     m_author = PLUGIN_AUTHOR;
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).");
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadNever;

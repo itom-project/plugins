@@ -1109,12 +1109,13 @@ Example\n\
     answer = bytearray(9) #supposed length is 9 characters\n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns");
 
-    m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
+
 #ifndef WIN32
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);

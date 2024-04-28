@@ -79,3 +79,9 @@ They both run at 10 full steps per mm (1) (hence: linear axes):
 
 ser = dataIO("SerialIO",4,115200,"\r",8,1)
 mot = actuator("NanotecStepMotor",ser,[1,4],[10,10],[1,1])
+
+
+Changelog
+==========
+
+* itom setup 2.1.0: Release
