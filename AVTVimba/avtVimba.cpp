@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "Roughness" for itom software
 URL : http ://www.uni-stuttgart.de/ito
-Copyright(C) 2016, Institut f�r Technische Optik (ITO),
-Universit�t Stuttgart, Germany;
+Copyright(C) 2016, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany;
 IPROM, TU Braunschweig, Germany
 
 This file is part of a plugin for the measurement software itom.
