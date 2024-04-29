@@ -148,6 +148,12 @@ if(PLUGIN_DummyGrabber)
     add_subdirectory(DummyGrabber)
 endif(PLUGIN_DummyGrabber)
 
+# DummyMultiChannelGrabber
+option(PLUGIN_DummyMultiChannelGrabber "Build with this plugin." ON)
+if(PLUGIN_DummyMultiChannelGrabber)
+    add_subdirectory(DummyMultiChannelGrabber)
+endif(PLUGIN_DummyMultiChannelGrabber)
+
 # DummyMotor
 option(PLUGIN_DummyMotor "Build with this plugin." ON)
 if(PLUGIN_DummyMotor)
