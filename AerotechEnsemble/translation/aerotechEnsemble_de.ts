@@ -472,7 +472,7 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
     <name>ito::AddInBase</name>
     <message>
         <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Diese Function wurde im Plugin nicht benutzt</translation>
+        <translation type="obsolete">Diese Funktion wurde im Plugin nicht benutzt</translation>
     </message>
 </context>
 <context>

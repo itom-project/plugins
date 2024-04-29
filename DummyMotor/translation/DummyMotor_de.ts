@@ -183,7 +183,7 @@
     <message>
         <location line="+288"/>
         <source>function name &apos;%1&apos; does not exist</source>
-        <translation type="unfinished">Der Functionsname &apos;%1&apos; existiert nicht</translation>
+        <translation type="unfinished">Der Funktionsname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
         <location line="+236"/>

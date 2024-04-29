@@ -226,7 +226,7 @@ Achtung: Die aktuelle Version läuft nur mit Vistek-Treibern bis einschließlich
     <message>
         <location line="+4"/>
         <source>Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback</source>
-        <translation type="unfinished">Protokollstufe: Die Protokolldatei heißt Vistek_SVGigE.log und befindet sich im aktuellen Verzeichnis; Stufen: 0 - deaktiviert (standard); 1 - KRITISCHe Fehler, die ein Weiterbetreiben verhindern; 2 - FEHLER, die ein ordnungsgemäßes Functionieren verhindern; 3 - WARNUNGen, die in der Regel keine Auswirkungen auf die Function haben; 4 - INFO zur Auflistung der Kamerakommunikation; 5 - DIAGNOSE zur Untersuchung von Bild-Callbacks; 6 - DEBUG zum Empfangen mehrerer Parameter für Bild-Callbacks; 7 - DETAILs zum Empfangen mehrerer Signale für jeden Bild-Callback</translation>
+        <translation type="unfinished">Protokollstufe: Die Protokolldatei heißt Vistek_SVGigE.log und befindet sich im aktuellen Verzeichnis; Stufen: 0 - deaktiviert (standard); 1 - KRITISCHe Fehler, die ein Weiterbetreiben verhindern; 2 - FEHLER, die ein ordnungsgemäßes Funktionieren verhindern; 3 - WARNUNGen, die in der Regel keine Auswirkungen auf die Funktion haben; 4 - INFO zur Auflistung der Kamerakommunikation; 5 - DIAGNOSE zur Untersuchung von Bild-Callbacks; 6 - DEBUG zum Empfangen mehrerer Parameter für Bild-Callbacks; 7 - DETAILs zum Empfangen mehrerer Signale für jeden Bild-Callback</translation>
     </message>
     <message>
         <location line="+629"/>
@@ -954,7 +954,7 @@ Achtung: Die aktuelle Version läuft nur mit Vistek-Treibern bis einschließlich
     <name>ito::AddInBase</name>
     <message>
         <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Die Function &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
+        <translation type="obsolete">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
     </message>
     <message>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>

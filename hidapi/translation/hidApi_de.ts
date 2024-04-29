@@ -159,7 +159,7 @@ Das Plugin wurde für Windows, Linux und Mac entwickelt.
 
 Für die Verbindung mit einem Gerät wird die Hersteller-ID und die Produkt-ID benötigt.
 
-Die setVal- und getVal-Functionen lesen und schreiben über die Konsole oder die Functionen.</translation>
+Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die Funktionen.</translation>
     </message>
     <message>
         <location line="+16"/>

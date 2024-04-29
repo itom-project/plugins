@@ -315,7 +315,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         AXISMASK availableMask;
 
-        //es ist natuerlich besser, eine Function bezueglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.
+        //It is naturally better to call a function regarding the A3200, but three 'available' axes are sufficient.
         availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
 
         if (!retValue.containsError())

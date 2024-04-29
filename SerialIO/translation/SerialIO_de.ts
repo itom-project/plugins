@@ -211,7 +211,7 @@
     <message>
         <location line="+8"/>
         <source>Endline character, will be looking for during getVal by using readline</source>
-        <translation>Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Function in getVal() gesucht wird</translation>
+        <translation>Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Funktion in getVal() gesucht wird</translation>
     </message>
     <message>
         <location line="+3"/>
