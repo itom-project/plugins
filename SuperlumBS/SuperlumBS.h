@@ -37,7 +37,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    SuperlumBS
-  *\brief    This class can be used to commonicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662)
+  *\brief    This class can be used to communicate with different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662)
   *
   *         This class can be used to work with Piefocs and Piezo-Stages. The ITO-Controllers have only one axis with axis number 0.
   *            This system needs a serial port, which differs depending on type:

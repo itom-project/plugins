@@ -206,7 +206,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Standa8SMC4USB is an itom-plugin, which can be used to commonicate with the STANDA controllers 8SMC4-USB.
+        <source>Standa8SMC4USB is an itom-plugin, which can be used to communicate with the STANDA controllers 8SMC4-USB.
 It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</source>
         <translation type="unfinished"></translation>
     </message>

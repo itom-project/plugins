@@ -9,8 +9,8 @@ Currently there are plugins available like:
 * cameras supported by OpenCV
 * SVS Vistek GigE cameras
 * PI Piezo Controllers
-* Serial port commonication
-* GWInstek Power Supply commonication plugin
+* Serial port communication
+* GWInstek Power Supply communication plugin
 * Dummy motor
 * Import/Export methods for data objects to many image formats
 

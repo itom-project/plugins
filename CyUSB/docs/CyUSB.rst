@@ -50,7 +50,7 @@ Any USB device is defined by its vendor and product ID. Both are usually hex-val
 values need to be given. If you have no idea about the vendor and product ID, set the optional initialization parameter *printInfoAboutAllDevices* to 1 (True). Then,
 information about all connected USB devices including its name and vendor / product ID is printed to the console.
 
-Once the device is identified, you need to indicate a so called endpoint ID. The read- and write-commonication with the device is done via several endpoints. All reading endpoints
+Once the device is identified, you need to indicate a so called endpoint ID. The read- and write-communication with the device is done via several endpoints. All reading endpoints
 are in the range 128..255 while the writing endpoints are between 0..127. For many devices the corresponding read/write endpoints have the same offset between its limit 0 and 128.
 Therefore, the initialization only contains the parameter 'endpoint', such that *endpoint_read* is set to 128+endpoint and *endpoint_write* to 'endpoint'. You can always change
 the endpoints using the specific parameters.
@@ -72,7 +72,7 @@ Once the USB-device is opened and the endpoints are configured, you can send and
 The command **getVal** only reads the number of characters that arrived at the current endpoint at the moment of its call. Analyze the return value and probably call **getVal**
 again if you expect more characters to arrive. This is also the same behaviour than for serial connections.
 
-This plugin is also used by other hardware plugins to commonicate with further devices.
+This plugin is also used by other hardware plugins to communicate with further devices.
 
 Compilation
 ===========

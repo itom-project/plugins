@@ -67,7 +67,7 @@ SuperlumBSInterface::SuperlumBSInterface()
     m_description = QObject::tr("Plugin for Superlum BraodSweeper BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP.");
 
 /*    char docstring[] = \
-"The SuperlumBS is an itom-plugin, which can be used to commonicate with a Superlum BroadSweeper.\n\
+"The SuperlumBS is an itom-plugin, which can be used to communicate with a Superlum BroadSweeper.\n\
 Different BroadSweeper types (BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP) are implemented.\n\
 Only BS-840-1-HP is tested.\n\
 The company website can be found under http://www.superlumdiodes.com \n\
@@ -76,7 +76,7 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 It is initialized by actuator(\"SuperlumBS\", SerialIO).";
     m_detaildescription = QObject::tr(docstring);*/
-    m_detaildescription = QObject::tr("The SuperlumBS is an itom-plugin, which can be used to commonicate with a Superlum BroadSweeper.\n\
+    m_detaildescription = QObject::tr("The SuperlumBS is an itom-plugin, which can be used to communicate with a Superlum BroadSweeper.\n\
 Different BroadSweeper types (BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP) are implemented.\n\
 Only BS-840-1-HP is tested.\n\
 The company website can be found under http://www.superlumdiodes.com \n\

@@ -1162,7 +1162,7 @@ ito::RetVal AndorSDK3::checkError(const int &code)
     case AT_ERR_INVALIDALIGNMENT:
         return ito::RetVal(ito::retError, AT_ERR_INVALIDALIGNMENT, "A queued buffer was not aligned on an 8-byte boundary");
     case AT_ERR_COMM:
-        return ito::RetVal(ito::retError, AT_ERR_COMM, "An error has occurred while commonicating with hardware");
+        return ito::RetVal(ito::retError, AT_ERR_COMM, "An error has occurred while communicating with hardware");
     case AT_ERR_STRINGNOTAVAILABLE:
         return ito::RetVal(ito::retError, AT_ERR_STRINGNOTAVAILABLE, "Index / String is not available");
     case AT_ERR_STRINGNOTIMPLEMENTED:

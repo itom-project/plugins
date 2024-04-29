@@ -57,7 +57,7 @@ AerotechEnsembleInterface::AerotechEnsembleInterface(QObject *parent)
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char* docstring = \
-"This plugin allows commonicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
+"This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
 \n\
 If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide \
 a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the \
@@ -73,7 +73,7 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
     m_description = QObject::tr("Plugin for the Ensemble-controller of Aerotech");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-"This plugin allows commonicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
+"This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
 \n\
 If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide \
 a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the \
@@ -139,7 +139,7 @@ AerotechEnsemble::AerotechEnsemble() :
     m_params.insert("name", Param("name", ParamBase::String | ParamBase::In | ParamBase::Readonly, "AerotechEnsemble", NULL));
 
     m_params.insert("controller", Param("controller", ParamBase::String | ParamBase::In | ParamBase::Readonly, "", "name of the connected controller"));
-    m_params.insert("commonication", Param("commonication", ParamBase::String | ParamBase::In | ParamBase::Readonly, "", "type of the commonication (USB, Ethernet)"));
+    m_params.insert("communication", Param("communication", ParamBase::String | ParamBase::In | ParamBase::Readonly, "", "type of the communication (USB, Ethernet)"));
     m_params.insert("libraryVersion", Param("libraryVersion", ParamBase::String | ParamBase::In | ParamBase::Readonly, "", "Version of the Ensemble C library"));
 
     m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
@@ -352,12 +352,12 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
             m_identifier = name;
         }
 
-        //commonication type
-        COMMUNICATIONTYPE commonicationType;
-        if (EnsembleInformationGetCommunicationType(m_pHandle, &commonicationType))
+        //communication type
+        COMMUNICATIONTYPE communicationType;
+        if (EnsembleInformationGetCommunicationType(m_pHandle, &communicationType))
         {
-            name = (commonicationType == COMMUNICATIONTYPE_Ethernet)? "Ethernet" : "USB";
-            m_params["commonication"].setVal<const char*>(name.data());
+            name = (communicationType == COMMUNICATIONTYPE_Ethernet)? "Ethernet" : "USB";
+            m_params["communication"].setVal<const char*>(name.data());
         }
 
         //library version
@@ -1291,7 +1291,7 @@ ito::RetVal AerotechEnsemble::axisFaultToRetVal(int axisFault, int axisID)
         retval += ito::RetVal(ito::retError, 0, tr("The encoder fault input on the motor feedback connector was triggered.").toLatin1().data());
         break;
     case AXISFAULT_CommunicationLostFault:
-        retval += ito::RetVal(ito::retError, 0, tr("One or more of the drives on the network lost commonications with the controller.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("One or more of the drives on the network lost communications with the controller.").toLatin1().data());
         break;
     case AXISFAULT_FeedbackScalingFault:
         retval += ito::RetVal(ito::retError, 0, tr("The difference between the position feedback and the scaled (adjusted by GainKv) velocity feedback exceeds the threshold specified by the PositionErrorThreshold parameter.").toLatin1().data());

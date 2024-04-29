@@ -175,7 +175,7 @@
 <context>
     <name>OphirPowermeterInterface</name>
     <message>
-        <source>An opened serial port (the right commonication parameters will be set by this plugin).</source>
+        <source>An opened serial port (the right communication parameters will be set by this plugin).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

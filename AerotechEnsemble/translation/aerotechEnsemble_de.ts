@@ -204,7 +204,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>One or more of the drives on the network lost commonications with the controller.</source>
+        <source>One or more of the drives on the network lost communications with the controller.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -359,7 +359,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin allows commonicating with controllers of type Ensemble (4.xx Version) of company Aerotech.
+        <source>This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech.
 
 If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the second the axis ID 1 and so on.
 For running this plugin you need an installed Ensemble driver and a connected device.

@@ -71,7 +71,7 @@ SuperlumBLInterface::SuperlumBLInterface()
     m_description = QObject::tr("Plugin for Superlum S-series BroadLighter SLDs.");
 
 /*    char docstring[] = \
-"The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to commonicate with a BroadLighter.\n\
+"The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
 Only S-840-B-I-20 is tested by now.\n\
 The company website can be found under http://www.superlumdiodes.com \n\
 This system needs a serial port, which differs depending on the controller type. \
@@ -79,7 +79,7 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).";
     m_detaildescription = QObject::tr(docstring);*/
-    m_detaildescription = QObject::tr("The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to commonicate with a BroadLighter.\n\
+    m_detaildescription = QObject::tr("The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
 Only S-840-B-I-20 is tested by now.\n\
 The company website can be found under http://www.superlumdiodes.com \n\
 This system needs a serial port, which differs depending on the controller type. \
@@ -94,7 +94,7 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right commonication parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 

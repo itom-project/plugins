@@ -119,7 +119,7 @@ FirgelliLACInterface::FirgelliLACInterface()
     setObjectName("FirgelliLAC");
 
     m_description = QObject::tr("FirgelliLAC");
-    m_detaildescription = QObject::tr("FirgelliLAC is an itom-plugin, which can be used to commonicate with the Firgelli USB controllers.\
+    m_detaildescription = QObject::tr("FirgelliLAC is an itom-plugin, which can be used to communicate with the Firgelli USB controllers.\
 \n\
 It has been tested with one connected motor PQ12-SS-GG-VV-P with one axis.\n\
 \n\

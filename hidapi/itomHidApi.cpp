@@ -54,12 +54,12 @@ ItomHidApiInterface::ItomHidApiInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("HidApi");
 
-    m_description = tr("itom-plugin for a usb HID API commonication");
+    m_description = tr("itom-plugin for a usb HID API communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_detaildescription = tr( \
 "HidApi is a plugin which gives direct/raw access to HID compliant devices (e.g. via USB).\n\
-It can be used by plugins for commonication analog to the serial port.\n\
+It can be used by plugins for communication analog to the serial port.\n\
 The plugin is implemented for Windows, Linux and Mac.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\

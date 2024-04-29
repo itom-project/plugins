@@ -293,13 +293,13 @@
     <name>SerialIOInterface</name>
     <message>
         <location line="-147"/>
-        <source>itom-plugin for a serial port commonication</source>
+        <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
-It is used by different plugins for commonication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
+It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.
 
 flow bitmask

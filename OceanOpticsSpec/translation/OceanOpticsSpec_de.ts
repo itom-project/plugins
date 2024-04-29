@@ -130,7 +130,7 @@
     </message>
     <message>
         <source>This DLL integrates the OceanOptics spectrometers which use the Ocean Byte Protocol (OBP) into itom. This includes series: STS, QE Pro, Ocean FX, and Ocean HDX  (and probably future releases)
-It uses the libUSB interface to commonicate with the devices.
+It uses the libUSB interface to communicate with the devices.
 !This was ONLY fully implemented for the STS series! Others most likely won&apos;t work properly yet.
 Tested with: * OceanOptics STS-UV (25 um slit)</source>
         <translation type="unfinished"></translation>

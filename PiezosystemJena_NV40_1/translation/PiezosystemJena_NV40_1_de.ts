@@ -164,7 +164,7 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>The PiezosystemJena is an itom-plugin, which can be used to commonicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.
+        <source>The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.
 This system needs a serial port. The parameters are set automatically during initialization.
 It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance).</source>
         <translation type="unfinished"></translation>

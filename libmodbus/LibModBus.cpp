@@ -60,11 +60,11 @@ LibModBusInterface::LibModBusInterface()
     m_type = ito::typeDataIO | ito::typeADDA;
     setObjectName("LibModBus");
 
-    m_description = tr("itom-plugin for a modbus commonication");
+    m_description = tr("itom-plugin for a modbus communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.\n\
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
@@ -72,7 +72,7 @@ The content of the registers is expected as data in the uint16 data object for r
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr(
-"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.\n\
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
@@ -92,14 +92,14 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
 
     paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU commonication (N,E,O)").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[N,P,O]{1}"), true);
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -139,13 +139,13 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModbusTCP or slave ID for ModbusRTU").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU commonication (N,E,O)").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU commonication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

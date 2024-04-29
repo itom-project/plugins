@@ -83,12 +83,12 @@ GWInstekPSPInterface::GWInstekPSPInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"This itom-plugin allows commonicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
+"This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.";
     m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr(
-"This itom-plugin allows commonicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
+"This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.");
 

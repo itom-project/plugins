@@ -332,7 +332,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>NanotecStepMotor is an itom-plugin, which can be used to commonicate with the Nanotec controllers SMCP.
+        <source>NanotecStepMotor is an itom-plugin, which can be used to communicate with the Nanotec controllers SMCP.
 It has been tested with one connected controller SMCP33 and 4 axis.</source>
         <translation type="unfinished"></translation>
     </message>

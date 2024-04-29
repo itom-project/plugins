@@ -46,22 +46,22 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>The baudrate of the port for RTU commonication</source>
+        <source>The baudrate of the port for RTU communication</source>
         <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Parity for RTU commonication (N,E,O)</source>
+        <source>Parity for RTU communication (N,E,O)</source>
         <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Number of bits to be written in line for RTU commonication</source>
+        <source>Number of bits to be written in line for RTU communication</source>
         <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Stop bits after every n bits for RTU commonication</source>
+        <source>Stop bits after every n bits for RTU communication</source>
         <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
@@ -104,12 +104,12 @@
     <name>LibModBusInterface</name>
     <message>
         <location line="-362"/>
-        <source>itom-plugin for a modbus commonication</source>
+        <source>itom-plugin for a modbus communication</source>
         <translation type="unfinished">itom-Plugin für eine modbus-Komminikation</translation>
     </message>
     <message>
         <location line="+11"/>
-        <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU commonication.
+        <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions.
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written.
@@ -134,22 +134,22 @@ Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&ap
     </message>
     <message>
         <location line="+2"/>
-        <source>The baudrate of the port for RTU commonication</source>
+        <source>The baudrate of the port for RTU communication</source>
         <translation type="unfinished">Baudrate für den Port der RTU-Kommunikation</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Parity for RTU commonication (N,E,O)</source>
+        <source>Parity for RTU communication (N,E,O)</source>
         <translation type="unfinished">Parität für die RTU-Kommunikation (N,E,O)</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Number of bits to be written in line for RTU commonication</source>
+        <source>Number of bits to be written in line for RTU communication</source>
         <translation type="unfinished">Anzahl Bits die pro Zeile über die RTU-Kommunikation geschrieben werden</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Stop bits after every n bits for RTU commonication</source>
+        <source>Stop bits after every n bits for RTU communication</source>
         <translation type="unfinished">Stop-Bits nach jedem n-ten Bit für die RTU-Kommunikation</translation>
     </message>
     <message>
@@ -252,7 +252,7 @@ Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&ap
     </message>
     <message>
         <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for commonication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
+It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
 The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
         <translation type="obsolete">SerialIO ist ein ITOM-Plugin um einen direkten Zugriff auf die seriellen Ports zu bekommen.
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
@@ -370,14 +370,14 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     </message>
     <message>
         <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for commonication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
+It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
 The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
         <translation type="obsolete">SerialIO ist ein itom-Plugin um einen direkten Zugriff auf die serielle Schnittstelle zu bekommen.
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
     <message>
-        <source>itom-plugin for a serial port commonication</source>
+        <source>itom-plugin for a serial port communication</source>
         <translation type="vanished">Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>

@@ -607,7 +607,7 @@
     </message>
     <message>
         <location line="+13"/>
-        <source>The PIPiezoCtrl is an itom-plugin, which can be used to commonicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665, E-662 or C-663) are implemented.
+        <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665, E-662 or C-663) are implemented.
 
 It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.
 

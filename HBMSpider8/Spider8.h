@@ -219,7 +219,7 @@ class Spider8 : public ito::AddInDataIO
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
 *\class     Spider8Funcs
- \brief     Private class for commonication with HBM Spider8 device
+ \brief     Private class for communication with HBM Spider8 device
 
 */
 class Spider8Funcs

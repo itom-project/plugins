@@ -62,7 +62,7 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: SuperlumBS
 
-To commonicate with the device, you need to perform the following settings for the serial port commonication using the Plugin **SerialIO**.
+To communicate with the device, you need to perform the following settings for the serial port communication using the Plugin **SerialIO**.
 
 The parameter are as follow:
 
@@ -82,7 +82,7 @@ Then create a new instance of the plugin **SuperlumBS** using the instance of th
     serial = dataIO("SerialIO", COM-Port, Baudrate, endline="\r\n")
     bs = DataIO("SuperlumBS", serial)
 
-After the initialization of the plugin **SuperlumBS** the remote commonication is set. The plugin works only, if the **remote access** is available, **Master-Key** is in position I and the **remote Interlock** is closed.
+After the initialization of the plugin **SuperlumBS** the remote communication is set. The plugin works only, if the **remote access** is available, **Master-Key** is in position I and the **remote Interlock** is closed.
 If the instance of **SuperlumBS** is deleted, the remote access is switched to the local mode.
 
 Parameters

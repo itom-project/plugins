@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`LibModBus`
 **License**:    :pluginlicense:`LibModBus`
 **Platforms**:  Windows, Linux
-**Devices**:    Modbus commonication over TCP/IP and RTU
+**Devices**:    Modbus communication over TCP/IP and RTU
 **Author**:     :pluginauthor:`LibModBus`
 =============== ========================================================================================================
 
@@ -46,19 +46,19 @@ parameters can be changed using *setParam*.
     IP-Address of the connected Modbus-TCP device or serial port for Modbus-RTU connection. Under Windows COM1-COM9 is supported, unix-based systems should use /dev/ttyS0.. or /dev/ttyUSB0..
 
 **port**: {int}, read-only
-    port used for IP commonication or device ID for ModbusRTU
+    port used for IP communication or device ID for ModbusRTU
 
 **baud**: {int}, read-only
-    The baudrate of the port for RTU commonication
+    The baudrate of the port for RTU communication
 
 **parity**: {str}, read-only
-    Parity for RTU commonication (N->None, E->Even, O->Odd)
+    Parity for RTU communication (N->None, E->Even, O->Odd)
 
 **databit**: {int}, read-only
-    Number of bits to be written in line for RTU commonication
+    Number of bits to be written in line for RTU communication
 
 **stopbit**: {int}, read-only
-    Stop bits after every n bits for RTU commonication
+    Stop bits after every n bits for RTU communication
 
 **output_mode**: {bool}
     if output_mode is true, multiple outputs will be sent to command line, e.g. register values of getVal function. Default is false
@@ -71,7 +71,7 @@ parameters can be changed using *setParam*.
 Usage
 =====
 
-Values can be read or written via modbus commonication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1,
+Values can be read or written via modbus communication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1,
 the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj must be initialized as 'uint16' for modbus register values.
 To read or write coils, dObj must be initialized as 'uint8' as the decision for using read/write coil or read/write register only depends on the data type of the input data object.
 

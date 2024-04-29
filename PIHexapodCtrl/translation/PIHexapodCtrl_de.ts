@@ -321,7 +321,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>F-361 commonications error</source>
+        <source>F-361 communications error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -574,7 +574,7 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>The PIHexapodCtrl is an itom-plugin, which can be used to commonicate with PI Hexapod-controllers.
+        <source>The PIHexapodCtrl is an itom-plugin, which can be used to communicate with PI Hexapod-controllers.
 Different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) are implemented,
 It is used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.
 This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.

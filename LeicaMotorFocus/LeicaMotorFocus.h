@@ -64,7 +64,7 @@ class LeicaMotorFocus : public ito::AddInActuator
 
     private:
 
-        ito::AddInDataIO *m_pSer;    /*! < Handle to serial port for commonication with the microscope*/
+        ito::AddInDataIO *m_pSer;    /*! < Handle to serial port for communication with the microscope*/
         double m_scale; /*!< Smallest increment of motor in mm*/
         int m_async;    /*!< Toggles wait until timeout / stop driving and dont wait*/
         int m_direction; /*!< Implement mirror used in getPos and LMFSetPos*/
@@ -88,8 +88,8 @@ class LeicaMotorFocus : public ito::AddInActuator
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL); /*!< This function establish the commonication between the plugin and the microscope*/
-        ito::RetVal close(ItomSharedSemaphore *waitCond); /*!< This function kills the commonication before the plugin is destroyed */
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL); /*!< This function establish the communication between the plugin and the microscope*/
+        ito::RetVal close(ItomSharedSemaphore *waitCond); /*!< This function kills the communication before the plugin is destroyed */
 
         //! Starts calibration for a single axis
         ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);

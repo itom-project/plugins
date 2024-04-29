@@ -15,7 +15,7 @@
 Overview
 ========
 
-The plugin implements the Motioncontroller Newport SMC100cc/pp. It can manage up to 32 controllers that are all connected to the same comport and commonicate internally over RS485. The connection to the computer is via RS232.
+The plugin implements the Motioncontroller Newport SMC100cc/pp. It can manage up to 32 controllers that are all connected to the same comport and communicate internally over RS485. The connection to the computer is via RS232.
 
 .. pluginsummaryextended::
     :plugin: NewportSMC100

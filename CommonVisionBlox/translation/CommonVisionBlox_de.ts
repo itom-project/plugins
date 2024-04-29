@@ -12,7 +12,7 @@
  via the Stemmer configuration tool. If a bitdepth &gt; 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file
  from Stemmer GenICam and don&apos;t set the pixelFormat property to auto but Mono16.
 
- In case of a slow connection, check the commonication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections.
+ In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections.
 
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.</source>
         <translation type="unfinished"></translation>

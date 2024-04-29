@@ -1041,11 +1041,11 @@ SerialIOInterface::SerialIOInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("SerialIO");
 
-    m_description = tr("itom-plugin for a serial port commonication");
+    m_description = tr("itom-plugin for a serial port communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
-"SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for commonication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
+"SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilities of the operating system. \n\
 \n\
 flow bitmask \n\
@@ -1077,7 +1077,7 @@ Example \n\
     answer = bytearray(9) #supposed length is 9 characters \n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ";
     m_detaildescription = tr(docstring);*/
-    m_detaildescription = tr("SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for commonication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
+    m_detaildescription = tr("SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilities of the operating system. \n\
 \n\
 flow bitmask \n\

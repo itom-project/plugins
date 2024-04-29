@@ -167,7 +167,7 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
     </message>
     <message>
         <location line="+1"/>
-        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to commonicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer * AvaSpec-ULS2048CL-EVO USB3-Spectrometer.</source>
+        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to communicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer * AvaSpec-ULS2048CL-EVO USB3-Spectrometer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

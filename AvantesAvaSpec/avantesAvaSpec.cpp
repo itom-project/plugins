@@ -127,7 +127,7 @@ AvantesAvaSpecInterface::AvantesAvaSpecInterface() : AddInInterfaceBase()
     m_description = QObject::tr("Avantes AvaSpec");
     m_detaildescription = QObject::tr(
 "This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. \
-It uses a low-level libusb connection to commonicate with the devices and has been \
+It uses a low-level libusb connection to communicate with the devices and has been \
 tested with the following spectrometers: \
 \
 * AvaSpec 3468 USB-Spectrometer \

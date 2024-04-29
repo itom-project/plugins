@@ -197,7 +197,7 @@
     </message>
     <message>
         <location filename="../SMC100Interface.cpp" line="73"/>
-        <source>NewportSMC100 is an itom-plugin, which can be used to commonicate with the Newport controllers SMC100CC and SMC100PP.
+        <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
         <translation type="unfinished"></translation>
     </message>

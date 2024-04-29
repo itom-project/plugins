@@ -115,7 +115,7 @@ OceanOpticsSpecInterface::OceanOpticsSpecInterface() : AddInInterfaceBase()
     m_detaildescription = QObject::tr(
 "This DLL integrates the OceanOptics spectrometers which use the Ocean Byte Protocol (OBP) into itom. \
 This includes series: STS, QE Pro, Ocean FX, and Ocean HDX  (and probably future releases)\n\
-It uses the libUSB interface to commonicate with the devices.\n\
+It uses the libUSB interface to communicate with the devices.\n\
 !This was ONLY fully implemented for the STS series! \
 Others most likely won't work properly yet.\n\
 Tested with: \

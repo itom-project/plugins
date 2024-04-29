@@ -100,7 +100,7 @@ Download page: https://www.ophiropt.com/laser--measurement/software/com-object")
         "serial",
         ito::ParamBase::HWRef | ito::ParamBase::In,
         NULL,
-        tr("An opened serial port (the right commonication parameters will be set by this plugin).")
+        tr("An opened serial port (the right communication parameters will be set by this plugin).")
             .toLatin1()
             .data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);

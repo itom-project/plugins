@@ -252,7 +252,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FirgelliLAC is an itom-plugin, which can be used to commonicate with the Firgelli USB controllers.
+        <source>FirgelliLAC is an itom-plugin, which can be used to communicate with the Firgelli USB controllers.
 It has been tested with one connected motor PQ12-SS-GG-VV-P with one axis.
 
 Please indicate the correct working distance of the connected motor (e.g. 20mm) at startup, else the

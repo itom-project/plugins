@@ -117,7 +117,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoMoveActuator,
         DemoAlgorithms::demoMoveActuatorParams,
-        tr("Demo algorithm (I) for plugin-developers - actuator commonication. Moves selected axes "
+        tr("Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes "
            "of an actuator."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -125,7 +125,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoSnapImage,
         DemoAlgorithms::demoSnapImageParams,
-        tr("Demo algorithm (II) for plugin-developers - camera commonication. Snaps a single "
+        tr("Demo algorithm (II) for plugin-developers - camera communication. Snaps a single "
            "image."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -133,7 +133,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoSnapMovie,
         DemoAlgorithms::demoSnapMovieParams,
-        tr("Demo algorithm (III) for plugin-developers - camera commonication. Snaps a number of "
+        tr("Demo algorithm (III) for plugin-developers - camera communication. Snaps a number of "
            "images to a stack."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);
@@ -141,7 +141,7 @@ ito::RetVal DemoAlgorithms::init(
     filter = new FilterDef(
         DemoAlgorithms::demoTestActuator,
         DemoAlgorithms::demoTestActuatorParams,
-        tr("Demo algorithm (IV) for plugin-developers - actuator commonication. Moves first axis "
+        tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis "
            "of an actuator several time to test the actuator performance."),
         ito::AddInAlgo::catNone,
         ito::AddInAlgo::iNotSpecified);

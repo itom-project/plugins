@@ -67,7 +67,7 @@ PIHexapodCtrlInterface::PIHexapodCtrlInterface()
     setObjectName("PIHexapodCtrl");
 
     m_description = tr("PI Hexapods H810, H824, H840, H850");
-    m_detaildescription = tr("The PIHexapodCtrl is an itom-plugin, which can be used to commonicate with PI Hexapod-controllers.\n\
+    m_detaildescription = tr("The PIHexapodCtrl is an itom-plugin, which can be used to communicate with PI Hexapod-controllers.\n\
 Different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) are implemented,\n\
 It is used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.\n\
 This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.\n\
@@ -1414,7 +1414,7 @@ ito::RetVal PIHexapodCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &last
                         lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 cannot be initialized/is not initialized").toLatin1().data()));
                     break;
                     case 48:
-                        lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 commonications error").toLatin1().data()));
+                        lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 communication error").toLatin1().data()));
                     break;
                     case 53:
                         lastErrors.append(QPair<int,QByteArray>(errorNo, tr("MOV! command motion in progress").toLatin1().data()));

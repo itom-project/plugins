@@ -150,9 +150,9 @@ Some files of the SVGigE SDK are shipped within this plugin (currently 1.5.2). P
 
 This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...).
 
-For a robust data commonication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.
+For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.
 
-Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, use the GenICam plugin of itom that is able to commonicate with Vistek USB3 and GigE cameras.</source>
+Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, use the GenICam plugin of itom that is able to communicate with Vistek USB3 and GigE cameras.</source>
         <translation type="unfinished">itom-Plugin für GigE-Kameras von SVS Vistek. Jede Kamera wird mit Hilfe deren Seriennummer (siehe Gehäuse der Kamera) initialisiert.
 
 Einige Dateien des SVGigE-SDKs werden mit diesem Plugin mitgeliefert (aktuell 1.5.2). Bitte die SVS Vistek-Webseite auf neueren SDK-Versionen prüfen und ggf. die vorhandenen Dateien ersetzen. Für dieses spezielle Plugin bietet SVS Vistek jedoch keinen Support.
@@ -225,7 +225,7 @@ Achtung: Die aktuelle Version läuft nur mit Vistek-Treibern bis einschließlich
     </message>
     <message>
         <location line="+4"/>
-        <source>Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera commonication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback</source>
+        <source>Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback</source>
         <translation type="unfinished">Protokollstufe: Die Protokolldatei heißt Vistek_SVGigE.log und befindet sich im aktuellen Verzeichnis; Stufen: 0 - deaktiviert (standard); 1 - KRITISCHe Fehler, die ein Weiterbetreiben verhindern; 2 - FEHLER, die ein ordnungsgemäßes Functionieren verhindern; 3 - WARNUNGen, die in der Regel keine Auswirkungen auf die Function haben; 4 - INFO zur Auflistung der Kamerakommunikation; 5 - DIAGNOSE zur Untersuchung von Bild-Callbacks; 6 - DEBUG zum Empfangen mehrerer Parameter für Bild-Callbacks; 7 - DETAILs zum Empfangen mehrerer Signale für jeden Bild-Callback</translation>
     </message>
     <message>

@@ -64,11 +64,11 @@ ItomCyUSBInterface::ItomCyUSBInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("CyUSB");
 
-    m_description = tr("itom-plugin for a USB port commonication with Cypress Semiconductor USB chips.");
+    m_description = tr("itom-plugin for a USB port communication with Cypress Semiconductor USB chips.");
 
     m_detaildescription = tr(
 "ItomCyUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\n\
-It can be used by plugins for commonication analog to the USB port.\n\
+It can be used by plugins for communication analog to the USB port.\n\
 The plugin is implemented for Window.\n\
 \n\
 To connect to a device you need the vendor ID and the product ID.\n\
@@ -82,7 +82,7 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel commonication with USB-devices") + GITVERSION;
+    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices") + GITVERSION;
 
     ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x04B4, tr("The vendor ID of the device to connect to").toLatin1().data()); //default denselight device
     m_initParamsMand.append(paramVal);
@@ -90,7 +90,7 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("printInfoAboutAllDevices", ito::ParamBase::Int, 0, 1, 0, tr("If true, all information about connected devices is printed to the console.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all commonication commands are printed to the dockWidget.").toLatin1().data());
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all communication commands are printed to the dockWidget.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s].").toLatin1().data());
     m_initParamsOpt.append(paramVal);

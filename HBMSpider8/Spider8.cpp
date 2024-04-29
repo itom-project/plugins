@@ -1336,7 +1336,7 @@ ito::RetVal Spider8::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
     {
         m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
-        // commonication default is 9600 baud, 8 data bits, 1 stop bit, even parity
+        // communication default is 9600 baud, 8 data bits, 1 stop bit, even parity
         // maximum listed speed is 76800 baud. After switch on 9600 baus is always possible.
         retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
         retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
@@ -1382,7 +1382,7 @@ ito::RetVal Spider8::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
             m_pSpider = new Spider8Funcs(m_pSer);
             m_baud = (*paramsOpt)[0].getVal<int>();
-            // now speed up commonication
+            // now speed up communication
             retValue += m_pSpider->hbmSetBaud(m_baud);
         }
         // set all channels to inactive

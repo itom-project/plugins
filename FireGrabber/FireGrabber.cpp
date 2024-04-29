@@ -70,7 +70,7 @@ FireGrabberInterface::FireGrabberInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char* docstring = \
-"Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to commonicate with corresponding cameras. The cameras are connected to the computer via \
+"Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to communicate with corresponding cameras. The cameras are connected to the computer via \
 firewire. \n\
 \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
@@ -83,7 +83,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
 #endif
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-"Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to commonicate with corresponding cameras. The cameras are connected to the computer via \
+"Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to communicate with corresponding cameras. The cameras are connected to the computer via \
 firewire. \n\
 \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \

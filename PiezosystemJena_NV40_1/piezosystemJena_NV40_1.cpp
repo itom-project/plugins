@@ -29,11 +29,11 @@ PiezosystemJena_NV40_1Interface::PiezosystemJena_NV40_1Interface()
     m_description = QObject::tr("Piezosystem Jena NV40/1 CLE");
 
 /*    char docstring[] = \
-"The PiezosystemJena is an itom-plugin, which can be used to commonicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
+"The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
 This system needs a serial port. The parameters are set automatically during initialization.\n\
 It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).";
     m_detaildescription = QObject::tr(docstring);*/
-    m_detaildescription = QObject::tr("The PiezosystemJena is an itom-plugin, which can be used to commonicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
+    m_detaildescription = QObject::tr("The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
 This system needs a serial port. The parameters are set automatically during initialization.\n\
 It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
 

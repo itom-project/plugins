@@ -64,13 +64,13 @@ AerotechA3200Interface::AerotechA3200Interface(QObject *parent)
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char* docstring = \
-"This plugin allows commonicating with controllers of type A3200 of company Aerotech. \n\
+"This plugin allows communicating with controllers of type A3200 of company Aerotech. \n\
 For details please check C:\\A3200\\MANUAL.";*/
 
     m_description = QObject::tr("Plugin for the A3200-controller of Aerotech");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-"This plugin allows commonicating with controllers of type A3200 of company Aerotech. \n\
+"This plugin allows communicating with controllers of type A3200 of company Aerotech. \n\
 For details please check C:\\A3200\\MANUAL.");
     m_author = "Simon Chen, Christof Pruss, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
