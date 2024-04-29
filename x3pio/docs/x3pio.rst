@@ -21,8 +21,7 @@ is licensed under the LGPL license and uses further libraries. For more informat
 of the library itself see www.opengps.eu.
 
 For loading a x3p file, this plugin only supports the feature types SUR (surface) and PRF (profile), where profile
-is always loaded in a 1xN data object. The x- and y- axis of loaded x3p files must always be incremental, no absolute x-
-or y-axes are supported.
+is always loaded in a 1xN data object. The x- and y- axis of loaded x3p files must always be incremental, no absolute x- or y-axes are supported.
 
 Data objects that should be stored in a x3p file are always stored as feature type SUR, such that 1xN or Mx1 data objects
 are also stored as surfaces.
