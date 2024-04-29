@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut f�r Technische Optik (ITO),
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -1747,7 +1747,7 @@ ito::RetVal BasicFilters::genericSobelOptParams(QVector<ito::Param> *paramsMand,
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-\detail This function uses the generic filter engine to run the optimized Sobel filter (s. J�hne Digitale Bildverarbeitung)
+\detail This function uses the generic filter engine to run the optimized Sobel filter (s. Jähne Digitale Bildverarbeitung)
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
 \param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function

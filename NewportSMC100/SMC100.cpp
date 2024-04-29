@@ -837,7 +837,7 @@ ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
                     break;
                 }
             }
-            // otherwise it�s -1 and that means that the old status remains
+            // otherwise it's -1 and that means that the old status remains
         }
         else
         {
@@ -1169,7 +1169,7 @@ ito::RetVal SMC100::SMCSetVelocityAcceleration(bool vNota, const QVector<double>
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Array size doesn�t match the number of axis").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Array size doesn't match the number of axis").toLatin1().data());
     }
     return retval;
 }

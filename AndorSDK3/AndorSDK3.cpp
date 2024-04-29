@@ -126,7 +126,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("readout_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, std::numeric_limits<double>::max(), 0.0, tr("time to readout data from the sensor in the current configuration (0.0 if not implemented)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sensor_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("current temperature of sensor in �C (inf if not implemented)").toLatin1().data());
+    paramVal = ito::Param("sensor_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("current temperature of sensor in °C (inf if not implemented)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sensor_cooling", ito::ParamBase::Int, 0, 1, 0, tr("state of the sensor cooling. Cooling is disabled (0) by default at power up and must be enabled (1) for the camera to achieve its target temperature.").toLatin1().data());

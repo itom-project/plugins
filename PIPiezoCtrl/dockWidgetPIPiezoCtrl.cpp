@@ -54,7 +54,7 @@ void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
     else
     {
         m_scale = 1000.0f;
-        m_unit = u8" �m";
+        m_unit = u8" µm";
         ui.spinBoxTargetPos->setSuffix(m_unit);
         ui.spinBoxActPos->setSuffix(m_unit);
         ui.spinBoxStepSize->setSuffix(m_unit);

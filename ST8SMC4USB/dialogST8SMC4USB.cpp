@@ -71,14 +71,14 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
         if (params["unit"].getVal<int>() > 0)
         {
             ui.sb_speed->setSuffix(" mm/s");
-            ui.sb_accel->setSuffix(" mm/s�");
-            ui.sb_decel->setSuffix(" mm/s�");
+            ui.sb_accel->setSuffix(" mm/s²");
+            ui.sb_decel->setSuffix(" mm/s²");
         }
         else
         {
-            ui.sb_speed->setSuffix(" �/s");
-            ui.sb_accel->setSuffix(" �/s�");
-            ui.sb_decel->setSuffix(" �/s�");
+            ui.sb_speed->setSuffix(" °/s");
+            ui.sb_accel->setSuffix(" °/s²");
+            ui.sb_decel->setSuffix(" °/s²");
         }
     }
 

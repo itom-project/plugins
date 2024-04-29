@@ -118,9 +118,9 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 #endif
 
         /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
-            dp � Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
-            param1 � First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
-            param2 � Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
+            dp : Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
+            param1 : First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
+            param2 : Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
         cv::HoughCircles(*cvplaneIn, circles, method, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
 
 
@@ -1083,7 +1083,7 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
     paramsOpt->append(ito::Param("method", ito::ParamBase::Int | ito::ParamBase::In, cv::FM_7POINT, std::max(cv::FM_RANSAC, cv::FM_LMEDS), cv::FM_8POINT, description.toLatin1().data()));
     paramsOpt->append(ito::Param("param1", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("Parameter used for RANSAC. It is the maximum distance from a point to an epipolar line in pixels, beyond which the point is considered an outlier and is not used for computing the final fundamental matrix. It can be set to something like 1-3, depending on the accuracy of the point localization, image resolution, and the image noise.").toLatin1().data()));
     paramsOpt->append(ito::Param("param2", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("Parameter used for the RANSAC or LMedS methods only. It specifies a desirable level of confidence (probability) that the estimated matrix is correct.").toLatin1().data()));
-    paramsOpt->append(ito::Param("status", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1�s. If not given, no status information is returned.").toLatin1().data()));
+    paramsOpt->append(ito::Param("status", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1's. If not given, no status information is returned.").toLatin1().data()));
     return retval;
 }
 

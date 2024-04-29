@@ -208,7 +208,7 @@ void DialogThorlabsBP::currentAxisChanged(int newAxis)
         ui.comboMaximumVoltage->setCurrentIndex(2);
         break;
     }
-    ui.lblTravelRange->setText(QString(QLatin1String("%1 �m")).arg(temporaryParams["maximumTravelRange"].getVal<double*>()[newAxis] * 1000.0));
+    ui.lblTravelRange->setText(QString(QLatin1String("%1 µm")).arg(temporaryParams["maximumTravelRange"].getVal<double*>()[newAxis] * 1000.0));
 
     if (temporaryParams["zeroed"].getVal<int*>()[newAxis])
     {

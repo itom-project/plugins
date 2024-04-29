@@ -59,7 +59,7 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
     else
     {
         m_scale = 1000.0f;
-        m_unit = u8" �m";
+        m_unit = u8" µm";
         ui.dblSpinPosLimitLow->setSuffix(m_unit);
         ui.dblSpinPosLimitHigh->setSuffix(m_unit);
         ui.label_Velocity->setVisible(false);

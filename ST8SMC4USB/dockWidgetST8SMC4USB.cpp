@@ -46,7 +46,7 @@ void DockWidgetST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     QString suffix;
     if (params["unit"].getVal<int>() == 0)
     {
-        suffix = QLatin1String(" �");
+        suffix = QLatin1String(" °");
     }
     else
     {
