@@ -24,7 +24,7 @@
               1 = Customer
    Bits 28    MUST BE ZERO
    Bits 27-16 Facility Code (programmer defined)
-   Bits 15-0  Exception Code (programmer defined)   (least significant)
+   Bits 15-0  Exception Code (programmer defined)   (least sigificant)
 
 */
 
@@ -84,7 +84,7 @@
 
 
 /*
-   Convenience macros
+   Convience macros
 */
 #define AER_DRV_ERROR(num)       (U600ERR_DRV_CODE + num)
 #define AER_960RET_ERROR(num)    (U600ERR_960RET_CODE + num)

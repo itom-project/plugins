@@ -501,7 +501,7 @@ BOOL PI_FUNC_DECL PI_JAX(int ID,  int iJoystickID,  int iAxesID, const char* szA
 BOOL PI_FUNC_DECL PI_qJAX(int ID, const int* iJoystickIDsArray, const int* iAxesIDsArray, int iArraySize, char* szAxesBuffer, int iBufferSize);
 BOOL PI_FUNC_DECL PI_qJBS(int ID, const int* iJoystickIDsArray, const int* iButtonIDsArray, BOOL* pbValueArray, int iArraySize);
 BOOL PI_FUNC_DECL PI_JDT(int ID, const int* iJoystickIDsArray, const int* iAxisIDsArray,const int* piValueArray, int iArraySize);
-BOOL PI_FUNC_DECL PI_JLT(int ID, int iJoystickID, int iAxisID, int iStartAddress, const double* pdValueArray,int iArraySize);
+BOOL PI_FUNC_DECL PI_JLT(int ID, int iJoystickID, int iAxisID, int iStartAdress, const double* pdValueArray,int iArraySize);
 BOOL PI_FUNC_DECL PI_qJLT(int ID, const int* iJoystickIDsArray, const int* iAxisIDsArray,  int iNumberOfTables,  int iOffsetOfFirstPointInTable,  int iNumberOfValues, double** pdValueArray, char* szGcsArrayHeader, int iGcsArrayHeaderMaxSize);
 BOOL PI_FUNC_DECL PI_JON(int ID, const int* iJoystickIDsArray, const BOOL* pbValueArray, int iArraySize);
 BOOL PI_FUNC_DECL PI_qJON(int ID, const int* iJoystickIDsArray, BOOL* pbValueArray, int iArraySize);

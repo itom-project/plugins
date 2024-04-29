@@ -414,7 +414,7 @@
  * ---------------
  *   - packet resend capabilities improved
  *     NOTE: The image pointer will be NULL for uncomplete images
- *           which may be the case for insufficient network bandwidth
+ *           which may be the case for unsufficient network bandwidth
  *
  * Version 1.4.1.4
  * ---------------
@@ -2022,7 +2022,7 @@ extern "C"
    *  @return success or error code
    *
    *  HINT: If the return code is SVGigE_SVCAM_STATUS_CAMERA_OCCUPIED then the
-   *        IPAddress will show the IP of the host that occupies the camera.
+   *        IPAdress will show the IP of the host that occupies the camera.
    */
   __usrdllexport__ SVGigE_RETURN
   Camera_forceValidNetworkSettings(Camera_handle hCamera,

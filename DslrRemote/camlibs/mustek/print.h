@@ -28,7 +28,7 @@
 #define printAPINote			if (1) printf
 #define printAPIError		if (1) printf
 
-/* only for debugging : The FunctionCall */
+/* only for debugging : The FunktionCall */
 #define printFnkCall			if (0) printf
 
 /* Message or Errors from the Core Layer */

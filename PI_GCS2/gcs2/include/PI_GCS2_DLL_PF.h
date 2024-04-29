@@ -452,7 +452,7 @@ typedef BOOL (PI_FUNC_DECL * PFPI_JAX)(int ID,  int iJoystickID,  int iAxesID, c
 typedef BOOL (PI_FUNC_DECL * PFPI_qJAX)(int ID, const int* iJoystickIDsArray, const int* iAxesIDsArray, int iArraySize, char* szAxesBuffer, int iBufferSize);
 typedef BOOL (PI_FUNC_DECL * PFPI_qJBS)(int ID, const int* iJoystickIDsArray, const int* iButtonIDsArray, BOOL* pbValueArray, int iArraySize);
 typedef BOOL (PI_FUNC_DECL * PFPI_JDT)(int ID, const int* iJoystickIDsArray, const int* iAxisIDsArray,const int* piValueArray, int iArraySize);
-typedef BOOL (PI_FUNC_DECL * PFPI_JLT)(int ID, int iJoystickID, int iAxisID, int iStartAddress, const double* pdValueArray,int iArraySize);
+typedef BOOL (PI_FUNC_DECL * PFPI_JLT)(int ID, int iJoystickID, int iAxisID, int iStartAdress, const double* pdValueArray,int iArraySize);
 typedef BOOL (PI_FUNC_DECL * PFPI_qJLT)(int ID, const int* iJoystickIDsArray, const int* iAxisIDsArray,  int iNumberOfTables,  int iOffsetOfFirstPointInTable,  int iNumberOfValues, double** pdValueArray, char* szGcsArrayHeader, int iGcsArrayHeaderMaxSize);
 typedef BOOL (PI_FUNC_DECL * PFPI_JON)(int ID, const int* iJoystickIDsArray, const BOOL* pbValueArray, int iArraySize);
 typedef BOOL (PI_FUNC_DECL * PFPI_qJON)(int ID, const int* iJoystickIDsArray, BOOL* pbValueArray, int iArraySize);

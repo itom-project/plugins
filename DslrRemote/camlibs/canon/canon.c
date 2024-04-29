@@ -3307,7 +3307,7 @@ canon_int_list_directory (Camera *camera, const char *folder, CameraList *list,
                                    in this block */
                                 memset (&info, 0, sizeof (info));
 
-                                /* we start with nothing and continuously add stuff */
+                                /* we start with nothing and continously add stuff */
                                 info.file.fields = GP_FILE_INFO_NONE;
 
                                 info.file.mtime = dirent_time;
@@ -3868,7 +3868,7 @@ canon_int_get_info_func (Camera *camera, const char *folder,
                                 /* we're going to fill out the info structure
                                    in this block */
 
-                                /* We start with nothing and continuously add stuff */
+                                /* We start with nothing and continously add stuff */
                                 info->file.fields = GP_FILE_INFO_NONE;
 
                                 info->file.mtime = dirent_time;

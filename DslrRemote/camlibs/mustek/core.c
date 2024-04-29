@@ -45,7 +45,7 @@
 #  define N_(String) (String)
 #endif
 
-/*----------------------  Function for Communication ------------------------ */
+/*----------------------  Funktion for Communication ------------------------ */
 
 /*
  * Send the Initial Command. If the device is rs232 this
