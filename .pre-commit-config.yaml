@@ -1,3 +1,5 @@
+exclude: ^(AerotechA3200/Include|AerotechEnsemble/CLibrary|PI_GCS2/gcs2|IDSuEye/IDSDevLibs|cmu1394/cmu1394/include|DslrRemote2/libptp2-1.2.0|DslrRemote/camlibs|DslrRemote/gphoto2|DslrRemote/libtool_gcc|DslrRemote/libgphoto2|DslrRemote/libgphoto2_port|PCOPixelFly/PCO|DslrRemote/regex|libmodbus/libmodbus-3.1.2|FirgelliLAC/Mpusbapi|FireGrabber/FireGrab|hidapi/hidapi-0.7.0|QCam/QImaging_SDK|ST8SMC4USB/Lib|Vistek/VistekGigESDK|RawImport/dcraw|x3pio/x3plib)/
+
 ci:
     autoupdate_schedule: monthly
 
@@ -15,7 +17,7 @@ repos:
     hooks:
     -   id: codespell
         args:
-        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt,*.po,*.iss.in,*.m4sh,*.dll,PI_GCS2/gcs2/*,IDSuEye/IDSDevLibs/*,DslrRemote2/libptp2-1.2.0/*,x3pio/x3plib/*,DslrRemote/camlibs/*,DslrRemote/gphoto2/*,DslrRemote/libtool_gcc/*,DslrRemote/libgphoto2/*,DslrRemote/libgphoto2_port/*,DslrRemote/regex/*,PCOPixelFly/PCO/*,libmodbus/libmodbus-3.1.2/*,FireGrabber/FireGrab/*,hidapi/hidapi-0.7.0/*,AerotechEnsemble/CLibrary/*,Vistek/VistekGigESDK/*,RawImport/dcraw/*,AerotechA3200/Include/*,FittingFilters/nr3.h,QCam/QImaging_SDK/*,ST8SMC4USB/Lib/*,cmu1394/cmu1394/include/*,FirgelliLAC/Mpusbapi/*
+        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt,*.po,*.iss.in,*.m4sh,*.dll,FittingFilters/nr3.h
         -   --ignore-words=.codespell_ignore_words.txt
 
 -   repo: https://github.com/asottile/pyupgrade
