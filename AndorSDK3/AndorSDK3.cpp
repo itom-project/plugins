@@ -191,7 +191,7 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (iNumberDevices <= 0)
         {
             retVal += ito::RetVal(ito::retError, 0, "no Andor SDK3 compatible cameras have been detected at this computer. Check all redistributable binaries \
-                                                    have been copyd to the executable directory or are in the system path and check atdebug.log file");
+                                                    have been copied to the executable directory or are in the system path and check atdebug.log file");
         }
     }
 
@@ -942,7 +942,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
@@ -987,7 +987,7 @@ ito::RetVal AndorSDK3::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

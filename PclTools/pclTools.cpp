@@ -1583,7 +1583,7 @@ const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
                 }
                 ne.compute(*normals);
 
-                retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copyd to the output point cloud [not supported]").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]").toLatin1().data());
                 pcl::concatenateFields(rgbCloud, *normals, *(pclOut->toPointXYZRGBNormal()));
             }
             break;
@@ -3623,7 +3623,7 @@ const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid polygon mesh").toLatin1().data()));
     paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygon mesh").toLatin1().data()));
-    paramsMand->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("vector with indices of polygons that will be copyd into output mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("vector with indices of polygons that will be copied into output mesh").toLatin1().data()));
 
     return retval;
 }

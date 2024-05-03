@@ -90,7 +90,7 @@ DispWindowInterface::DispWindowInterface()
     \n\
     For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and
     set the variable GLEW_DIR in CMake \
-    to the corresponding folder. The necessary library will finally be copyd to the lib-folder of
+    to the corresponding folder. The necessary library will finally be copied to the lib-folder of
     itom such that an entry in the \
     environment variable path is not necessary. Please make sure, that you use always the same
     version of glew for all plugins that \ require this library.";
@@ -102,7 +102,7 @@ DispWindowInterface::DispWindowInterface()
 various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
 \n\
 For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake \
-to the corresponding folder. The necessary library will finally be copyd to the lib-folder of itom such that an entry in the \
+to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the \
 environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that \
 require this library.");
 

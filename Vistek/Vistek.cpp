@@ -853,7 +853,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This method copies the acquired image data to externalDataObject or m_data.
 /*!
-    If *externalDataObject is NULL then it will be reassigned to &m_data so the image data is copyd to m_data instead.
+    If *externalDataObject is NULL then it will be reassigned to &m_data so the image data is copied to m_data instead.
 
     \param [in] *externalDataObject is the data object where the image is to be stored. (Defaults to NULL)
     \return ito::RetVal retOk if everything is ok, retError if camera has not been started or no image has been acquired.
@@ -988,7 +988,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no data has been acquired by the method acquire.
     \sa DataObject, acquire, retrieveData
@@ -1034,7 +1034,7 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

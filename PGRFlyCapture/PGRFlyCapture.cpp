@@ -2083,7 +2083,7 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is shallow-copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
@@ -2128,7 +2128,7 @@ ito::RetVal PGRFlyCapture::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

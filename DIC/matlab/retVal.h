@@ -77,7 +77,7 @@ class ITOMCOMMON_EXPORT RetVal
         *   constructor with retValue, retCode and errorMessage
         *   @param [in]  retValue     type of RetVal; for possible values see \ref tRetValue
         *   @param [in]  retCode      user definable return code
-        *   @param [in]  pRetMessage  error message to be passed or NULL, string is copyd
+        *   @param [in]  pRetMessage  error message to be passed or NULL, string is copied
         *   Makes a deep copy of RetVal, i.e. a copy of the error message
         */
         RetVal(ito::tRetValue retValue, int retCode, const char *pRetMessage);

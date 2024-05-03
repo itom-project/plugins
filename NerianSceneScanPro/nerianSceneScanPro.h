@@ -86,7 +86,7 @@ class NerianSceneScanPro : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-        //char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copyd to the dataObject m_data (defined in AddInGrabber)
+        //char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
         enum SyncParams: unsigned long{

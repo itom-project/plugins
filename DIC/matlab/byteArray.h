@@ -110,7 +110,7 @@ class ITOMCOMMON_EXPORT ByteArray
         //! another ByteArray is assigned to this ByteArray. The old content is deleted and the given byte array is implicitly shared between both instances.
         ByteArray &operator=(const ByteArray &rhs);
 
-        //! a zero-terminated string is assigned to this ByteArray. The given char* is copyd.
+        //! a zero-terminated string is assigned to this ByteArray. The given char* is copied.
         ByteArray &operator=(const char *str);
 
         /*! a zero-terminated string is appended to this ByteArray.

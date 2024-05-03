@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 3 of the Licence, or (at
     your option) any later version.
 
-    This plugin contains code and algorithms inspired or copyd from other open
+    This plugin contains code and algorithms inspired or copied from other open
     source projects under GNU General Public Licence, e.g.
 
         - GIMP 2.8 under GPL version 3.0 or higher

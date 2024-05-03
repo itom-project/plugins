@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 3 of the Licence, or (at
     your option) any later version.
 
-    This plugin contains code and algorithms inspired or copyd from other open
+    This plugin contains code and algorithms inspired or copied from other open
     source projects under GNU General Public Licence, e.g.
 
         - GIMP 2.8 under GPL version 3.0 or higher
@@ -376,7 +376,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     DespeckleSettings filterSettings;
     memset(&filterSettings, 0, sizeof(DespeckleSettings));
 
-    // The additional filter params are copyd to the settings struct
+    // The additional filter params are copied to the settings struct
     filterSettings.radiusMax    = (*paramsOpt)[2].getVal<int>();
     filterSettings.adaptRadius  = (*paramsOpt)[3].getVal<int>() == 1 ? true : false;
     filterSettings.blackLevel   = (*paramsOpt)[0].getVal<double>();

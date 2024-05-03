@@ -320,7 +320,7 @@ ito::RetVal DemoAlgorithms::dialogParams(
 //----------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoMoveActuator copyd form the template "filterParams" and modified
+/** parameters for calling demoMoveActuator copied form the template "filterParams" and modified
  *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
  *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
  *
@@ -431,7 +431,7 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoSnapImage copyd form the template "filterParams" and modified
+/** parameters for calling demoSnapImage copied form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
 *
@@ -583,7 +583,7 @@ ito::RetVal DemoAlgorithms::demoSnapImage(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoSnapMovie copyd form the template "filterParams" and modified
+/** parameters for calling demoSnapMovie copied form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
 *
@@ -737,7 +737,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling demoTestActuator copyd form the template "filterParams" and modified
+/** parameters for calling demoTestActuator copied form the template "filterParams" and modified
  *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
  *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
  *

@@ -2187,7 +2187,7 @@ ito::RetVal Spider8::writeDigital(const int channel, ito::DataObject *externalDa
     This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
 
-    This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copyd to (either
+    This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
@@ -2245,10 +2245,10 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     This method copies the recently grabbed camera frame to the given DataObject.
 
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
-    interest must exactly fit to the size of the camera. Then, the acquired image is copyd inside of the given region of interest (copy into a subpart of
+    interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
 

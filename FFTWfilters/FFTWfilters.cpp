@@ -1196,7 +1196,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copyd to the output object. Only properties of the chosen axis are changed: \n\
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1235,7 +1235,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copyd to the output object. Only properties of the chosen axis are changed: \n\
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1275,7 +1275,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copyd to the output object. Only properties of the last two axes are changed: \n\
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
@@ -1314,7 +1314,7 @@ if the input is of one of the following types: (u)int8, (u)int16, int32, float32
 input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
 a new dataObject is always put into the destination object. \n\
 \n\
-Meta and axes information are copyd to the output object. Only properties of the last two axes are changed: \n\
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
 \n\
 * offset: 0.0 \n\
 * scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\

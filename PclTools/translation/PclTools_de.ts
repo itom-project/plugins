@@ -830,7 +830,7 @@
     </message>
     <message>
         <location line="+104"/>
-        <source>the alpha values of the input point cloud cannot be copyd to the output point cloud [not supported]</source>
+        <source>the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1125,7 +1125,7 @@
     </message>
     <message>
         <location line="-140"/>
-        <source>vector with indices of polygons that will be copyd into output mesh</source>
+        <source>vector with indices of polygons that will be copied into output mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -1738,7 +1738,7 @@ ito::RetVal BasicFilters::genericSobelOptParams(QVector<ito::Param> *paramsMand,
         paramsMand->append(param);
         param = ito::Param("dir", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("derivative in x: 0, y: 1 direction or 2: 2D magnitude sqrt(dx*dx + dy*dy)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copyd to output image (default)").toLatin1().data());
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
         paramsOpt->append(param);
     }
 

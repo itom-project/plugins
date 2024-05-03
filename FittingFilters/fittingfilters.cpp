@@ -2011,7 +2011,7 @@ RetVal FittingFilters::fitLeastSquarePlaneSVD(const cv::Mat *inputMatrix, double
 }
 
 //---------------------------------------------------------------------------------------------------------------
-//this code is copyd from 'm': param3d.cpp, line 168, method 'LeastSquaresPlaneWindow'
+//this code is copied from 'm': param3d.cpp, line 168, method 'LeastSquaresPlaneWindow'
 /*
 The basics of this function is the plane equation
 

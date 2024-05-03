@@ -36,7 +36,7 @@ Download and install the latest NI-DAQmx driver from
 https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html#346240
 
 The major part of this driver is usually installed under **C:/Program Files/National Instruments** and
-**C:/Program Files (x86)/National Instruments**. Some important libraries are also copyd to the
+**C:/Program Files (x86)/National Instruments**. Some important libraries are also copied to the
 **C:/Windows/System32**, where they are found from the itom plugin.
 
 If you choose a different installation folder but the defaulft, please set the **NIDAQMX_ROOT**

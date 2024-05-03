@@ -51,7 +51,7 @@
     </message>
     <message>
         <location line="-1445"/>
-        <source>if 0 NaN values in input image will be copyd to output image (default)</source>
+        <source>if 0 NaN values in input image will be copied to output image (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

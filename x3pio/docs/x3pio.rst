@@ -64,13 +64,13 @@ All necessary system path information should then automatically be found.
 If not the Cmake **XERCESC_INCLUDE_DIR** variable must then point to the include directory.
 The variables **XERCESC_LIBRARY**, **XERCESC_LIBRARY_DEBUG** should then be automatically found.
 
-After compilation, the following libraries and files are copyd into the lib path of itom:
+After compilation, the following libraries and files are copied into the lib path of itom:
 
 * iso5436-2.xsd
 * iso5436-2-xml.dll (x3p library)
 * xerces-c_3_1_vc100.dll (library from CodeSynthesis XSD)
 
-Since the xerces library is copyd to the lib folder, CodeSynthesis must not be included into the Path environment variable. Therefore you can uncheck
+Since the xerces library is copied to the lib folder, CodeSynthesis must not be included into the Path environment variable. Therefore you can uncheck
 the corresponding option in the setup of CodeSynthesis.
 
 If there is a problem with the compilation, saying that the option cxx-tree is not available within xsd.exe, then you should check the variable **XSD_EXECUTABLE**.

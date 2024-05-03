@@ -331,7 +331,7 @@ cv::Mat getBGRMatFromRGBA32DataObject(const ito::DataObject &obj, ito::RetVal *r
         bgr = cv::Mat( bgra.rows, bgra.cols, CV_8UC3 );
 
         // forming an array of matrices is a quite efficient operation,
-        // because the matrix data is not copyd, only the headers
+        // because the matrix data is not copied, only the headers
         // rgba[0] -> bgr[2], rgba[1] -> bgr[1],
         // rgba[2] -> bgr[0], rgba[3] -> alpha[0]
         int from_to[] = { 0,0, 1,1, 2,2 };

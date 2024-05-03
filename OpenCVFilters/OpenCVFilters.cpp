@@ -2222,7 +2222,7 @@ The mask is eroded and than dilated by kernel size using openCV cv::erode and cv
 In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.\n\
 \n\
 It is allowed to let the filter work inplace if you give the same source and destination data object, else the destination data object is verified \
-if it fits to the size and type of the source data object and if not a new one is allocated and the input data is copyd to the new object. \n\
+if it fits to the size and type of the source data object and if not a new one is allocated and the input data is copied to the new object. \n\
 ");
 
 ito::RetVal OpenCVFilters::cvRemoveSpikesParams(

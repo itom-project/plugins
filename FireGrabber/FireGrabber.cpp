@@ -278,7 +278,7 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
         { FCE_INSTALLERROR       /* 1015*/,  "Installation error"},
         { FCE_DRVVERSION         /* 1016*/,  "Driver has wrong version"},
         { FCE_NODEADDRESS        /* 1017*/,  "Wrong nodeaddress"},
-        { FCE_PARTIAL            /* 1018*/,  "Partial info. copyd"},
+        { FCE_PARTIAL            /* 1018*/,  "Partial info. copied"},
         { FCE_NOMEM              /* 1019*/,  "No memory"},
         { FCE_NOTAVAILABLE       /* 1020*/,  "Requested function not available"},
         { FCE_NOTCONNECTED       /* 1021*/,  "Not connected to target"},
@@ -2191,7 +2191,7 @@ ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     \note This method is similar to VideoCapture::retrieve() of openCV
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire

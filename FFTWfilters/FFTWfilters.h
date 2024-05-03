@@ -23,7 +23,7 @@
 /*! \file FFTWfilters.h
    \brief   This is the main file for the M++Filter library, which contains the interface definition.
 
-   The algorithms in this dll are mostly copyd from the filter.h and filter.cpp. The filters are grouped in different sub .cpp-files.
+   The algorithms in this dll are mostly copied from the filter.h and filter.cpp. The filters are grouped in different sub .cpp-files.
 
    \author ITO
    \date 02.2016

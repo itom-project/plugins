@@ -1401,7 +1401,7 @@ ito::RetVal NiDAQmx::stop(ItomSharedSemaphore *waitCond /*= NULL*/)
     This method returns a reference to the recently acquired NiDAQmx data. Therefore this data must fit into the data structure of the
     DataObject.
 
-    This method returns a reference to the internal dataObject m_data of the NiDAQmx device where the currently acquired data is copyd to (either
+    This method returns a reference to the internal dataObject m_data of the NiDAQmx device where the currently acquired data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a set of data is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the NiDAQmx device.
@@ -1459,9 +1459,9 @@ ito::RetVal NiDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     This method copies the recently grabbed NiDAQmx device data to the given DataObject.
 
     The given dataObject must either have an empty size (then it is resized to the size and type of the NiDAQmx device data) or its size or adjusted region of
-    interest must exactly fit to the size of the NiDAQmx device data. Then, the acquired data is copyd inside of the given region of interest.
+    interest must exactly fit to the size of the NiDAQmx device data. Then, the acquired data is copied inside of the given region of interest.
 
-    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copyd to.
+    \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired data is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is NiDAQmx device has not been started or no data has been acquired by the method acquire.
 

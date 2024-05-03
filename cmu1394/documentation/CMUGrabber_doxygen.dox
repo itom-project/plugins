@@ -912,11 +912,11 @@ HTML_FOOTER            =
 HTML_STYLESHEET        =
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
-# other source files which should be copyd to the HTML output directory. Note
-# that these files will be copyd to the base HTML output directory. Use the
+# other source files which should be copied to the HTML output directory. Note
+# that these files will be copied to the base HTML output directory. Use the
 # $relpath$ marker in the HTML_HEADER and/or HTML_FOOTER files to load these
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
-# the files will be copyd as-is; there are no commands or markers available.
+# the files will be copied as-is; there are no commands or markers available.
 
 HTML_EXTRA_FILES       =
 
@@ -1103,7 +1103,7 @@ QHG_LOCATION           =
 # will be generated, which together with the HTML files, form an Eclipse help
 # plugin. To install this plugin and make it available under the help contents
 # menu in Eclipse, the contents of the directory containing the HTML and XML
-# files needs to be copyd into the plugins directory of eclipse. The name of
+# files needs to be copied into the plugins directory of eclipse. The name of
 # the directory within the plugins directory should be the same as
 # the ECLIPSE_DOC_ID value. After copying Eclipse needs to be restarted before
 # the help appears.

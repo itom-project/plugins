@@ -67,7 +67,7 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
     param = Param("orderY", ParamBase::Int, NULL, tr("order of the fitting polynomial y-direction").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("replaceNaN", ParamBase::Int, 0, 1, 0, tr("if 0 infinite values in input image will be copyd to output").toLatin1().data());
+    param = Param("replaceNaN", ParamBase::Int, 0, 1, 0, tr("if 0 infinite values in input image will be copied to output").toLatin1().data());
     paramsOpt->append(param);
 
     *paramsOut << Param("sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toLatin1().data());
