@@ -16,23 +16,25 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(IVI_FOUNDATION_DIRECTORY "" CACHE PATH "Path to the install directory of IVI Foundation (e.g. C:/Program Files/IVI Foundation")
+set(THORLABS_DFM_VISA_DIRECTORY "" CACHE PATH "Path to the install directory of Thorlabs Deformable Mirror VISA (e.g. C:/Program Files/IVI Foundation/VISA")
+set(THORLABS_DFM_VISA_x86_DIRECTORY "" CACHE PATH "Path to the install directory of Thorlabs Deformable Mirror VISA x86 (e.g. C:/Program Files (x86)/IVI Foundation/VISA")
 
-if(NOT IVI_FOUNDATION_DIRECTORY)
-	set(IVI_FOUNDATION_DIRECTORY $ENV{IVI_FOUNDATION_ROOT})
-endif(NOT IVI_FOUNDATION_DIRECTORY)
+if(NOT THORLABS_DFM_VISA_DIRECTORY AND THORLABS_DFM_VISA_x86_DIRECTORY)
+	set(THORLABS_DFM_VISA_DIRECTORY $ENV{NI_VISA_ROOT})
+endif(NOT THORLABS_DFM_VISA_DIRECTORY AND THORLABS_DFM_VISA_x86_DIRECTORY)
 
-if(IVI_FOUNDATION_DIRECTORY)
+if(THORLABS_DFM_VISA_DIRECTORY AND THORLABS_DFM_VISA_x86_DIRECTORY)
     if(WIN32)
-        find_path(THORLABS_DFMX_INCLUDE_DIR "TLDFMX_def.h" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Include" "VISA/Win64/Include")
-        find_library(THORLABS_DFM_LIBRARY "TLDFM_64" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Lib_x64/msc" "VISA/Win64/Lib_x64/msc")
-        find_library(THORLABS_DFMX_LIBRARY "TLDFMX_64" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Lib_x64/msc" "VISA/Win64/Lib_x64/msc")
+        find_path(THORLABS_DFMX_INCLUDE_DIR "TLDFMX_def.h" PATHS ${THORLABS_DFM_VISA_DIRECTORY} PATH_SUFFIXES "Win64/Include")
+        find_path(THORLABS_DFM_x86_INCLUDE_DIR "vpptype.h" PATHS ${THORLABS_DFM_VISA_x86_DIRECTORY} PATH_SUFFIXES "WinNT/Include")
+        find_library(THORLABS_DFM_LIBRARY "TLDFM_64" PATHS ${THORLABS_DFM_VISA_DIRECTORY} PATH_SUFFIXES "Win64/Lib_x64/msc")
+        find_library(THORLABS_DFMX_LIBRARY "TLDFMX_64" PATHS ${THORLABS_DFM_VISA_DIRECTORY} PATH_SUFFIXES "Win64/Lib_x64/msc")
     endif(WIN32)
-endif(IVI_FOUNDATION_DIRECTORY)
+endif(THORLABS_DFM_VISA_DIRECTORY)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
-if(THORLABS_DFMX_INCLUDE_DIR)
+if(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
     find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
     include(ItomBuildMacros)
@@ -47,6 +49,8 @@ if(THORLABS_DFMX_INCLUDE_DIR)
         ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
         #add further include directories here
         ${THORLABS_DFMX_INCLUDE_DIR}
+        ${THORLABS_DFM_INCLUDE_DIR}
+        ${THORLABS_DFM_x86_INCLUDE_DIR}
     )
 
     link_directories(
@@ -106,7 +110,7 @@ if(THORLABS_DFMX_INCLUDE_DIR)
         FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
         )
 
-    itom_configure_plugin_documentation(${target_name} myGrabber)
+    itom_configure_plugin_documentation(${target_name} ThorlabsDMH)
 
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")
@@ -116,17 +120,15 @@ if(THORLABS_DFMX_INCLUDE_DIR)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    # find_file(THORLABS_DFMX_BINARY "TLDFMX_64.dll"  PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Bin" "VISA/Win64/Bin")
-
     itom_post_build_copy_files_to_lib_folder(${target_name} THORLABS_DFMX_BINARY)
 
     set(BINARY_FILES
-        "${IVI_FOUNDATION_DIRECTORY}/VISA/Win64/Bin/TLDFM_64.dll"
-        "${IVI_FOUNDATION_DIRECTORY}/VISA/Win64/Bin/TLDFMX_64.dll"
+        "${THORLABS_DFM_VISA_DIRECTORY}/Win64/Bin/TLDFM_64.dll"
+        "${THORLABS_DFM_VISA_DIRECTORY}/Win64/Bin/TLDFMX_64.dll"
         )
 
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
 
-else(THORLABS_DFMX_INCLUDE_DIR)
-    message(SEND_ERROR "${THORLABS_DFMX_INCLUDE_DIR} for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate IVI_FOUNDATION_DIRECTORY.")
-ENDIF(THORLABS_DFMX_INCLUDE_DIR)
+else(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
+    message(SEND_ERROR "${THORLABS_DFMX_INCLUDE_DIR} or ${THORLABS_DFM_x86_INCLUDE_DIR} for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate IVI_FOUNDATION_DIRECTORY.")
+ENDIF(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
