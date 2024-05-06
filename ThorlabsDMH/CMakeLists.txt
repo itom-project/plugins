@@ -24,8 +24,9 @@ endif(NOT IVI_FOUNDATION_DIRECTORY)
 
 if(IVI_FOUNDATION_DIRECTORY)
     if(WIN32)
-        find_path(THORLABS_DFMX_INCLUDE_DIR "TLDFMX_def.h" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/Win64/Include")
-        find_library(THORLABS_DFMX_LIBRARY "TLDFMX_64" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/Win64/Lib_x64/msc")
+        find_path(THORLABS_DFMX_INCLUDE_DIR "TLDFMX_def.h" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Include" "VISA/Win64/Include")
+        find_library(THORLABS_DFM_LIBRARY "TLDFM_64" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Lib_x64/msc" "VISA/Win64/Lib_x64/msc")
+        find_library(THORLABS_DFMX_LIBRARY "TLDFMX_64" PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Lib_x64/msc" "VISA/Win64/Lib_x64/msc")
     endif(WIN32)
 endif(IVI_FOUNDATION_DIRECTORY)
 
@@ -94,6 +95,7 @@ if(THORLABS_DFMX_INCLUDE_DIR)
         ${ITOM_SDK_LIBRARIES}
         ${QT5_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
+        ${THORLABS_DFM_LIBRARY}
         ${THORLABS_DFMX_LIBRARY}
         )
 
@@ -114,9 +116,16 @@ if(THORLABS_DFMX_INCLUDE_DIR)
 
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    find_file(THORLABS_DFMX_BINARY "TLDFMX_64.dll"  PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/Win64/Bin")
+    # find_file(THORLABS_DFMX_BINARY "TLDFMX_64.dll"  PATHS ${IVI_FOUNDATION_DIRECTORY} PATH_SUFFIXES "VISA/WinNT/Bin" "VISA/Win64/Bin")
 
     itom_post_build_copy_files_to_lib_folder(${target_name} THORLABS_DFMX_BINARY)
+
+    set(BINARY_FILES
+        "${IVI_FOUNDATION_DIRECTORY}/VISA/Win64/Bin/TLDFM_64.dll"
+        "${IVI_FOUNDATION_DIRECTORY}/VISA/Win64/Bin/TLDFMX_64.dll"
+        )
+
+    itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
 
 else(THORLABS_DFMX_INCLUDE_DIR)
     message(SEND_ERROR "${THORLABS_DFMX_INCLUDE_DIR} for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate IVI_FOUNDATION_DIRECTORY.")

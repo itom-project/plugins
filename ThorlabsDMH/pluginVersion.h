@@ -16,9 +16,9 @@
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Your Company Name"
-#define PLUGIN_AUTHOR         "AuthorName"
-#define PLUGIN_COPYRIGHT      "Your Copyright"
+#define PLUGIN_COMPANY        "TRUMPF Laser- und Systemtechnik GmbH"
+#define PLUGIN_AUTHOR         "C.Lederbogen, TRUMPF Laser- und Systemtechnik GmbH"
+#define PLUGIN_COPYRIGHT      "Copyright (C) 2024, TRUMPF Laser- und Systemtechnik GmbH"
 #define PLUGIN_NAME           "ThorlabsDMH"
 
 //----------------------------------------------------------------------------------------------------------------------------------

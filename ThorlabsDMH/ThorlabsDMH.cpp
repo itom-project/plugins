@@ -33,9 +33,16 @@
 #include <qstringlist.h>
 #include <qwaitcondition.h>
 
+#include "common/helperCommon.h"
+#include "common/paramMeta.h"
+
 #include "dockWidgetThorlabsDMH.h"
 
-#include "TLDFM.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "TLDFMX.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -60,7 +67,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(GITVERSION);
 
     // add mandatory and optional parameters for the initialization here.
@@ -74,6 +81,8 @@ Put a detailed description about what the plugin is doing, what is needed to get
 */
 ThorlabsDMHInterface::~ThorlabsDMHInterface()
 {
+    m_initParamsMand.clear();
+    m_initParamsOpt.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -96,21 +105,73 @@ ito::RetVal ThorlabsDMHInterface::closeThisInst(ito::AddInBase** addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
    remove entries from m_params in this constructor or later in the init method
 */
-ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0), m_nrOfAxes(3)
+ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
 {
+    ito::IntMeta* imeta;
+    ito::DoubleMeta* dmeta;
+
+    // register exec functions
+    ito::float64 zernike[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    QVector<ito::Param> pMand = QVector<ito::Param>()
+        << ito::Param("ZernikeIDs",
+                      ito::ParamBase::DoubleArray,
+                      12,
+                      zernike,
+                      new ito::DoubleArrayMeta(-1.0, 1.0, 0, 6, 6),
+                      tr("list of zernike IDs").toLatin1().data());
+    pMand << ito::Param(
+        "ZernikeValues",
+        ito::ParamBase::DoubleArray,
+        12,
+        zernike,
+        new ito::DoubleArrayMeta(-1.0, 1.0, 0, 6, 6),
+        tr("list of zernike values").toLatin1().data());
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("sets a List of Zernike coefficients"));
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("relax the mirror"));
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // end register exec functions
+
     ito::Param paramVal(
-        "name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsDMH", NULL);
+        "name",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "ThorlabsDMH",
+        "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(
+    paramVal = ito::Param(
         "async",
-        ito::Param(
-            "async",
-            ito::ParamBase::Int,
-            0,
-            1,
-            m_async,
-            tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)")
+            .toLatin1()
+            .data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "numaxis",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        40,
+        40,
+        40,
+        tr("Number of axes attached to this stage").toLatin1().data());
+    imeta = paramVal.getMetaT<ito::IntMeta>();
+    imeta->setCategory("General");
+    imeta->setRepresentation(ito::ParamMeta::PureNumber); // numaxis should be a spin box and no
+                                                          // slider in any generic GUI
+    m_params.insert(paramVal.getName(), paramVal);
+    m_nrOfAxes = paramVal.getVal<int>();
 
     // initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0, m_nrOfAxes);
@@ -160,6 +221,15 @@ ito::RetVal ThorlabsDMH::init(
     //  in m_params to connected dock widgets...
     //  - call setInitialized(true) to confirm the end of the initialization (even if it failed)
 
+    // Find resources
+    retValue = selectInstrument();
+    if (!retValue.containsError())
+    {
+        if (!m_resourceName)
+        {
+            retValue += ito::RetVal(ito::retError, 1, tr("No device found!").toLatin1().data());
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -173,6 +243,7 @@ ito::RetVal ThorlabsDMH::init(
     }
 
     setInitialized(true); // init method has been finished (independent on retval)
+
     return retValue;
 }
 
@@ -194,6 +265,53 @@ ito::RetVal ThorlabsDMH::close(ItomSharedSemaphore* waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ThorlabsDMH::execFunc(
+    const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase>> /*paramsOut*/,
+    ItomSharedSemaphore* waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase* param1 = nullptr;
+    ito::ParamBase* param2 = nullptr;
+
+    if (funcName == "setZernikes")
+    {
+        param1 = ito::getParamByName(&(*paramsMand), "Zernikes", &retValue);
+
+        if (!retValue.containsError())
+        {
+        }
+    }
+    else if (funcName == "relaxMirror")
+    {
+        if (!retValue.containsError())
+        {
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("function name '%1' does not exist")
+                .arg(funcName.toLatin1().data())
+                .toLatin1()
+                .data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
     }
 
     return retValue;
@@ -848,6 +966,64 @@ ito::RetVal ThorlabsDMH::updateStatus()
     sendStatusUpdate();
 
     return ito::retOk;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! method to select instrument
+ito::RetVal ThorlabsDMH::selectInstrument()
+{
+    ito::RetVal retValue = ito::retOk;
+
+    ViStatus err;
+    ViUInt32 deviceCount = 0;
+    int choice = 0;
+
+    ViChar manufacturer[TLDFM_BUFFER_SIZE];
+    ViChar instrumentName[TLDFM_MAX_INSTR_NAME_LENGTH];
+    ViChar serialNumber[TLDFM_MAX_SN_LENGTH];
+    ViBoolean deviceAvailable;
+
+    err = TLDFM_get_device_count(VI_NULL, &deviceCount);
+    if ((TL_ERROR_RSRC_NFOUND == err) || (0 == deviceCount))
+    {
+        retValue += ito::RetVal(
+            ito::retError, 1, QObject::tr("No matching instruments found").toLatin1().data());
+        return retValue;
+    }
+
+    // printf("Found %d matching instrument(s):\n\n", deviceCount);
+
+    for (ViUInt32 i = 0; i < deviceCount; i++)
+    {
+        err = TLDFM_get_device_information(
+            VI_NULL,
+            i,
+            manufacturer,
+            instrumentName,
+            serialNumber,
+            &deviceAvailable,
+            m_resourceName);
+    }
+
+    // just accept the first connected deformable mirror
+    choice = 1;
+
+    err = TLDFM_get_device_information(
+        VI_NULL,
+        (ViUInt32)(choice - 1),
+        manufacturer,
+        instrumentName,
+        serialNumber,
+        &deviceAvailable,
+        m_resourceName);
+
+    if (VI_SUCCESS != err)
+    {
+        retValue += ito::RetVal(
+            ito::retError, 1, QObject::tr("Error in select instrument").toLatin1().data());
+    }
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -28,6 +28,8 @@ either version 2 of the Licence, or
 #include <qsharedpointer.h>
 #include "dialogThorlabsDMH.h"
 
+#include "TLDFMX.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    ThorlabsDMHInterface
@@ -78,35 +80,33 @@ class ThorlabsDMH : public ito::AddInActuator
         int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
         int m_nrOfAxes;
 
+        ViChar m_resourceName[TLDFM_BUFFER_SIZE];
+
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
         ito::RetVal updateStatus(); //optional method to obtain the status and position of all connected axes
 
+        ito::RetVal selectInstrument();
+
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
-
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
-
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
         ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-
         ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-
         ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
-
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-
         ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
