@@ -130,5 +130,5 @@ if(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
 
 else(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
-    message(SEND_ERROR "${THORLABS_DFMX_INCLUDE_DIR} or ${THORLABS_DFM_x86_INCLUDE_DIR} for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate IVI_FOUNDATION_DIRECTORY.")
+    message(SEND_ERROR "${THORLABS_DFMX_INCLUDE_DIR} or ${THORLABS_DFM_x86_INCLUDE_DIR} for plugin ${target_name} could not be found. ${target_name} will not be build. Please properly indicate THORLABS_DFM_VISA_DIRECTORY and THORLABS_DFM_VISA_x86_DIRECTORY.")
 ENDIF(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)

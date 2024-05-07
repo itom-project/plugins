@@ -111,20 +111,21 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
     ito::DoubleMeta* dmeta;
 
     // register exec functions
+    int zernikeID[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     ito::float64 zernike[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     QVector<ito::Param> pMand = QVector<ito::Param>()
         << ito::Param("ZernikeIDs",
-                      ito::ParamBase::DoubleArray,
+                      ito::ParamBase::IntArray,
                       12,
-                      zernike,
-                      new ito::DoubleArrayMeta(-1.0, 1.0, 0, 6, 6),
+                      zernikeID,
+                      new ito::IntArrayMeta(0, 15, 1, 0, 12),
                       tr("list of zernike IDs").toLatin1().data());
     pMand << ito::Param(
         "ZernikeValues",
         ito::ParamBase::DoubleArray,
         12,
         zernike,
-        new ito::DoubleArrayMeta(-1.0, 1.0, 0, 6, 6),
+        new ito::DoubleArrayMeta(-1.0, 1.0, 0, 0, 12),
         tr("list of zernike values").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
@@ -173,6 +174,86 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
     m_params.insert(paramVal.getName(), paramVal);
     m_nrOfAxes = paramVal.getVal<int>();
 
+    paramVal = ito::Param(
+        "manufacturerName",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Manufaturer name").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "instrumentName",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Instrument name").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "serialNumber",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("serial Number").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "extensionDriver",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Extension driver").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "firmware",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Firmware").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "minZernikeAmplitude",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device Parameter"),
+        tr("min Zernike Amplitude").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "maxZernikeAmplitude",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device Parameter"),
+        tr("max Zernike Amplitude").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "zernikeCount",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 15, 1, "Device Parameter"),
+        tr("zernike Count").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "systemMeasurementSteps",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 100, 1, "Device Parameter"),
+        tr("system Measurement Steps").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "relaxSteps",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 100, 1, "Device Parameter"),
+        tr("relax Steps").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     // initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0, m_nrOfAxes);
     m_currentStatus.fill(0, m_nrOfAxes);
@@ -205,6 +286,7 @@ ito::RetVal ThorlabsDMH::init(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+    ViStatus err = VI_SUCCESS;
 
     // steps todo:
     //  - get all initialization parameters
@@ -229,7 +311,65 @@ ito::RetVal ThorlabsDMH::init(
         {
             retValue += ito::RetVal(ito::retError, 1, tr("No device found!").toLatin1().data());
         }
+
+        err = TLDFMX_init(m_resourceName, VI_TRUE, VI_TRUE, &m_insrumentHdl);
+        if (err)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 1, tr("Error during initialisation!").toLatin1().data());
+        }
+
+        // get device info
+        retValue = getDeviceInfo();
     }
+
+
+    // get extension driver parameters
+    if (!retValue.containsError())
+    {
+        ViInt32 zernikeCount, systemMeasurementSteps, relaxSteps;
+        ViReal64 minZernikeAmplitude;
+        ViReal64 maxZernikeAmplitude;
+
+        err = TLDFMX_get_parameters(
+            m_insrumentHdl,
+            &minZernikeAmplitude,
+            &maxZernikeAmplitude,
+            &zernikeCount,
+            &systemMeasurementSteps,
+            &relaxSteps);
+
+        if (err)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 1, tr("Error during getting parameter!").toLatin1().data());
+        }
+        else
+        {
+            m_params["minZernikeAmplitude"].setVal<double>(minZernikeAmplitude);
+            m_params["maxZernikeAmplitude"].setVal<double>(maxZernikeAmplitude);
+            m_params["zernikeCount"].setVal<int>(zernikeCount);
+            m_params["systemMeasurementSteps"].setVal<int>(systemMeasurementSteps);
+            m_params["relaxSteps"].setVal<int>(relaxSteps);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        err = TLDFMX_reset(m_insrumentHdl);
+        if (err)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        QSharedPointer<QVector<ito::ParamBase>> _dummy;
+        retValue += execFunc("relaxMirror", _dummy, _dummy, _dummy, nullptr);
+    }
+
 
     if (!retValue.containsError())
     {
@@ -261,6 +401,8 @@ ito::RetVal ThorlabsDMH::close(ItomSharedSemaphore* waitCond)
     //  - disconnect the device if not yet done
     //  - this funtion is considered to be the "inverse" of init.
 
+    TLDFMX_close(m_insrumentHdl);
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -284,16 +426,104 @@ ito::RetVal ThorlabsDMH::execFunc(
 
     if (funcName == "setZernikes")
     {
-        param1 = ito::getParamByName(&(*paramsMand), "Zernikes", &retValue);
+        param1 = ito::getParamByName(&(*paramsMand), "ZernikeIDs", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "ZernikeValues", &retValue);
 
         if (!retValue.containsError())
         {
+            int* zernikeIDs = param1->getVal<int*>();
+            double* zernikeValues = param2->getVal<double*>();
+            // ----_-_-_-_-_----- jump in for tomorrow
+            // int number = (*paramsMand)[0].getVal<int>();
+            // remember zernike as list?!?
+
+            int ID = zernikeIDs[1];
+
+            ViStatus err;
+            TLDFMX_zernike_flag_t zernike = Z_Def_Flag;
+            ViReal64 zernikeAmplitude = 0.1, zernikePattern[MAX_SEGMENTS];
+
+            printf("  Defocus: %8.3f\n", zernikeAmplitude);
+            // Calculate voltage pattern
+            err = TLDFMX_calculate_single_zernike_pattern(
+                m_insrumentHdl, zernike, zernikeAmplitude, zernikePattern);
+            if (err)
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
+            }
+            printf("  Calculated Pattern:\n");
+
+            // Set voltages to device, the pattern is already range checked
+            // [range checking is enabled by default]
+            printf("  Set Voltage Pattern:\n");
+            err = TLDFM_set_segment_voltages(m_insrumentHdl, zernikePattern);
+            if (err)
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
+            }
         }
     }
     else if (funcName == "relaxMirror")
     {
         if (!retValue.containsError())
         {
+            ViStatus err;
+            ViUInt32 relaxPart = T_MIRROR;
+            ViBoolean isFirstStep = VI_TRUE, reload = VI_TRUE;
+            ViReal64 relaxPattern[MAX_SEGMENTS];
+            ViInt32 remainingRelaxSteps;
+
+            // First Step
+            err = TLDFMX_relax(
+                m_insrumentHdl,
+                relaxPart,
+                isFirstStep,
+                reload,
+                relaxPattern,
+                VI_NULL,
+                &remainingRelaxSteps);
+            if (err)
+            {
+                retValue += ito::RetVal(
+                    ito::retError, 1, tr("Error during relaxing mirror!").toLatin1().data());
+            }
+
+            err = TLDFM_set_segment_voltages(m_insrumentHdl, relaxPattern);
+            if (err)
+            {
+                retValue += ito::RetVal(
+                    ito::retError, 1, tr("Error during relaxing mirror!").toLatin1().data());
+            }
+
+            isFirstStep = VI_FALSE;
+
+            // Loop until remaining relax steps are 0
+            do
+            {
+                err = TLDFMX_relax(
+                    m_insrumentHdl,
+                    relaxPart,
+                    isFirstStep,
+                    reload,
+                    relaxPattern,
+                    VI_NULL,
+                    &remainingRelaxSteps);
+                if (err)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError, 1, tr("Error during relaxing mirror!").toLatin1().data());
+                }
+
+                err = TLDFM_set_segment_voltages(m_insrumentHdl, relaxPattern);
+                if (err)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError, 1, tr("Error during relaxing mirror!").toLatin1().data());
+                }
+
+            } while (0 < remainingRelaxSteps);
         }
     }
     else
@@ -988,7 +1218,11 @@ ito::RetVal ThorlabsDMH::selectInstrument()
     if ((TL_ERROR_RSRC_NFOUND == err) || (0 == deviceCount))
     {
         retValue += ito::RetVal(
-            ito::retError, 1, QObject::tr("No matching instruments found").toLatin1().data());
+            ito::retError,
+            1,
+            QObject::tr("No matching instruments found, Maybe device is not connected.")
+                .toLatin1()
+                .data());
         return retValue;
     }
 
@@ -1023,6 +1257,64 @@ ito::RetVal ThorlabsDMH::selectInstrument()
         retValue += ito::RetVal(
             ito::retError, 1, QObject::tr("Error in select instrument").toLatin1().data());
     }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! method to get device Info
+ito::RetVal ThorlabsDMH::getDeviceInfo()
+{
+    ito::RetVal retValue = ito::retOk;
+
+    ViStatus err;
+    ViChar manufNameBuf[TLDFM_BUFFER_SIZE];
+    ViChar instrNameBuf[TLDFM_MAX_INSTR_NAME_LENGTH];
+    ViChar snBuf[TLDFM_MAX_SN_LENGTH];
+    ViChar drvRevBuf[TLDFM_MAX_STRING_LENGTH];
+    ViChar fwRevBuf[TLDFM_MAX_STRING_LENGTH];
+
+    err = TLDFM_get_manufacturer_name(m_insrumentHdl, manufNameBuf);
+    if (err)
+        retValue += ito::RetVal(
+            ito::retError,
+            1,
+            QObject::tr("did not get manufaturer name, maybe device is already connected with "
+                        "THORLABS software.")
+                .toLatin1()
+                .data());
+    if (!retValue.containsError())
+    {
+        m_params["manufacturerName"].setVal<char*>(manufNameBuf);
+    }
+
+    err = TLDFM_get_instrument_name(m_insrumentHdl, instrNameBuf);
+    if (err)
+        retValue += ito::RetVal(
+            ito::retError, 1, QObject::tr("did not get instrument name").toLatin1().data());
+    if (!retValue.containsError())
+    {
+        m_params["instrumentName"].setVal<char*>(instrNameBuf);
+    }
+
+    err = TLDFM_get_serial_Number(m_insrumentHdl, snBuf);
+    if (err)
+        retValue += ito::RetVal(
+            ito::retError, 1, QObject::tr("did not get serial number").toLatin1().data());
+    if (!retValue.containsError())
+    {
+        m_params["serialNumber"].setVal<char*>(snBuf);
+    }
+
+    err = TLDFMX_revision_query(m_insrumentHdl, drvRevBuf, fwRevBuf);
+    if (err)
+        retValue +=
+            ito::RetVal(ito::retError, 1, QObject::tr("did not get firmware").toLatin1().data());
+    if (!retValue.containsError())
+    {
+        m_params["extensionDriver"].setVal<char*>(drvRevBuf);
+        m_params["firmware"].setVal<char*>(fwRevBuf);
+    }
+
     return retValue;
 }
 

@@ -24,92 +24,117 @@ either version 2 of the Licence, or
 #ifndef THORLABSDMH_H
 #define THORLABSDMH_H
 
+#define MAX_SEGMENTS (40)
+
 #include "common/addInInterface.h"
-#include <qsharedpointer.h>
 #include "dialogThorlabsDMH.h"
+#include <qsharedpointer.h>
 
 #include "TLDFMX.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
- /**
-  *\class    ThorlabsDMHInterface
-  *
-  *\brief    Interface-Class for ThorlabsDMH-Class
-  *
-  *    \sa    AddInActuator, ThorlabsDMH
-  *
-  */
+/**
+ *\class    ThorlabsDMHInterface
+ *
+ *\brief    Interface-Class for ThorlabsDMH-Class
+ *
+ *    \sa    AddInActuator, ThorlabsDMH
+ *
+ */
 class ThorlabsDMHInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
     Q_INTERFACES(ito::AddInInterfaceBase)
     PLUGIN_ITOM_API
 
-    public:
-        ThorlabsDMHInterface();
-        ~ThorlabsDMHInterface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);
+public:
+    ThorlabsDMHInterface();
+    ~ThorlabsDMHInterface();
+    ito::RetVal getAddInInst(ito::AddInBase** addInInst);
 
-    private:
-        ito::RetVal closeThisInst(ito::AddInBase **addInInst);
+private:
+    ito::RetVal closeThisInst(ito::AddInBase** addInInst);
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
- /**
-  *\class    ThorlabsDMH
+/**
+ *\class    ThorlabsDMH
 
-  */
+ */
 class ThorlabsDMH : public ito::AddInActuator
 {
     Q_OBJECT
 
-    protected:
-        //! Destructor
-        ~ThorlabsDMH();
-        //! Constructor
-        ThorlabsDMH();
+protected:
+    //! Destructor
+    ~ThorlabsDMH();
+    //! Constructor
+    ThorlabsDMH();
 
-    public:
-        friend class ThorlabsDMHInterface;
-        const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+public:
+    friend class ThorlabsDMHInterface;
+    const ito::RetVal showConfDialog(void);
+    int hasConfDialog(void)
+    {
+        return 1;
+    }; //!< indicates that this plugin has got a configuration dialog
 
-    private:
-        int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
-        int m_nrOfAxes;
+private:
+    int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
+                 //!< not return until positioning was done.
+    int m_nrOfAxes;
 
-        ViChar m_resourceName[TLDFM_BUFFER_SIZE];
+    ViChar m_resourceName[TLDFM_BUFFER_SIZE];
+    ViSession m_insrumentHdl;
 
-        ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
+    ito::RetVal waitForDone(
+        const int timeoutMS = -1,
+        const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
+        const int flags = 0 /*for your use*/);
 
-        ito::RetVal updateStatus(); //optional method to obtain the status and position of all connected axes
+    ito::RetVal updateStatus(); // optional method to obtain the status and position of all
+                                // connected axes
 
-        ito::RetVal selectInstrument();
+    ito::RetVal selectInstrument();
+    ito::RetVal getDeviceInfo();
 
-    public slots:
-        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal close(ItomSharedSemaphore *waitCond);
+public slots:
+    ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
+    ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond);
+    ito::RetVal init(
+        QVector<ito::ParamBase>* paramsMand,
+        QVector<ito::ParamBase>* paramsOpt,
+        ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal close(ItomSharedSemaphore* waitCond);
 
-        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
-        ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
-        ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal calib(const int axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setOrigin(const int axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal getStatus(QSharedPointer<QVector<int>> status, ItomSharedSemaphore* waitCond);
+    ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore* waitCond);
+    ito::RetVal getPos(
+        const QVector<int> axis,
+        QSharedPointer<QVector<double>> pos,
+        ItomSharedSemaphore* waitCond);
+    ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setPosAbs(
+        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setPosRel(
+        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
 
-        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
+    ito::RetVal execFunc(
+        const QString funcName,
+        QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+        ItomSharedSemaphore* waitCond);
 
-    private slots:
-        void dockWidgetVisibilityChanged(bool visible);
+private slots:
+    void dockWidgetVisibilityChanged(bool visible);
 };
 
 #endif // THORLABSDMH_H
