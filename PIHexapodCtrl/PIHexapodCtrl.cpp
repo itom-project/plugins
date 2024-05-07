@@ -72,7 +72,7 @@ Different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) are impleme
 It is used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.\n\
 This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.\n\
 It is initialized by actuator(\"PIHexapodCtrl\", SerialIO, Controller Type (e.g. 'E662')).\n\
-Stageparameters can be set directly by setParam(\"STAGEPARAMETER\", value).\n\
+Stage parameters can be set directly by setParam(\"STAGEPARAMETER\", value).\n\
 WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.\n\
 Hence, stages should not be mixed up.\n\
 \n\
