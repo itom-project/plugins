@@ -459,7 +459,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     <name>SMC100Interface</name>
     <message>
         <location filename="../SMC100Interface.cpp" line="86"/>
-        <source>An opened serial port (the right commoncation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right communication parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

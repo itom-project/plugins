@@ -491,19 +491,19 @@ public:
     static ito::RetVal cvRotP90(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats cclw for 90� by
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats cclw for 90° by
                                                 executing cvRot(..., false)*/
     static ito::RetVal cvRotM90(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats clw for 90� by
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats clw for 90° by
                                                 executing cvRot(..., false)*/
 
     static const QString cvRot180Doc;
     static ito::RetVal cvRot180(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats for 180�*/
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats for 180° */
 
     static ito::RetVal stdParams2Objects(
         QVector<ito::Param>* paramsMand,
@@ -521,7 +521,7 @@ private:
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut,
-        bool rotClw); /*! Rotate +90� (rotClw == false) or -90� (rotClw == true) by transpose +
+        bool rotClw); /*! Rotate +90° (rotClw == false) or -90° (rotClw == true) by transpose +
                          flip*/
 
     static ito::RetVal checkInputOutputEqual(

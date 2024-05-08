@@ -151,7 +151,7 @@
     <name>PiezosystemJena_NV40_1Interface</name>
     <message>
         <location line="-1084"/>
-        <source>An opened serial port (the right commoncation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right communication parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

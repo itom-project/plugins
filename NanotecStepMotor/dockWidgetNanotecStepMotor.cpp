@@ -168,7 +168,7 @@ void DockWidgetNanotecStepMotor::parametersChanged(QMap<QString, ito::Param> par
         connect(m_pGoSignalMapper, SIGNAL(mapped(const int &)), this, SLOT(goBtnClicked(const int &)));
         connect(m_pAbsPosSignalMapper, SIGNAL(mapped(const int &)), this, SLOT(absDestPosChanged(const int &)));
 
-        // Don�t enter this part again
+        // Don't enter this part again
         firstRun = false;
     }
 }
