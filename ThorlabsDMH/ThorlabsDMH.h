@@ -88,6 +88,8 @@ private:
 
     ViChar m_resourceName[TLDFM_BUFFER_SIZE];
     ViSession m_insrumentHdl;
+    QVector<double> m_currentZernike; /*!< vector (same length than number of zernike terms)
+                                         containing the current zernikes*/
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,

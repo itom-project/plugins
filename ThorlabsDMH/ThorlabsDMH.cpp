@@ -60,7 +60,7 @@ ThorlabsDMHInterface::ThorlabsDMHInterface()
     char docstring[] =
         "This template can be used for implementing a new type of actuator plugin \n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...\n no tip tilt";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
@@ -118,7 +118,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
                       ito::ParamBase::IntArray,
                       12,
                       zernikeID,
-                      new ito::IntArrayMeta(0, 15, 1, 0, 12),
+                      new ito::IntArrayMeta(4, 15, 1, 0, 12),
                       tr("list of zernike IDs").toLatin1().data());
     pMand << ito::Param(
         "ZernikeValues",
@@ -150,11 +150,12 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
 
     paramVal = ito::Param(
         "async",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
         m_async,
-        tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)")
+        tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async), here "
+           "only sync supported")
             .toLatin1()
             .data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
@@ -214,6 +215,72 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    // ----------------- Segments -----------------
+    paramVal = ito::Param(
+        "numSegments",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 15, 1, "Device Parameter"),
+        tr("number of Segments").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "minVoltageMirror",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("min voltage of Mirror Segments").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "maxVoltageMirror",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("max voltage of Mirror Segments").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "commonVoltageMirror",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("commom voltage of Mirror Segments").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "numTipTilt",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        new ito::IntMeta(0, 15, 1, "Device Parameter"),
+        tr("number of of Tip/Tilt Elements").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "minVoltageTipTilt",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("min voltage Tip/Tilt").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "maxVoltageTipTilt",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("max voltage Tip/Tilt").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "commonVoltageTipTilt",
+        ito::ParamBase::Double | ito::ParamBase::Readonly,
+        0.0,
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
+        tr("common voltage Tip/Tilt").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    // ----------------- Zernike -----------------
     paramVal = ito::Param(
         "minZernikeAmplitude",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
@@ -323,6 +390,41 @@ ito::RetVal ThorlabsDMH::init(
         retValue = getDeviceInfo();
     }
 
+    // get device configuration
+    if (!retValue.containsError())
+    {
+        ViUInt32 Segments, TiltElements;
+        ViReal64 VoltageMirrorMin, VoltageMirrorMax, VoltageMirrorCommon;
+        ViReal64 VoltageTiltMin, VoltageTiltMax, VoltageTiltCommon;
+
+        err = TLDFM_get_device_configuration(
+            m_insrumentHdl,
+            &Segments,
+            &VoltageMirrorMin,
+            &VoltageMirrorMax,
+            &VoltageMirrorCommon,
+            &TiltElements,
+            &VoltageTiltMin,
+            &VoltageTiltMax,
+            &VoltageTiltCommon);
+
+        if (err)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 1, tr("Error during getting parameter!").toLatin1().data());
+        }
+        else
+        {
+            m_params["numSegments"].setVal<int>(Segments);
+            m_params["minVoltageMirror"].setVal<double>(VoltageMirrorMin);
+            m_params["maxVoltageMirror"].setVal<double>(VoltageMirrorMax);
+            m_params["commonVoltageMirror"].setVal<double>(VoltageMirrorCommon);
+            m_params["numTipTilt"].setVal<int>(TiltElements);
+            m_params["minVoltageTipTilt"].setVal<double>(VoltageTiltMin);
+            m_params["maxVoltageTipTilt"].setVal<double>(VoltageTiltMax);
+            m_params["commonVoltageTipTilt"].setVal<double>(VoltageTiltCommon);
+        }
+    }
 
     // get extension driver parameters
     if (!retValue.containsError())
@@ -363,6 +465,9 @@ ito::RetVal ThorlabsDMH::init(
                 ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
         }
     }
+
+    // rezize zernike vector
+    m_currentZernike.fill(0.0, m_params["zernikeCount"].getVal<int>() + 4);
 
     if (!retValue.containsError())
     {
@@ -429,40 +534,58 @@ ito::RetVal ThorlabsDMH::execFunc(
         param1 = ito::getParamByName(&(*paramsMand), "ZernikeIDs", &retValue);
         param2 = ito::getParamByName(&(*paramsMand), "ZernikeValues", &retValue);
 
+        int numIDs = param1->getLen();
+        int numZernikes = param2->getLen();
+
+        int* zernikeIDs = param1->getVal<int*>();
+        double* zernikeValues = param2->getVal<double*>();
+
+        if (numIDs != numZernikes)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 1, tr("not same amount of IDs and values given!").toLatin1().data());
+        }
+
         if (!retValue.containsError())
         {
-            int* zernikeIDs = param1->getVal<int*>();
-            double* zernikeValues = param2->getVal<double*>();
-            // ----_-_-_-_-_----- jump in for tomorrow
-            // int number = (*paramsMand)[0].getVal<int>();
-            // remember zernike as list?!?
+            QVector<double> targetZernike = m_currentZernike;
 
-            int ID = zernikeIDs[1];
+            for (int i = 0; i < numIDs; i++)
+            {
+                targetZernike[zernikeIDs[i]] = zernikeValues[i];
+            }
 
             ViStatus err;
-            TLDFMX_zernike_flag_t zernike = Z_Def_Flag;
-            ViReal64 zernikeAmplitude = 0.1, zernikePattern[MAX_SEGMENTS];
+            TLDFMX_zernike_flag_t zernike = Z_All_Flag;
+            ViReal64 zernikePattern[MAX_SEGMENTS];
+            ViReal64 zernikeAmplitude[TLDFMX_MAX_ZERNIKE_TERMS];
 
-            printf("  Defocus: %8.3f\n", zernikeAmplitude);
+            for (int i = 0; i < TLDFMX_MAX_ZERNIKE_TERMS; i++)
+            {
+                zernikeAmplitude[i] = targetZernike[i + 4];
+            }
+
             // Calculate voltage pattern
-            err = TLDFMX_calculate_single_zernike_pattern(
+            err = TLDFMX_calculate_zernike_pattern(
                 m_insrumentHdl, zernike, zernikeAmplitude, zernikePattern);
             if (err)
             {
-                retValue +=
-                    ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
+                retValue += ito::RetVal(
+                    ito::retError,
+                    1,
+                    tr("Error during calculate zernike pattern!").toLatin1().data());
             }
-            printf("  Calculated Pattern:\n");
 
             // Set voltages to device, the pattern is already range checked
             // [range checking is enabled by default]
-            printf("  Set Voltage Pattern:\n");
             err = TLDFM_set_segment_voltages(m_insrumentHdl, zernikePattern);
             if (err)
             {
-                retValue +=
-                    ito::RetVal(ito::retError, 1, tr("Error during resetting!").toLatin1().data());
+                retValue += ito::RetVal(
+                    ito::retError, 1, tr("Error during set segment voltage!").toLatin1().data());
             }
+
+            m_currentZernike = targetZernike;
         }
     }
     else if (funcName == "relaxMirror")
@@ -474,6 +597,9 @@ ito::RetVal ThorlabsDMH::execFunc(
             ViBoolean isFirstStep = VI_TRUE, reload = VI_TRUE;
             ViReal64 relaxPattern[MAX_SEGMENTS];
             ViInt32 remainingRelaxSteps;
+
+            QMutex waitMutex;
+            QWaitCondition waitCondition;
 
             // First Step
             err = TLDFMX_relax(
@@ -522,6 +648,11 @@ ito::RetVal ThorlabsDMH::execFunc(
                     retValue += ito::RetVal(
                         ito::retError, 1, tr("Error during relaxing mirror!").toLatin1().data());
                 }
+
+                // short delay
+                waitMutex.lock();
+                waitCondition.wait(&waitMutex, 5); // 5 ms
+                waitMutex.unlock();
 
             } while (0 < remainingRelaxSteps);
         }
@@ -689,11 +820,14 @@ ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* wai
 
     if (!retValue.containsError())
     {
-        // todo:
-        // start calibrating the given axes and don't forget to regularily call setAlive().
-        // this is important if the calibration needs more time than the timeout time of itom (e.g.
-        // 5sec). itom regularily checks the alive flag and only drops to a timeout if setAlive() is
-        // not regularily called (at least all 3-4 secs).
+        ViStatus err;
+
+        err = TLDFM_reset(m_insrumentHdl);
+        if (err)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("error by resetting mirror!").toLatin1().data());
+        }
     }
 
     if (waitCond)
@@ -729,30 +863,36 @@ ito::RetVal ThorlabsDMH::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitC
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (isMotorMoving())
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
-    }
-    else
-    {
-        foreach (const int& i, axis)
-        {
-            if (i >= 0 && i < m_nrOfAxes)
-            {
-                // todo: set axis i to origin (current position is considered to be the 0-position).
-            }
-            else
-            {
-                retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
-            }
-        }
+    // if (isMotorMoving())
+    //{
+    //     retValue += ito::RetVal(
+    //         ito::retError,
+    //         0,
+    //         tr("motor is running. Additional actions are not possible.").toLatin1().data());
+    // }
+    // else
+    //{
+    //     foreach (const int& i, axis)
+    //     {
+    //         if (i >= 0 && i < m_nrOfAxes)
+    //         {
+    //             // todo: set axis i to origin (current position is considered to be the
+    //             0-position).
+    //         }
+    //         else
+    //         {
+    //             retValue += ito::RetVal::format(
+    //                 ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+    //         }
+    //     }
 
-        retValue += updateStatus();
-    }
+    //    retValue += updateStatus();
+    //}
+
+    retValue += ito::RetVal(
+        ito::retWarning,
+        0,
+        tr("not needed and not implemented for this actauator").toLatin1().data());
 
     if (waitCond)
     {
@@ -789,7 +929,7 @@ ito::RetVal ThorlabsDMH::getStatus(
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getPos
 /*!
-    returns the current position (in mm or degree) of the given axis
+    returns the current position (in V) of the given axis
 */
 ito::RetVal ThorlabsDMH::getPos(
     const int axis, QSharedPointer<double> pos, ItomSharedSemaphore* waitCond)
@@ -812,7 +952,7 @@ ito::RetVal ThorlabsDMH::getPos(
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getPos
 /*!
-    returns the current position (in mm or degree) of all given axes
+    returns the current position (in V) of all given axes
 */
 ito::RetVal ThorlabsDMH::getPos(
     QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore* waitCond)
@@ -820,19 +960,35 @@ ito::RetVal ThorlabsDMH::getPos(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    foreach (const int i, axis)
+    ViReal64 SegmentVoltages[MAX_SEGMENTS];
+    ViStatus err;
+
+    err = TLDFM_get_segment_voltages(m_insrumentHdl, SegmentVoltages);
+
+    if (err)
     {
-        if (i >= 0 && i < m_nrOfAxes)
+        retValue += ito::RetVal(
+            ito::retError, 1, tr("Error during get segment voltages!").toLatin1().data());
+    }
+    else
+    {
+        for (int i = 0; i < axis.size(); i++)
         {
-            // obtain current position of axis i
-            // transform tempPos to angle
-            m_currentPos[i] = 0.0; // set m_currentPos[i] to the obtained position
-            (*pos)[i] = m_currentPos[i];
-        }
-        else
-        {
-            retValue += ito::RetVal::format(
-                ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            if (axis[i] >= 0 && axis[i] < m_nrOfAxes)
+            {
+                m_currentPos[axis[i]] =
+                    SegmentVoltages[axis[i]]; // set m_currentPos[i] to the obtained position
+                (*pos)[i] = m_currentPos[axis[i]];
+            }
+            else
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError,
+                    1,
+                    tr("axis %i not available. only Segments betweeen 0 and %i").toLatin1().data(),
+                    axis[i],
+                    m_nrOfAxes - 1);
+            }
         }
     }
 
@@ -887,6 +1043,9 @@ ito::RetVal ThorlabsDMH::setPosAbs(
     }
     else
     {
+        int cntPos = 0;
+        m_targetPos = m_currentPos;
+
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_nrOfAxes)
@@ -896,9 +1055,10 @@ ito::RetVal ThorlabsDMH::setPosAbs(
             }
             else
             {
-                m_targetPos[i] = 0.0; // todo: set the absolute target position to the desired value
-                                      // in mm or degree
+                m_targetPos[i] = pos[cntPos];
             }
+
+            cntPos++;
         }
 
         if (!retValue.containsError())
@@ -907,7 +1067,20 @@ ito::RetVal ThorlabsDMH::setPosAbs(
             // switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
-            // todo: start the movement
+            ViStatus err;
+            ViReal64 segmentVoltages[MAX_SEGMENTS];
+
+            for (int i = 0; i < m_nrOfAxes; i++)
+            {
+                segmentVoltages[i] = m_targetPos[i];
+            }
+
+            err = TLDFM_set_segment_voltages(m_insrumentHdl, segmentVoltages);
+            if (err)
+            {
+                retValue += ito::RetVal(
+                    ito::retError, 1, tr("Error during set segment voltage!").toLatin1().data());
+            }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
             // slots gets informed about new targets
@@ -929,7 +1102,7 @@ ito::RetVal ThorlabsDMH::setPosAbs(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
+            retValue += waitForDone(10000, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -995,6 +1168,14 @@ ito::RetVal ThorlabsDMH::setPosRel(
     }
     else
     {
+        int cntPos = 0;
+        m_targetPos = m_currentPos;
+
+        ViReal64 SegmentVoltages[MAX_SEGMENTS];
+        ViStatus err;
+
+        err = TLDFM_get_segment_voltages(m_insrumentHdl, SegmentVoltages);
+
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_nrOfAxes)
@@ -1004,10 +1185,10 @@ ito::RetVal ThorlabsDMH::setPosRel(
             }
             else
             {
-                m_targetPos[i] = 0.0; // todo: set the absolute target position to the desired value
-                                      // in mm or degree (obtain the absolute position with respect
-                                      // to the given relative distances)
+                m_targetPos[i] = pos[cntPos] + SegmentVoltages[cntPos];
             }
+
+            cntPos++;
         }
 
         if (!retValue.containsError())
@@ -1016,7 +1197,20 @@ ito::RetVal ThorlabsDMH::setPosRel(
             // switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
-            // todo: start the movement
+            ViStatus err;
+            ViReal64 segmentVoltages[MAX_SEGMENTS];
+
+            for (int i = 0; i < m_nrOfAxes; i++)
+            {
+                segmentVoltages[i] = m_targetPos[i];
+            }
+
+            err = TLDFM_set_segment_voltages(m_insrumentHdl, segmentVoltages);
+            if (err)
+            {
+                retValue += ito::RetVal(
+                    ito::retError, 1, tr("Error during set segment voltage!").toLatin1().data());
+            }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
             // slots gets informed about new targets
@@ -1038,7 +1232,7 @@ ito::RetVal ThorlabsDMH::setPosRel(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
+            retValue += waitForDone(10000, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -1092,18 +1286,26 @@ ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axi
         }
     }
 
+    ViReal64 SegmentVoltages[MAX_SEGMENTS];
+    ViStatus err;
+
     while (!done && !timeout)
     {
-        // todo: obtain the current position, status... of all given axes
+        err = TLDFM_get_segment_voltages(m_insrumentHdl, SegmentVoltages);
+
+        if (err)
+        {
+            retVal += ito::RetVal(
+                ito::retError, 1, tr("Error during get segment voltages!").toLatin1().data());
+        }
 
         done = true; // assume all axes at target
         motor = 0;
-        foreach (const int& i, axis)
+        for (int i = 0; i < m_nrOfAxes; i++)
         {
-            m_currentPos[i] = 0.0; // todo: if possible, set the current position if axis i to its
-                                   // current position
+            m_currentPos[i] = SegmentVoltages[i];
 
-            if (1 /*axis i is still moving*/)
+            if (m_currentPos[i] != m_targetPos[i])
             {
                 setStatus(
                     m_currentStatus[i],
@@ -1111,13 +1313,13 @@ ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axi
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = false; // not done yet
             }
-            else if (1 /*axis i is at target*/)
+            else
             {
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorAtTarget,
                     ito::actSwitchesMask | ito::actStatusMask);
-                done = false; // not done yet
+                done = true; // done
             }
         }
 
@@ -1127,7 +1329,7 @@ ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axi
         // now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
-            // todo: force all axes to stop
+            // todo: force all axes to stop --> not needed
 
             // set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
