@@ -90,13 +90,13 @@ SMC100::SMC100() :
     // Read/Write - Parameters
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to dataheet command HT").toLatin1().data());
+    paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("calib_mode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to dataheet command HT").toLatin1().data());
+    paramVal = ito::Param("calib_mode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("config_state", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to dataheet command HT").toLatin1().data());
+    paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("exec_calib", ito::ParamBase::IntArray, NULL, tr("Expects an array with the axis that should be calibrated ([1,3,4])").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -498,7 +498,7 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
         }
         else if (key == "config_state")
         {
-            // only the controller status is checked. Every other status is displaid as 0
+            // only the controller status is checked. Every other status is displayed as 0
             // the setter method leaves every controller represented by a 0 in its state. It only changes the 1.
             QVector<int> axis;
             foreach(const int &a, m_addresses)

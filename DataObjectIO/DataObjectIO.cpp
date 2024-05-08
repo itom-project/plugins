@@ -79,34 +79,34 @@ DataObjectIOInterface::DataObjectIOInterface()
 
     m_description = QObject::tr("import or export dataObject from/to several file formats.");
 
-    // for the docstring, please don't set any spaces at the beginning of the line.
-    /*    char docstring[] = \
-    "This filter contains two different export- / import-functionalities for dataObjects, image or
-    raw.\n\
-    \n\
-    Image-export functions converts dataObjects to image data and saves them as common
-    image-formats.\n\
-    \n\
-    * uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image
-    format allows color are saved according to the defined color palette.\n\
-    * float32 or float64 are saved as gray-values (8bit or if supported as 16bit) or according to
-    the
-    defined color palette. Therefore the values must be between 0.0 and 1.0.\n\
-      Values outside these borders are clipped. If the image format supports RGBA, invalid values
-    are saved as transparent values (alpha=zero) else as black values.\n\
-    * rgba32 can be saved as 'rgb' (full opacity), 'rgba' (alpha channel is considered, not
-    supported by all formats) or gray formats, where the color image is transformed to gray. \n\
-      if a format from a color palette is indicated, the color image is transformed to gray first
-    and then interpreted using the indicated color palette. \n\
-    \n\
-    Basic export-filter definition: source object, filename, palette, ...\n\
-    Basic import-filter definition: destination object, filename, channel-specification, ...\n\
-    \n\
-    Raw-export functions write/read the data to/from txt-based or binary file formats.";
+// for the docstring, please don't set any spaces at the beginning of the line.
+/*    char docstring[] = \
+"This filter contains two different export- / import-functionalities for dataObjects, image or
+raw.\n\
+\n\
+Image-export functions converts dataObjects to image data and saves them as common
+image-formats.\n\
+\n\
+* uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image
+format allows color are saved according to the defined color palette.\n\
+* float32 or float64 are saved as gray-values (8bit or if supported as 16bit) or according to
+the
+defined color palette. Therefore the values must be between 0.0 and 1.0.\n\
+    Values outside these borders are clipped. If the image format supports RGBA, invalid values
+are saved as transparent values (alpha=zero) else as black values.\n\
+* rgba32 can be saved as 'rgb' (full opacity), 'rgba' (alpha channel is considered, not
+supported by all formats) or gray formats, where the color image is transformed to gray. \n\
+    if a format from a color palette is indicated, the color image is transformed to gray first
+and then interpreted using the indicated color palette. \n\
+\n\
+Basic export-filter definition: source object, filename, palette, ...\n\
+Basic import-filter definition: destination object, filename, channel-specification, ...\n\
+\n\
+Raw-export functions write/read the data to/from txt-based or binary file formats.";
 
-        m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr(
-        "This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
+"This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
 \n\
 Image-export functions converts dataObjects to image data and saves them as common image-formats.\n\
 \n\

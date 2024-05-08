@@ -90,7 +90,8 @@ Together with this plugin parts of the drivers (some header files and static lib
 at compile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
 of this plugin.";
     m_detaildescription = QObject::tr(docstring);*/
-    m_detaildescription = QObject::tr("This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
+    m_detaildescription = QObject::tr(
+"This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
 This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.\n\
 \n\
 In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. \
@@ -1206,7 +1207,6 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
     ito::RetVal retValue(ito::retOk);
 
     unsigned long imglength = 0;
-    long lcopiesize = 0;
     long lsrcstrpos = 0;
     int y  = 0;
     int maxxsize = (int)m_params["sizex"].getMax();

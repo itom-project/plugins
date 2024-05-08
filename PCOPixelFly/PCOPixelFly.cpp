@@ -600,7 +600,7 @@ ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
         {    -165,   QObject::tr("no dma buffer found").toLatin1().data()},
         {    -166,   QObject::tr("locking of pages failed").toLatin1().data()},
         {    -167,   QObject::tr("unlocking of pages failed").toLatin1().data()},
-        {    -168,   QObject::tr("DMA buffersize to smal").toLatin1().data()},
+        {    -168,   QObject::tr("DMA buffersize to small").toLatin1().data()},
         {    -169,   QObject::tr("PCI-Bus error in DMA").toLatin1().data()},
         {    -170,   QObject::tr("DMA is running, command not allowed").toLatin1().data()},
         {    -228,   QObject::tr("get processor failed").toLatin1().data()},
@@ -1667,7 +1667,6 @@ ito::RetVal PCOPixelFly::retrieveData(ito::DataObject *externalDataObject)
     int iRetCode = 0;
     int iPicTimeOut = 2;
 
-    long lcopiesize = 0;
     long lsrcstrpos = 0;
     int y  = 0;
     int maxxsize = (int)m_params["sizex"].getMax();

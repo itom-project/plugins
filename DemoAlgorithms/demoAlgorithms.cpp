@@ -44,9 +44,9 @@ DemoAlgorithmsInterface::DemoAlgorithmsInterface()
 
     m_description =
         QObject::tr("DemoAlgorithms to show a plugin developer how to write plugins in c++");
-    m_detaildescription =
-        QObject::tr("The DemoAlgorithms-DLL contains some basic filter function to show a plugin "
-                    "developer how to use a motor or program an own plugin widget");
+    m_detaildescription = QObject::tr(
+"The DemoAlgorithms-DLL contains some basic filter function to show a plugin \n\
+developer how to use a motor or program an own plugin widget");
     m_author = "Wolfram Lyda, ITO, University Stuttgart";
     m_license = QObject::tr("LGPL");
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

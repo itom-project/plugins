@@ -51,7 +51,7 @@ ThorlabsTCubeTECInterface::ThorlabsTCubeTECInterface()
     m_description = QObject::tr("ThorlabsTCubeTEC");
 
     m_detaildescription = QObject::tr(
-        "ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers. \n\
+"ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers. \n\
 \n\
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.TCube.TEC.\n\
 \n\
@@ -803,7 +803,7 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
 }
 
 //-------------------------------------------------------------------------------------
-/* if a dock widget is displaid, this timer is activated to continuously update
+/* if a dock widget is displayed, this timer is activated to continuously update
 the current temperature and emit it via parametersChanged. */
 void ThorlabsTCubeTEC::timerEvent(QTimerEvent* event)
 {

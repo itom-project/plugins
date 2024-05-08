@@ -128,7 +128,7 @@ plot is opened that displays a moving graph of recent intensity values:
 
         if plot_handle.exists():
             try:
-                plot_handle["source"] = image #update the displaid image
+                plot_handle["source"] = image #update the displayed image
             except:
                 pass
         else:

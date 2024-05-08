@@ -58,7 +58,7 @@
     <message>
         <location line="+13"/>
         <source>Camera IP:</source>
-        <translation>IP-Addresse:</translation>
+        <translation>IP-Adresse:</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -197,7 +197,7 @@ Achtung: Die aktuelle Version läuft nur mit Vistek-Treibern bis einschließlich
     <message>
         <location line="+8"/>
         <source>IP address of the camera</source>
-        <translation>IP-Addresse der Kamera</translation>
+        <translation>IP-Adresse der Kamera</translation>
     </message>
     <message>
         <location line="+4"/>

@@ -51,7 +51,7 @@ parameters can be changed using *setParam*.
 **async**: {int} [0,1]
     Defines if the code continues while a controller is processing a task.
 **accel**: {doubleArray}
-    Array of the accelerations of each axis. Notice that if the acceleration is too high, errors can occur because of physical boundaries. These boundaries might be changeable due the serialport. For further information refer to the dataheet.
+    Array of the accelerations of each axis. Notice that if the acceleration is too high, errors can occur because of physical boundaries. These boundaries might be changeable due the serialport. For further information refer to the data sheet.
 **calib_mode**: {intArray} [0,4]
     Defines the calibration mode, each axis performs when exec_calib is called with an 1 for the corresponding axis.
     0 use MZ switch and encoder Index.

@@ -73,9 +73,11 @@ template <> inline ito::int32 swapByte<ito::int32>(const ito::int32 val)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail copy the rows from different z-planes of a multi-plane single row object to a single
-   plane 2D-Object \param[in]   dObjSrc     DataObject with shape Z x 1 x X \param[out]  dObjDst
-   DataObject with shape (Z=Y) x X \author ITO \date
+/*!\detail copy the rows from different z-planes of a multi-plane single row object to a single plane 2D-Object
+\param[in]   dObjSrc     DataObject with shape Z x 1 x X
+\param[out]  dObjDst DataObject with shape (Z=Y) x X
+\author ITO
+\date
 */
 template <typename _Tp> ito::RetVal copyRows(ito::DataObject* dObjSrc, ito::DataObject* dObjDst)
 {
@@ -802,7 +804,7 @@ ito::RetVal BasicFilters::mergeColorPlane(
                     rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
                     rowPtrDst[x] += ((ito::int32)rowPtrB[x]) << 16;
                     rowPtrDst[x] += 255
-                        << 24; // set alpha to 255, otherwise nothing is displaid in itom
+                        << 24; // set alpha to 255, otherwise nothing is displayed in itom
                 }
             }
         }
@@ -851,7 +853,7 @@ ito::RetVal BasicFilters::mergeColorPlane(
                     rowPtrDst[x].g = (ito::int32)rowPtrG[x];
                     rowPtrDst[x].r = (ito::int32)rowPtrR[x];
                     rowPtrDst[x].a =
-                        255; // setting alpha to 255, otherwise nothing is displaid in itom
+                        255; // setting alpha to 255, otherwise nothing is displayed in itom
                 }
             }
         }
@@ -933,7 +935,7 @@ ito::RetVal BasicFilters::mergeColorPlane(
                         rowPtrDst[y * planeSize[1] + x] +=
                             srcPtr[(y * planeSize[1] + x) * numMats + ofsB] << 16;
                         rowPtrDst[y * planeSize[1] + x] += 255
-                            << 24; // set alpha to 255, otherwise nothing is displaid in itom
+                            << 24; // set alpha to 255, otherwise nothing is displayed in itom
                     }
                 }
             }
@@ -969,7 +971,7 @@ ito::RetVal BasicFilters::mergeColorPlane(
                         rowPtrDst[y * planeSize[1] + x].b =
                             srcPtr[(y * planeSize[1] + x) * numMats + ofsB];
                         rowPtrDst[y * planeSize[1] + x].a =
-                            255; // set alpha to 255, otherwise nothing is displaid in itom
+                            255; // set alpha to 255, otherwise nothing is displayed in itom
                     }
                 }
             }

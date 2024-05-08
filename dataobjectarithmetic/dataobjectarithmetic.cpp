@@ -70,7 +70,7 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
 
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
     m_detaildescription = QObject::tr(
-        "This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
+"This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
 \n\

@@ -404,7 +404,7 @@ Configuration Dialog and Toolbox
 The plugin provides both a configuration dialog as well as a toolbox.
 
 The toolbox comes with an overview panel, that shows some basic information about connected channels
-and about the current run state of the task. In a 2nd tab, a general list of all parameters is displaid
+and about the current run state of the task. In a 2nd tab, a general list of all parameters is displayed
 by means of a generic parameter widget.
 
 The configuration dialog let you configure all channels as well as provide access to all major
@@ -1092,7 +1092,7 @@ Analog Input Tasks
 
 
     # Step 2: choose another logging type. Usually it is recommended to
-    # stop the device before chaining the logging modes. However,
+    # stop the device before changing the logging modes. However,
     # it the device is still started if the logging parameters
     # will be changed, it will automatically be stopped and restarted
     # again.

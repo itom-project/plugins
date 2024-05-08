@@ -233,7 +233,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
         <location filename="../SMC100.cpp" line="93"/>
         <location filename="../SMC100.cpp" line="95"/>
         <location filename="../SMC100.cpp" line="99"/>
-        <source>Calibration / Homing mode for each axis for further information refer to dataheet command HT</source>
+        <source>Calibration / Homing mode for each axis for further information refer to data sheet command HT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

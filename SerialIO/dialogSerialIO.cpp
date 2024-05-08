@@ -900,7 +900,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     char* deviceName = (*paramList)["name"].getVal<char*>(); // borrowed reference
     if (endline.compare("\r") || endline.compare("\r\n") || endline.compare("\n") ||
         endline.compare(
-            "")) // all those are standard endline characters all other will be displaid as hex
+            "")) // all those are standard endline characters all other will be displayed as hex
     {
         sprintf(
             txt,

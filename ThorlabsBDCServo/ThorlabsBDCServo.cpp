@@ -86,7 +86,7 @@ ThorlabsBDCServoInterface::ThorlabsBDCServoInterface()
 
     m_description = QObject::tr("ThorlabsBDCServo");
     m_detaildescription = QObject::tr(
-        "ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs: \n\
+"ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs: \n\
 \n\
 * Benchtop DC Servo (M30XY) \n\
 \n\

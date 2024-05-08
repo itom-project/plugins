@@ -196,7 +196,7 @@ to the API directory (e.g. C:\XIMEA\API\xiAPI).
 
 *Linux:*
 
-Install the XIMEA driver from the ximea website and use the commands described there, too, in or to install the driver.
+Install the XIMEA driver from the ximea website and use the commands described there, too, in order to install the driver.
 Then point the CMAKE variable XIMEA_APIDIR to the include directory of the Ximea package. This must contain the file m3api.h.
 Like under Windows, the library itself is dynamically loaded at runtime. It is usually loaded from /usr/lib.
 

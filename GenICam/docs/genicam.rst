@@ -102,9 +102,9 @@ During the initialization of a GenICam camera instance, it is possible to select
 warning or error messages will be printed to the command line of itom. The different verbose levels are:
 
 * 0: nothing is printed to the command line
-* 1: error: only severe errors are displaid
-* 2: warning: errors and warnings are displaid
-* 3: info: errors, warnings and few information are displaid
+* 1: error: only severe errors are displayed
+* 2: warning: errors and warnings are displayed
+* 3: info: errors, warnings and few information are displayed
 * 4: debug: this level contains all levels above including detailed information about the startup process as well as detected parameters of the device
 * 5: all: all information is printed including details about the state of all image buffers and reported changes in device-specific parameters.
 

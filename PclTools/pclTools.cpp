@@ -732,7 +732,7 @@ This file format allows displaying volume data from the given 3D data object for
     opt1.setMeta(sm, true);
     paramsOpt->append(opt1);
 
-    paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displaid)...").toLatin1().data()));
+    paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displayed)...").toLatin1().data()));
     paramsOpt->append(ito::Param("scalarThreshold", ito::ParamBase::Int, 0, std::numeric_limits<ito::uint16>::max(), 0, tr("values <= threshold will be set to 0 (transparent values for scalar field name 'scalars')").toLatin1().data()));
 
     return retval;

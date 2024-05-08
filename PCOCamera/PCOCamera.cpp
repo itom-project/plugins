@@ -920,7 +920,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (!retVal.containsError())
         {
             m_params["binning"].setVal<int>(hbin*100 + vbin);
-            setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, hbin * 100 + vbin)), NULL); //do this is order to recheck the dependent parameters binning, roi and format, else errors might stop the initialization in the arm method
+            setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, hbin * 100 + vbin)), NULL); //do this is order to recheck the available parameters binning, roi and format, else errors might stop the initialization in the arm method
         }
     }
 

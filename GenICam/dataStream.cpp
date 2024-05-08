@@ -1592,7 +1592,7 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(
             rowPtrDst[x].g = (*rowPtrSrc)[1];
             rowPtrDst[x].b = (*rowPtrSrc)[2];
             rowPtrSrc++;
-            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displaid in itom
+            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
         }
     }
 
@@ -1631,7 +1631,7 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
             rowPtrDst[x].g = (*rowPtrSrc)[1];
             rowPtrDst[x].b = (*rowPtrSrc)[2];
             rowPtrSrc++;
-            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displaid in itom
+            rowPtrDst[x].a = 255; // setting alpha to 255, otherwise nothing is displayed in itom
         }
     }
 

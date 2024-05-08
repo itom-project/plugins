@@ -172,7 +172,7 @@
     <message>
         <location line="+52"/>
         <location line="+70"/>
-        <source>devices is not open or endpoint Poiter is NULL.</source>
+        <source>devices is not open or endpoint pointer is NULL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -51,7 +51,7 @@ QuantumComposerInterface::QuantumComposerInterface()
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = "";
     m_detaildescription = QObject::tr(
-        "QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
+"QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
 \n\
 This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin \n\
 which is a mandatory input argument of the QuantumComposer plugin. \n\

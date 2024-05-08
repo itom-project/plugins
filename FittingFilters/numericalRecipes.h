@@ -82,9 +82,9 @@ private:
 //    VecDoub row(MatDoub_I &a, const Int i)
 //    {
 //        Int j,n=a.ncols();
-//        VecDoub answer(n);
-//        for (j=0;j<n;j++) answer[j] = a[i][j];
-//        return answer;
+//        VecDoub ans(n);
+//        for (j=0;j<n;j++) ans[j] = a[i][j];
+//        return ans;
 //    }
 //
 //    template<int order> static VecDoub fpoly(const Doub x)

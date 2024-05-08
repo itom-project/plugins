@@ -383,7 +383,7 @@ ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QShared
     {
         if (m_gammaCorrection)
         {
-            retval += ito::RetVal(ito::retWarning, 0, "a rgba32 dataObject will not be properly displaid if gamma correction is True (only red-channel is used for lookup in gamma correction LUT).");
+            retval += ito::RetVal(ito::retWarning, 0, "a rgba32 dataObject will not be properly displayed if gamma correction is True (only red-channel is used for lookup in gamma correction LUT).");
         }
 
         texturesUint8 = textures;

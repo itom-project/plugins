@@ -1174,11 +1174,6 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
     int ret = 0;
-//    int timeOutMS = (int)(m_params["time_out"].getVal<double>() * 1000 + 0.5);
-
-//    unsigned long imglength = 0;
-//    long lcopiesize = 0;
-
     int current_image = m_params["current_image"].getVal<int>();
     m_params["current_image"].setVal<int>((current_image + 1) % m_params["number_of_images"].getVal<int>());
 

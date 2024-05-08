@@ -85,7 +85,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
+"This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
 \n\
 * morphological filters (dilation, erosion) \n\
 * image filtering (blur, median blur...) \n\

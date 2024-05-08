@@ -79,7 +79,7 @@ GLDisplayInterface::GLDisplayInterface()
 Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. \n\
 OpenGL allows a fast switch between all created textures. \n\
 \n\
-Per default, the window is either displaid in a second screen (fullscreen) or if only one screen is available - \n\
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - \n\
 placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize \n\
 parameter at initialization. \n\
 \n\
@@ -100,7 +100,7 @@ Allowed values for these tags are: \n\
 Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. \n\
 OpenGL allows a fast switch between all created textures. \n\
 \n\
-Per default, the window is either displaid in a second screen (fullscreen) or if only one screen is available - \n\
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - \n\
 placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize \n\
 parameter at initialization. \n\
 \n\
@@ -253,7 +253,7 @@ GLDisplay::GLDisplay() :
     paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, maxheight, defheight, tr("height of window [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("currentIdx", ito::ParamBase::Int, 0, 0, 0, tr("Index of currently displaid image [0..)").toLatin1().data());
+    paramVal = ito::Param("currentIdx", ito::ParamBase::Int, 0, 0, 0, tr("Index of currently displayed image [0..)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("numImages", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0, tr("Number of different images").toLatin1().data());

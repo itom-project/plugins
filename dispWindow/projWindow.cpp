@@ -1755,9 +1755,9 @@ int PrjWindow::getOrientationClearedCurImg(void) const
 
 //-------------------------------------------------------------------------------------
 /*
-void PrjWindow::resizeEvent(QResizeEvent *prevent)
+void PrjWindow::resizeEvent(QResizeEvent *pevent)
 {
-    QSize newSize = prevent->size();
+    QSize newSize = pevent->size();
     resize(newSize.width(), newSize.height());
 }
 */

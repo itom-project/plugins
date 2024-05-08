@@ -67,7 +67,7 @@ ito::RetVal DispWindowInterface::closeThisInst(ito::AddInBase** addInInst)
 /** addIn interface constructor
  *
  *    The DispWindow plugin provides a window for displaying cosine fringes and graycode images. The
- * window is topmost, frameless and uses openGL for the actual painting. The dependent parameters
+ * window is topmost, frameless and uses openGL for the actual painting. The available parameters
  * are:
  *        - x0, y0: window position
  *        - xsize, ysize: window size
@@ -98,7 +98,7 @@ DispWindowInterface::DispWindowInterface()
     m_description = tr("Window for SLM/LCD-Applications");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
+"This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
 various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
 \n\
 For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake \

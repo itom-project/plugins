@@ -161,7 +161,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ito::RetVal retValue(ito::retOk);
 
     VRmDWORD device_num = paramsOpt->at(0).getVal<int>(); // first parameter is device number
-    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second parametert is port number of device
+    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second parameter is port number of device
 
     if (!retValue.containsError())
     {

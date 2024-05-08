@@ -219,7 +219,7 @@
     </message>
     <message>
         <location line="+6"/>
-        <source>name of scalar field, e.g. &apos;scalars&apos; (zero values will be transparent), &apos;ImageScalars&apos; (zero values will be displaid)...</source>
+        <source>name of scalar field, e.g. &apos;scalars&apos; (zero values will be transparent), &apos;ImageScalars&apos; (zero values will be displayed)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

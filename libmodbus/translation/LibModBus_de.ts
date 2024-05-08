@@ -37,7 +37,7 @@
     <message>
         <location filename="../LibModBus.cpp" line="+138"/>
         <source>IP Address or COM-Port of the target device</source>
-        <translation type="unfinished">IP-Addresse oder COM-Port des Zielgeräts</translation>
+        <translation type="unfinished">IP-Adresse oder COM-Port des Zielgeräts</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -72,7 +72,7 @@
     <message>
         <location line="+2"/>
         <source>Default string for register addressing. Coding is &apos;Reg1Address,Reg1Size;Reg2Address,Reg2Size...&apos;</source>
-        <translation type="unfinished">Standard-String für Registeraddressierung. Die Kodierung ist &apos;Reg1Address, Reg1Size; Reg2Address, Reg2Size ...&apos;</translation>
+        <translation type="unfinished">Standard-String für Registeradressierung. Die Kodierung ist &apos;Reg1Address, Reg1Size; Reg2Address, Reg2Size ...&apos;</translation>
     </message>
     <message>
         <location line="+176"/>
@@ -117,15 +117,15 @@ The content of the registers is expected as data in the uint16 data object for r
 If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be used for addressing.</source>
         <translation type="unfinished">LibModBus ist ein itom-Plugin, das eine Kommunikationsschnittstelle mit modbusTCP und modbusRTU bereitstellt.
 Das Plugin basiert auf der libmodbus v3.1.1 Bibliothek und wurde nur unter Windows getestet.
-Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus addressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
+Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus adressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
 Die genutzten Plugin-Funktionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll.
-Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Addressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Addresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Addressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
-Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Addressierung genutzt.</translation>
+Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Adressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Adresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Adressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
+Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Adressierung genutzt.</translation>
     </message>
     <message>
         <location line="+15"/>
-        <source>Address of the target device. IP-Address for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)</source>
-        <translation type="unfinished">Addresse des Zielgeräts: IP-Addresse für ModbusTCP (z.B. 127.0.0.1) oder COM-Port für ModbusRTU (z.B. COM1)</translation>
+        <source>Address of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)</source>
+        <translation type="unfinished">Adresse des Zielgeräts: IP-Adresse für ModbusTCP (z.B. 127.0.0.1) oder COM-Port für ModbusRTU (z.B. COM1)</translation>
     </message>
     <message>
         <location line="+4"/>

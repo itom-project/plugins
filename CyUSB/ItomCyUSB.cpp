@@ -447,19 +447,19 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                             {
                                 m_isocInEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Input endPoint ist: CCyIsocEndPoint\n" << std::endl;
+                                    << "Input endPoint : CCyIsocEndPoint\n" << std::endl;
                             }
                             if ((m_bulkInEndPoint == NULL) && (attrib == 2) && bIn)
                             {
                                 m_bulkInEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Input endPoint ist: CCyBulkEndPoint\n" << std::endl;
+                                    << "Input endPoint is: CCyBulkEndPoint\n" << std::endl;
                             }
                             if ((m_interruptInEndPoint == NULL) && (attrib == 3) && bIn)
                             {
                                 m_interruptInEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Input endPoint ist: CCyInterruptEndPoint\n" << std::endl;
+                                    << "Input endPoint is: CCyInterruptEndPoint\n" << std::endl;
                             }
                             */
                         }
@@ -482,19 +482,19 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                             {
                                 m_isocOutEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Output endPoint ist: CCyIsocEndPoint\n" << std::endl;
+                                    << "Output endPoint is: CCyIsocEndPoint\n" << std::endl;
                             }
                             if ((m_bulkOutEndPoint == NULL) && (attrib == 2) && !bIn)
                             {
                                 m_bulkOutEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Output endPoint ist: CCyBulkEndPoint\n" << std::endl;
+                                    << "Output endPoint is: CCyBulkEndPoint\n" << std::endl;
                             }
                             if ((m_interruptOutEndPoint == NULL) && (attrib == 3) && !bIn)
                             {
                                 m_interruptOutEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
                                 std::cout << "-----------------------------\n"
-                                    << "Output endPoint ist: CCyInterruptEndPoint\n" << std::endl;
+                                    << "Output endPoint is: CCyInterruptEndPoint\n" << std::endl;
                             }
                             */
                         }
@@ -703,7 +703,7 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint Pointer is NULL.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint pointer is NULL.").toLatin1().data());
     }
 
     if (m_params["debug"].getVal<int>() == 1)
@@ -773,7 +773,7 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint Pointer is NULL.").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint pointer is NULL.").toLatin1().data());
     }
 
     if (m_params["debug"].getVal<int>() == 1)

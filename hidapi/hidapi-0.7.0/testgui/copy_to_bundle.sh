@@ -13,7 +13,7 @@ EXEPATH=./TestGUI.app/Contents/MacOS
 LIBS_TO_BUNDLE=libFOX
 
 
-function copiedeps {
+function copydeps {
 	local file=$1
 	# echo "Copying deps for $file...."
 	local BASE_OF_EXE=`basename $file`
@@ -68,7 +68,7 @@ function copiedeps {
 
 				# Call this function (recursive) on
 				# on each dependency of this library.
-				copiedeps $EXEPATH/$BASE
+				copydeps $EXEPATH/$BASE
 			fi
 		fi
 	done
@@ -76,4 +76,4 @@ function copiedeps {
 
 rm $EXEPATH/*
 cp $EXE_NAME $EXEPATH
-copiedeps $EXEPATH/$EXE_NAME
+copydeps $EXEPATH/$EXE_NAME

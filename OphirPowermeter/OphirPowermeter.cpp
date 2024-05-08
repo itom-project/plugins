@@ -71,7 +71,7 @@ OphirPowermeterInterface::OphirPowermeterInterface()
 
     m_description = QObject::tr("Plugin for Ophir Powermeter.");
     m_detaildescription = QObject::tr(
-        "The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
+"The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. \n\
 \n\
 Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
