@@ -112,5 +112,5 @@ if(WIN32)
 endif(WIN32)
 
 else(XIMEA_SDK_FOUND)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
+    message(FATAL_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(XIMEA_SDK_FOUND)
