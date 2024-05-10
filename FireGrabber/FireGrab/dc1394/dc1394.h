@@ -11,7 +11,7 @@
  *
  * Copyright (C) 2000-2001 SMART Technologies Inc.
  * Copyright (C) 2001-2004 Universite catholique de Louvain
- * Copyright (C) 2000 Carnegie Mellon University
+ * Copyright (C) 2000 Carnegie Mellon Universität
  * Copyright (C) 2006- Massachussets Institute of Technology
  * Copyright (C) 2004- Nara Institute of Science and Technology
  * All files are also Copyright (C) their respective author(s)

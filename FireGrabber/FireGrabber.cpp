@@ -89,9 +89,9 @@ firewire. \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.");
 #ifndef WIN32
-    m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
+    m_author = "G. Baer, M. Gronle, ITO, Universität Stuttgart";
 #else
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
+    m_author = "A. Bielke, M. Gronle, ITO, Universität Stuttgart";
 #endif
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;

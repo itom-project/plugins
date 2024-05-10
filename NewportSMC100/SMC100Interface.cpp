@@ -76,7 +76,7 @@ The parameters of the serial port (besides port number) are set automatically du
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization.");
 
-    m_author = "M. Hoppe, M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Hoppe, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

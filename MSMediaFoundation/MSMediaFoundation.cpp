@@ -84,7 +84,7 @@ Affiliation \n\
 This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under \n\
 http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)");
 
-    m_author = "M. Gronle, H. Bieger, ITO, University Stuttgart";
+    m_author = "M. Gronle, H. Bieger, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

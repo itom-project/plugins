@@ -86,7 +86,7 @@ license information of Aerotech see their documentation. \n\
 \n\
 For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).");
 
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart, Juergen Ortmann, Ortmann Digitaltechnik";
+    m_author = "A. Bielke, M. Gronle, ITO, Universität Stuttgart, Juergen Ortmann, Ortmann Digitaltechnik";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

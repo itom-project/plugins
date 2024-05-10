@@ -92,7 +92,7 @@ instance when initializing this plugin.";
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.");
 
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
+    m_author = "H. Bieger, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

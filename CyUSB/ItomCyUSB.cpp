@@ -77,7 +77,7 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
 \n\
 !Only the setVal function could be tested!");
 
-    m_author = "J Krauter, ITO University Stuttgart";
+    m_author = "J Krauter, ITO Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

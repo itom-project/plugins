@@ -72,7 +72,7 @@ For details please check C:\\A3200\\MANUAL.";*/
     m_detaildescription = QObject::tr(
 "This plugin allows communicating with controllers of type A3200 of company Aerotech. \n\
 For details please check C:\\A3200\\MANUAL.");
-    m_author = "Simon Chen, Christof Pruss, ITO, University Stuttgart";
+    m_author = "Simon Chen, Christof Pruss, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

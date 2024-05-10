@@ -111,7 +111,7 @@ For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to th
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
 Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;

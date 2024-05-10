@@ -133,7 +133,7 @@ tested with the following spectrometers: \
 * AvaSpec 3468 USB-Spectrometer \
 * AvaSpec 2048 USB-Spectrometer \
 * AvaSpec-ULS2048CL-EVO USB3-Spectrometer.");
-    m_author = "M. Gronle, R. Hahn, W. Lyda, ITO, University Stuttgart";
+    m_author = "M. Gronle, R. Hahn, W. Lyda, ITO, Universität Stuttgart";
     m_license = QObject::tr("LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;

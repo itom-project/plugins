@@ -168,7 +168,7 @@ meshes to common formats like pcd, ply, stl, obj... Once the plugin is loaded \n
 itom in general is also able to load and save such structures using the methods provided \n\
 by this plugin.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

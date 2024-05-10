@@ -123,7 +123,7 @@ provided by COPTONIX). \n\
 If you change any parameters like speed or acceleration, set the values and then read the values again, since the currently set values \
 might slightly differ from the desired values due to rounding uncertainties.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

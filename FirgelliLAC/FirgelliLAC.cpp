@@ -128,7 +128,7 @@ plugin might deliver wrong values. At startup, the motor is always moved to its 
 in order to be able to subsequently provide right position values. This behaviour is mandatory\n\
 and cannot be changed (due to the driver of the controller board).");
 
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
+    m_author = "H. Bieger, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

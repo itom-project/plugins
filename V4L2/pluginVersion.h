@@ -33,8 +33,8 @@
 #define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION_STRING "0.0.1"
-#define PLUGIN_COMPANY        "Institut für Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, University Stuttgart"
+#define PLUGIN_COMPANY        "Institut für Technische Optik, Universität Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, Universität Stuttgart"
 #define PLUGIN_NAME           "V4L2"
 
 //----------------------------------------------------------------------------------------------------------------------------------

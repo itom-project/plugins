@@ -85,7 +85,7 @@ It was published under GNU General Public License and can be downloaded under ht
 \n\
 To build this plugin you will need the libs from the fftw.");
 
-    m_author = "W. Lyda, twip optical solutions GmbH, T. Boettcher, M. Gronle, University Stuttgart";
+    m_author = "W. Lyda, twip optical solutions GmbH, T. Boettcher, M. Gronle, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

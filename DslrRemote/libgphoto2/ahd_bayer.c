@@ -8,7 +8,7 @@
  * gp_ahd_interpolate() from Eero Salminen <esalmine@gmail.com>
  * and Theodore Kilgore. The work of Eero Salminen is for partial completion
  * of a Diploma in Information and Computer Science,
- * Helsinki University of Technology, Finland.
+ * Helsinki Universität of Technology, Finland.
  *
  * \par
  * The algorithm is based upon the paper

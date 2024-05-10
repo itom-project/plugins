@@ -78,7 +78,7 @@ Hence, stages should not be mixed up.\n\
 \n\
 If the device is newly started, all axes have to be initialized first. This is done using the command myMotor.calib(0,1,2,3,4,5) in order \n\
 to initialize the x,y,z,u,v and w axis, respectively.");
-    m_author = "W. Lyda, ITO, University Stuttgart";
+    m_author = "W. Lyda, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

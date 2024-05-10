@@ -281,7 +281,7 @@ the plugin, especially set the manual / auto flag of parameters (not directly av
 For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter 'dump_grabs' to set a number of images \
 that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

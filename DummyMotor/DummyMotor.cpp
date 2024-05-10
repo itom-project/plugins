@@ -99,7 +99,7 @@ to simulate or develop your measurement system at another computer. Whenever a p
 this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) \
 expired.");
 
-    m_author = "W. Lyda, ITO, University Stuttgart";
+    m_author = "W. Lyda, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

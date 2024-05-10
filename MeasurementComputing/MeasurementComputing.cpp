@@ -59,7 +59,7 @@ Digital I/O, counter and temperature ports can be used by the **exec**-functions
 \n\
 Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact information of each key executive at Measurement Computing. \n").toLatin1().data();
 
-    m_author = "J. Krauter, ITO, University Stuttgart";
+    m_author = "J. Krauter, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

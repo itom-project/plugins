@@ -94,7 +94,7 @@ in the following way: \n\
 Please note that you only need to indicate a baudrate for RS232 connections, in the other cases, \n\
 the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

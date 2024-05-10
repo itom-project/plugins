@@ -76,7 +76,7 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage. \n\
 \n\
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH & Co. KG.");
-    m_author = "W. Lyda, H. Bieger, ITO, University Stuttgart";
+    m_author = "W. Lyda, H. Bieger, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

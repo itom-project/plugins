@@ -64,7 +64,7 @@ OpenCVFiltersNonFreeInterface::OpenCVFiltersNonFreeInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
     m_detaildescription = QObject::tr("This plugin provides wrappers for various OpenCV algorithms from its section non-free.");
-    m_author = "M. Gronle, P. Bahar, ITO, University Stuttgart";
+    m_author = "M. Gronle, P. Bahar, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

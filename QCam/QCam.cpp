@@ -61,7 +61,7 @@ QCamInterface::QCamInterface() : AddInInterfaceBase()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_detaildescription = QObject::tr("This plugin is currently under development.");
-    m_author            = "M. Holtom, College of Eng., Swansea University; M. Gronle, ITO, University Stuttgart";
+    m_author            = "M. Holtom, College of Eng., Swansea Universität; M. Gronle, ITO, Universität Stuttgart";
     m_license           = QObject::tr("itom-plugin under LGPL / QCam driver under ???");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;

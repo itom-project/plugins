@@ -254,7 +254,7 @@ The library ISO 5436-2 XML, that is necessary for this plugin and included in th
 is licensed under the LGPL license and uses further libraries. For more information about the license \n\
 of the library itself see www.opengps.eu");
 
-    m_author = "C. Kohler, ITO, University Stuttgart";
+    m_author = "C. Kohler, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

@@ -65,7 +65,7 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_detaildescription = QObject::tr("NanotecStepMotor is an itom-plugin, which can be used to communicate with the Nanotec controllers SMCP.\nIt has been tested with one connected controller SMCP33 and 4 axis.");
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
+    m_author = "H. Bieger, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

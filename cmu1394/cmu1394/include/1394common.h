@@ -12,14 +12,14 @@
  *
  *  Christopher Baker
  *  Robotics Institute
- *  Carnegie Mellon University
+ *  Carnegie Mellon Universität
  *  Pittsburgh, PA
  *
  *	Copyright 5/2000
  *
  *	Iwan Ulrich
  *	Robotics Institute
- *	Carnegie Mellon University
+ *	Carnegie Mellon Universität
  *	Pittsburgh, PA
  *
  *  This file is part of the CMU 1394 Digital Camera Driver

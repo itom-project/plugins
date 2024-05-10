@@ -71,7 +71,7 @@ Any detected and supported device can offer multiple framerates and sizes. Use t
 to let the plugin print a list of supported formats (the plugin initialization then stops with a desired error).";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "V. Ferreras Paz, M. Gronle, ITO, University Stuttgart";
+    m_author = "V. Ferreras Paz, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

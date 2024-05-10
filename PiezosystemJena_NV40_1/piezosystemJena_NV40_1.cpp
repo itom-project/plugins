@@ -37,7 +37,7 @@ It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).";
 This system needs a serial port. The parameters are set automatically during initialization.\n\
 It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
 
-    m_author = "V. Ferreras-Paz, M. Gronle, W. Lyda, ITO, University Stuttgart";
+    m_author = "V. Ferreras-Paz, M. Gronle, W. Lyda, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

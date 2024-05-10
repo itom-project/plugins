@@ -1109,7 +1109,7 @@ Example\n\
     answer = bytearray(9) #supposed length is 9 characters\n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns");
 
-    m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
+    m_author = "H. Bieger, C. Kohler, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

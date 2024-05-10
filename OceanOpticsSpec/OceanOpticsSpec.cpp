@@ -121,7 +121,7 @@ Others most likely won't work properly yet.\n\
 Tested with: \
 \
 * OceanOptics STS-UV (25 um slit)");
-    m_author = "J. Drozella, ITO, University Stuttgart";
+    m_author = "J. Drozella, ITO, Universität Stuttgart";
     m_license = QObject::tr("LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;

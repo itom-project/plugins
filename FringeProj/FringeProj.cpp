@@ -580,7 +580,7 @@ FringeProjInterface::FringeProjInterface()
 
     m_description = QObject::tr("Algorithms used for fringe projection (phase shifting and Gray code)");
     m_detaildescription = QObject::tr("This DLL contains several reconstruction algorithms for fringe projection.");
-    m_author = "C. Kohler, M. Gronle, ITO, University Stuttgart";
+    m_author = "C. Kohler, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

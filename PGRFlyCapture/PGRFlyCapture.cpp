@@ -132,7 +132,7 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
 
     m_description = QObject::tr("Point Grey FlyCapture2 Cameras");
 
-    m_author = "W. Lyda, M. Gronle, P. Wagner, ITO, University Stuttgart";
+    m_author = "W. Lyda, M. Gronle, P. Wagner, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

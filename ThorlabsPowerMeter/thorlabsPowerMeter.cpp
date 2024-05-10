@@ -79,7 +79,7 @@ For compiling this plugin, you need to install the Thorlabs PM100x Instrument Dr
 Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directory (e.g. C:/Program Files/IVI Foundation/VISA/Win64/Include)";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Robin Hahn, ITO, University Stuttgart";
+    m_author = "Robin Hahn, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

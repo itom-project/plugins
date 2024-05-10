@@ -77,7 +77,7 @@ weighted values, such that more precise fitting results are achievable. \n\
 \n\
 Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

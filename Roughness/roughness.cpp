@@ -69,7 +69,7 @@ The contained algorithms are: \n\
 * calcAbbottCurve: determination of the abbott curve based on the roughness or waviness \n\
 \n\
 Some algorithms the plugin 'fittingFilters' for a valid execution.");
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

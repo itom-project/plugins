@@ -85,7 +85,7 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
 
-    m_author = "J. Krauter, ITO, University Stuttgart";
+    m_author = "J. Krauter, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

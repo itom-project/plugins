@@ -123,7 +123,7 @@ Download the SDK and install it at any location. Additionally you need to instal
 \n\
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.");
 
-    m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, University Stuttgart";
+    m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

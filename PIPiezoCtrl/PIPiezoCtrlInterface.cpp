@@ -86,7 +86,7 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
 WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum available position.\
 In the case of a higher maximum position, set the plugin parameter \"posLimitHigh\". ");
 
-    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, University Stuttgart";
+    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

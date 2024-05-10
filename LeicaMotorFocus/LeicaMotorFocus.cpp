@@ -137,7 +137,7 @@ For the initialization of this plugin you already need an opened serial IO port 
 the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator \
 is closed again.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author = "W. Lyda, M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

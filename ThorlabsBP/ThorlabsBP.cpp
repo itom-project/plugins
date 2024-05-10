@@ -99,7 +99,7 @@ This plugin has been tested with the Benchtop Piezo with 1 and 3 channels. \n\
 \n\
 The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected. Else the values are always in volts.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
