@@ -25,22 +25,22 @@ option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON."
 
 # AerotechA3200
 if(NOT BUILD_TARGET64)
-	if(WIN32)
-		option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-		if(PLUGIN_aerotechA3200 OR )
-    		add_subdirectory(AerotechA3200)
-		endif(PLUGIN_aerotechA3200)
-	endif()
+    if(WIN32)
+        option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_aerotechA3200 OR )
+            add_subdirectory(AerotechA3200)
+        endif(PLUGIN_aerotechA3200)
+    endif()
 endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
 if(BUILD_QTVERSION STREQUAL "Qt5")
-	if(WIN32)
-		option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
-		if(PLUGIN_aerotechEnsemble)
-			add_subdirectory(AerotechEnsemble)
-		endif(PLUGIN_aerotechEnsemble)
-	endif()
+    if(WIN32)
+        option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
+        if(PLUGIN_aerotechEnsemble)
+            add_subdirectory(AerotechEnsemble)
+        endif(PLUGIN_aerotechEnsemble)
+    endif()
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
 

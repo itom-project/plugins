@@ -20,7 +20,7 @@ Overview
 Parameters
 ==========
 
-These paramaters are available and can be used to configure the **AerotechA3200** instance.
+These parameters are available and can be used to configure the **AerotechA3200** instance.
 
 **name**: {str}, read-only
     name of the plugin (*AerotechA3200*)

@@ -90,7 +90,7 @@
     </message>
     <message>
         <location line="+83"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation>Absolute Positionierung</translation>
     </message>
     <message>

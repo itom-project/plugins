@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -42,7 +42,7 @@
     #endif
 #endif
 
-#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hypen between "NI" and "DAQ"
+#include "NIDAQmx.h" // This is the NI C Library .h file, which is distinquised from this file by lacking a hyphen between "NI" and "DAQ"
 #include "NI-PeripheralClasses.h" // Classes that encapsulate general stuff like channels and tasks
 
 #include "NI-DAQmxError.h"

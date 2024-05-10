@@ -64,7 +64,7 @@
 //
 ////----------------------------------------------------------------------------------------------------------------------------------
 ///**
-// * \detail This function writes back the value of the different GUI-Elements to the 1394 before the dialog is deleted. Only the grab depth and the binning will be seperated, because they need a realloc of memory.
+// * \detail This function writes back the value of the different GUI-Elements to the 1394 before the dialog is deleted. Only the grab depth and the binning will be separated, because they need a realloc of memory.
 // *
 // * \sa RetVal AS5216::showConfDialog(void)
 // * \date    Oct.2011

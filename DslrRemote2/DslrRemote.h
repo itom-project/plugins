@@ -29,7 +29,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include <qsharedpointer.h>
 
-// forward declaration, interal class
+// forward declaration, internal class
 class PtpCam;
 
 //----------------------------------------------------------------------------------------------------------------------------------

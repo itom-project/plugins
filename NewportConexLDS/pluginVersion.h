@@ -18,9 +18,9 @@
     CREATE_VERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING                                                                      \
     CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_AUTHOR "J. Krauter, ITO University Stuttgart"
-#define PLUGIN_COPYRIGHT "(C) 2024, ITO, University Stuttgart"
+#define PLUGIN_COMPANY "Institut für Technische Optik, Universität Stuttgart"
+#define PLUGIN_AUTHOR "J. Krauter, ITO Universität Stuttgart"
+#define PLUGIN_COPYRIGHT "(C) 2024, ITO, Universität Stuttgart"
 #define PLUGIN_NAME "NewportConexLDS"
 
 //----------------------------------------------------------------------------------------------------------------------------------

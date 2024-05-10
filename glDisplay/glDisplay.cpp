@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -115,7 +115,7 @@ Allowed values for these tags are: \n\
 * 'wrapT' (vertical scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT, 'GL_CLAMP_TO_EDGE' \n\
 * 'wrapS' (horizontal scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT', 'GL_CLAMP_TO_EDGE'");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

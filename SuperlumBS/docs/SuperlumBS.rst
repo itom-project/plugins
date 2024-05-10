@@ -119,7 +119,7 @@ parameters can be changed using *setParam*.
 **operation_mode**: {int}
     ( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation.
 **optical_output**: {int}
-    ( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.
+    ( 0 ) optical output is disabled, ( 1 ) optical output is enabled.
 **power_mode**: {int}
     ( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.
 **remote_interlock**: {int}, read-only
@@ -167,9 +167,9 @@ The return integer value will be 1 for MANual, 2 for AUTOmatic, 3 for EXTneral a
 
 .. code-block:: python
 
-	>>bs.getParam("operation_mode")
-	1
-	>>
+    >>bs.getParam("operation_mode")
+    1
+    >>
 
 Changelog
 =========

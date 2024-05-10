@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **accel**: {seq. of int}
     motor shaft acceleration, range: 1..65.535 [default 2.364]
 **async**: {int}
-    asychronous (1) or sychronous (0) [default] mode
+    asynchronous (1) or synchronous (0) [default] mode
 **axisID**: {seq. of int}
     internal ID of axis
 **axisSteps**: {seq. of float}, read-only

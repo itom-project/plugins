@@ -16,8 +16,8 @@
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, University Stuttgart"
+#define PLUGIN_COMPANY        "Institut für Technische Optik, Universität Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, Universität Stuttgart"
 #define PLUGIN_NAME           "ThorlabsCCS"
 
 //----------------------------------------------------------------------------------------------------------------------------------

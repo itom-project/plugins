@@ -45,8 +45,7 @@ Parameters
 **connection**: {str}, read-only
     type of the connection ('RS232', 'USB').
 **deviceType**: {str}, read-only
-    Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-
-    II).
+    Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II).
 **headName**: {str}, read-only
     Head name connected to the device.
 **headSerialNumber**: {str}, read-only

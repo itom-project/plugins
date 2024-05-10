@@ -183,7 +183,7 @@ old *libiomp5md.dll* but on the renamed version with the same content.
 This might resolve the name conflict with the same file (different version)
 shipped with Numpy+MKL.
 
-Then set the CMake variable *FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR** or the environment path vairable **FLIR_SDK_ROOT**
+Then set the CMake variable *FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR** or the environment path variable **FLIR_SDK_ROOT**
 to the base directory of the pco.sensicam (e.g. C:\Program Files\Point Grey Research\FlyCapture2).
 
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2018, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -63,8 +63,8 @@ public:
     ~BasePort();
 
     virtual EAccessMode GetAccessMode() const; //overloaded from IPort: if the driver is open, return RW (= read/write), otherwise NA (= not available)
-    virtual void Read(void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
-    virtual void Write(const void *pBuffer, int64_t Address, int64_t Length); //overloded from IPort
+    virtual void Read(void *pBuffer, int64_t Address, int64_t Length); //overloaded from IPort
+    virtual void Write(const void *pBuffer, int64_t Address, int64_t Length); //overloaded from IPort
 
     ito::RetVal connectToGenApi(ito::uint32 portIndex);
 

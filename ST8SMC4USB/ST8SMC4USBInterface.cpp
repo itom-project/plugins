@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport ST8SMC4USB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -73,7 +73,7 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.";
 \n\
 It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
 
-    m_author = "H. Bieger, M. Gronle, J. Krauter, ITO, University Stuttgart";
+    m_author = "H. Bieger, M. Gronle, J. Krauter, ITO, Universität Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;

@@ -266,7 +266,7 @@ Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!</source>
+        <source>Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

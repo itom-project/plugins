@@ -57,35 +57,35 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifndef USB_CLASS_PTP
-#define USB_CLASS_PTP		6
+#define USB_CLASS_PTP        6
 #endif
 
 // USB control message data phase direction
 #ifndef USB_DP_HTD
-#define USB_DP_HTD		(0x00 << 7)	// host to device
+#define USB_DP_HTD        (0x00 << 7)    // host to device
 #endif
 #ifndef USB_DP_DTH
-#define USB_DP_DTH		(0x01 << 7)	// device to host
+#define USB_DP_DTH        (0x01 << 7)    // device to host
 #endif
 
 // PTP class specific requests
 #ifndef USB_REQ_DEVICE_RESET
-#define USB_REQ_DEVICE_RESET		0x66
+#define USB_REQ_DEVICE_RESET        0x66
 #endif
 #ifndef USB_REQ_GET_DEVICE_STATUS
-#define USB_REQ_GET_DEVICE_STATUS	0x67
+#define USB_REQ_GET_DEVICE_STATUS    0x67
 #endif
 
 // USB Feature selector HALT
 #ifndef USB_FEATURE_HALT
-#define USB_FEATURE_HALT	0x00
+#define USB_FEATURE_HALT    0x00
 #endif
 
 // OUR APPLICATION USB URB (2MB) ;)
-#define PTPCAM_USB_URB		2097152
+#define PTPCAM_USB_URB        2097152
 
-#define USB_TIMEOUT		5000
-#define USB_CAPTURE_TIMEOUT	20000
+#define USB_TIMEOUT        5000
+#define USB_CAPTURE_TIMEOUT    20000
 
 // the other one, it sucks definitely ;)
 //int ptpcam_usb_timeout = USB_TIMEOUT;
@@ -164,7 +164,7 @@ short PtpCam::ptp_write_func(unsigned char *bytes, unsigned int size, void *data
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// XXX this one is suposed to return the number of bytes read!!!
+// XXX this one is supposed to return the number of bytes read!!!
 short PtpCam::ptp_check_int(unsigned char *bytes, unsigned int size, void *data)
 {
     int result;
@@ -296,7 +296,7 @@ ito::RetVal PtpCam::clear_stall(PTP_USB* ptp_usb)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("inep: usb_get_endpoint_status()").toLatin1().data());
         perror("inep: usb_get_endpoint_status()");
     }
-    // and clear the HALT condition if happend
+    // and clear the HALT condition if happened
     else if (status)
     {
         // printf("Resetting input pipe!\n");
@@ -317,7 +317,7 @@ ito::RetVal PtpCam::clear_stall(PTP_USB* ptp_usb)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("outep: usb_get_endpoint_status()").toLatin1().data());
         perror("outep: usb_get_endpoint_status()");
     }
-    // and clear the HALT condition if happend
+    // and clear the HALT condition if happened
     else if (status)
     {
         //printf("Resetting output pipe!\n");
@@ -589,7 +589,7 @@ ito::RetVal PtpCam::list_devices(short force, QMap<int, QString> &deviceList)
                         // "Could not get device info!\n");
 
                         //                    deviceList.append(QString("%1/%2\t0x%3/0x%4\t%5").arg(bus->dirname, dev->filename,
-                        //                        dev->discriptor.idVendor, dev->descriptor.idProduct, deviceinfo.Model);
+                        //                        dev->descriptor.idVendor, dev->descriptor.idProduct, deviceinfo.Model);
                         if (ptp_getdeviceinfo(&params, &deviceinfo) == PTP_RC_OK)
                         {
                             int port = libusb_get_port_number(dev);
@@ -677,7 +677,7 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
     int ExposureTime = 0;
     short ret;
 
-    // printf("\nInitiating captue...\n");
+    // printf("\nInitiating capture...\n");
     retval += open_camera(portnum, force, &ptp_usb, &params, &m_pdev);
     //if (open_camera(busn, devn, force, &ptp_usb, &params, &dev)<0)
     if (retval.containsError())
@@ -690,7 +690,7 @@ ito::RetVal PtpCam::capture_image(int portnum, short force)
         goto out;
     }
 
-    // obtain exposure time in miliseconds
+    // obtain exposure time in milliseconds
     if (ptp_property_issupported(&params, PTP_DPC_ExposureTime))
     {
         PTPDevicePropDesc dpd;
@@ -792,7 +792,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
     if (retval.containsError())
         return retval;
 
-    // capture timeout should be longe
+    // capture timeout should be longer
     m_ptpcam_usb_timeout = USB_CAPTURE_TIMEOUT;
 
     // printf("Camera: %s\n", params.deviceinfo.Model);
@@ -802,7 +802,7 @@ ito::RetVal PtpCam::loop_capture(int portnum, short force, int n, int interval, 
     {
         // capture
         time(&start_time);
-        //printf("\nInitiating captue...\n");
+        //printf("\nInitiating capture...\n");
         //CR(ptp_initiatecapture(&params, 0x0, 0), "Could not capture\n");
         retval += ptp_initiatecapture(&params, 0x0, 0);
         n--;
@@ -965,7 +965,7 @@ ito::RetVal PtpCam::nikon_initiate_dc(int portnum, short force)
         return retval;
 
     // printf("Camera: %s\n", params.deviceinfo.Model);
-    // printf("\nInitiating direct captue...\n");
+    // printf("\nInitiating direct capture...\n");
 
     if (params.deviceinfo.VendorExtensionID != PTP_VENDOR_NIKON)
     {
@@ -976,7 +976,7 @@ ito::RetVal PtpCam::nikon_initiate_dc(int portnum, short force)
 
     if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
-        // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
+        // printf("Sorry, your camera does not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
         goto out;
     }
@@ -1013,7 +1013,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
     uint16_t result;
     uint16_t nevent = 0;
     PTPUSBEventContainer* events = NULL;
-    int ExposureTime = 0;	// exposure time in miliseconds
+    int ExposureTime = 0;    // exposure time in milliseconds
     int BurstNumber = 1;
     PTPDevicePropDesc dpd;
     PTPObjectInfo oi;
@@ -1032,7 +1032,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
         goto out;
     }
 
-    // printf("\nInitiating direct captue...\n");
+    // printf("\nInitiating direct capture...\n");
 
     if (params.deviceinfo.VendorExtensionID != PTP_VENDOR_NIKON)
     {
@@ -1043,12 +1043,12 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
 
     if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
-        // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
+        // printf("Sorry, your camera does not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
         goto out;
     }
 
-    // obtain exposure time in miliseconds
+    // obtain exposure time in milliseconds
     memset(&dpd, 0, sizeof(dpd));
     result = ptp_getdevicepropdesc(&params, PTP_DPC_ExposureTime, &dpd);
     if (result == PTP_RC_OK) ExposureTime = (*(int32_t*)(dpd.CurrentValue)) / 10;
@@ -1088,7 +1088,7 @@ ito::RetVal PtpCam::nikon_direct_capture(int portnum, short force, char* filenam
 
     // sleep in case of exposure longer than 1/100
     //if (ExposureTime>10) {
-//    printf("sleeping %i miliseconds\n", 500 + ExposureTime);
+//    printf("sleeping %i milliseconds\n", 500 + ExposureTime);
     //usleep(ExposureTime * 1000 + 500000);
     Sleep(ExposureTime + 500);
     //}
@@ -1254,7 +1254,7 @@ loop:
     uint16_t result;
     uint16_t nevent = 0;
     PTPUSBEventContainer* events = NULL;
-    int ExposureTime = 0;	// exposure time in miliseconds
+    int ExposureTime = 0;    // exposure time in milliseconds
     int BurstNumber = 1;
     PTPDevicePropDesc dpd;
     PTPObjectInfo oi;
@@ -1268,7 +1268,7 @@ loop:
 //        return;
 
     // printf("Camera: %s\n", params.deviceinfo.Model);
-    // printf("\nInitiating direct captue...\n");
+    // printf("\nInitiating direct capture...\n");
 
     if (params.deviceinfo.VendorExtensionID != PTP_VENDOR_NIKON)
     {
@@ -1279,12 +1279,12 @@ loop:
 
     if (!ptp_operation_issupported(&params, PTP_OC_NIKON_DirectCapture))
     {
-        // printf("Sorry, your camera dows not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera dows not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
+        // printf("Sorry, your camera does not support Nikon DirectCapture!\nDo not buy from %s!\n", params.deviceinfo.Manufacturer);
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!").arg(params.deviceinfo.Manufacturer).toLatin1().data());
         goto out;
     }
 
-    // obtain exposure time in miliseconds
+    // obtain exposure time in milliseconds
     memset(&dpd, 0, sizeof(dpd));
     result = ptp_getdevicepropdesc(&params, PTP_DPC_ExposureTime, &dpd);
     if (result == PTP_RC_OK) ExposureTime = (*(int32_t*)(dpd.CurrentValue)) / 10;
@@ -1299,7 +1299,7 @@ loop:
     /* sleep in case of exposure longer than 1/100 */
     if (ExposureTime > 10)
     {
-        // printf("sleeping %i miliseconds\n", ExposureTime);
+        // printf("sleeping %i milliseconds\n", ExposureTime);
         //usleep(ExposureTime * 1000);
         Sleep(ExposureTime);
     }
@@ -2254,7 +2254,7 @@ ito::RetVal PtpCam::getset_property_internal(PTPParams* params, uint16_t propert
 //        else
 //            printf("succeeded.\n");
     }
-    /*	out: */
+    /*    out: */
 
     ptp_free_devicepropdesc(&dpd);
 
@@ -2418,10 +2418,10 @@ ito::RetVal PtpCam::getset_property_value(int portnum, uint16_t property, char**
     }
 
     // Transaction data phase description
-    #define PTP_DP_NODATA		0x0000	// no data phase
-    #define PTP_DP_SENDDATA		0x0001	// sending data
-    #define PTP_DP_GETDATA		0x0002	// receiving data
-    #define PTP_DP_DATA_MASK	0x00ff	// data phase mask
+    #define PTP_DP_NODATA        0x0000    // no data phase
+    #define PTP_DP_SENDDATA        0x0001    // sending data
+    #define PTP_DP_GETDATA        0x0002    // receiving data
+    #define PTP_DP_DATA_MASK    0x00ff    // data phase mask
     #define PTP_CNT_INIT(cnt) { memset(&cnt,0,sizeof(cnt)); }
 
     PTPContainer ptp;
@@ -2600,7 +2600,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     if (ret < 0)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
 
-    // and clear the HALT condition if happend
+    // and clear the HALT condition if happened
     if (status)
     {
         // printf("Resetting input pipe!\n");
@@ -2616,7 +2616,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     if (ret < 0)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
 
-    // and clear the HALT condition if happend
+    // and clear the HALT condition if happened
     if (status)
     {
         // printf("Resetting output pipe!\n");
@@ -2633,7 +2633,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
     if (ret < 0)
         retval += ito::RetVal(ito::retError, 0, QObject::tr("usb_get_endpoint_status()").toLatin1().data());
 
-    // and clear the HALT condition if happend
+    // and clear the HALT condition if happened
     if (status)
     {
         // printf("Resetting interrupt pipe!\n");
@@ -2656,7 +2656,7 @@ ito::RetVal PtpCam::reset_device(int portnum, short force)
             printf("Device status 0x%04x\n", devstatus[1]);
     }
 
-    // finally reset the device (that clears prevoiusly opened sessions)
+    // finally reset the device (that clears previously opened sessions)
     ret = usb_ptp_device_reset(&ptp_usb);
     // if (ret<0)perror("usb_ptp_device_reset()");
     if (ret < 0)
@@ -2704,15 +2704,15 @@ void ptphack()
 
     char* data = NULL;
 
-    PTPDeviceInfo 	PTPDeviceInfo = {};
-    PTPStorageIDs 	PTPStorageIDs = {};
-    PTPStorageInfo 	PTPStorageInfo = {};
-    PTPObjectHandles 	PTPObjectHandles = {};
-    PTPObjectInfo	PTPObjectInfo = {};
-    PTPPropDescRangeForm 	PTPPropDescRangeForm = {};
-    PTPPropDescEnumForm 	PTPPropDescEnumForm = {};
-    PTPDevicePropDesc 	PTPDevicePropDesc = {};
-    PTPCANONFolderEntry 	PTPCANONFolderEntry = {};
+    PTPDeviceInfo     PTPDeviceInfo = {};
+    PTPStorageIDs     PTPStorageIDs = {};
+    PTPStorageInfo     PTPStorageInfo = {};
+    PTPObjectHandles     PTPObjectHandles = {};
+    PTPObjectInfo    PTPObjectInfo = {};
+    PTPPropDescRangeForm     PTPPropDescRangeForm = {};
+    PTPPropDescEnumForm     PTPPropDescEnumForm = {};
+    PTPDevicePropDesc     PTPDevicePropDesc = {};
+    PTPCANONFolderEntry     PTPCANONFolderEntry = {};
 
     if (open_camera(0, 0, 0, &ptp_usb, &params, &dev)<0)
         return;

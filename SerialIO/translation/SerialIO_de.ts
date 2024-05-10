@@ -260,7 +260,7 @@
     </message>
     <message>
         <location line="+20"/>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation>Optionaler Parameter ist NULL</translation>
     </message>
     <message>

@@ -2,7 +2,7 @@
     Plugin "VRMagic" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -51,8 +51,8 @@ class DockWidgetVRMagic : public ito::AbstractAddInDockWidget
         bool m_firstRun;
         QMap<QString, ito::Param> m_currentParams;
 
-		inline double msecToSec(double musec) { return (double)(musec*1.0e-3); }
-		inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
+        inline double msecToSec(double musec) { return (double)(musec*1.0e-3); }
+        inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

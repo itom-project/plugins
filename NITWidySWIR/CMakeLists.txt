@@ -28,7 +28,7 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core LinguistTools Widgets)
 
 if(NOT NITLIBRARY_SDK_DIR)
-	set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT} CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
+    set(NITLIBRARY_SDK_DIR $ENV{NIT_SDK_ROOT} CACHE PATH "path of the NITLIBRARY SDK. Must contain subfolders like bin, bin64, include, lib, lib64")
 endif(NOT NITLIBRARY_SDK_DIR)
 
 find_path(NITLIBRARY_INCLUDE_DIR NITManager.h PATHS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /include /inc DOC "NITLibrary include directory")
@@ -59,7 +59,7 @@ if(NITLIBRARY_INCLUDE_DIR)
     )
 
     if(BUILD_TARGET64)
-		find_library(NITLIBRARY_LIB ${_NIT_LIBRARY_NAMES}  NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
+        find_library(NITLIBRARY_LIB ${_NIT_LIBRARY_NAMES}  NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x64)
     else(BUILD_TARGET64)
         find_library(NITLIBRARY_LIB ${_NIT_LIBRARY_NAMES}  NITLibrary NITLabView HINTS ${NITLIBRARY_SDK_DIR} PATH_SUFFIXES /lib/x86)
     endif(BUILD_TARGET64)
@@ -70,7 +70,7 @@ if(NITLIBRARY_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNITWidySWIR.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -90,7 +90,7 @@ if(NITLIBRARY_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

@@ -31,7 +31,7 @@ The following parameters are mandatory or optional for initializing an instance 
 Compilation
 ===========
 
-The Xenics Xeneth Software Development Kit is publicaly not available.
+The Xenics Xeneth Software Development Kit is publicly not available.
 Please contact Xenics to get access to the SDK https://www.xenics.com/
 
 Download the software and run the installation.

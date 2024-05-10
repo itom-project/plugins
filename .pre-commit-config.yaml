@@ -1,7 +1,33 @@
+exclude: ^(.*\.(chm|png|jpg|dll|svg)|AerotechA3200/Include|AerotechEnsemble/CLibrary|PI_GCS2/gcs2|IDSuEye/IDSDevLibs|cmu1394/cmu1394/include|DslrRemote2/libptp2-1.2.0|DslrRemote/camlibs|DslrRemote/gphoto2|DslrRemote/libtool_gcc|DslrRemote/libgphoto2|DslrRemote/libgphoto2_port|DslrRemote/regex|DslrRemote/libtool_gcc|PCOPixelFly/PCO|hidapi/hidapi-0.7.0|libmodbus/libmodbus-3.1.2|FirgelliLAC/Mpusbapi|FireGrabber/FireGrab|hidapi/hidapi-0.7.0|QCam/QImaging_SDK|ST8SMC4USB/Lib|Vistek/VistekGigESDK|RawImport/dcraw|x3pio/x3plib)/
+
+ci:
+    autoupdate_schedule: monthly
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+    -   id: fix-byte-order-marker
+
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+    -   id: codespell
+        args:
+        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt,*.po,*.iss.in,*.m4sh,*.dll,FittingFilters/nr3.h,RawImport/dcraw.c
+        -   --ignore-words=.codespell_ignore_words.txt
+
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+    -   id: pyupgrade
+        args:
+        -   --py36-plus
+
+-   repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v0.9.1
+    hooks:
+    -   id: sphinx-lint

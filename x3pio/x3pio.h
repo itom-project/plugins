@@ -2,7 +2,7 @@
     Plugin "x3pio" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -28,7 +28,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DataObjectIOInterface
-*   @brief DataIO functions implemented in former ito mcpp measurement programm
+*   @brief DataIO functions implemented in former ito mcpp measurement program
 *
 *   AddIn Interface for the MCPPDataIO class s. also \ref MCPPDataIO
 */
@@ -59,7 +59,7 @@ class X3pIOInterface : public ito::AddInInterfaceBase
 *   @brief Algorithms used to process images and dataobjects with filters provided by openCV
 *
 *   In this class the algorithms used for the processing of images are implemented.
-*   The filters wrapp openCV-Filters to python interface. Handling of 3D-Objects differs depending on the filter.
+*   The filters wrap openCV-Filters to python interface. Handling of 3D-Objects differs depending on the filter.
 *
 */
 class X3pIO : public ito::AddInAlgo

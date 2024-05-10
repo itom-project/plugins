@@ -14,8 +14,8 @@
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "ITO, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "ITO, University Stuttgart"
+#define PLUGIN_COMPANY        "ITO, Universität Stuttgart"
+#define PLUGIN_COPYRIGHT      "ITO, Universität Stuttgart"
 #define PLUGIN_NAME           "NITWidySWIR"
 
 //----------------------------------------------------------------------------------------------------------------------------------

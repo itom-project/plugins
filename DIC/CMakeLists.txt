@@ -26,7 +26,7 @@ if(NOT ITOM_SDK_DIR)
 endif()
 
 
-OPTION(USE_CUDA "Use CUDA computation capabilites if CUDA toolkit / drivers are found.")
+OPTION(USE_CUDA "Use CUDA computation capabilities if CUDA toolkit / drivers are found.")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
@@ -58,11 +58,11 @@ if(USE_CUDA)
         enable_language(CUDA)
         ADD_DEFINITIONS(-DUSECUDA)
     else (CUDA_FOUND)
-	    SET(CUDA_FOUND FALSE)
+        SET(CUDA_FOUND FALSE)
         MESSAGE(STATUS "Have not found Cuda Toolkit, CUDA disabled")
     endif (CUDA_FOUND)
 else(USE_CUDA)
-	SET(CUDA_FOUND FALSE)
+    SET(CUDA_FOUND FALSE)
 endif (USE_CUDA)
 
 IF(BUILD_SHARED_LIBS)
@@ -91,46 +91,46 @@ ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
 
 IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-	ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 INCLUDE_DIRECTORIES(
     ${QT_QTCORE_INCLUDE_DIR}
     ${EIGEN_INCLUDE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
-	${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-	${OpenCV_DIR}/include       #include directory of OpenCV
-	${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
-	${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
-	#add further include directories here
+    ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
+    ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
+    ${OpenCV_DIR}/include       #include directory of OpenCV
+    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
+    #add further include directories here
 )
 
 LINK_DIRECTORIES(
-	#add all linker directories
+    #add all linker directories
 )
 
 set(PLUGIN_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/dic.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dicPrivate.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolationMats.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dic.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicPrivate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolationMats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolation.h
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-	#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(PLUGIN_SOURCES
-#	${CMAKE_CURRENT_SOURCE_DIR}/dic.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicFilterDef.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolation.cpp
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicFilterDef.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolationItom.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicInitialGuess.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicDisplacementSS.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicDisplacementFF.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dicImageGeneration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicInitialGuess.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicDisplacementSS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicDisplacementFF.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dicImageGeneration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dicDeformation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dicSpline.cpp
-	#add further source files here
+    #add further source files here
 )
 
 if (CUDA_FOUND)
@@ -141,17 +141,17 @@ endif (CUDA_FOUND)
 #Append rc file to the source files for adding information about the plugin
 # to the properties of the DLL under Visual Studio.
 if(MSVC)
-	list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 set(PLUGIN_UI
-#	${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.ui
-#	${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.ui
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.ui
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.ui
 )
 
 set(PLUGIN_RCC
-	#add absolute pathes to any *.qrc resource files here
-#	${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
+    #add absolute paths to any *.qrc resource files here
+#    ${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
 )
 
 

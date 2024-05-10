@@ -68,7 +68,7 @@
     </message>
     <message>
         <location filename="../ThorlabsFF.cpp" line="51"/>
-        <source>ThorlabsFF is an plugin to controll the Thorlabs Filter Flipper:
+        <source>ThorlabsFF is an plugin to control the Thorlabs Filter Flipper:
 
 * Filter Flipper (MFF101)
 

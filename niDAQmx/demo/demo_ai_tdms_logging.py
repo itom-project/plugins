@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Continuous analog input task with optional logging (TDMS files).
 
 Demo script for acquiring a continuous set of analog
@@ -30,7 +28,7 @@ Hint: It depends on the NI DAQ devices, if they allow
 integrating different devices into the same measurement
 task or not. Many devices do not allow this.
 
-Data from a continuous task can be obtained by regularily
+Data from a continuous task can be obtained by regularly
 calling getVal / copyVal or by enabling the TDMS file logging
 technique.
 
@@ -128,7 +126,7 @@ for i in range(0, 10):
 
 
 # Step 2: choose another logging type. Usually it is recommended to
-# stop the device before chaning the logging modes. However,
+# stop the device before changing the logging modes. However,
 # it the device is still started if the logging parameters
 # will be changed, it will automatically be stopped and restarted
 # again.

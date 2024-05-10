@@ -37,18 +37,18 @@ template<typename _Tp> ito::RetVal doInterpolateLinear(const _Tp* inPtr, const i
     // Here we have to do the real job
     // we loop over all points, using openmp to speed up a little bit
     int colwise = (flags & 512) > 0;
-	int fSize, sSize;
+    int fSize, sSize;
 
-	if (colwise)
-	{
-		fSize = height;
-		sSize = width;
-	}
-	else
-	{
-		fSize = width;
-		sSize = height;
-	}
+    if (colwise)
+    {
+        fSize = height;
+        sSize = width;
+    }
+    else
+    {
+        fSize = width;
+        sSize = height;
+    }
 
 #if (USEOMP)
 #pragma omp parallel num_threads(NTHREADS)
@@ -191,14 +191,14 @@ ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const
     //cv::Mat kernelDy = cv::Mat(cv::Size(1, 3), CV_32F, kernel);
     cv::Mat matDx, matDy, matDxy;
 
-	int nimgStep = imgStep;
+    int nimgStep = imgStep;
     cv::Mat imgMat;
     // adapt Matlab type columnwise matrix first
     if (flags & 512)
     {
         imgMat = cv::Mat(sizex, sizey, CV_32F, (void*)img);
         imgMat = imgMat.t();
-		nimgStep = sizex;
+        nimgStep = sizex;
     }
     else
     {
@@ -209,8 +209,8 @@ ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const
     cv::filter2D(imgMat, matDy, -1, kernelDy, cv::Point(-1, -1), 0.0, cv::BORDER_ISOLATED);
     ito::float32 *dxp = (ito::float32*)matDx.data;
     ito::float32 *dyp = (ito::float32*)matDy.data;
-	// this is necessary when we do the transposing for use in Matlab
-	ito::float32 *imgp = (ito::float32*)imgMat.data;
+    // this is necessary when we do the transposing for use in Matlab
+    ito::float32 *imgp = (ito::float32*)imgMat.data;
 
     // border correction
     for (int y = 0; y < sizey; y++)
@@ -263,106 +263,106 @@ ito::RetVal doCalcAMat(const float *img, const int sizex, const int sizey, const
             {
                 for (int x = 0; x < sizex - 1; x++)
                 {
-                    AMatBiCu.data[16 * (y * sizex + x)] = BMatBiCu0	* imgp[y	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 1] = BMatBiCu20	* dxp[y	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 2] = BMatBiCu32	* imgp[y	* nimgStep + x]
-                        + BMatBiCu33	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu36	* dxp[y	* nimgStep + x]
-                        + BMatBiCu37	* dxp[y	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 3] = BMatBiCu48	* imgp[y	* nimgStep + x]
-                        + BMatBiCu49	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu52	* dxp[y	* nimgStep + x]
-                        + BMatBiCu53	* dxp[y	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 4] = BMatBiCu72	* dyp[y	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 5] = BMatBiCu92	* dxyp[y	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 6] = BMatBiCu104	* dyp[y	* nimgStep + x]
-                        + BMatBiCu105	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu108	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu109	* dxyp[y	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 7] = BMatBiCu120	* dyp[y	* nimgStep + x]
-                        + BMatBiCu121	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu124	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu125	* dxyp[y	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 8] = BMatBiCu128	* imgp[y	* nimgStep + x]
-                        + BMatBiCu130	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu136	* dyp[y	* nimgStep + x]
-                        + BMatBiCu138	* dyp[(y + 1)	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 9] = BMatBiCu148	* dxp[y	* nimgStep + x]
-                        + BMatBiCu150	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu156	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu158	* dxyp[(y + 1)	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 10] = BMatBiCu160	* imgp[y	* nimgStep + x]
-                        + BMatBiCu161	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu162	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu163	* imgp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu164	* dxp[y	* nimgStep + x]
-                        + BMatBiCu165	* dxp[y	* nimgStep + x + 1]
-                        + BMatBiCu166	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu167	* dxp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu168	* dyp[y	* nimgStep + x]
-                        + BMatBiCu169	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu170	* dyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu171	* dyp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu172	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu173	* dxyp[y	* nimgStep + x + 1]
-                        + BMatBiCu174	* dxyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu175	* dxyp[(y + 1)	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 11] = BMatBiCu176	* imgp[y	* nimgStep + x]
-                        + BMatBiCu177	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu178	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu179	* imgp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu180	* dxp[y	* nimgStep + x]
-                        + BMatBiCu181	* dxp[y	* nimgStep + x + 1]
-                        + BMatBiCu182	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu183	* dxp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu184	* dyp[y	* nimgStep + x]
-                        + BMatBiCu185	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu186	* dyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu187	* dyp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu188	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu189	* dxyp[y	* nimgStep + x + 1]
-                        + BMatBiCu190	* dxyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu191	* dxyp[(y + 1)	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 12] = BMatBiCu192	* imgp[y	* nimgStep + x]
-                        + BMatBiCu194	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu200	* dyp[y	* nimgStep + x]
-                        + BMatBiCu202	* dyp[(y + 1)	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 13] = BMatBiCu212	* dxp[y	* nimgStep + x]
-                        + BMatBiCu214	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu220	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu222	* dxyp[(y + 1)	* nimgStep + x];
-                    AMatBiCu.data[16 * (y * sizex + x) + 14] = BMatBiCu224	* imgp[y	* nimgStep + x]
-                        + BMatBiCu225	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu226	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu227	* imgp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu228	* dxp[y	* nimgStep + x]
-                        + BMatBiCu229	* dxp[y	* nimgStep + x + 1]
-                        + BMatBiCu230	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu231	* dxp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu232	* dyp[y	* nimgStep + x]
-                        + BMatBiCu233	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu234	* dyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu235	* dyp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu236	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu237	* dxyp[y	* nimgStep + x + 1]
-                        + BMatBiCu238	* dxyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu239	* dxyp[(y + 1)	* nimgStep + x + 1];
-                    AMatBiCu.data[16 * (y * sizex + x) + 15] = BMatBiCu240	* imgp[y	* nimgStep + x]
-                        + BMatBiCu241	* imgp[y	* nimgStep + x + 1]
-                        + BMatBiCu242	* imgp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu243	* imgp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu244	* dxp[y	* nimgStep + x]
-                        + BMatBiCu245	* dxp[y	* nimgStep + x + 1]
-                        + BMatBiCu246	* dxp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu247	* dxp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu248	* dyp[y	* nimgStep + x]
-                        + BMatBiCu249	* dyp[y	* nimgStep + x + 1]
-                        + BMatBiCu250	* dyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu251	* dyp[(y + 1)	* nimgStep + x + 1]
-                        + BMatBiCu252	* dxyp[y	* nimgStep + x]
-                        + BMatBiCu253	* dxyp[y	* nimgStep + x + 1]
-                        + BMatBiCu254	* dxyp[(y + 1)	* nimgStep + x]
-                        + BMatBiCu255	* dxyp[(y + 1)	* nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x)] = BMatBiCu0    * imgp[y    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 1] = BMatBiCu20    * dxp[y    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 2] = BMatBiCu32    * imgp[y    * nimgStep + x]
+                        + BMatBiCu33    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu36    * dxp[y    * nimgStep + x]
+                        + BMatBiCu37    * dxp[y    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 3] = BMatBiCu48    * imgp[y    * nimgStep + x]
+                        + BMatBiCu49    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu52    * dxp[y    * nimgStep + x]
+                        + BMatBiCu53    * dxp[y    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 4] = BMatBiCu72    * dyp[y    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 5] = BMatBiCu92    * dxyp[y    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 6] = BMatBiCu104    * dyp[y    * nimgStep + x]
+                        + BMatBiCu105    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu108    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu109    * dxyp[y    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 7] = BMatBiCu120    * dyp[y    * nimgStep + x]
+                        + BMatBiCu121    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu124    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu125    * dxyp[y    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 8] = BMatBiCu128    * imgp[y    * nimgStep + x]
+                        + BMatBiCu130    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu136    * dyp[y    * nimgStep + x]
+                        + BMatBiCu138    * dyp[(y + 1)    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 9] = BMatBiCu148    * dxp[y    * nimgStep + x]
+                        + BMatBiCu150    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu156    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu158    * dxyp[(y + 1)    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 10] = BMatBiCu160    * imgp[y    * nimgStep + x]
+                        + BMatBiCu161    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu162    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu163    * imgp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu164    * dxp[y    * nimgStep + x]
+                        + BMatBiCu165    * dxp[y    * nimgStep + x + 1]
+                        + BMatBiCu166    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu167    * dxp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu168    * dyp[y    * nimgStep + x]
+                        + BMatBiCu169    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu170    * dyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu171    * dyp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu172    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu173    * dxyp[y    * nimgStep + x + 1]
+                        + BMatBiCu174    * dxyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu175    * dxyp[(y + 1)    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 11] = BMatBiCu176    * imgp[y    * nimgStep + x]
+                        + BMatBiCu177    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu178    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu179    * imgp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu180    * dxp[y    * nimgStep + x]
+                        + BMatBiCu181    * dxp[y    * nimgStep + x + 1]
+                        + BMatBiCu182    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu183    * dxp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu184    * dyp[y    * nimgStep + x]
+                        + BMatBiCu185    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu186    * dyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu187    * dyp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu188    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu189    * dxyp[y    * nimgStep + x + 1]
+                        + BMatBiCu190    * dxyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu191    * dxyp[(y + 1)    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 12] = BMatBiCu192    * imgp[y    * nimgStep + x]
+                        + BMatBiCu194    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu200    * dyp[y    * nimgStep + x]
+                        + BMatBiCu202    * dyp[(y + 1)    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 13] = BMatBiCu212    * dxp[y    * nimgStep + x]
+                        + BMatBiCu214    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu220    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu222    * dxyp[(y + 1)    * nimgStep + x];
+                    AMatBiCu.data[16 * (y * sizex + x) + 14] = BMatBiCu224    * imgp[y    * nimgStep + x]
+                        + BMatBiCu225    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu226    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu227    * imgp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu228    * dxp[y    * nimgStep + x]
+                        + BMatBiCu229    * dxp[y    * nimgStep + x + 1]
+                        + BMatBiCu230    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu231    * dxp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu232    * dyp[y    * nimgStep + x]
+                        + BMatBiCu233    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu234    * dyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu235    * dyp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu236    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu237    * dxyp[y    * nimgStep + x + 1]
+                        + BMatBiCu238    * dxyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu239    * dxyp[(y + 1)    * nimgStep + x + 1];
+                    AMatBiCu.data[16 * (y * sizex + x) + 15] = BMatBiCu240    * imgp[y    * nimgStep + x]
+                        + BMatBiCu241    * imgp[y    * nimgStep + x + 1]
+                        + BMatBiCu242    * imgp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu243    * imgp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu244    * dxp[y    * nimgStep + x]
+                        + BMatBiCu245    * dxp[y    * nimgStep + x + 1]
+                        + BMatBiCu246    * dxp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu247    * dxp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu248    * dyp[y    * nimgStep + x]
+                        + BMatBiCu249    * dyp[y    * nimgStep + x + 1]
+                        + BMatBiCu250    * dyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu251    * dyp[(y + 1)    * nimgStep + x + 1]
+                        + BMatBiCu252    * dxyp[y    * nimgStep + x]
+                        + BMatBiCu253    * dxyp[y    * nimgStep + x + 1]
+                        + BMatBiCu254    * dxyp[(y + 1)    * nimgStep + x]
+                        + BMatBiCu255    * dxyp[(y + 1)    * nimgStep + x + 1];
                 }
             }
 #if (USEOMP)
@@ -570,106 +570,106 @@ ito::RetVal doInterpolateCubicPts(const float *img, const int sizex, const int s
             //       h^3   h^3 * t  h^3 * t^2  h^3 * t^3];
 
             // wikipedia version
-            coeffVec[0] = BMatBiCu0	* img[row1	* imgStep + col1];
-            coeffVec[1] = BMatBiCu20	* dxp[row1	* imgStep + col1];
-            coeffVec[2] = BMatBiCu32	* img[row1	* imgStep + col1]
-                + BMatBiCu33	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu36	* dxp[row1	* imgStep + col1]
-                + BMatBiCu37	* dxp[row1	* imgStep + col1 + 1];
-            coeffVec[3] = BMatBiCu48	* img[row1	* imgStep + col1]
-                + BMatBiCu49	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu52	* dxp[row1	* imgStep + col1]
-                + BMatBiCu53	* dxp[row1	* imgStep + col1 + 1];
-            coeffVec[4] = BMatBiCu72	* dyp[row1	* imgStep + col1];
-            coeffVec[5] = BMatBiCu92	* dxyp[row1	* imgStep + col1];
-            coeffVec[6] = BMatBiCu104	* dyp[row1	* imgStep + col1]
-                + BMatBiCu105	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu108	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu109	* dxyp[row1	* imgStep + col1 + 1];
-            coeffVec[7] = BMatBiCu120	* dyp[row1	* imgStep + col1]
-                + BMatBiCu121	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu124	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu125	* dxyp[row1	* imgStep + col1 + 1];
-            coeffVec[8] = BMatBiCu128	* img[row1	* imgStep + col1]
-                + BMatBiCu130	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu136	* dyp[row1	* imgStep + col1]
-                + BMatBiCu138	* dyp[(row1 + 1)	* imgStep + col1];
-            coeffVec[9] = BMatBiCu148	* dxp[row1	* imgStep + col1]
-                + BMatBiCu150	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu156	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu158	* dxyp[(row1 + 1)	* imgStep + col1];
-            coeffVec[10] = BMatBiCu160	* img[row1	* imgStep + col1]
-                + BMatBiCu161	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu162	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu163	* img[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu164	* dxp[row1	* imgStep + col1]
-                + BMatBiCu165	* dxp[row1	* imgStep + col1 + 1]
-                + BMatBiCu166	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu167	* dxp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu168	* dyp[row1	* imgStep + col1]
-                + BMatBiCu169	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu170	* dyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu171	* dyp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu172	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu173	* dxyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu174	* dxyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu175	* dxyp[(row1 + 1)	* imgStep + col1 + 1];
-            coeffVec[11] = BMatBiCu176	* img[row1	* imgStep + col1]
-                + BMatBiCu177	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu178	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu179	* img[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu180	* dxp[row1	* imgStep + col1]
-                + BMatBiCu181	* dxp[row1	* imgStep + col1 + 1]
-                + BMatBiCu182	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu183	* dxp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu184	* dyp[row1	* imgStep + col1]
-                + BMatBiCu185	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu186	* dyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu187	* dyp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu188	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu189	* dxyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu190	* dxyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu191	* dxyp[(row1 + 1)	* imgStep + col1 + 1];
-            coeffVec[12] = BMatBiCu192	* img[row1	* imgStep + col1]
-                + BMatBiCu194	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu200	* dyp[row1	* imgStep + col1]
-                + BMatBiCu202	* dyp[(row1 + 1)	* imgStep + col1];
-            coeffVec[13] = BMatBiCu212	* dxp[row1	* imgStep + col1]
-                + BMatBiCu214	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu220	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu222	* dxyp[(row1 + 1)	* imgStep + col1];
-            coeffVec[14] = BMatBiCu224	* img[row1	* imgStep + col1]
-                + BMatBiCu225	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu226	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu227	* img[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu228	* dxp[row1	* imgStep + col1]
-                + BMatBiCu229	* dxp[row1	* imgStep + col1 + 1]
-                + BMatBiCu230	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu231	* dxp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu232	* dyp[row1	* imgStep + col1]
-                + BMatBiCu233	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu234	* dyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu235	* dyp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu236	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu237	* dxyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu238	* dxyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu239	* dxyp[(row1 + 1)	* imgStep + col1 + 1];
-            coeffVec[15] = BMatBiCu240	* img[row1	* imgStep + col1]
-                + BMatBiCu241	* img[row1	* imgStep + col1 + 1]
-                + BMatBiCu242	* img[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu243	* img[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu244	* dxp[row1	* imgStep + col1]
-                + BMatBiCu245	* dxp[row1	* imgStep + col1 + 1]
-                + BMatBiCu246	* dxp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu247	* dxp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu248	* dyp[row1	* imgStep + col1]
-                + BMatBiCu249	* dyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu250	* dyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu251	* dyp[(row1 + 1)	* imgStep + col1 + 1]
-                + BMatBiCu252	* dxyp[row1	* imgStep + col1]
-                + BMatBiCu253	* dxyp[row1	* imgStep + col1 + 1]
-                + BMatBiCu254	* dxyp[(row1 + 1)	* imgStep + col1]
-                + BMatBiCu255	* dxyp[(row1 + 1)	* imgStep + col1 + 1];
+            coeffVec[0] = BMatBiCu0    * img[row1    * imgStep + col1];
+            coeffVec[1] = BMatBiCu20    * dxp[row1    * imgStep + col1];
+            coeffVec[2] = BMatBiCu32    * img[row1    * imgStep + col1]
+                + BMatBiCu33    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu36    * dxp[row1    * imgStep + col1]
+                + BMatBiCu37    * dxp[row1    * imgStep + col1 + 1];
+            coeffVec[3] = BMatBiCu48    * img[row1    * imgStep + col1]
+                + BMatBiCu49    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu52    * dxp[row1    * imgStep + col1]
+                + BMatBiCu53    * dxp[row1    * imgStep + col1 + 1];
+            coeffVec[4] = BMatBiCu72    * dyp[row1    * imgStep + col1];
+            coeffVec[5] = BMatBiCu92    * dxyp[row1    * imgStep + col1];
+            coeffVec[6] = BMatBiCu104    * dyp[row1    * imgStep + col1]
+                + BMatBiCu105    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu108    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu109    * dxyp[row1    * imgStep + col1 + 1];
+            coeffVec[7] = BMatBiCu120    * dyp[row1    * imgStep + col1]
+                + BMatBiCu121    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu124    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu125    * dxyp[row1    * imgStep + col1 + 1];
+            coeffVec[8] = BMatBiCu128    * img[row1    * imgStep + col1]
+                + BMatBiCu130    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu136    * dyp[row1    * imgStep + col1]
+                + BMatBiCu138    * dyp[(row1 + 1)    * imgStep + col1];
+            coeffVec[9] = BMatBiCu148    * dxp[row1    * imgStep + col1]
+                + BMatBiCu150    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu156    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu158    * dxyp[(row1 + 1)    * imgStep + col1];
+            coeffVec[10] = BMatBiCu160    * img[row1    * imgStep + col1]
+                + BMatBiCu161    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu162    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu163    * img[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu164    * dxp[row1    * imgStep + col1]
+                + BMatBiCu165    * dxp[row1    * imgStep + col1 + 1]
+                + BMatBiCu166    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu167    * dxp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu168    * dyp[row1    * imgStep + col1]
+                + BMatBiCu169    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu170    * dyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu171    * dyp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu172    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu173    * dxyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu174    * dxyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu175    * dxyp[(row1 + 1)    * imgStep + col1 + 1];
+            coeffVec[11] = BMatBiCu176    * img[row1    * imgStep + col1]
+                + BMatBiCu177    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu178    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu179    * img[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu180    * dxp[row1    * imgStep + col1]
+                + BMatBiCu181    * dxp[row1    * imgStep + col1 + 1]
+                + BMatBiCu182    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu183    * dxp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu184    * dyp[row1    * imgStep + col1]
+                + BMatBiCu185    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu186    * dyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu187    * dyp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu188    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu189    * dxyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu190    * dxyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu191    * dxyp[(row1 + 1)    * imgStep + col1 + 1];
+            coeffVec[12] = BMatBiCu192    * img[row1    * imgStep + col1]
+                + BMatBiCu194    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu200    * dyp[row1    * imgStep + col1]
+                + BMatBiCu202    * dyp[(row1 + 1)    * imgStep + col1];
+            coeffVec[13] = BMatBiCu212    * dxp[row1    * imgStep + col1]
+                + BMatBiCu214    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu220    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu222    * dxyp[(row1 + 1)    * imgStep + col1];
+            coeffVec[14] = BMatBiCu224    * img[row1    * imgStep + col1]
+                + BMatBiCu225    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu226    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu227    * img[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu228    * dxp[row1    * imgStep + col1]
+                + BMatBiCu229    * dxp[row1    * imgStep + col1 + 1]
+                + BMatBiCu230    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu231    * dxp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu232    * dyp[row1    * imgStep + col1]
+                + BMatBiCu233    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu234    * dyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu235    * dyp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu236    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu237    * dxyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu238    * dxyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu239    * dxyp[(row1 + 1)    * imgStep + col1 + 1];
+            coeffVec[15] = BMatBiCu240    * img[row1    * imgStep + col1]
+                + BMatBiCu241    * img[row1    * imgStep + col1 + 1]
+                + BMatBiCu242    * img[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu243    * img[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu244    * dxp[row1    * imgStep + col1]
+                + BMatBiCu245    * dxp[row1    * imgStep + col1 + 1]
+                + BMatBiCu246    * dxp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu247    * dxp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu248    * dyp[row1    * imgStep + col1]
+                + BMatBiCu249    * dyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu250    * dyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu251    * dyp[(row1 + 1)    * imgStep + col1 + 1]
+                + BMatBiCu252    * dxyp[row1    * imgStep + col1]
+                + BMatBiCu253    * dxyp[row1    * imgStep + col1 + 1]
+                + BMatBiCu254    * dxyp[(row1 + 1)    * imgStep + col1]
+                + BMatBiCu255    * dxyp[(row1 + 1)    * imgStep + col1 + 1];
 
             res[npts * 3] = coeffVec[0] + coeffVec[1] * t + coeffVec[2] * t2 + coeffVec[3] * t3
                 + coeffVec[4] * h + coeffVec[5] * h * t + coeffVec[6] * h * t2 + coeffVec[7] * h * t3
