@@ -26,11 +26,11 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 if(NOT VRMAGIC_INCLUDE_DIR)
-	if(WIN32)
-		find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" "$ENV{VRMAGIC_ROOT}" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
-	else()
-		find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
-	endif()
+    if(WIN32)
+        find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" "$ENV{VRMAGIC_ROOT}" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
+    else()
+        find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
+    endif()
 endif(NOT VRMAGIC_INCLUDE_DIR)
 
 if(VRMAGIC_INCLUDE_DIR)
@@ -42,7 +42,7 @@ if(VRMAGIC_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
-		${VRMAGIC_INCLUDE_DIR}
+        ${VRMAGIC_INCLUDE_DIR}
     )
 
     if(BUILD_TARGET64)

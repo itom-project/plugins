@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ItomUSBDevice" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "ItomLibUSB.h"
 #include "dockWidgetLibUSB.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -72,7 +72,7 @@ ItomUSBDeviceInterface::ItomUSBDeviceInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
 "LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\
@@ -80,7 +80,7 @@ The setVal and getVal functions will write and read on the specified endpoint.";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr(
 "LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\

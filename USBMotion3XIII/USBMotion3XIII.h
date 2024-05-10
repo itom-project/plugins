@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "USBMotion3XIII" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "common/addInInterface.h"
 
 #include "dialogUSBMotion3XIII.h"    //! This is the configuration dialog
-#include "dockWidgetUSBMotion3XIII.h"    //! This is the controll dialog
+#include "dockWidgetUSBMotion3XIII.h"    //! This is the control dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -68,7 +68,7 @@ class USBMotion3XIII : public ito::AddInActuator
 
     protected:
         ~USBMotion3XIII();    //! Destructor
-        USBMotion3XIII();    //!< Constructur
+        USBMotion3XIII();    //!< Constructor
 
         void timerEvent( QTimerEvent *event );
 

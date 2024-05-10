@@ -73,8 +73,8 @@ ito::RetVal DIC::DICDeformation(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     ito::DataObject xvals, yvals, dx, dy, posx, posy;
     int nSizes[2] = { sizey, sizex };
-	if (sizex < 4 || sizey < 4)
-		return ito::RetVal(ito::retError, 0, tr("Currently only spline interpolation implemented, requiring at least 3 x 3 cells.").toLatin1().data());
+    if (sizex < 4 || sizey < 4)
+        return ito::RetVal(ito::retError, 0, tr("Currently only spline interpolation implemented, requiring at least 3 x 3 cells.").toLatin1().data());
 
 
     if (rowWise)
@@ -120,8 +120,8 @@ ito::RetVal DIC::DICDeformation(QVector<ito::ParamBase> *paramsMand, QVector<ito
             break;
     }
 
-	if (numcoeff == 0 && fabs(wx.at<double>(0)) < 1e-15)
-		return ito::RetVal(ito::retError, 0, tr("No principal component for analysis found, aborting!").toLatin1().data());
+    if (numcoeff == 0 && fabs(wx.at<double>(0)) < 1e-15)
+        return ito::RetVal(ito::retError, 0, tr("No principal component for analysis found, aborting!").toLatin1().data());
     else if (numcoeff == 0 && wx.at<double>(0) != 0)
         numcoeff = 1;
 

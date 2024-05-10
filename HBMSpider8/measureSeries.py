@@ -177,7 +177,7 @@ class hbmMeasureSeries(ItomUi):
             try:
                 self.gui.plot["source"] = self.liveData
                 self.gui.plot["yAxisInterval"] = self.axisScaleLive
-                self.gui.leAverage["text"] = "{0:.5g}".format(np.sum(self.liveData) / self.liveData.size(1))
+                self.gui.leAverage["text"] = f"{np.sum(self.liveData) / self.liveData.size(1):.5g}"
             except:
                 print('error plotting data')
             try:
@@ -280,7 +280,7 @@ class hbmMeasureSeries(ItomUi):
             if self.hbm != None:
                 self.hbm.setParam("numSamples", self.samples)
                 self.gui.leStatus["text"] = self.hbm.getParam("status")
-            self.gui.leMeasTime["text"] = "{0:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
+            self.gui.leMeasTime["text"] = "{:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
 
     @ItomUi.autoslot("")
     def on_pbReInit_pressed(self):
@@ -368,7 +368,7 @@ class hbmMeasureSeries(ItomUi):
                         self.numSeries = self.resultObj.size(1) - 1
                         self.plotAutoScale()
                         self.fillTable()
-                        print("File loaded successfuly\n", filename)
+                        print("File loaded successfully\n", filename)
                     except:
                         print("Error loading file\n", filename)
                         pass
@@ -420,7 +420,7 @@ class hbmMeasureSeries(ItomUi):
                     filename += ".idc"
                 saveIDC(filename, dataTmp)
 
-            print("File saved successfuly\n", filename)
+            print("File saved successfully\n", filename)
         except:
             pass
 
@@ -446,7 +446,7 @@ class hbmMeasureSeries(ItomUi):
             self.seriesData = self.seriesData * self.gui.dsbScale["value"] - self.gui.dsbOffset["value"]
         self.invertSeries = self.gui.cbSeriesInverted["checked"]
 
-        self.gui.leAverage["text"] = "{0:.5g}".format(np.sum(self.seriesData) / self.seriesData.size(1))
+        self.gui.leAverage["text"] = f"{np.sum(self.seriesData) / self.seriesData.size(1):.5g}"
         self.resultDic['s' + str(self.numSeries) + 'n' + str(self.numMeas)] = self.seriesData.copy()
         if self.invertSeries:
             if (self.lastSeriesSize - self.numMeas >= 0):
@@ -636,7 +636,7 @@ class hbmMeasureSeries(ItomUi):
                     for ns in range(0, self.numSeries):
                         SSreg  = SSreg + (self.resultObj[nv, ns + 1] * scale + offset - self.resultObj[nv, 0]) ** 2
                 R2 = 1 - SSreg / SStot
-                resStr = "y = {0:.5e} + {1:.5e} * x\nR^2 = {2:7.5f}\n".format(float(offset), float(scale), float(R2))
+                resStr = f"y = {float(offset):.5e} + {float(scale):.5e} * x\nR^2 = {float(R2):7.5f}\n"
                 self.gui.txtEval.call("setText", resStr)
 
                 # Calculate total variance of fitted model, we have numMeas - 2 degrees of freedom, as we are fitting
@@ -651,14 +651,14 @@ class hbmMeasureSeries(ItomUi):
                 tCrit5 = stats.t.ppf(1-0.025, self.numMeas * self.numSeries - 2)
                 tCrit1 = stats.t.ppf(1-0.005, self.numMeas * self.numSeries - 2)
                 if tSMv > tCrit1:
-                    resStr = "t_scale = {0:.2f}\nt_critical_5 = {1:.2f}\n\
-t_critical_1 = {2:.2f}\nt_scale > t_critical_1 --> parameter is significant @ 99%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
+                    resStr = "t_scale = {:.2f}\nt_critical_5 = {:.2f}\n\
+t_critical_1 = {:.2f}\nt_scale > t_critical_1 --> parameter is significant @ 99%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
                 elif tSMv > tCrit5:
-                    resStr = "t_scale = {0:.2f}\nt_critical_5 = {1:.2f}\n\
-t_critical_1 = {2:.2f}\nt_scale > t_critical_5 --> parameter is significant @ 95%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
+                    resStr = "t_scale = {:.2f}\nt_critical_5 = {:.2f}\n\
+t_critical_1 = {:.2f}\nt_scale > t_critical_5 --> parameter is significant @ 95%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
                 else:
-                    resStr = "t_scale = {0:.2f}\nt_critical_5 = {1:.2f}\n\
-t_critical_1 = {2:.2f}\nt_scale < t_critical_5 --> parameter is NOT significant @ 95%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
+                    resStr = "t_scale = {:.2f}\nt_critical_5 = {:.2f}\n\
+t_critical_1 = {:.2f}\nt_scale < t_critical_5 --> parameter is NOT significant @ 95%\n".format(float(tSMv), float(tCrit5), float(tCrit1))
                 self.gui.txtEval.call("append", "Checking for significance of scale (m):\nTest statistics is of type t, as we have few values.\nTest hypothesis is H0: scale = 0,\nH1: scale != 0,\nso we want to reject H0\n")
                 self.gui.txtEval.call("append", resStr)
 
@@ -674,14 +674,14 @@ t_critical_1 = {2:.2f}\nt_scale < t_critical_5 --> parameter is NOT significant 
                 FCrit5 = stats.f.ppf(0.05, self.numSeries * self.numMeas - 2, 1)
                 FCrit1 = stats.f.ppf(0.01, self.numSeries * self.numMeas - 2, 1)
                 if FVal > FCrit1:
-                    resStr = "F_model = {0:.2f}\nF_critical_5 = {1:.2f}\n\
-F_critical_1 = {2:.2f}\nF_model > F_critical_1 --> model is significant @ 99%\n".format(float(FVal), float(FCrit5), float(FCrit1))
+                    resStr = "F_model = {:.2f}\nF_critical_5 = {:.2f}\n\
+F_critical_1 = {:.2f}\nF_model > F_critical_1 --> model is significant @ 99%\n".format(float(FVal), float(FCrit5), float(FCrit1))
                 elif FVal > FCrit5:
-                    resStr = "F_model = {0:.2f}\nF_critical_5 = {1:.2f}\n\
-F_critical_1 = {2:.2f}\nF_model > F_critical_5 --> model is significant @ 95%\n".format(float(FVal), float(FCrit5), float(FCrit1))
+                    resStr = "F_model = {:.2f}\nF_critical_5 = {:.2f}\n\
+F_critical_1 = {:.2f}\nF_model > F_critical_5 --> model is significant @ 95%\n".format(float(FVal), float(FCrit5), float(FCrit1))
                 else:
-                    resStr = "F_model = {0:.2f}\nF_critical_5 = {1:.2f}\n\
-F_critical_1 = {2:.2f}\nF_model < F_critical_5 --> model is NOT significant @ 95%\n".format(float(FVal), float(FCrit5), float(FCrit1))
+                    resStr = "F_model = {:.2f}\nF_critical_5 = {:.2f}\n\
+F_critical_1 = {:.2f}\nF_model < F_critical_5 --> model is NOT significant @ 95%\n".format(float(FVal), float(FCrit5), float(FCrit1))
                 self.gui.txtEval.call("append", "Checking for significance of whole model:\nTest statistics is of type F, as we compare\n\
 the explained variance (Yf - Ym)^2 to\nthe not explained variance (Yi - Yf)^2\n\
 Test hypothesis H0: is the data lies on a horizontal line,\n\

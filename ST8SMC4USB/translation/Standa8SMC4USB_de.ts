@@ -167,7 +167,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -274,7 +274,7 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>asynchronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

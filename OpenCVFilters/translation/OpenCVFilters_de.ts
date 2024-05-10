@@ -224,17 +224,17 @@
     </message>
     <message>
         <location line="-52"/>
-        <source>Rotated object by 90� clockwise with cvRotateM90-Filter</source>
+        <source>Rotated object by 90° clockwise with cvRotateM90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Rotated object by 90� counter clockwise with cvRotateP90-Filter</source>
+        <source>Rotated object by 90° counter clockwise with cvRotateP90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+167"/>
-        <source>Rotated object by 180� using cvRotate180-Filter</source>
+        <source>Rotated object by 180° using cvRotate180-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -746,7 +746,7 @@ The following values are possible:
     </message>
     <message>
         <location line="+1"/>
-        <source>Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1�s. If not given, no status information is returned.</source>
+        <source>Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1's. If not given, no status information is returned.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1192,7 +1192,7 @@ It is allowed to let the filter work inplace if you give the same input than des
     </message>
     <message>
         <location line="+200"/>
-        <source>This filter rotates the image by 90� count clock wise.
+        <source>This filter rotates the image by 90° count clock wise.
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
 
@@ -1202,7 +1202,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
     </message>
     <message>
         <location line="+10"/>
-        <source>This filter rotates the image by 90� clock wise.
+        <source>This filter rotates the image by 90° clock wise.
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
 
@@ -1212,7 +1212,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
     </message>
     <message>
         <location line="+216"/>
-        <source>This filter rotates the image by 180�.
+        <source>This filter rotates the image by 180°.
 
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The result is contained in the destination object
 
@@ -1494,7 +1494,7 @@ The epipolar geometry is described by the following equation:
 where F is a fundamental matrix, p_1 and p_2 are corresponding points in the first and the second images, respectively.
 
 The function calculates the fundamental matrix using one of four methods listed above and returns the found fundamental matrix.
-Normally just one matrix is found. But in case of the 7-point algorithm, the function may return up to 3 solutions (9 	imes 3 matrix that stores all 3 matrices sequentially).</source>
+Normally just one matrix is found. But in case of the 7-point algorithm, the function may return up to 3 solutions (9     imes 3 matrix that stores all 3 matrices sequentially).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

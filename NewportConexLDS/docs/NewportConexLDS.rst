@@ -241,4 +241,4 @@ Create 2 dimensional plot of data. First data points below a laser power level o
 Changelog
 ==========
 
-* Plugin version 1.1.0: Renam timeStemp to timeStamp
+* Plugin version 1.1.0: Rename timeStemp to timestamp

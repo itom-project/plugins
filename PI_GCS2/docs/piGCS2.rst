@@ -37,7 +37,7 @@ An instance of this plugin has the following internal parameters:
     use this parameter followed by :YourCommand in order to read/write value from/to device
     (e.g. PI_CMD:ERR?)
 **async**: {int}
-    asychronous (1) or synchronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **checkFlags**: {int}
     Check flags (or-combination possible): 0x01: check position boundaries before
     positioning and actualize current position after positioning (default: on), 0x02: check

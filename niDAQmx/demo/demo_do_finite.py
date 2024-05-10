@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite digital output task.
 
 Demo script for sending a series of number to different

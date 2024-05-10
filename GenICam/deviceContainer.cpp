@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2018, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -606,9 +606,9 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                         {
                             accessStatus = GenTL::DEVICE_ACCESS_STATUS_READWRITE;
                             localRetVal += ito::RetVal::format(
-                                ito::retWarning, 
-                                0, 
-                                "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!", 
+                                ito::retWarning,
+                                0,
+                                "Device '%s' reports an unknown access status. Therefore it is assumed that this camera can be accessed!",
                                 sDeviceID
                             );
                         }

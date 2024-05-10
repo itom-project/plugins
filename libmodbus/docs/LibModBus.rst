@@ -65,7 +65,7 @@ parameters can be changed using *setParam*.
 
 **registers**: {str}
     fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function.
-    *registers* needs to be stored with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
+    *registers* needs to be stored with address and number of consecutive registers separated by ',' and different registers separated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
 
 
 Usage

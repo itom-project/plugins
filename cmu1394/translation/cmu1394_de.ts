@@ -320,7 +320,7 @@ time out!</source>
     </message>
     <message>
         <location line="+18"/>
-        <source>Offest</source>
+        <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

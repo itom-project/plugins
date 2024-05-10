@@ -18,7 +18,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
 if(NOT THORLABS_KINESIS_DIRECTORY)
-	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+    set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
 endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(THORLABS_KINESIS_KCUBEDCSERVO_LIBNAME "Thorlabs.MotionControl.KCube.DCServo")
@@ -70,10 +70,10 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()

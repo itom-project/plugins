@@ -44,4 +44,3 @@ Changelog
 * itom setup 4.1.0: This plugin has been compiled using the PCL 1.8.0
 * itom setup 4.1.0: This plugin has been compiled using the PCL 1.8.0
 * itom setup 4.3.0: This plugin has been compiled using the PCL 1.12.0
-

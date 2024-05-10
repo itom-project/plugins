@@ -49,7 +49,7 @@ NewportConexLDSInterface::NewportConexLDSInterface()
 
     m_description = QObject::tr("NewportConexLDS");
     char docstring[] =
-        "NewportConexLDS is an itom-plugin to use the Newport Conex-LDS autocollimator.\n\
+"NewportConexLDS is an itom-plugin to use the Newport Conex-LDS autocollimator.\n\
 For further information go to: https://www.newport.com/p/CONEX-LDS\n\
 \n\
 This plugin has been developed using SerialIO interface with following default parameters:\n\
@@ -1405,7 +1405,7 @@ ito::RetVal NewportConexLDS::getCalibrationCoefficients(ito::float64* calibratio
         retVal += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during getting calibration coeffients values.").toUtf8().data());
+            tr("Error during getting calibration coefficients values.").toUtf8().data());
     }
 
     return retVal;

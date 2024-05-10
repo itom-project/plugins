@@ -230,7 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The number you wanted to set doesn�t correspond to analog, digital or counter (1-3)</source>
+        <source>The number you wanted to set doesn't correspond to analog, digital or counter (1-3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -242,11 +242,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error occured</source>
+        <source>Error occurred</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The digital read mode is not supported yet, because an external clock source is neccesary</source>
+        <source>The digital read mode is not supported yet, because an external clock source is necessary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -222,7 +222,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asychronous (1) or sychronous (0) [default] mode</source>
+        <source>asynchronous (1) or sychronous (0) [default] mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

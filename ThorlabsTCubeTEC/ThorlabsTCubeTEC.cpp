@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "ThorlabsTCubeTEC" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2022, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -51,7 +51,7 @@ ThorlabsTCubeTECInterface::ThorlabsTCubeTECInterface()
     m_description = QObject::tr("ThorlabsTCubeTEC");
 
     m_detaildescription = QObject::tr(
-        "ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers. \n\
+"ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers. \n\
 \n\
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.TCube.TEC.\n\
 \n\
@@ -803,7 +803,7 @@ ito::RetVal ThorlabsTCubeTEC::setParam(
 }
 
 //-------------------------------------------------------------------------------------
-/* if a dock widget is displayed, this timer is actived to continously update
+/* if a dock widget is displayed, this timer is activated to continuously update
 the current temperature and emit it via parametersChanged. */
 void ThorlabsTCubeTEC::timerEvent(QTimerEvent* event)
 {
@@ -885,7 +885,7 @@ ito::RetVal ThorlabsTCubeTEC::checkError(short value, const char* message)
                 message);
         case 4:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+                ito::retError, 1, "%s: An I/O Error has occurred in the FTDI chip.", message);
         case 5:
             return ito::RetVal::format(
                 ito::retError,
@@ -922,10 +922,10 @@ ito::RetVal ThorlabsTCubeTEC::checkError(short value, const char* message)
                 ito::retError, 1, "%s: Bad function pointer detected.", message);
         case 20:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+                ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 21:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+                ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 32:
             return ito::RetVal::format(
                 ito::retError, 1, "%s: Attempt to open a device that was already open.", message);

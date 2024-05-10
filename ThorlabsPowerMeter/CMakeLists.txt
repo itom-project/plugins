@@ -87,7 +87,7 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #${CMAKE_CURRENT_SOURCE_DIR}/PM100source.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -108,7 +108,7 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     #add all (generated) header and source files to the library (these files are compiled then)

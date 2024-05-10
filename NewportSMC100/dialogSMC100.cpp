@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport SMC100" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -43,7 +43,7 @@ DialogSMC100::DialogSMC100(ito::AddInBase *actuator) :
     m_calibStatusNames.append(tr("MZ and encoder"));
     m_calibStatusNames.append(tr("Current Pos as Home"));
     m_calibStatusNames.append(tr("MZ only"));
-    m_calibStatusNames.append(tr("EoR ans encoder"));
+    m_calibStatusNames.append(tr("EoR and encoder"));
     m_calibStatusNames.append(tr("EoR only"));
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
@@ -122,7 +122,7 @@ void DialogSMC100::parametersChanged(QMap<QString, ito::Param> params)
     // set ui to new parameters
     ui.checkAsync->setChecked(params["async"].getVal<int>());
 
-    // Reconnect them for reaction on upcomming changes
+    // Reconnect them for reaction on upcoming changes
     for (int i = 0; i < m_pComboBoxes.size(); ++i)
     {
         connect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
@@ -198,7 +198,7 @@ void DialogSMC100::on_calibrateBtn_clicked()
         {
             configV.append(0);
             configVInv.append(0);
-            calibV.append(m_calibInitialStatus[i]); // don�t care, keep old mode
+            calibV.append(m_calibInitialStatus[i]); // don't care, keep old mode
         }
     }
 
@@ -275,7 +275,7 @@ void DialogSMC100::resetButtonClicked()
     }
     m_axisToInitialize[i] = false;
 
-    // Reconnect them for reaction on upcomming changes
+    // Reconnect them for reaction on upcoming changes
     connect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
     connect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
     connect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
@@ -325,7 +325,7 @@ void DialogSMC100::createUiListEntry(const int i)
     resetButton->setMaximumWidth(22);
     resetButton->setContentsMargins(0, 0, 0, 0);
 
-    // inser elements in Layout
+    // insert elements in Layout
     layout->insertWidget(0, nrLabel);
     layout->insertWidget(1, speedSpin);
     layout->insertWidget(2, accelSpin);
@@ -341,7 +341,7 @@ void DialogSMC100::createUiListEntry(const int i)
     connect(accelSpin, SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
-    // store Pointer to each spin box in a qvector for later occuring use
+    // store Pointer to each spin box in a qvector for later occurring use
     m_pListElements.append(frame);
     m_pSpeedSpin.append(speedSpin);
     m_pAccelSpin.append(accelSpin);

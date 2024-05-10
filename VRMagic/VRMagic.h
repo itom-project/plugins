@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -52,27 +52,27 @@ class VRMagic : public ito::AddInGrabber
         ito::RetVal setVRMagicParam(const char *paramName, int newValue);
 
     private:
-		enum SyncParams {
+        enum SyncParams {
             sSignalSource = 0x0001,
             sContrast = 0x0002,
             sSaturation = 0x0004,
             sHue = 0x0008,
             sBrightness = 0x0010,
-			sAll = sSignalSource | sContrast | sSaturation | sHue | sBrightness
+            sAll = sSignalSource | sContrast | sSaturation | sHue | sBrightness
         };
 
 
-		ito::RetVal synchronizeCameraSettings(int what = sAll);
+        ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
         ito::RetVal readCameraFloatParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
 
-		ito::RetVal checkError(const VRmRetVal &error, const char* command = NULL);
+        ito::RetVal checkError(const VRmRetVal &error, const char* command = NULL);
 
         ito::RetVal m_acqRetVal;
-		VRmUsbCamDevice m_handle;
-		VRmDWORD m_port;
-		VRmDeviceKey* m_device_key;
-		bool m_imagesAreInterlaced;
+        VRmUsbCamDevice m_handle;
+        VRmDWORD m_port;
+        VRmDeviceKey* m_device_key;
+        bool m_imagesAreInterlaced;
 
     signals:
         //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */

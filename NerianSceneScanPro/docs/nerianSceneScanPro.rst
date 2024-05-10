@@ -73,7 +73,7 @@ Parameters
 **noiseReduction**: {int}
     1 if the noise reduction filter is enabled
 **operationMode**: {int}
-    0: Pass trhough, 1: rectify, 2: stereo matching
+    0: Pass through, 1: rectify, 2: stereo matching
 **roi**: {int rect [x0,y0,width,height]}, read-only
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
 **saveAutoRecalibration**: {int}

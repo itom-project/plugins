@@ -2,7 +2,7 @@
     Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2017, twip optical solutions GmbH
-    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "PGRFlyCapture.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 #include <bitset>
 
@@ -88,7 +88,7 @@ ito::RetVal PGRFlyCaptureInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: PGRFlyCapture) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
@@ -136,7 +136,7 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("GPL / this plugin needs to link agains the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.");
+    m_license = QObject::tr("GPL / this plugin needs to link against the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.");
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
@@ -870,7 +870,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 triggerModeSetup.mode = 0;
                 break;
             case 0: //Standard external hardware trigger [Mode 0, Source External]
-                m_RunSoftwareSync = false;  // Force synchronisation by software trigger during aquire
+                m_RunSoftwareSync = false;  // Force synchronisation by software trigger during acquire
                 triggerModeSetup.onOff = true;
                 triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
                 triggerModeSetup.mode = 0;
@@ -1216,7 +1216,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     m_camIdx = (*paramsOpt)[0].getVal<int>();    // the first parameter in optional list is for the camera index
     int limitBPP = (*paramsOpt)[1].getVal<int>();    // the second parameter in optional list is for the max BPP
-    bool startSyncronized = (*paramsOpt)[2].getVal<int>();    // the third parameter in optional list handels synchronisation
+    bool startSyncronized = (*paramsOpt)[2].getVal<int>();    // the third parameter in optional list handles synchronisation
     QString colorMode = paramsOpt->at(3).getVal<char*>();
 
     Initnum++;
@@ -1914,12 +1914,12 @@ ito::RetVal PGRFlyCapture::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the PGRFlyCapture, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the PGRFlyCapture, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal PGRFlyCapture::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -2207,7 +2207,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                     ito::uint8 *cbuf = (ito::uint8*)convertedImage.GetData();
                     if (cbuf == NULL)
                     {
-                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                     }
                     else
                     {
@@ -2221,7 +2221,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 ito::uint8 *cbuf = (ito::uint8*)m_imageBuffer.GetData();
                 if (cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
@@ -2241,7 +2241,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                     ito::Rgba32 *cbuf = (ito::Rgba32*)convertedImage.GetData();
                     if (cbuf == NULL)
                     {
-                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                     }
                     else
                     {
@@ -2255,7 +2255,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 ito::Rgba32 *cbuf = (ito::Rgba32*)m_imageBuffer.GetData();
                 if (cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
@@ -2275,7 +2275,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                     ito::uint16 *cbuf = (ito::uint16*)convertedImage.GetData();
                     if (cbuf == NULL)
                     {
-                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                     }
                     else
                     {
@@ -2297,7 +2297,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 ito::uint16 *cbuf = (ito::uint16*)m_imageBuffer.GetData();
                 if (cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
@@ -2325,7 +2325,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                     ito::uint16 *cbuf = (ito::uint16*)convertedImage.GetData();
                     if (cbuf == NULL)
                     {
-                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                     }
                     else
                     {
@@ -2341,7 +2341,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                     ito::uint16 *cbuf = (ito::uint16*)m_imageBuffer.GetData();
                     if (cbuf == NULL)
                     {
-                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.").toLatin1().data());
                     }
                     else
                     {

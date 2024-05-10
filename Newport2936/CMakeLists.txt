@@ -30,7 +30,7 @@ set(NEWPORT_POWER_METER_DIR "" CACHE PATH "path to the install directory of Newp
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
 if(WIN32)
-	find_path(NEWPORT_NEWPDLL_INCLUDE_DIR "NewpDll.h" PATHS ${NEWPORT_POWER_METER_DIR} $ENV{NEWPORT_2936_ROOT} PATH_SUFFIXES /Samples/C++/UseDeviceKey/UseDeviceKey)
+    find_path(NEWPORT_NEWPDLL_INCLUDE_DIR "NewpDll.h" PATHS ${NEWPORT_POWER_METER_DIR} $ENV{NEWPORT_2936_ROOT} PATH_SUFFIXES /Samples/C++/UseDeviceKey/UseDeviceKey)
 endif(WIN32)
 
 find_library(NEWPORT_USBDLL_LIBRARY "usbdll" HINTS ${NEWPORT_POWER_METER_DIR} $ENV{NEWPORT_2936_ROOT} PATH_SUFFIXES "Bin")
@@ -55,7 +55,7 @@ if(NEWPORT_NEWPDLL_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewport2936.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -75,7 +75,7 @@ if(NEWPORT_NEWPDLL_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

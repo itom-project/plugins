@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -44,7 +44,7 @@ namespace io
 /*!
     This Function transforms the DataObject passed to saveDataObject function via itom application into Image of Format_Mono.
 */
-template<typename _Tp> ito::RetVal transformDatatoImage_Mono(QImage *image, ito::DataObject *dObj, QString imgFilename, const _Tp tresHold)
+template<typename _Tp> ito::RetVal transformDatatoImage_Mono(QImage *image, ito::DataObject *dObj, QString imgFilename, const _Tp threshold)
 {
     ito::RetVal ret = ito::retOk;
     int monoIndex;
@@ -58,7 +58,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_Mono(QImage *image, ito:
         linePtr0 = (_Tp*)(_Tp*)MAT0->ptr(row);
         for (int col=0; col<MAT0->cols; col++)
         {
-            monoIndex = linePtr0[col] > tresHold ? 1 : 0;
+            monoIndex = linePtr0[col] > threshold ? 1 : 0;
             image->setPixel(col, row, monoIndex);
         }
     }
@@ -74,7 +74,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_Mono(QImage *image, ito:
 /*!
     This Function transforms the DataObject passed to saveDataObject function via itom application into Image of Format_MonoLSB.
 */
-template<typename _Tp> ito::RetVal transformDatatoImage_MonoLSB(QImage *image, ito::DataObject *dObj, QString imgFilename, const _Tp tresHold)
+template<typename _Tp> ito::RetVal transformDatatoImage_MonoLSB(QImage *image, ito::DataObject *dObj, QString imgFilename, const _Tp threshold)
 {
     ito::RetVal ret = ito::retOk;
     int monoIndex;
@@ -88,7 +88,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_MonoLSB(QImage *image, i
         linePtr0 = (_Tp*)MAT0->ptr(row);
         for (int col=0; col < MAT0->cols; col++)
         {
-            monoIndex = linePtr0[col] > tresHold ? 1 : 0;
+            monoIndex = linePtr0[col] > threshold ? 1 : 0;
             image->setPixel(col, row, monoIndex);
         }
     }

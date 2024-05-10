@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "ThorlabsFF" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -48,7 +48,7 @@ ThorlabsFFInterface::ThorlabsFFInterface()
 
     m_description = QObject::tr("ThorlabsFF");
 
-    m_detaildescription = QObject::tr("ThorlabsFF is an plugin to controll the Thorlabs Filter Flipper: \n\
+    m_detaildescription = QObject::tr("ThorlabsFF is an plugin to control the Thorlabs Filter Flipper: \n\
 \n\
 * Filter Flipper (MFF101) \n\
 \n\
@@ -428,7 +428,7 @@ ito::RetVal ThorlabsFF::checkError(short value, const char* message)
         case 1: return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
         case 2: return ito::RetVal::format(ito::retError, 1, "%s: The Device could not be found. This can be generated if the function TLI_BuildDeviceList() has not been called.", message);
         case 3: return ito::RetVal::format(ito::retError, 1, "%s: The Device must be opened before it can be accessed. See the appropriate Open function for your device.", message);
-        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occurred in the FTDI chip.", message);
         case 5: return ito::RetVal::format(ito::retError, 1, "%s: There are Insufficient resources to run this application.", message);
         case 6: return ito::RetVal::format(ito::retError, 1, "%s: An invalid parameter has been supplied to the device.", message);
         case 7: return ito::RetVal::format(ito::retError, 1, "%s: The Device is no longer present. The device may have been disconnected since the last TLI_BuildDeviceList() call.", message);
@@ -437,8 +437,8 @@ ito::RetVal ThorlabsFF::checkError(short value, const char* message)
         case 17: return ito::RetVal::format(ito::retError, 1, "%s: No functions available for this device.", message);
         case 18: return ito::RetVal::format(ito::retError, 1, "%s: The function is not available for this device.", message);
         case 19: return ito::RetVal::format(ito::retError, 1, "%s: Bad function pointer detected.", message);
-        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
-        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
+        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 32: return ito::RetVal::format(ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
         case 33: return ito::RetVal::format(ito::retError, 1, "%s: The device has stopped responding.", message);
         case 34: return ito::RetVal::format(ito::retError, 1, "%s: This function has not been implemented.", message);

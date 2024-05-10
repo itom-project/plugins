@@ -40,7 +40,7 @@ be changed using *setParam*.
 **acceleration**: {float}
     acceleration in real world units (e.g. mm/s^2)
 **async**: {int}
-    synchronous (0, default) or asychronous (1) mode
+    synchronous (0, default) or asynchronous (1) mode
 **deviceName**: {str}, read-only
     Description of the device
 **enableAxis**: {int}
@@ -69,7 +69,7 @@ be changed using *setParam*.
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
 

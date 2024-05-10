@@ -80,7 +80,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>device temperature of sensor in �C</source>
+        <source>device temperature of sensor in °C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

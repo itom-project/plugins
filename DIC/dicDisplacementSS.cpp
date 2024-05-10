@@ -236,7 +236,7 @@ int doCalcJacobian(ito::DataObject *imgInRef, ito::DataObject *imgInDef, ito::Da
     distCoeff->zeros(positions.getSize(0), 12, ito::tFloat32);
     correlCoeffVec->zeros(positions.getSize(0), ito::tFloat32);
 
-    // do a dummy interpolation to cache AMat for preceeding calls
+    // do a dummy interpolation to cache AMat for proceeding calls
     ito::DataObject dummyPos, dummyRes;
     dummyPos.zeros(1, 2, ito::tFloat64);
     retVal += doInterpolate(inFieldDef, &dummyPos, &dummyRes, interpAlgo & 14, 0, hasCuda);

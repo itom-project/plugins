@@ -95,7 +95,7 @@
     </message>
     <message>
         <location line="+19"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation>Absolute Positionierung</translation>
     </message>
     <message>

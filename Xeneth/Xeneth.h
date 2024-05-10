@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut fÃ¼r Technische Optik, UniversitÃ¤t Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 

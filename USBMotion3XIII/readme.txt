@@ -7,5 +7,5 @@ www.coptonix.com
 Berlin
 
 The website above provides samples, documentation and drivers for the
-motor stepper card. The 64bit libary has been provided directly by
+motor stepper card. The 64bit library has been provided directly by
 coptonix.

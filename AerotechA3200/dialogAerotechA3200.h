@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -66,5 +66,5 @@ class dialogAerotechA3200 : public QDialog
     public slots:
 
     private slots:
-        void on_pushButtonCalib_clicked();    //!< If the Botton invokes a AerotechA3200::Calib of enabled Axis
+        void on_pushButtonCalib_clicked();    //!< If the Button invokes a AerotechA3200::Calib of enabled Axis
 };

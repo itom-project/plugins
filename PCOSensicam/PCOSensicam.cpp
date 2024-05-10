@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "PCOSensicam.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -137,7 +137,7 @@ PCOSensicamInterface::~PCOSensicamInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PCOSensicamInterface with the name PCOSensicamInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class PCOSensicamInterface with the name PCOSensicamInterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -793,12 +793,12 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the PCOSensicam, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the PCOSensicam, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal PCOSensicam::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -935,7 +935,7 @@ ito::RetVal PCOSensicam::startCamera()
         /*int d,t;
         GET_STATUS(hdriver,&d,&t,&t);
         if ((((d&0x0E00)>>9)>0x01)&&((d&0x00C0)==0x00C0))
-        printf(", DOUBLE modes avaiable\n");
+        printf(", DOUBLE modes available\n");
         else
         printf("\n");*/
      break;
@@ -1035,7 +1035,7 @@ ito::RetVal PCOSensicam::startCamera()
    {
         //test and set camera values
 
-        //normal mode, auto triggger binning 1x1 max roi
+        //normal mode, auto trigger binning 1x1 max roi
         //test if SET_COC gets right values
         cocValues.mode = ((type & 0xFF) | ((gain & 0xFF) << 8) | ((submode & 0xFF)<<16));
         int err = test_coc2(cocValues);
