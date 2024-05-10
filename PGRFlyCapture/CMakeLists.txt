@@ -35,7 +35,7 @@ itom_init_cmake_policy(3.12)
 set(FLYCAPTURE_PGRFLYCAP_DIR "" CACHE PATH "path of the FLIR Fly Capture SDK. Must contain subfolders like bin,bin64,include,lib,lib64")
 
 if(NOT FLYCAPTURE_PGRFLYCAP_DIR)
-	set(FLYCAPTURE_PGRFLYCAP_DIR $ENV{FLIR_SDK_ROOT})
+    set(FLYCAPTURE_PGRFLYCAP_DIR $ENV{FLIR_SDK_ROOT})
 endif(NOT FLYCAPTURE_PGRFLYCAP_DIR)
 
 if(WIN32)
@@ -101,7 +101,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
     #Define Version in pluginVersion.h
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()

@@ -17,7 +17,7 @@ Overview
 This plugin encapsulates the access to the serial port. It can be used on both
 Windows and linux based operating systems.
 
-In **itom**, this plugin is also interally used by other plugins (e.g. *PIPiezoCtrl*, *UhlActuator*, *LeicaMotorFocus* or *PiezosystemJena*).
+In **itom**, this plugin is also internally used by other plugins (e.g. *PIPiezoCtrl*, *UhlActuator*, *LeicaMotorFocus* or *PiezosystemJena*).
 
 Features are:
 
@@ -122,7 +122,7 @@ parameters can be changed using *setParam*.
     is not available yet. Then you need to recall **getVal** again.
     If you set **readline** to 1, **getVal** collects values from the input buffer and checks if **endlineRead** is contained in the string. If so, **getVal** writes
     all characters also those behind the first appearance of **endlineRead** into the bytearray. Neverteless the number of obtained signs returned by **getVal**
-    just counts the signs to the first apperance of *endlineRead*.
+    just counts the signs to the first appearance of *endlineRead*.
     Remaining characters are recognized at the next call to **getVal**. If no endline characters is detected within *timeout* seconds, a timeout (error code: 256)
     is raised.
     The following code example demonstrates how to obtain the bytearray until the **endlineRead** sign.
@@ -264,7 +264,7 @@ your user to the **dialout** group, logout once and login again.
 
     sudo adduser USERNAME dialout
 
-where USERNAME ist the username under which you are running **itom**
+where USERNAME is the username under which you are running **itom**
 
 Changelog
 ===========

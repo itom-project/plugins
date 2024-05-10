@@ -158,7 +158,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PmdPico royale error: an unknown error occured</source>
+        <source>PmdPico royale error: an unknown error occurred</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

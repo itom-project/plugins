@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -32,7 +32,7 @@
     #include "opencv2/videoio/videoio.hpp"
 #endif
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -68,7 +68,7 @@
 *   CV_CAP_PROP_HUE                Hue of the data (only for cameras).
 *   CV_CAP_PROP_GAIN            Gain of the data (only for cameras).
 *   CV_CAP_PROP_EXPOSURE        Exposure (only for cameras).
-*   CV_CAP_PROP_CONVERT_RGB        Boolean flags indicating whether datas should be converted to RGB.
+*   CV_CAP_PROP_CONVERT_RGB        Boolean flags indicating whether data should be converted to RGB.
 *   CV_CAP_PROP_WHITE_BALANCE    Currently not supported
 *   CV_CAP_PROP_RECTIFICATION    Rectification flag for stereo cameras (note: only supported by DC1394 v 2.x backend currently)
 *
@@ -398,7 +398,7 @@ OpenCVGrabber::~OpenCVGrabber()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Funktion to set and update data informations
+// Function to set and update data information
 ito::RetVal OpenCVGrabber::checkCameraAbilities()
 {
     bool camRetVal = false;
@@ -481,7 +481,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -539,7 +539,7 @@ ito::RetVal OpenCVGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore

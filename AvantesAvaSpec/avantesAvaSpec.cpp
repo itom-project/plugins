@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -538,7 +538,7 @@ ito::RetVal AvantesAvaSpec::close(ItomSharedSemaphore *waitCond)
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -587,7 +587,7 @@ ito::RetVal AvantesAvaSpec::getParam(QSharedPointer<ito::Param> val, ItomSharedS
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -921,7 +921,7 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
                 //the data. Then obtain the data.
                 memset(multiMeasdata.pixels, 0, sizeof(multiMeasdata.pixels));
                 request_size = sizeof(multiMeasdata.prefix);
-                if (m_readAveragedImageInOneChunk)// for some reason the entire multiMeasdata must be read in a single chunk from device this may be realted to usb3
+                if (m_readAveragedImageInOneChunk)// for some reason the entire multiMeasdata must be read in a single chunk from device this may be related to usb3
                 {
                     //we can not read prefix first to get the number of bytes-> calculate it
                     request_size += m_params["sizex"].getVal<int>() * 4 + sizeof(multiMeasdata.timestamp) + sizeof(multiMeasdata.averages)+m_imageBufferLengthModifier;

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Holography" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -55,7 +55,7 @@ int NTHREADS = 2;
     #endif
     for (int g = 0; g <= (1 << maxBits); g++)
     {
-	}
+    }
 */
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
 /*static*/ ito::RetVal Holography::FresnelCalcProp(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;
-	ito::DataObject *outFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>(); //0, 1
+    ito::DataObject *outFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>(); //0, 1
     ito::DataObject outField;
     int sizex = paramsMand->at(1).getVal<int>();
     int sizey = paramsMand->at(2).getVal<int>();

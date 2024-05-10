@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "QCam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -86,7 +86,7 @@ class QCam : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+//        ito::RetVal checkData(void);    /*!< Check if object has to be reallocated */
 
         ito::RetVal errorCheck(QCam_Err errcode);
         ito::RetVal supportedFormats(bool &mono, bool &colorFilter, bool &colorBayer);

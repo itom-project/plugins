@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Standa ST8SMC4USB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -257,7 +257,7 @@ ito::RetVal ST8SMC4USB::synchronizeMotorSettings(double newAccel /*= -1.0*/, dou
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widget window is created at this position.
 */
 ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
 {
@@ -277,7 +277,7 @@ ito::RetVal ST8SMC4USB::SMCCheckError(ito::RetVal retval)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ST8SMC4USB::init. The widget window is created at this position.
 */
 ST8SMC4USB::ST8SMC4USB() :
     AddInActuator(),
@@ -291,12 +291,12 @@ ST8SMC4USB::ST8SMC4USB() :
     m_params.insert("device_id", ito::Param("device_id", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Name of controller").toLatin1().data()));
     m_params.insert("units_per_step", ito::Param("units_per_step", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
     m_params.insert("device_num", ito::Param("device_num", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
-    m_params.insert("device_port", ito::Param("device_port", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("Serial port of device").toLatin1().data()));
+    m_params.insert("device_port", ito::Param("device_port", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Serial port of device").toLatin1().data()));
     m_params.insert("unit", ito::Param("unit", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("unit of axis, 0: degree (default), 1: mm").toLatin1().data()));
 
     // Read/Write - Parameters
     m_params.insert("micro_steps", ito::Param("micro_steps", ito::ParamBase::Int, 1, 256, 1, tr("micro steps for motor [1,2,4,8,16,32,64,128,256]").toLatin1().data()));
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data()));
     m_params.insert("accel", ito::Param("accel", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0").toLatin1().data()));
     m_params.insert("decel", ito::Param("decel", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, 1000000.0, 0.0, tr("Target speed (for stepper motor: steps/s, for DC: rpm); range: 0.0..1000000.0").toLatin1().data()));
@@ -558,12 +558,12 @@ ito::RetVal ST8SMC4USB::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -600,14 +600,14 @@ ito::RetVal ST8SMC4USB::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ST8SMC4USB::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -713,7 +713,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -726,7 +726,7 @@ ito::RetVal ST8SMC4USB::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -742,7 +742,7 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
     sendStatusUpdate();
 
-    // starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the
+    // starts a small worker thread with a timer that regularly calls doAliveTimer to trigger the
     // alive thread such that itom do not run into a timeout if the homing needs lots of time
     QThread* awakeThread = new QThread(this);
     QTimer* timer = new QTimer(nullptr); // _not_ this!
@@ -814,7 +814,7 @@ ito::RetVal ST8SMC4USB::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -837,7 +837,7 @@ ito::RetVal ST8SMC4USB::getPos(const int axis, QSharedPointer<double> pos, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -882,7 +882,7 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -897,7 +897,7 @@ ito::RetVal ST8SMC4USB::setPosAbs(const int axis, const double pos, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -913,7 +913,7 @@ ito::RetVal ST8SMC4USB::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -928,7 +928,7 @@ ito::RetVal ST8SMC4USB::setPosRel(const int axis, const double pos, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls ST8SMC4USB::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -944,8 +944,8 @@ ito::RetVal ST8SMC4USB::setPosRel(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa SMCSetPos
     \return retOk
@@ -1027,7 +1027,7 @@ ito::RetVal ST8SMC4USB::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number

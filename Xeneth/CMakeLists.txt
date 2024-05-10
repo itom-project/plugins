@@ -20,7 +20,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(XENETH_SDK_DIR "" CACHE PATH "base path to the Xeneth SDK (that contains the include folder)")
 
 if(NOT XENETH_SDK_DIR)
-	set(XENETH_SDK_DIR $ENV{XENETH_ROOT})
+    set(XENETH_SDK_DIR $ENV{XENETH_ROOT})
 endif(NOT XENETH_SDK_DIR)
 
 find_path(XENETH_INCLUDE_DIR XCamera.h PATHS ${XENETH_SDK_DIR} PATH_SUFFIXES include)
@@ -61,7 +61,7 @@ if(XENETH_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/XenethInterface.h
         ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -84,7 +84,7 @@ if(XENETH_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     #Define Version in pluginVersion.h

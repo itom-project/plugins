@@ -72,7 +72,7 @@ if(XIMEA_SDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
     )
 
-    set(PLUGIN_RCC	)
+    set(PLUGIN_RCC    )
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

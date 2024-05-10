@@ -41,7 +41,7 @@ An instance of this plugin has the following internal parameters:
 **cameraSerialNo**: {str}, read-only
     Serial number of the camera (see camera housing)
 **cameraIP**: {str}, read-only
-    IP adress of the camera
+    IP address of the camera
 **camnum**: {int}
     Camera Number
 **exposure**: {float}

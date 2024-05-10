@@ -172,7 +172,7 @@
     <message>
         <location line="+52"/>
         <location line="+70"/>
-        <source>devices is not open or endpoint Poiter is NULL.</source>
+        <source>devices is not open or endpoint pointer is NULL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -289,7 +289,7 @@ The setVal and getVal functions will write and read on the specified endpoint.
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

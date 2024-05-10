@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Vistek" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -22,7 +22,7 @@
 
 #include "Vistek.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 #include "pluginVersion.h"
 #include <qstring.h>
@@ -138,4 +138,4 @@ VistekInterface::~VistekInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class VistekInterface with the name Vistekinterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class VistekInterface with the name Vistekinterface as plugin for the Qt-System (see Qt-DOC)

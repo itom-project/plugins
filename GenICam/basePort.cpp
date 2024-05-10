@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2018, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -117,7 +117,7 @@ EAccessMode BasePort::GetAccessMode() const // if the driver is open, return RW 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloded from IPort
+void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloaded from IPort
 {
     // Fetch <Length> bytes starting as <Address> from the device
     // and copy them to <pBuffer>
@@ -157,7 +157,7 @@ void BasePort::Read(void *pBuffer, int64_t Address, int64_t Length) //overloded 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BasePort::Write(const void *pBuffer, int64_t Address, int64_t Length) //overloded from IPort
+void BasePort::Write(const void *pBuffer, int64_t Address, int64_t Length) //overloaded from IPort
 {
     // Copy <Length> bytes from <pBuffer> to the device
     // starting as <Address>

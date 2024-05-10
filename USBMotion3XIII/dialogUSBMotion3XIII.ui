@@ -145,12 +145,12 @@
             </property>
             <item>
              <property name="text">
-              <string>Sychronous</string>
+              <string>Synchronous</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Asychronous</string>
+              <string>Asynchronous</string>
              </property>
             </item>
            </widget>

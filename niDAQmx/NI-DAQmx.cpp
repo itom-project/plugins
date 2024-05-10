@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -1763,7 +1763,7 @@ void NiDAQmx::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -2061,7 +2061,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// not supported yet, because an external clock source is neccesary, marc: todo: similar to readAnalog
+// not supported yet, because an external clock source is necessary, marc: todo: similar to readAnalog
 ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
 {
     // right now I only support 8 line Ports! Some devices have 16 or 32 lines per port!

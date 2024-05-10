@@ -38,7 +38,7 @@ PROJECT_NUMBER         = 0.0.1
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Plugin DLL for the ITO iTOM to show how to programm algorithms"
+PROJECT_BRIEF          = "Plugin DLL for the ITO iTOM to show how to program algorithms"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
@@ -888,7 +888,7 @@ HTML_FILE_EXTENSION    = .html
 # standard header. Note that when using a custom header you are responsible
 # for the proper inclusion of any scripts and style sheets that doxygen
 # needs, which is dependent on the configuration options used.
-# It is adviced to generate a default header using "doxygen -w html
+# It is advised to generate a default header using "doxygen -w html
 # header.html footer.html stylesheet.css YourConfigFile" and then modify
 # that header. Note that the header is subject to change so you typically
 # have to redo this when upgrading to a newer version of doxygen or when

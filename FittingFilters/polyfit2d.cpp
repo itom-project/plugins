@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -156,10 +156,10 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 
         // Add Protokoll
 //    char prot[81] = {0};
-//    _snprintf(prot, 80, "2D polynomical fit with order x = %i and y = %i", gradX, gradY);
+//    _snprintf(prot, 80, "2D polynomial fit with order x = %i and y = %i", gradX, gradY);
 //    dObjDst->addToProtocol(std::string(prot));
     QString msg;
-    msg = tr("2D polynomical fit with order x = %1 and y = %2").arg(gradX).arg(gradY);
+    msg = tr("2D polynomial fit with order x = %1 and y = %2").arg(gradX).arg(gradY);
     dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
 
     delete[] x;
@@ -176,36 +176,30 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /* ******************** Polyfit.C   23.3.93 ***************************** */
 /* ***********************************************************************
-    Mit dieser Funktion werden Polynomkoeffizienten einer Ausgleichsflaeche
-    durch die Messpunkte berechnet. Sie gibt folgende Fehlercodes zurrueck:
+This function computes polynomial coefficients of a fitting surface based on measurement points. It returns the following error codes:
 
-    0:  Fehlerfrei beendet
-    1:  Fehler bei den Feldgrenzen
-    2:  gradX und gradY =0, Funktion abgebrochen
-    3:  gradX und/oder gradY zu gross
-    4:  Fehler bei Speicherzuweisung in Berechne_Koeff
-    5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten
-    6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum
-    7:  Fehler bei Speicherzuweisung fuer ZeilenSumme
-    8:  Fehler bei berechnung der Fehlerquadrate
+0: Successfully completed
+1: Boundary errors
+2: gradX and gradY = 0, function aborted
+3: gradX and/or gradY too large
+4: Memory allocation error in Calculate_Coefficients
+5: Memory allocation error for recursion coefficients
+6: Memory allocation error for values, NormX, NormY, or Sum
+7: Memory allocation error for row sum
+8: Error in calculating the sum of squares of errors
 
-    Beim Aufruf muessen uebergeben werden:
+Upon invocation, the following must be passed:
 
-    x         - Ein Zeiger auf das Array, das die X-Koordinaten der Mess-
-              punkte enthaelt.
-    y         - Ein Zeiger auf das Array, das die Y-Koordinaten der Mess-
-              punkte enthaelt.
-    Messwerte - Ein Zeiger (float) auf den Anfang des Arrays, in dem die
-              Messwerte zu finden sind. Es muss von der Form M[x][y] sein.
-    gradX,    - die Polynomgrade der Fitfunktion in X/Y - Richtung.
-    gradY
-    AnzahlX,  - die Zahl der Messpunkte in X/Y - Richtung.
-    AnzahlY
-    Sigma     - Ein Pointer auf eine float - Variable, in der die Fehler-
-              quadrat Summe uebergeben wird.
+x - A pointer to the array containing the X coordinates of the measurement points.
+y - A pointer to the array containing the Y coordinates of the measurement points.
+Measurements - A pointer (float) to the beginning of the array where the measurements are located. It must be in the form M[x][y].
+gradX, - The polynomial degrees of the fitting function in the X/Y direction.
+gradY
+NumberX, - The number of measurement points in the X/Y direction.
+NumberY
+Sigma - A pointer to a float variable in which the sum of squares of errors is passed.
 
- Die Funktion uebergibt dann die Polynomkoeffizienten und alle anderen Infos
- zur Berechnung der Funktionswerte an die Structure koeff.
+The function then returns the polynomial coefficients and all other information for calculating function values to the structure coefficients.
  ********************************************************************** */
 ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *dblFittedData, int gradX, int gradY, int sizeX, int sizeY, double *sigma, struct Koeffizienten *koeff, bool fillNaNValues)
 //
@@ -306,7 +300,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     dx = 1;
     dy = 1;
 
-    // Berechnung der NormX mit der Funktion OrthPolAuswerten ----------------
+    // Berechnung der NormX mit der Function OrthPolAuswerten ----------------
     for (n=0; n < koeff->sizeX; n++)
     {
         if (n == 0)
@@ -545,7 +539,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
         *(S + i*(PolyGrad+1) + 1) = -(i-1)* *(S + (i-1)*(PolyGrad+1) +1); // Rekursionsformel
     }
 
-    for (i=3; i<=PolyGrad; i++)   // fuer die Stirlingzahlen
+    for (i=3; i<=PolyGrad; i++)   // für die Stirlingzahlen
     {
         for (j=2; j<=i-1; j++)
         {
@@ -575,10 +569,12 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     free(S); S=NULL;
 
     /*************************************************
-     Berechnung der Koeffizienten fuer die Rekursion. Dass so eine Rekursion
-     existiert, ist klar, es genuegt alpha, beta und gamma so zu bestimmen, dass
-     die ersten drei Koeffizienten des Polynoms Pn richtig dargestellt werden,
-     die anderen sind dann automatisch richtig.
+     Calculation of the coefficients for recursion.
+     That such a recursion exists is clear,
+     it suffices to determine alpha, beta, and gamma
+     in such a way that the first three coefficients
+     of the polynomial Pn are represented correctly;
+     the others are then automatically correct.
     ***************************************************/
     for (i = 2; i<=PolyGrad; i++)
     {
@@ -639,7 +635,7 @@ double FittingFilters::Fitwerte(double tx, double ty, struct Koeffizienten *koef
     OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Px, koeff->alphaX, koeff->betaX, koeff->gammaX);
     OrthPolAuswerten(koeff->sizeY, koeff->gradY, ty, Py, koeff->alphaY, koeff->betaY, koeff->gammaY);
 
-    // --------- Berechnung des Funktionswertes nach Gl. 11.8 ----------------
+    // --------- Berechnung des Functionswertes nach Gl. 11.8 ----------------
     for (n=0, z=0.0 ; n <= koeff->gradX ; n++)
     {
         for (m=0 ; m <= koeff->gradY ; m++)

@@ -116,7 +116,7 @@ struct CamParameters
         Parameter Focus;
 };
 
-/// The only visiable class for controlling of video devices in format singelton
+/// The only visible class for controlling of video devices in format singleton
 class VideoInput
 {
 public:
@@ -140,7 +140,7 @@ public:
     // Setting of parameters of video device with deviceID
     void setParameters(unsigned int deviceID, CamParameters parameters);
 
-    // Getting numbers of existence VideoDevices with listing in consol
+    // Getting numbers of existence VideoDevices with listing in console
     unsigned int listDevices(bool silent = false);
 
     // Getting numbers of formats, which are supported by VideoDevice with deviceID
@@ -173,7 +173,7 @@ public:
     // Checking of using Raw Data of pixels from VideoDevice with deviceID
     bool isDeviceRawDataSource(unsigned int deviceID);
 
-    // Setting of the state of outprinting info in consol
+    // Setting of the state of outprinting info in console
     void setVerbose(bool state);
 
     // Initialization of video device with deviceID by media type with id

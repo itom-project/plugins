@@ -4,7 +4,7 @@ set(target_name PCOSensicam)
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 #################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
+# Input elements for CMake GUI (Checkboxes, Paths, Strings...)
 #################################################################
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
@@ -23,7 +23,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(PCO_SENSICAM_SDK_DIR "" CACHE PATH "path of the pco.sdk. Must contain subfolders like bin,bin64,include,lib,lib64")
 
 if(NOT PCO_SENSICAM_SDK_DIR)
-	set(PCO_SENSICAM_SDK_DIR $ENV{PCO_SENSICAM_ROOT})
+    set(PCO_SENSICAM_SDK_DIR $ENV{PCO_SENSICAM_ROOT})
 endif(NOT PCO_SENSICAM_SDK_DIR)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -71,7 +71,7 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOSensicam.h
         ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -93,7 +93,7 @@ if(PCO_SENSICAM_SDK_CAM_LIB AND PCO_SENSICAM_SDK_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     #Define Version in pluginVersion.h

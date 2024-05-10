@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -63,7 +63,7 @@ class AerotechA3200 : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        AerotechA3200();    //!< Constructur
+        AerotechA3200();    //!< Constructor
         ~AerotechA3200();    //! Destructor
 
         //void timerEvent( QTimerEvent *event );

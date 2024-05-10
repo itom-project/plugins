@@ -16,7 +16,7 @@ Overview
 .. pluginsummaryextended::
     :plugin: Holography
 
-	Algorithms used for digital holography, such as Rayleigh Sommerfield and Fresnel propagation
+    Algorithms used for digital holography, such as Rayleigh Sommerfield and Fresnel propagation
 
 These filters are defined in the plugin:
 

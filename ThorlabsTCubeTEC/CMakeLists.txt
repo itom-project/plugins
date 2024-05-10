@@ -16,7 +16,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
 if(NOT THORLABS_KINESIS_DIRECTORY)
-	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+    set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
 endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(THORLABS_KINESIS_TEC_LIBNAME "Thorlabs.MotionControl.TCube.TEC")
@@ -58,7 +58,7 @@ if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsTCubeTEC.h
         ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -78,7 +78,7 @@ if(THORLABS_KINESIS_TEC_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     #Define Version in pluginVersion.h
