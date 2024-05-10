@@ -75,13 +75,10 @@ if(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
     #Define Version in pluginVersion.h
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
-#Add version information to the plugIn-dll unter MSVC
-if(MSVC)
-    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif()
-
-
-
+    #Add version information to the plugIn-dll under MSVC
+    if(MSVC)
+        list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
@@ -116,4 +113,3 @@ endif()
 else(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
     message(WARNING "${target_name}-Dependency OpenCV-${OpenCV_FOUND}, LAPACK-${LAPACKE_FOUND} and/or OpenMP-${OPENMP_FOUND} could not be found. ${target_name} will not be build")
 endif(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
-

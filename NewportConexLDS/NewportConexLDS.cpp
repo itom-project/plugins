@@ -70,7 +70,7 @@ endline    \\r\\n\n\
     m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
     ito::Param paramVal(
         "serialIOInstance",
         ito::ParamBase::HWRef | ito::ParamBase::In,

@@ -64,7 +64,7 @@ subdirectories like include or bin are contained.");
     m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
     m_initParamsMand.append(ito::Param("device", ito::ParamBase::String, "", "device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices"));

@@ -55,7 +55,7 @@ if(CYAPI_INCLUDE_DIRS)
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomCyUSB.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.cpp
     )
-	
+
 	#Define Version in pluginVersion.h
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 

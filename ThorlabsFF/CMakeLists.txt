@@ -81,7 +81,7 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     set(PLUGIN_RCC
         #add absolute paths to any *.qrc resource files here
     )
-    
+
     #Define Version in pluginVersion.h
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 

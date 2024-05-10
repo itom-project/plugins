@@ -97,7 +97,7 @@ if(ANDOR_SDK3_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/DialogAndorSDK3.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetAndorSDK3.ui
     )
-	
+
 	#Define Version in pluginVersion.h
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 

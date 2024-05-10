@@ -65,7 +65,7 @@ NITWidySWIRInterface::NITWidySWIRInterface()
             NITLibrary defines the parameter **\"offset, gain, histogram threshold, pixel clock\"** as changeable, but with the current version is does not! \n\
                 The parameter **pixel_clock** is set to *Readonly*, because the camera acquisition crash. This problem should be tested with the next NITLibrary version.\n";
     m_detaildescription = QObject::tr(docstring);
-    
+
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = PLUGIN_MIN_ITOM_VERSION;

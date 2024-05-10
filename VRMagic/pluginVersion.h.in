@@ -29,7 +29,7 @@
 #define PLUGINVERSION_H
 
 #include "itom_sdk.h"
-  
+
 #define PLUGIN_VERSION              CREATE_VERSION(4, 5, 0)
 #define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(2, 1, 0)
 #define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_plugins_VERSION_MAJOR},${itom_plugins_VERSION_MINOR},${itom_plugins_VERSION_PATCH})

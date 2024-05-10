@@ -47,7 +47,7 @@ For compiling this plugin, you need to install the Newport USB Driver V 4.2.2";
     m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

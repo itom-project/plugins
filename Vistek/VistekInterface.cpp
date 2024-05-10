@@ -110,7 +110,7 @@ use the GenICam plugin of itom that is able to communicate with Vistek USB3 and 
     m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
 

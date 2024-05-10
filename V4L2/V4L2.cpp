@@ -77,7 +77,7 @@ to let the plugin print a list of supported formats (the plugin initialization t
     m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-    
+
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 

@@ -67,7 +67,7 @@ if(CVB_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/commonVisionBloxInterface.cpp
         #add further source files here
     )
-	
+
 	#Define Version in pluginVersion.h
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 

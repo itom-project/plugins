@@ -110,7 +110,7 @@ An instance of this plugin has the following parameters:
     can be used to apply a scale to values after measurement, thus converting the values from ADUs to a physical meaningful value
     in combination with the offsets values. Offset is first.
 
-	*Value range: [-inf, inf], Default: 1.0*
+    *Value range: [-inf, inf], Default: 1.0*
 
 
 Changelog
