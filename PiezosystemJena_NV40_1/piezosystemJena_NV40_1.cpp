@@ -1,5 +1,4 @@
 #define ITOM_IMPORT_API
-#define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 #include "piezosystemJena_NV40_1.h"
