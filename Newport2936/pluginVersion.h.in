@@ -35,9 +35,9 @@
 #define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(3, 2, 0)
 #define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_plugins_VERSION_MAJOR},${itom_plugins_VERSION_MINOR},${itom_plugins_VERSION_PATCH})
 #define PLUGIN_LICENCE              "Licensed under LGPL, uses Newport USB Driver software and driver (not covered by LPGL)."
-#define PLUGIN_COMPANY              "Institut für Technische Optik, Universität Stuttgart"
-#define PLUGIN_AUTHOR               "Robin Hahn, Bernd Bertschinger,ITO, Universität Stuttgart"
-#define PLUGIN_COPYRIGHT            "(C) 2018, ITO, Universität Stuttgart"
+#define PLUGIN_COMPANY              "Institut für Technische Optik, University Stuttgart"
+#define PLUGIN_AUTHOR               "Robin Hahn, Bernd Bertschinger,ITO, University Stuttgart"
+#define PLUGIN_COPYRIGHT            "(C) 2018, ITO, University Stuttgart"
 #define PLUGIN_NAME                 "Newport 2936"
 
 
