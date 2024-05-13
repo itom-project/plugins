@@ -111,5 +111,5 @@ if(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 else(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
-    message(WARNING "${target_name}-Dependency OpenCV-${OpenCV_FOUND}, LAPACK-${LAPACKE_FOUND} and/or OpenMP-${OPENMP_FOUND} could not be found. ${target_name} will not be build")
+    message(WARNING "${target_name}-Dependency OpenCV-${OpenCV_FOUND}, LAPACKE-${LAPACKE_FOUND} and/or OpenMP-${OPENMP_FOUND} could not be found. ${target_name} will not be build")
 endif(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
