@@ -45,7 +45,10 @@
 #define CVMATREF_2DREAL(mat,m,n)  *( (MATTYPE*)(mat->data + mat->step[0]*(m) + mat->step[1]*(n)) )
 
 #if defined LAPACKE
-    #include "lapacke.h"
+    #include <complex>
+    #define lapack_complex_float std::complex<float>
+    #define lapack_complex_double std::complex<double>
+    #include <lapacke.h>
 
     #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; int NAME ## __rows;
     #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);
