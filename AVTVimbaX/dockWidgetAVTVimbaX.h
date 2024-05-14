@@ -21,8 +21,8 @@ You should have received a copy of the GNU Library General Public License
 along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETAVTVimbaX_H
-#define DOCKWIDGETAVTVimbaX_H
+#ifndef DOCKWIDGETAvtVimbaX_H
+#define DOCKWIDGETAvtVimbaX_H
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
@@ -31,18 +31,18 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetAVTVimbaX.h"
+#include "ui_dockWidgetAvtVimbaX.h"
 
-class DockWidgetAVTVimbaX : public ito::AbstractAddInDockWidget
+class DockWidgetAvtVimbaX : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetAVTVimbaX(ito::AddInDataIO *grabber);
-        ~DockWidgetAVTVimbaX() {};
+        DockWidgetAvtVimbaX(ito::AddInDataIO *grabber);
+        ~DockWidgetAvtVimbaX() {};
 
     private:
-        Ui::DockWidgetAVTVimbaX ui;
+        Ui::DockWidgetAvtVimbaX ui;
         bool m_inEditing;
         bool m_firstRun;
 

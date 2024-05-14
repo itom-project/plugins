@@ -26,12 +26,13 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 
 #include "common/addInGrabber.h"
 #include <qsharedpointer.h>
-#include "dialogAVTVimbaX.h"
-#include <VimbaCPP/Include/VimbaCPP.h>
-#include "avtEnums.h"
+#include "dialogAvtVimbaX.h"
+#include <VmbCPP/VmbCPP.h>
+#include "avtVimbaXEnums.h"
 #include <qtimer.h>
 
-using namespace AVT::VmbAPI;
+using namespace VmbCPP;
+//using namespace AVT::VmbAPI;
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -125,7 +126,7 @@ class AVTVimbaX : public ito::AddInGrabber
         QTimer *m_aliveTimer;
         QThread *m_aliveTimerThread;
 
-        VmbInterfaceType m_interfaceType;
+        VmbTransportLayerType m_interfaceType;
         TriggerSourceEnum m_triggerSourceEnum;
         TriggerActivationEnum m_triggerActivationEnum;
         BppEnum m_bppEnum;

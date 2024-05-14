@@ -1,8 +1,7 @@
 #ifndef AVTENUMS_H
 #define AVTENUMS_H
 
-#include <VimbaCPP/Include/VimbaCPP.h>
-
+#include <VmbCPP/VmbCPP.h>
 
 struct BppEnum
 {

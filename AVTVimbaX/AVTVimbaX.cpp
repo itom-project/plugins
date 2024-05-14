@@ -24,7 +24,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "AVTVimbaX.h"
+#include <avtVimbaX.h>
 #include "pluginVersion.h"
 #include "gitVersion.h"
 
@@ -33,7 +33,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 
-#include "dockWidgetAVTVimbaX.h"
+#include "dockWidgetAvtVimbaX.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -185,7 +185,7 @@ AVTVimbaX::AVTVimbaX() :
     m_params.insert(paramVal.getName(),paramVal);
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-    DockWidgetAVTVimbaX *dw = new DockWidgetAVTVimbaX(this);
+    DockWidgetAvtVimbaX *dw = new DockWidgetAvtVimbaX(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -243,7 +243,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     timeoutMS = sToMs(m_params["timeout"].getVal<double>());
 
-    VimbaSystem& sys = VimbaSystem::GetInstance();
+    VmbSystem& sys = VmbSystem::GetInstance();
     CameraPtrVector cameras;
 
     //startup API
@@ -282,24 +282,15 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
                     m_params["serial_no"].setVal<char*>( (char*)(serialNumber.data()) );
 
-                    /*AVT::VmbAPI::FeaturePtrVector v;
-                    std::string blub;
-                    m_camera->GetFeatures(v);
-                    for (int i = 0; i < v.size(); ++i)
-                    {
-                        v[i]->GetName(blub);
-                        std::cout << blub.data() << "\n" << std::endl;
-                    }*/
-
                     switch (m_interfaceType)
                     {
-                    case VmbInterfaceEthernet:
+                    case VmbTransportLayerTypeEthernet:
                         m_params["interface"].setVal<const char*>("GigE");
                         break;
-                    case VmbInterfaceFirewire:
+                    case VmbTransportLayerTypeIIDC:
                         m_params["interface"].setVal<const char*>("Firewire");
                         break;
-                    case VmbInterfaceUsb:
+                    case VmbTransportLayerTypeU3V:
                         m_params["interface"].setVal<const char*>("USB");
                         break;
                     default:
@@ -310,7 +301,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
                 if (!retValue.containsError())
                 {
-                    AVT::VmbAPI::FeaturePtr feature;
+                    VmbCPP::FeaturePtr feature;
                         if (m_camera->GetFeatureByName("ExposureTime", feature) == VmbErrorSuccess)
                         {
                             nameExposureTime = "ExposureTime";
@@ -325,7 +316,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                             nameExposureTime = "";
                         }
 
-                    if (m_interfaceType == VmbInterfaceEthernet)
+                    if (m_interfaceType == VmbTransportLayerTypeEthernet)
                     {
                         //some defaults (they are not changed in this plugin)
                         setEnumFeature("ExposureAuto", "Off");
@@ -340,7 +331,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                         }
                         retValue += setIntFeature("GVSPPacketSize", packetSize);
                     }
-                    else if (m_interfaceType == VmbInterfaceFirewire)
+                    else if (m_interfaceType == VmbTransportLayerTypeIIDC)
                     {
                         //some defaults (they are not changed in this plugin)
                         setEnumFeature("TriggerMode", "Off"); //trigger off makes no sense
@@ -356,7 +347,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
                         retValue += getEnumFeatureByName("TriggerSelector", enum_name, enum_idx);
                     }
-                    else if (m_interfaceType == VmbInterfaceUsb)
+                    else if (m_interfaceType == VmbTransportLayerTypeU3V)
                     {
                         // some defaults (they are not changed in this plugin)
                         setEnumFeature("TriggerMode", "Off"); // trigger off makes no sense
@@ -383,8 +374,8 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                     retValue += checkError(m_camera->GetFeatureByName("PixelFormat", pFeature));
                     if (!retValue.containsError())
                     {
-                        AVT::VmbAPI::StringVector pixelTypesStr;
-                        AVT::VmbAPI::Int64Vector pixelTypesIdx;
+                        VmbCPP::StringVector pixelTypesStr;
+                        VmbCPP::Int64Vector pixelTypesIdx;
                         int minBpp = 16;
                         int maxBpp = 8;
                         bool available;
@@ -392,7 +383,7 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                         //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
                         if (pFeature->GetValues(pixelTypesStr) == VmbErrorSuccess && pFeature->GetValues(pixelTypesIdx) == VmbErrorSuccess)
                         {
-                            for (AVT::VmbAPI::StringVector::size_type i = 0; i < pixelTypesStr.size(); ++i)
+                            for (VmbCPP::StringVector::size_type i = 0; i < pixelTypesStr.size(); ++i)
                             {
                                 pFeature->IsValueAvailable(pixelTypesIdx[i], available);
                                 if (available)
@@ -448,15 +439,15 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 retValue += checkError(m_camera->GetFeatureByName("TriggerSource", pFeature));
                 if (!retValue.containsError())
                 {
-                    AVT::VmbAPI::StringVector triggerSourceStr;
-                    AVT::VmbAPI::Int64Vector triggerSourceIdx;
+                    VmbCPP::StringVector triggerSourceStr;
+                    VmbCPP::Int64Vector triggerSourceIdx;
                     bool available;
                     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
 
                     //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
                     if (pFeature->GetValues(triggerSourceStr) == VmbErrorSuccess && pFeature->GetValues(triggerSourceIdx) == VmbErrorSuccess)
                     {
-                        for (AVT::VmbAPI::StringVector::size_type i = 0; i < triggerSourceStr.size(); ++i)
+                        for (VmbCPP::StringVector::size_type i = 0; i < triggerSourceStr.size(); ++i)
                         {
                             pFeature->IsValueAvailable(triggerSourceIdx[i], available);
                             if (available)
@@ -513,15 +504,15 @@ ito::RetVal AVTVimbaX::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 retValue += checkError(m_camera->GetFeatureByName("TriggerActivation", pFeature));
                 if (!retValue.containsError())
                 {
-                    AVT::VmbAPI::StringVector triggerActivationStr;
-                    AVT::VmbAPI::Int64Vector triggerActivationIdx;
+                    VmbCPP::StringVector triggerActivationStr;
+                    VmbCPP::Int64Vector triggerActivationIdx;
                     bool available;
                     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
 
                     //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
                     if (pFeature->GetValues(triggerActivationStr) == VmbErrorSuccess && pFeature->GetValues(triggerActivationIdx) == VmbErrorSuccess)
                     {
-                        for (AVT::VmbAPI::StringVector::size_type i = 0; i < triggerActivationStr.size(); ++i)
+                        for (VmbCPP::StringVector::size_type i = 0; i < triggerActivationStr.size(); ++i)
                         {
                             pFeature->IsValueAvailable(triggerActivationIdx[i], available);
                             if (available)
@@ -650,7 +641,7 @@ ito::RetVal AVTVimbaX::close(ItomSharedSemaphore *waitCond)
     }
     if (Initnum<1)
     {
-        VimbaSystem& sys = VimbaSystem::GetInstance();
+        VmbSystem& sys = VmbSystem::GetInstance();
 
 
         //shutdown API
@@ -1204,7 +1195,7 @@ ito::RetVal AVTVimbaX::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     else
     {
         m_isgrabbing = true;
-        AVT::VmbAPI::FeaturePtr feature;
+        VmbCPP::FeaturePtr feature;
         if (m_camera->GetFeatureByName("TriggerSoftware", feature) == VmbErrorSuccess)
         {
             retValue += checkError(feature->RunCommand());
@@ -1265,10 +1256,11 @@ ito::RetVal AVTVimbaX::retrieveData(ito::DataObject *externalDataObject)
             {
                 VmbUint32_t frameImgSize, bufferHeight, bufferWidth;
                 VmbUchar_t *bufferPtr;
-                m_frame->GetImageSize(frameImgSize);
                 m_frame->GetImage(bufferPtr);
                 m_frame->GetHeight(bufferHeight);
                 m_frame->GetWidth(bufferWidth);
+                frameImgSize = bufferHeight*bufferWidth;
+                //m_frame->GetImageSize(frameImgSize);
 
                 if (m_data.getType() == ito::tUInt8)
                 {
@@ -1463,7 +1455,7 @@ void AVTVimbaX::dockWidgetVisibilityChanged(bool visible)
 */
 const ito::RetVal AVTVimbaX::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogAVTVimbaX(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
+    return apiShowConfigurationDialog(this, new DialogAvtVimbaX(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1555,7 +1547,7 @@ ito::RetVal AVTVimbaX::synchronizeParameters(int features)
     {
         VmbInt64_t binH, binH_max, binH_min, binH_inc;
         VmbInt64_t binV, binV_max, binV_min, binV_inc;
-        AVT::VmbAPI::FeaturePtr feature;
+        VmbCPP::FeaturePtr feature;
         if (m_camera->GetFeatureByName("horizontalBinning", feature) == VmbErrorNotFound)
         {
             m_params["binning"].setFlags(ito::ParamBase::Readonly);
@@ -1590,7 +1582,7 @@ ito::RetVal AVTVimbaX::synchronizeParameters(int features)
         retval += ret_;
     }
 
-    if ((features & fGigETransport) && m_interfaceType == VmbInterfaceEthernet)
+    if ((features & fGigETransport) && m_interfaceType == VmbTransportLayerTypeEthernet)
     {
         VmbInt64_t intVal, intMin, intMax, intInc;
         ret_ = getIntFeatureByName("StreamBytesPerSecond",intVal, intMax, intMin, intInc);

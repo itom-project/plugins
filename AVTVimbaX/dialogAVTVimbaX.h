@@ -21,15 +21,15 @@ You should have received a copy of the GNU Library General Public License
 along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGAVTVimbaX_H
-#define DIALOGAVTVimbaX_H
+#ifndef DIALOGAvtVimbaX_H
+#define DIALOGAvtVimbaX_H
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
-#include "avtEnums.h"
+#include "AvtVimbaXEnums.h"
 
-#include "ui_dialogAVTVimbaX.h"
+#include "ui_dialogAvtVimbaX.h"
 
 #include <qstring.h>
 #include <qmap.h>
@@ -40,13 +40,13 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogAVTVimbaX : public ito::AbstractAddInConfigDialog
+class DialogAvtVimbaX : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
     public:
-        DialogAVTVimbaX(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/);
-        ~DialogAVTVimbaX() {};
+        DialogAvtVimbaX(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/);
+        ~DialogAvtVimbaX() {};
 
         ito::RetVal applyParameters();
 
@@ -56,7 +56,7 @@ class DialogAVTVimbaX : public ito::AbstractAddInConfigDialog
 
         inline bool dblEq(double v1, double v2) { return qAbs(v1-v2) <= std::numeric_limits<double>::epsilon(); }
 
-        Ui::DialogAVTVimbaX ui;
+        Ui::DialogAvtVimbaX ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
