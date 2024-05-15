@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FaulhaberMCS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2024, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -839,10 +839,10 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
     if (!retValue.containsError())
     {
         // todo:
-        // start calibrating the given axes and don't forget to regularily call setAlive().
+        // start calibrating the given axes and don't forget to regularly call setAlive().
         // this is important if the calibration needs more time than the timeout time of itom (e.g.
-        // 5sec). itom regularily checks the alive flag and only drops to a timeout if setAlive() is
-        // not regularily called (at least all 3-4 secs).
+        // 5sec). itom regularly checks the alive flag and only drops to a timeout if setAlive() is
+        // not regularly called (at least all 3-4 secs).
     }
 
     if (waitCond)
@@ -1943,7 +1943,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         if (timer.hasExpired(timeoutMS)) // timeout during movement
         {
             timeout = true;
-            // timeout occured, set the status of all currently moving axes to timeout
+            // timeout occurred, set the status of all currently moving axes to timeout
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
             retVal += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
             sendStatusUpdate(true);
@@ -1952,7 +1952,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
     if (timeout)
     {
-        // timeout occured, set the status of all currently moving axes to timeout
+        // timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);
