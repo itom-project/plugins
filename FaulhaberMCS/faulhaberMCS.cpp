@@ -45,17 +45,15 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
 
     m_description = QObject::tr("FaulhaberMCS");
 
-    char docstring[] =
-        "This template can be used for implementing a new type of actuator plugin \n\
+    m_detaildescription = QObject::tr("This template can be used for implementing a new type of actuator plugin \n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
-    m_detaildescription = QObject::tr(docstring);
+Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param(
