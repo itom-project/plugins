@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2021, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -70,18 +70,18 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
 
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
     m_detaildescription = QObject::tr(
-        "This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
+"This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
 \n\
 This plugin does not have any unusual dependencies.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_license = QObject::tr("LGPL");
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_aboutThis = tr(GITVERSION);
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //-------------------------------------------------------------------------------------
@@ -259,7 +259,7 @@ ito::RetVal DataObjectArithmetic::minValue(
 
     if (dObj == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULLL").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
     if (dObj->getDims() < 2)
@@ -716,7 +716,7 @@ ito::RetVal DataObjectArithmetic::devValue(
 
     if (dObj == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULLL").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
     ito::float64 meanResult = 0.0;
@@ -861,14 +861,14 @@ ito::RetVal DataObjectArithmetic::areEqual(
     if (dObj1 == NULL)
     {
         (*paramsOut)[0].setVal<int>(0);
-        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULLL").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
     ito::DataObject* dObj2 = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
     if (dObj2 == NULL)
     {
         (*paramsOut)[0].setVal<int>(0);
-        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULLL").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
     bool typeFlag;
@@ -3218,7 +3218,7 @@ ito::RetVal DataObjectArithmetic::boundingBoxHelper(
 const QString DataObjectArithmetic::findMultiSpotsDoc = QObject::tr(
     "This method determines the sub-pixel peak position of multiple spots in an image. \n\
 \n\
-This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developped with \
+This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developed with \
 respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of 'searchStepSize'. \n\
 In every line the coarse peak position of every 1D peak is analyzed. This can be done in two different ways (depending on the \n\
 parameter 'mode' (0, 2 or 4): \n\

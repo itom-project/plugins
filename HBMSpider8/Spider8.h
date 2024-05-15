@@ -261,10 +261,10 @@ class Spider8Funcs
         ito::RetVal hbmGetNumSamples(int &status, int &numSamples);
         ito::RetVal hbmReadData(QSharedPointer<char> data, QSharedPointer<int> dataSize, const int numValues);
         ito::RetVal hbmReadNScale(const int numChs, const int samples, double *iscales, double *voffsets, double *vscales, ito::DataObject *dataObj);
-        inline ito::RetVal scaleValues(const ito::uint16 *dInPtr, ito::DataObject *dOut, const int numSamples, const int numChs, double *scales)
+        inline ito::RetVal scaleValues(const ito::uint16 *dInPtr, ito::DataObject *dObjOut, const int numSamples, const int numChs, double *scales)
         {
             ito::RetVal retValue(ito::retOk);
-            double *doPtr = (double*)dOut->rowPtr(0, 0);
+            double *doPtr = (double*)dObjOut->rowPtr(0, 0);
 
             #if (USEOMP)
             #pragma omp parallel num_threads(NTHREADS)

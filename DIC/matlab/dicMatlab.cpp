@@ -24,9 +24,9 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "dicInterpolation.hu"
 
 #ifdef USECUDA
-	bool hasCuda = 1;
+    bool hasCuda = 1;
 #else
-	bool hasCuda = 0;
+    bool hasCuda = 0;
 #endif
 int NTHREADS = -1;
 
@@ -124,7 +124,7 @@ extern "C" DLLEXPORT int interpolateBiCu(const float *data, const int sizeX, con
         return -1;
 
     // force bicubic interpolation
-	int nflags = (flags & ~112) + 16;
+    int nflags = (flags & ~112) + 16;
 
     // checking for cuda
     if (nflags & 256)

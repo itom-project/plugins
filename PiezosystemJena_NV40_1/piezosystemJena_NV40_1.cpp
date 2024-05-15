@@ -37,14 +37,14 @@ It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).";
 This system needs a serial port. The parameters are set automatically during initialization.\n\
 It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
 
-    m_author = "V. Ferreras-Paz, M. Gronle, W. Lyda, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communication parameters will be set by this piezo-controller).").toLatin1().data());
     m_initParamsMand.append(paramVal);
 }
 
@@ -80,7 +80,7 @@ const ito::RetVal PiezosystemJena_NV40_1::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PiezosystemJena_NV40_1::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PiezosystemJena_NV40_1::init. The widget window is created at this position.
 */
 PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
     AddInActuator(),
@@ -92,7 +92,7 @@ PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PiezosystemJena", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numAxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("number of axes (here always 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -123,12 +123,12 @@ PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -172,14 +172,14 @@ ito::RetVal PiezosystemJena_NV40_1::getParam(QSharedPointer<ito::Param> val, Ito
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, PiezosystemJena_NV40_1::PISwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -388,7 +388,7 @@ ito::RetVal PiezosystemJena_NV40_1::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -401,7 +401,7 @@ ito::RetVal PiezosystemJena_NV40_1::calib(const int axis, ItomSharedSemaphore *w
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -422,7 +422,7 @@ ito::RetVal PiezosystemJena_NV40_1::calib(const QVector<int> /*axis*/, ItomShare
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of a single axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of a single axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -435,7 +435,7 @@ ito::RetVal PiezosystemJena_NV40_1::setOrigin(const int axis, ItomSharedSemaphor
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of various axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of various axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector with numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -479,7 +479,7 @@ ito::RetVal PiezosystemJena_NV40_1::getStatus(QSharedPointer<QVector<int> > stat
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -521,7 +521,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -558,7 +558,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const QVector<int> axis, QSharedPoint
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -573,7 +573,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const int axis, const double pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -607,7 +607,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const QVector<int> axis, QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -622,7 +622,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosRel(const int axis, const double pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PiezosystemJena_NV40_1::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -656,7 +656,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosRel(const QVector<int> axis, QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -839,8 +839,8 @@ ito::RetVal PiezosystemJena_NV40_1::waitForDone(const int timeoutMS, const QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa setPos
     \return retOk

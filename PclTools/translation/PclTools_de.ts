@@ -506,7 +506,7 @@
         <location line="+43"/>
         <location line="+42"/>
         <location line="+43"/>
-        <source>maximum divergence between (normal-)axis and model oriantation in radiant</source>
+        <source>maximum divergence between (normal-)axis and model orientation in radiant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -670,7 +670,7 @@
     <message>
         <location line="-42"/>
         <location line="+43"/>
-        <source>resulting oriantation vector</source>
+        <source>resulting orientation vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

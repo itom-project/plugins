@@ -751,7 +751,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
     </message>
     <message>
         <location line="+3"/>
-        <source>Error occured and acquisition has been stoped or didn&apos;t start</source>
+        <source>Error occurred and acquisition has been stoped or didn&apos;t start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

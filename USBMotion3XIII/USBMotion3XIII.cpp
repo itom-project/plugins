@@ -1,8 +1,8 @@
 /* *******************************************************************
     Plugin "USBMotion3XIII" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -123,11 +123,11 @@ provided by COPTONIX). \n\
 If you change any parameters like speed or acceleration, set the values and then read the values again, since the currently set values \
 might slightly differ from the desired values due to rounding uncertainties.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadAlways;
@@ -361,7 +361,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     Q_FLAGS(MaskFlag MaskFlags);
     Q_FLAGS(MCStatusMask MCStatusMasks);
 
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the program to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
 
@@ -420,7 +420,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
     if (hasGuiSupport())
     {
-        // // This is for the docking widged
+        // // This is for the docking widget
         // //now create dock widget for this plugin
         USBMotion3XIIIWid = new DockWidgetUSBMotion3XIII(this);    // Create a new non-modal dialog
 
@@ -765,9 +765,8 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 retValue += errorCheck(setmode(1, 0x00, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
 
-                //iprom: ich habe jetzt switchSettings1..switchSettings3 als Parameter angelegt.
-                //Damit laesst sich jederzeit die Settings-Einstellungen aendern. Brauchen wir
-                //dann die init-Parameter hier ueberhaupt noch?
+                //iprom: I have now created switchSettings1 to switchSettings3 as parameters.
+                // This allows changing the settings at any time. Do we still need the init parameters here?
                 // %% setswitchsettings for all axis
                 // calculate Settings
                 int Switches = paramsOpt->value(6).getVal<int>();

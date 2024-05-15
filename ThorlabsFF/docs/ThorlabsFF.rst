@@ -59,7 +59,7 @@ Install the Thorlabs Kinesis software and USB Drivers.
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
 

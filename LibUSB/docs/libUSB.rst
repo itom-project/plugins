@@ -100,6 +100,7 @@ In this case you have to compile LibUSB by yourself using your version of Visual
 
 5. Set the CMake variable **LibUSB_DIR** to this new folder or define a windows environment variable **LIBUSB_ROOT**.
 
+
 Changelog
 =========
 

@@ -305,7 +305,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
     <name>SuperlumBLInterface</name>
     <message>
         <location line="-641"/>
-        <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
+        <source>An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

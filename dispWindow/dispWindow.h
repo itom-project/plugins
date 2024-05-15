@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -94,7 +94,7 @@ public slots:
     ito::RetVal getVal(void* data, ItomSharedSemaphore* waitCond);
     ito::RetVal setVal(const void* data, ItomSharedSemaphore* waitCond);
     void numberOfImagesChanged(
-        int numImg, int numGray, int numCos); /** Slot to archieve data from the child-GL-window*/
+        int numImg, int numGray, int numCos); /** Slot to achieve data from the child-GL-window*/
 
     ito::RetVal execFunc(
         const QString funcName,

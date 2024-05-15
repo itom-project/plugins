@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PcoPixelFly" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -50,7 +50,7 @@ void DialogPCOPixelFly::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
-	ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
     ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
     ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 

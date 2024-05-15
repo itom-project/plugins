@@ -251,19 +251,19 @@ class hbmMeasureSeries(ItomUi):
                 self.gui.plot["yAxisInterval"] = self.axisScaleLive
                 #self.gui.leAverage["text"] = "{0:.5g}".format(np.sum(self.liveData) / self.liveData.size(1))
                 if self.liveData.size(0) >= 1:
-                    self.gui.leLastValue4["text"] = "{0:.5g}".format(np.sum(self.liveData[0,:]) / self.liveData.size(1) * self.scales[self.channels[0] - 4])
+                    self.gui.leLastValue4["text"] = f"{np.sum(self.liveData[0,:]) / self.liveData.size(1) * self.scales[self.channels[0] - 4]:.5g}"
                 else:
                     self.gui.leLastValue4["text"] =  ""
                 if self.liveData.size(0) >= 2:
-                    self.gui.leLastValue5["text"] = "{0:.5g}".format(np.sum(self.liveData[1,:]) / self.liveData.size(1) * self.scales[self.channels[1] - 4])
+                    self.gui.leLastValue5["text"] = f"{np.sum(self.liveData[1,:]) / self.liveData.size(1) * self.scales[self.channels[1] - 4]:.5g}"
                 else:
                     self.gui.leLastValue5["text"] =  ""
                 if self.liveData.size(0) >= 3:
-                    self.gui.leLastValue6["text"] = "{0:.5g}".format(np.sum(self.liveData[2,:]) / self.liveData.size(1) * self.scales[self.channels[2] - 4])
+                    self.gui.leLastValue6["text"] = f"{np.sum(self.liveData[2,:]) / self.liveData.size(1) * self.scales[self.channels[2] - 4]:.5g}"
                 else:
                     self.gui.leLastValue6["text"] = ""
                 if self.liveData.size(0) >= 4:
-                    self.gui.leLastValue7["text"] = "{0:.5g}".format(np.sum(self.liveData[3,:]) / self.liveData.size(1) * self.scales[self.channels[3] - 4])
+                    self.gui.leLastValue7["text"] = f"{np.sum(self.liveData[3,:]) / self.liveData.size(1) * self.scales[self.channels[3] - 4]:.5g}"
                 else:
                     self.gui.leLastValue7["text"] =  ""
             except:
@@ -351,7 +351,7 @@ class hbmMeasureSeries(ItomUi):
             if self.hbm != None:
                 self.hbm.setParam("numSamples", self.samples)
                 self.gui.leStatus["text"] = self.hbm.getParam("status")
-            self.gui.leMeasTime["text"] = "{0:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
+            self.gui.leMeasTime["text"] = "{:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
 
     @ItomUi.autoslot("")
     def on_pbReInit_pressed(self):
@@ -437,7 +437,7 @@ class hbmMeasureSeries(ItomUi):
                 if(len(dataTmp.keys()) != 2):
                     raise
                 else:
-                    print("File loaded successfuly\n", filename)
+                    print("File loaded successfully\n", filename)
                     try:
                         self.resultDic = dataTmp['dic']
                         self.resultObj = dataTmp['obj']
@@ -484,7 +484,7 @@ class hbmMeasureSeries(ItomUi):
             if (not filename[-4:] == ".idc"):
                 filename += ".idc"
             saveIDC(filename, dataTmp)
-            print("File saved successfuly\n", filename)
+            print("File saved successfully\n", filename)
         except:
             pass
 
@@ -507,19 +507,19 @@ class hbmMeasureSeries(ItomUi):
                 self.resultObj[nc + 1, self.numMeas] = np.sum(tmpObj[nc, :] / self.samples * self.scales[self.channels[nc] - 4])
 
             if tmpObj.size(0) >= 1:
-                self.gui.leLastValue4["text"] = "{0:.5g}".format(self.resultObj[1, self.numMeas])
+                self.gui.leLastValue4["text"] = f"{self.resultObj[1, self.numMeas]:.5g}"
             else:
                 self.gui.leLastValue4["text"] =  ""
             if tmpObj.size(0) >= 2:
-                self.gui.leLastValue5["text"] = "{0:.5g}".format(self.resultObj[2, self.numMeas])
+                self.gui.leLastValue5["text"] = f"{self.resultObj[2, self.numMeas]:.5g}"
             else:
                 self.gui.leLastValue5["text"] =  ""
             if tmpObj.size(0) >= 3:
-                self.gui.leLastValue6["text"] = "{0:.5g}".format(self.resultObj[3, self.numMeas])
+                self.gui.leLastValue6["text"] = f"{self.resultObj[3, self.numMeas]:.5g}"
             else:
                 self.gui.leLastValue6["text"] = ""
             if tmpObj.size(0) >= 4:
-                self.gui.leLastValue7["text"] = "{0:.5g}".format(self.resultObj[4, self.numMeas])
+                self.gui.leLastValue7["text"] = f"{self.resultObj[4, self.numMeas]:.5g}"
             else:
                 self.gui.leLastValue7["text"] =  ""
             self.plotAutoScale()

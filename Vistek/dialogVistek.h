@@ -1,7 +1,7 @@
 /* ********************************************************************
 Plugin "Vistek" for itom software
 URL: https://github.com/itom-project/plugins
-Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
+Copyright (C) 2017, Institut für Technische Optik, Universität Stuttgart
 
 This file is part of a plugin for the measurement software itom.
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "PCLTools" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2023, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -66,8 +66,8 @@ template<typename Point> ito::RetVal pclFitTrimmedBSplineHelper(const pcl::Point
         unsigned int iterations = paramsOpt->at(3).getVal<int>();
         unsigned int mesh_resolution = paramsOpt->at(4).getVal<int>();
         QByteArray filename = paramsOpt->at(5).getVal<char*>();
-        const double *surfaceFitParams = paramsOpt->at(6).getVal<double*>(); //always 4 elements due to meta contraints
-        const double *curveFitParams = paramsOpt->at(7).getVal<double*>(); //always 4 elements due to meta contraints
+        const double *surfaceFitParams = paramsOpt->at(6).getVal<double*>(); //always 4 elements due to meta constraints
+        const double *curveFitParams = paramsOpt->at(7).getVal<double*>(); //always 4 elements due to meta constraints
 
         pcl::on_nurbs::NurbsDataSurface data;
         pclPointCloud2Vector3d(cloud, data.interior);

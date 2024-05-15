@@ -197,7 +197,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> shows if the auto power range is wether on (1) or off(2) </source>
+        <source> shows if the auto power range is whether on (1) or off(2) </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

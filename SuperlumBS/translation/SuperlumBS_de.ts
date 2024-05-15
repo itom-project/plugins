@@ -867,7 +867,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
     <name>SuperlumBSInterface</name>
     <message>
         <location line="-1258"/>
-        <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
+        <source>An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

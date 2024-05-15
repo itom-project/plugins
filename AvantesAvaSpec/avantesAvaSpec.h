@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -52,7 +52,7 @@ class AvantesAvaSpec : public ito::AddInGrabber
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-        //        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+        //        ito::RetVal checkData(void);    /*!< Check if object has to be reallocated */
 
     private:
         ito::RetVal sendCommand(const char* cmd, int cmd_size, unsigned char* buf, int &buf_size);

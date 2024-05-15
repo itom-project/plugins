@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -67,7 +67,7 @@ ito::RetVal DispWindowInterface::closeThisInst(ito::AddInBase** addInInst)
 /** addIn interface constructor
  *
  *    The DispWindow plugin provides a window for displaying cosine fringes and graycode images. The
- * window is topmost, frameless and uses openGL for the actual painting. The avaiable parameters
+ * window is topmost, frameless and uses openGL for the actual painting. The available parameters
  * are:
  *        - x0, y0: window position
  *        - xsize, ysize: window size
@@ -98,7 +98,7 @@ DispWindowInterface::DispWindowInterface()
     m_description = tr("Window for SLM/LCD-Applications");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
+"This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
 various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
 \n\
 For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake \
@@ -106,12 +106,12 @@ to the corresponding folder. The necessary library will finally be copied to the
 environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that \
 require this library.");
 
-    m_author = "C. Kohler, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("LGPL");
-    m_aboutThis = tr(GITVERSION);
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     paramVal = ito::Param(
         "x0", ito::ParamBase::Int, -4096, 4096, 0, tr("x0 position of window").toLatin1().data());
@@ -212,7 +212,7 @@ DispWindow::DispWindow() : m_pWindow(nullptr)
     }
 
     qRegisterMetaType<QMap<QString, ito::Param>>(
-        "QMap<QString, ito::Param>"); // To enable the programm to transmit parameters via signals -
+        "QMap<QString, ito::Param>"); // To enable the program to transmit parameters via signals -
                                       // slot connections
     qRegisterMetaType<QVector<unsigned char>>("QVector<unsigned char>&");
 
@@ -741,7 +741,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             retValue += locker.getSemaphore()->returnValue;
 
             m_params["numgraybits"].setVal<int>(
-                m_pWindow->getNumGrayImages()); // set dependend parameter
+                m_pWindow->getNumGrayImages()); // set dependent parameter
             static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())
                 ->setMax(m_pWindow->getNumImages() - 1);
 
@@ -784,7 +784,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             retValue += locker.getSemaphore()->returnValue;
 
             m_params["numgraybits"].setVal<int>(
-                m_pWindow->getNumGrayImages()); // set dependend parameter
+                m_pWindow->getNumGrayImages()); // set dependent parameter
             static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())
                 ->setMax(m_pWindow->getNumImages() - 1);
 
@@ -808,7 +808,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             retValue += locker.getSemaphore()->returnValue;
 
             m_params["numgraybits"].setVal<int>(
-                m_pWindow->getNumGrayImages()); // set dependend parameter
+                m_pWindow->getNumGrayImages()); // set dependent parameter
             static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())
                 ->setMax(m_pWindow->getNumImages() - 1);
 

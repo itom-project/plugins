@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -271,7 +271,7 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         if (!retVal.containsError())
         {
             //try to set different color modes in order to check if they are supported
-            //crosscheck if intented color mode lies in range of supported bit depths of the sensor if get_supported_sensor_bid_depths is supported
+            //crosscheck if intended color mode lies in range of supported bit depths of the sensor if get_supported_sensor_bid_depths is supported
             UINT bitDepths = 0;
             is_DeviceFeature(m_camera, IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_SENSOR_BIT_DEPTHS, (void*)&bitDepths, sizeof(bitDepths));
 
@@ -981,12 +981,12 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the IDSuEye, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the IDSuEye, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal IDSuEye::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1079,7 +1079,7 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue += checkError(is_CaptureVideo(m_camera,IS_DONT_WAIT), "captureVideo"); //start image acquisiton
+        retValue += checkError(is_CaptureVideo(m_camera,IS_DONT_WAIT), "captureVideo"); //start image acquisition
 
         UINT events[] = { IS_SET_EVENT_SEQ };
         UINT timeoutMs = static_cast<UINT>(m_params["timeout"].getVal<double>() * 1000.0 * (double)m_NumberOfBuffers);

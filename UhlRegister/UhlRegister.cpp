@@ -103,18 +103,19 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage. \n\
 \n\
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH & Co. KG");
-    m_author = "W. Lyda, H. Bieger, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("LGPL");
-    m_aboutThis = tr(GITVERSION);
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-    paramVal = ito::Param("calibration", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("1 -> calibration during initilization").toLatin1().data());
+    paramVal = ito::Param("calibration", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("1 -> calibration during initialization").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("inversex", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("Invert axis direction for x").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -456,7 +457,7 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
         }
     }
 
-    //set all moving axis to status "moving", any ref or end switch flag is resetted
+    //set all moving axis to status "moving", any ref or end switch flag is reset
     setStatus(_axis, ito::actuatorMoving, ito::actStatusMask);
 
     while (!done && !timeout)
@@ -466,7 +467,7 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
         if (strlen(buf) != 0)
         {
             bufcnt = (unsigned long)strlen(buf);
-            if (bufcnt == 5) // Okay, five charakters + 0
+            if (bufcnt == 5) // Okay, five characters + 0
             {
                 for (axiscnt = 0; axiscnt < _axis.size(); axiscnt++)
                 {
@@ -475,7 +476,7 @@ ito::RetVal UhlRegister::waitForDone(const int timeoutMS, const QVector<int> axi
                     {
                         replaceStatus(m_currentStatus[_axis[axiscnt]], ito::actuatorMoving, ito::actuatorAtTarget);
                     }
-                    else // Okay wrong charakter (not @). Axis movement failed for this axis.
+                    else // Okay wrong character (not @). Axis movement failed for this axis.
                     {
                         (void)UhlReadRegL(XABSPOS + READ + _axis.value(axiscnt), &pos);
                         Sleep(UHLDELAY);
@@ -641,8 +642,8 @@ UhlRegister::UhlRegister() : AddInActuator(), m_spitchx(0), m_resolution(0), m_p
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 20.0, tr("timeout for axes movements in seconds").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 20.0, tr("timeout for axes movements in seconds").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
@@ -663,7 +664,7 @@ UhlRegister::~UhlRegister()
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -708,7 +709,7 @@ ito::RetVal UhlRegister::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -1111,7 +1112,7 @@ ito::RetVal UhlRegister::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         goto end;
     }
 
-    // really usefull???
+    // really useful???
     retval += UhlWriteRegB(COMMAND, GORELEXTCLK);
     if (retval.containsError())
     {
@@ -1374,13 +1375,13 @@ ito::RetVal UhlRegister::calib(QVector<int> axis, ItomSharedSemaphore *waitCond)
                         retval = UhlStatus();
                     }
                 }
-                // Write back absolut positions of other axis
+                // Write back absolute positions of other axis
                 for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++)
                 {
                     (void)UhlWriteRegL(XABSPOS + axis_cnt, positions[axis_cnt]);
                 }
 
-                // Set absolutposition und target register of calibrated axis to zero
+                // Set absolute position und target register of calibrated axis to zero
                 Sleep(UHLDELAY);
                 for (axis_cnt = 0; axis_cnt < m_numAxis; axis_cnt++)
                 {
@@ -1566,7 +1567,7 @@ const ito::RetVal UhlRegister::UhlSetPos(QVector<int> axis, QVector<double> pos,
     ito::RetVal retval = ito::retOk;
     long mask_move = 0;
     bool released = false;
-	int timeoutMS = m_params["timeout"].getVal<ito::float64>() * 1000;
+    int timeoutMS = m_params["timeout"].getVal<ito::float64>() * 1000;
 
     if (isMotorMoving())
     {
@@ -1621,7 +1622,7 @@ const ito::RetVal UhlRegister::UhlSetPos(QVector<int> axis, QVector<double> pos,
             waitCond->release();
             released = true;
         }
-		retval += waitForDone(timeoutMS, axis);
+        retval += waitForDone(timeoutMS, axis);
 
         if (!m_async && waitCond && !released)
         {

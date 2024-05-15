@@ -1,8 +1,8 @@
 /*# ********************************************************************
     Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -51,7 +51,7 @@ QuantumComposerInterface::QuantumComposerInterface()
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = "";
     m_detaildescription = QObject::tr(
-        "QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
+"QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
 \n\
 This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin \n\
 which is a mandatory input argument of the QuantumComposer plugin. \n\
@@ -73,9 +73,9 @@ endline    \\r\\n\n\
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal(
@@ -232,7 +232,7 @@ QuantumComposer::QuantumComposer() :
         "gateMode",
         ito::ParamBase::String,
         "",
-        tr("Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: "
+        tr("Global gate mode of the system output. (DIS: disabled, PULS: pulse inhibit, OUTP: "
            "output inhibit, CHAN: channel)."
            "cycle).")
             .toLatin1()
@@ -391,7 +391,7 @@ QuantumComposer::QuantumComposer() :
         8,
         states,
         new ito::IntArrayMeta(0, 1, 1, 1, 8, 1, "Channel parameter"),
-        tr("List of states to enalbe/disable channels listed in the parameter channelIndexList. "
+        tr("List of states to enable/disable channels listed in the parameter channelIndexList. "
            "List must have the same length as the parameter channelIndexList.")
             .toLatin1()
             .data());
@@ -891,7 +891,7 @@ ito::RetVal QuantumComposer::init(
         retValue += ito::RetVal(
             ito::retError,
             1,
-            tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!")
+            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!")
                 .toLatin1()
                 .data());
     }

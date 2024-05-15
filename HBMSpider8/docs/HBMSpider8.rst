@@ -32,8 +32,8 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: HBMSpider8
-		**SerialIO**: ito::ParamBase::HWRef
-			An open serial port on which the HBM Spider 8 is connected
+        **SerialIO**: ito::ParamBase::HWRef
+            An open serial port on which the HBM Spider 8 is connected
 
 Parameters
 ===========
@@ -46,68 +46,75 @@ An instance of this plugin has the following parameters:
     *Value range: [101, 404], Default: 101*
 
 **name**: string
-	Returns the plugin name
+    Returns the plugin name
 
 **channelList**: string
-	Returns a list with the available channels, readonly
+    Returns a list with the available channels, readonly
 
 **actChannelList**: string
-	Returns a list with the currently active channels, readonly
+    Returns a list with the currently active channels, readonly
 
 **samplingRate**: double
-	Sampling rate used for measurements (all channels)
+    Sampling rate used for measurements (all channels)
 
-	*Value range: [1.0, 9600.0], Default: 1200.0*
+    *Value range: [1.0, 9600.0], Default: 1200.0*
 
 **trigger**: string
-	trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, level: -32769 ... 32767
+    trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, level: -32769 ... 32767
 
 **bufferManagement**: int
-	0: clear data on second read out, 1: clear data on first read out
+    0: clear data on second read out, 1: clear data on first read out
 
-	*Value range: [0, 1], Default: 1*
+    *Value range: [0, 1], Default: 1*
 
 **numSamples**: int
-	Number of samples for a single measurement. Defines in combination with the parameter *samplingRate* the measurement time
+    Number of samples for a single measurement. Defines in combination with the parameter *samplingRate* the measurement time
 
-	*Value range: [1, 2000000000], Default: 1200*
+    *Value range: [1, 2000000000], Default: 1200*
 
 **preTrgSamples**: int
-	number of samples recorded before trigger is active
+    number of samples recorded before trigger is active
 
-	*Value range: [1, 500], Default: 1*
+    *Value range: [1, 500], Default: 1*
 
 **numCycles**: int
-	number of measurement cycles of numSamples
+    number of measurement cycles of numSamples
 
-	*Value range: [0, 2000000000], Default: 0*
+    *Value range: [0, 2000000000], Default: 0*
 
 **reset**: string
-	resets the error state of the HBM, readonly
+    resets the error state of the HBM, readonly
 
 **statusStr**: string
-	read out status string, readonly
+    read out status string, readonly
 
 **status**: int
-	read current status
-	0 no valid measured values available
-	1 Spider8 is in a waiting phase, i.e. transients caused by switching to a different measuring range have not yet decayed.
-	2 the pre-trigger buffer is being filled
-	3 the pre-trigger buffer is full; waiting for trigger event
-	4 the post-trigger buffer is being filled
-	5 the acquisition terminated with error
-	6 the acquisition terminated without error
+    read current status
+    0 no valid measured values available
+    1 Spider8 is in a waiting phase, i.e. transients caused by switching to a different measuring range have not yet decayed.
+    2 the pre-trigger buffer is being filled
+    3 the pre-trigger buffer is full; waiting for trigger event
+    4 the post-trigger buffer is being filled
+    5 the acquisition terminated with error
+    6 the acquisition terminated without error
 
-	*value range: [0, 6], Default: 6*
+    *value range: [0, 6], Default: 6*
 
 **offsets**: double vector
-	can be used to apply an offset to values after measurement, thus converting the valus from ADUs to a physical meaningful value
-	in combination with the scale values. Offset is first.
+    can be used to apply an offset to values after measurement, thus converting the values from ADUs to a physical meaningful value
+    in combination with the scale values. Offset is first.
 
-	*Value range: [-inf, inf], Default: 0.0*
+    *Value range: [-inf, inf], Default: 0.0*
 
 **scales**: double vector
-	can be used to apply a scale to values after measurement, thus converting the valus from ADUs to a physical meaningful value
-	in combination with the offsets values. Offset is first.
+    can be used to apply a scale to values after measurement, thus converting the values from ADUs to a physical meaningful value
+    in combination with the offsets values. Offset is first.
 
-	*Value range: [-inf, inf], Default: 1.0*
+    *Value range: [-inf, inf], Default: 1.0*
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release
+    *Value range: [-inf, inf], Default: 1.0*

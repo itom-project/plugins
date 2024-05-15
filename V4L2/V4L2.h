@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "V4L2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -49,7 +49,7 @@ class V4L2 : public ito::AddInGrabber //, public V4L2Interface
         ~V4L2();
         //! Constructor
         V4L2();
- //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if objekt has to be reallocated */
+ //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if object has to be reallocated */
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
 
@@ -74,13 +74,13 @@ class V4L2 : public ito::AddInGrabber //, public V4L2Interface
 
         int m_colorMode;
 
-        cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
+        cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve data, this image is already filled after acquire command */
 
         cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
         unsigned char *m_frame;
 
-        ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
+        ito::RetVal checkCameraAbilities(); /*!< Function to check and set available data types */
 
         enum tColorMode
         {
@@ -92,7 +92,7 @@ class V4L2 : public ito::AddInGrabber //, public V4L2Interface
             modeGray
         };
 
-        ito::RetVal fill_m_params(); /*!< Funktion to fill m_param with the camera controls*/
+        ito::RetVal fill_m_params(); /*!< Function to fill m_param with the camera controls*/
         ito::RetVal updateCamParam(QString &name, const ito::ParamBase &paramInt);
         ito::RetVal synchronizeCameraParametersToParams(bool deleteIfNotAvailable = false);
 

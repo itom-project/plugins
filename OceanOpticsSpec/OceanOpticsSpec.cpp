@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OceanOpticsSpec" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2020, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2020, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -121,13 +121,13 @@ Others most likely won't work properly yet.\n\
 Tested with: \
 \
 * OceanOptics STS-UV (25 um slit)");
-    m_author = "J. Drozella, ITO, University Stuttgart";
-    m_license = QObject::tr("LGPL");
-    m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer        = MINVERSION;
-    m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION);
 
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 
@@ -390,7 +390,7 @@ ito::RetVal OceanOpticsSpec::close(ItomSharedSemaphore *waitCond)
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -439,7 +439,7 @@ ito::RetVal OceanOpticsSpec::getParam(QSharedPointer<ito::Param> val, ItomShared
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -561,7 +561,7 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
             return retValue;
         }
 
-        /* set in aquire()
+        /* set in acquire()
         // average
         // cmd: 0x001 200 10
         a_len = 64;
@@ -580,7 +580,7 @@ ito::RetVal OceanOpticsSpec::startDevice(ItomSharedSemaphore *waitCond)
         // roi
         // cmd: 0x001 020 10 [set partial spectrum mode], no response
         // immediate:0x02 00 SS SS II II CC CC [band mode: Start, Interval, Count, 16b LSB]
-        //if (roi[0] != 0 || roi[2] != MAX_NR_PIXELS) { // roi always needs to be set for aquire() to work
+        //if (roi[0] != 0 || roi[2] != MAX_NR_PIXELS) { // roi always needs to be set for acquire() to work
 
             a_len = 64;
             *(uint32*)cmd = 0x00102010;// (uint32)0x10201000;
@@ -780,14 +780,14 @@ ito::RetVal OceanOpticsSpec::acquire(const int trigger, ItomSharedSemaphore *wai
 
 
                     if (average == 1) { //slower to do this within the loop
-                        for (int teller = 0; teller < payloadlength/*(xsize - m_numberDeadPixels)*/; ++teller) /*STS return length varies, doesnt return for dead ones(?)(worst case: returns 0 for last pixel (checksum)) */
+                        for (int teller = 0; teller < payloadlength/*(xsize - m_numberDeadPixels)*/; ++teller) /*STS return length varies, doesn't return for dead ones(?)(worst case: returns 0 for last pixel (checksum)) */
                         {
                             //vals[teller] = *(uint16*)&(singleMeasdata.header[byteoffset + 2*teller]);//swap16(singleMeasdata.pixels[teller + m_numberDeadPixels]);
                             vals16[teller] = singleMeasdata.pixels[teller];
                         }
                     }
                     else {
-                        for (int teller = 0; teller < payloadlength/*(xsize - m_numberDeadPixels)*/; ++teller) /*STS return length varies, doesnt return for dead ones(?)(worst case: returns 0 for last pixel (checksum)) */
+                        for (int teller = 0; teller < payloadlength/*(xsize - m_numberDeadPixels)*/; ++teller) /*STS return length varies, doesn't return for dead ones(?)(worst case: returns 0 for last pixel (checksum)) */
                         {
                             vals32[teller] += (ito::float32)singleMeasdata.pixels[teller] / (ito::float32)average;
                         }
@@ -985,7 +985,7 @@ void OceanOpticsSpec::updateParameters(QMap<QString, ito::ParamBase> params)
 }
 
 
-// Buid header [header data] + [message type] (swapped) + [immediate-data-ptr] + command/query
+// Build header [header data] + [message type] (swapped) + [immediate-data-ptr] + command/query
 // returns header including footer.
 ito::RetVal OceanOpticsSpec::buildheader(char **headout, OcHeader *headin, unsigned char* cmd, int cmd_len, char *data /*=nullptr*/, int dlen /*=-1*/, bool command  /*=true command or query*/)
 {
@@ -1225,7 +1225,7 @@ ito::RetVal OceanOpticsSpec::checkAnswerForError(unsigned char* buf, const unsig
             retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: too many buses try to access", prefix, buf[6]);
             break;
         case 0x000B:
-            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: out of memory (cant allocate)", prefix, buf[6]);
+            retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: out of memory (can't allocate)", prefix, buf[6]);
             break;
         case 0x000C:
             retVal += ito::RetVal::format(warningNotError ? ito::retWarning : ito::retError, buf[6], "%serror %i: valid command, but desired information not existing", prefix, buf[6]);

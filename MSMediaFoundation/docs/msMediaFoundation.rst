@@ -18,7 +18,7 @@ Overview
 
 This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras).
 
-This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next
+This driver detects an internal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next
 not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped
 to the gray output.
 
@@ -36,7 +36,7 @@ higher). Each connected camera is accessible by an auto-increment camera number,
 * "color" forces the camera to be opened in a color mode
 * "red", "green", "blue" only uses the desired channel, stored in a 8bit grayscale image
 
-Usually cameras can deliver data in different formats (image size and data format). The desired media type can be choosen using the initialization parameter *mediaTypeID*.
+Usually cameras can deliver data in different formats (image size and data format). The desired media type can be chosen using the initialization parameter *mediaTypeID*.
 Once the *mediaTypeID* is set to -1 at initialization, a list of all available media types is printed and the initialization aborts afterwards with a warning.
 Currently, only cameras with the media type *RGB24* or *YUY2* are supported.
 
@@ -217,3 +217,8 @@ Affiliation
 ============
 
 This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License).
+
+Changelog
+==========
+
+* itom setup 1.3.0: Release

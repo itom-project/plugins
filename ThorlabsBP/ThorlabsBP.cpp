@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ThorlabsBP" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -99,11 +99,11 @@ This plugin has been tested with the Benchtop Piezo with 1 and 3 channels. \n\
 \n\
 The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected. Else the values are always in volts.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
@@ -112,12 +112,12 @@ The position values are always in mm if the corresponding axis is in closed-loop
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class ThorlabsBPInterface with the name ThorlabsBPInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class ThorlabsBPInterface with the name ThorlabsBPInterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsBP::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the ThorlabsBP::init. The widget window is created at this position.
 */
 ThorlabsBP::ThorlabsBP() :
     AddInActuator(),
@@ -139,7 +139,7 @@ ThorlabsBP::ThorlabsBP() :
     m_params.insert("maximumTravelRange", ito::Param("maximumTravelRange", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.").toLatin1().data()));
     m_params.insert("maximumVoltage", ito::Param("maximumVoltage", ito::ParamBase::IntArray, NULL, tr("Maximum output voltage (75, 100 or 150 V).").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
@@ -198,21 +198,21 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
         if (serial == "")
         {
-			bool found = false;
-			for (int i = 0; i < serialNumbers.size(); ++i)
-			{
-				if (!openedDevices.contains(serialNumbers[i]))
-				{
-					serial = serialNumbers[i];
-					found = true;
-					break;
-				}
-			}
+            bool found = false;
+            for (int i = 0; i < serialNumbers.size(); ++i)
+            {
+                if (!openedDevices.contains(serialNumbers[i]))
+                {
+                    serial = serialNumbers[i];
+                    found = true;
+                    break;
+                }
+            }
 
-			if (!found)
-			{
-				retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
-			}
+            if (!found)
+            {
+                retval += ito::RetVal(ito::retError, 0, "no free Thorlabs devices found.");
+            }
         }
         else
         {
@@ -264,7 +264,7 @@ ito::RetVal ThorlabsBP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
             if (!retval.containsError())
             {
                 m_opened = true;
-				openedDevices.append(m_serialNo);
+                openedDevices.append(m_serialNo);
             }
         }
         else
@@ -451,7 +451,7 @@ ito::RetVal ThorlabsBP::close(ItomSharedSemaphore *waitCond)
 
         PBC_Close(m_serialNo); //Kinesis 1.6.0 and Kinesis 1.7.0 crash in this line! bug. todo.
         m_opened = false;
-		openedDevices.removeOne(m_serialNo);
+        openedDevices.removeOne(m_serialNo);
     }
 
 
@@ -466,12 +466,12 @@ ito::RetVal ThorlabsBP::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -508,14 +508,14 @@ ito::RetVal ThorlabsBP::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsBP::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -587,7 +587,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
             else
             {
-                const int *values = val->getVal<int*>(); //are alway m_numChannels values due to meta information
+                const int *values = val->getVal<int*>(); //are always m_numChannels values due to meta information
                 for (int i = 0; i < m_numChannels; ++i)
                 {
                     if (values[i])
@@ -638,7 +638,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
             else
             {
-                const int *values = val->getVal<int*>(); //are alway m_numChannels values due to meta information
+                const int *values = val->getVal<int*>(); //are always m_numChannels values due to meta information
                 for (int i = 0; i < m_numChannels; ++i)
                 {
                     if (m_params["hasFeedback"].getVal<int*>()[i])
@@ -702,7 +702,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
             else
             {
-                int *values = val->getVal<int*>(); //are alway m_numChannels values due to meta information
+                int *values = val->getVal<int*>(); //are always m_numChannels values due to meta information
                 for (int i = 0; i < m_numChannels; ++i)
                 {
                     if (values[i] == 125)
@@ -766,7 +766,7 @@ ito::RetVal ThorlabsBP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -779,7 +779,7 @@ ito::RetVal ThorlabsBP::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -964,7 +964,7 @@ ito::RetVal ThorlabsBP::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -988,7 +988,7 @@ ito::RetVal ThorlabsBP::getPos(const int axis, QSharedPointer<double> pos, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -1043,7 +1043,7 @@ ito::RetVal ThorlabsBP::getPos(const QVector<int> axis, QSharedPointer<QVector<d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -1060,7 +1060,7 @@ ito::RetVal ThorlabsBP::setPosAbs(const int axis, const double pos, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -1199,7 +1199,7 @@ ito::RetVal ThorlabsBP::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -1227,7 +1227,7 @@ ito::RetVal ThorlabsBP::setPosRel(const int axis, const double pos, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls ThorlabsBP::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -1370,8 +1370,8 @@ ito::RetVal ThorlabsBP::setPosRel(const QVector<int> axis, QVector<double> pos, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa SMCSetPos
     \return retOk
@@ -1515,7 +1515,7 @@ ito::RetVal ThorlabsBP::checkError(short value, const char* message)
         case 1: return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
         case 2: return ito::RetVal::format(ito::retError, 1, "%s: The Device could not be found. This can be generated if the function TLI_BuildDeviceList() has not been called.", message);
         case 3: return ito::RetVal::format(ito::retError, 1, "%s: The Device must be opened before it can be accessed. See the appropriate Open function for your device.", message);
-        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occurred in the FTDI chip.", message);
         case 5: return ito::RetVal::format(ito::retError, 1, "%s: There are Insufficient resources to run this application.", message);
         case 6: return ito::RetVal::format(ito::retError, 1, "%s: An invalid parameter has been supplied to the device.", message);
         case 7: return ito::RetVal::format(ito::retError, 1, "%s: The Device is no longer present. The device may have been disconnected since the last TLI_BuildDeviceList() call.", message);
@@ -1524,8 +1524,8 @@ ito::RetVal ThorlabsBP::checkError(short value, const char* message)
         case 17: return ito::RetVal::format(ito::retError, 1, "%s: No functions available for this device.", message);
         case 18: return ito::RetVal::format(ito::retError, 1, "%s: The function is not available for this device.", message);
         case 19: return ito::RetVal::format(ito::retError, 1, "%s: Bad function pointer detected.", message);
-        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
-        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
+        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 32: return ito::RetVal::format(ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
         case 33: return ito::RetVal::format(ito::retError, 1, "%s: The device has stopped responding.", message);
         case 34: return ito::RetVal::format(ito::retError, 1, "%s: This function has not been implemented.", message);

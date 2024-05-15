@@ -40,7 +40,7 @@ parameters can be changed using *setParam*.
 
     *2 values required, Value range: [0, 5], Default: [5, 5]*
 **async**: int
-    asychronous (1) or synchronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 
     *Value range: [0, 1], Default: 0*
 **backlash**: Sequence[float]
