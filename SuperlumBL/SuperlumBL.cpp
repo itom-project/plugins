@@ -563,7 +563,7 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
     retValue += SendQuestionWithAnswerString(request, answer, 500);  //ask, if optical output is enabled
     QRegularExpression regExp("^A2(\\d{2,2})");
     QRegularExpressionMatch match = regExp.match(answer);
-    if (match.hasMatch() >= 0 && !retValue.containsError())
+    if (match.hasMatch() && !retValue.containsError())
     {
         if (((match.captured(1).toInt()) & 2) == 2)
         {
