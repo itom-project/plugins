@@ -106,6 +106,23 @@ private:
     int m_statusWord;
     bool m_isComOpen;
 
+    enum statuswordBits
+    {
+        readyToSwitchOn = 1 << 0,
+        switchedOn = 1 << 1,
+        operationEnabled = 1 << 2,
+        fault = 1 << 3,
+        voltageEnabled = 1 << 4,
+        quickStop = 1 << 5,
+        switchOnDisabled = 1 << 6,
+        warning = 1 << 7,
+        targetReached = 1 << 10,
+        internalLimitActive = 1 << 11,
+        setPointAcknowledged = 1 << 12,
+        followingError = 1 << 13
+    };
+
+
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
@@ -153,7 +170,7 @@ public slots:
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(double& pos);
     ito::RetVal quickstop();
-    ito::RetVal getStatusword(std::string& data, std::string& cmd);
+    ito::RetVal getStatusword(int& status);
     ito::RetVal getTorqueGain(int& gain);
     ito::RetVal setTorqueGain(int& gain);
     ito::RetVal getTorqueIntegralTime(int& time);
@@ -170,6 +187,9 @@ public slots:
     ito::RetVal setVelocityWarningThreshold(int& thres);
     ito::RetVal getVelocityIntegralPartOption(int& option);
     ito::RetVal setVelocityIntegralPartOption(int& option);
+
+    void decodeStatusWord();
+
 
     int doubleToInteger(double& value);
 

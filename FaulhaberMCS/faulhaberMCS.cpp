@@ -45,7 +45,8 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
 
     m_description = QObject::tr("FaulhaberMCS");
 
-    m_detaildescription = QObject::tr("This template can be used for implementing a new type of actuator plugin \n\
+    m_detaildescription =
+        QObject::tr("This template can be used for implementing a new type of actuator plugin \n\
 \n\
 Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...");
 
@@ -132,6 +133,156 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+
+    //------------------------------- category Statusword ---------------------------//
+    paramVal = ito::Param(
+        "statusword",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        65535,
+        0,
+        tr("16bit statusword to CiA 402. It indicates the status of the drive unit.")
+            .toLatin1()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 65535, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "readyToSwitchOn",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "switchedOn",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "operationEnabled",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "fault",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Error present, 0: No error present (Bit 3).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "voltageEnabled",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "quickStop",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "switchOnDisabled",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "warning",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: One of the monitored temperatures has exceeded at least the warning threshold, 0: No raised temperatures (Bit 7).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "targetReached",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Target has reached, 0: is moving (Bit 10).")
+            .toLatin1()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "internalLimitActive",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not reached (Bit 11).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "setPointAcknowledged",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: New set-point has been loaded, 0: Previous set-point being changed or already reached (Bit 12).")
+            .toLatin1()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param(
+        "followingError",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("1: Permissible range for the following error exceeded, 0: The actual position follows the instructions without a following error (Bit 13).")
+            .toLatin1()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category device parameter ---------------------------//
     paramVal = ito::Param(
@@ -455,10 +606,9 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        int torqueGain, torqueTime;
-        int velocityGain, velocityTime, velocityDeviationThreshold, velocityDeviationTime,
-            velocityWarningThreshold, velocityIntegralPartOption;
-        int ambientTemp;
+        int torqueGain, torqueTime, velocityGain, velocityTime, velocityDeviationThreshold,
+            velocityDeviationTime, velocityWarningThreshold, velocityIntegralPartOption,
+            ambientTemp, statusword;
         retValue += getTorqueGain(torqueGain);
         retValue += getTorqueIntegralTime(torqueTime);
 
@@ -470,6 +620,8 @@ ito::RetVal FaulhaberMCS::init(
         retValue += getVelocityIntegralPartOption(velocityIntegralPartOption);
 
         retValue += getAmbientTemperature(ambientTemp);
+
+        retValue += getStatusword(statusword);
         if (!retValue.containsError())
         {
             m_params["torqueGain"].setVal<int>(torqueGain);
@@ -483,6 +635,8 @@ ito::RetVal FaulhaberMCS::init(
             m_params["velocityIntegralPartOption"].setVal<int>(velocityIntegralPartOption);
 
             m_params["ambientTemperature"].setVal<int>(ambientTemp);
+
+            m_params["statusword"].setVal<int>(statusword);
         }
     }
 
@@ -630,6 +784,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             if (!retValue.containsError())
             {
                 it->setVal<int>(option);
+            }
+        }
+        else if (key == "statusword")
+        {
+            int status;
+            retValue += getStatusword(status);
+            if (!retValue.containsError())
+            {
+                it->setVal<int>(status);
             }
         }
 
@@ -793,6 +956,8 @@ ito::RetVal FaulhaberMCS::setParam(
 
     if (!retValue.containsError())
     {
+        int status;
+        retValue += getStatusword(status);
         emit parametersChanged(
             m_params); // send changed parameters to any connected dialogs or dock-widgets
     }
@@ -1364,10 +1529,6 @@ ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
                 .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());
-        std::string data;
-        std::string cmd;
-        retVal += getStatusword(data, cmd);
-        std::cout << "getPosMCS error; data: '" << data << "' cmd: '" << cmd << "'\n" << std::endl;
     }
     return retVal;
 }
@@ -1496,47 +1657,26 @@ ito::RetVal FaulhaberMCS::quickstop()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getStatusword(std::string& data, std::string& cmd)
+ito::RetVal FaulhaberMCS::getStatusword(int& status)
 {
-    ito::RetVal retVal = ito::retOk;
-    const char* answData = nullptr;
-    const char* cmdString = nullptr;
-    const char* receiveTelegram = nullptr;
-    int nodeNr;
-    eMomanprot ret = mmProtReadAnswer(&answData, nodeNr, &cmdString, &receiveTelegram);
-    if (ret != eMomanprot_noData)
-    {
-        if (answData && cmdString)
-        {
-            data = answData;
-            cmd = cmdString;
-            __int64 value;
-            if (mmProtDecodeAnswStr(answData, value) == eDecoded_Statusword)
-            {
-                m_statusWord = (int)value;
-            }
-        }
-        else
-        {
-            retVal += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Do data revieced during getStatusword method with error message: '%1'!")
-                    .arg(mmProtGetErrorMessage(ret))
-                    .toLatin1()
-                    .data());
-        }
-    }
-    else
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x6041, 0x0, status);
+    if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during getStatusword with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(ret))
+            tr("Error during get status word method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
                 .toLatin1()
                 .data());
     }
+    else
+    {
+        m_statusWord = status;
+        decodeStatusWord();
+    }
+
     return retVal;
 }
 
@@ -1846,6 +1986,24 @@ ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(int& option)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::decodeStatusWord()
+{
+    m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
+    m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
+    m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
+    m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
+    m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
+    m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
+    m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
+    m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
+    m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
+    m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
+    m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 : 0);
+    m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
+    emit parametersChanged(m_params);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 int FaulhaberMCS::doubleToInteger(double& value)
 {
     return int(std::round(value * 100) / 100);
@@ -1978,11 +2136,6 @@ ito::RetVal FaulhaberMCS::updateStatus()
         retVal += getPosMCS(intPos);
 
         m_currentPos[i] = double(intPos);
-
-        std::string data;
-        std::string cmd;
-        retVal += getStatusword(data, cmd);
-        std::cout << "Status data: " << data << "   Status cmd: " << cmd << "\n" << std::endl;
 
         // if you know that the axis i is at its target position, change from moving to
         // target if moving has been set, therefore:
