@@ -22,7 +22,7 @@
 
 #include "dockWidgetFaulhaberMCS.h"
 #include "motorAxisController.h"
-
+#include <iostream>
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetFaulhaberMCS::DockWidgetFaulhaberMCS(ito::AddInActuator* actuator) :
     AbstractAddInDockWidget(actuator), m_pActuator(actuator), m_inEditing(false), m_firstRun(true)
@@ -33,18 +33,18 @@ DockWidgetFaulhaberMCS::DockWidgetFaulhaberMCS(ito::AddInActuator* actuator) :
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
 {
-    ui.checkBoxReadyToSwitchOn->setChecked(params["readyToSwitchOn"].getVal<int>());
-    ui.checkBoxSwitchOn->setChecked(params["switchedOn"].getVal<int>());
-    ui.checkBoxOperationEnabled->setChecked(params["operationEnabled"].getVal<int>());
-    ui.checkBoxFault->setChecked(params["fault"].getVal<int>());
-    ui.checkBoxVoltageEnabled->setChecked(params["voltageEnabled"].getVal<int>());
-    ui.checkBoxQuickStop->setChecked(params["quickStop"].getVal<int>());
-    ui.checkBoxSwitchOnDisabled->setChecked(params["switchOnDisabled"].getVal<int>());
-    ui.checkBoxWarning->setChecked(params["warning"].getVal<int>());
-    ui.checkBoxTargetReached->setChecked(params["targetReached"].getVal<int>());
-    ui.checkBoxInternalLimitActive->setChecked(params["internalLimitActive"].getVal<int>());
-    ui.checkBoxSetPointAcknowledged->setChecked(params["setPointAcknowledged"].getVal<int>());
-    ui.checkBoxFollowingError->setCheckable(params["followingError"].getVal<int>());
+    ui.radioButtonReadyToSwitchOn->setChecked(params["readyToSwitchOn"].getVal<int>());
+    ui.radioButtonSwitchOn->setChecked(params["switchedOn"].getVal<int>());
+    ui.radioButtonOperationEnabled->setChecked(params["operationEnabled"].getVal<int>());
+    ui.radioButtonFault->setChecked(params["fault"].getVal<int>());
+    ui.radioButtonVoltageEnabled->setChecked(params["voltageEnabled"].getVal<int>());
+    ui.radioButtonQuickStop->setChecked(params["quickStop"].getVal<int>());
+    ui.radioButtonSwitchOnDisabled->setChecked(params["switchOnDisabled"].getVal<int>());
+    ui.radioButtonWarning->setChecked(params["warning"].getVal<int>());
+    ui.radioButtonTargetReached->setChecked(params["targetReached"].getVal<int>());
+    ui.radioButtonInternalLimitActive->setChecked(params["internalLimitActive"].getVal<int>());
+    ui.radioButtonSetPointAcknowledged->setChecked(params["setPointAcknowledged"].getVal<int>());
+    ui.radioButtonFollowingError->setCheckable(params["followingError"].getVal<int>());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

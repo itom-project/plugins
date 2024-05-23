@@ -26,7 +26,6 @@
 #include "faulhaberMCS.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
-#include <iostream>
 
 #include <qdatetime.h>
 #include <qmessagebox.h>
@@ -163,7 +162,9 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).").toLatin1().data());
+        tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).")
+            .toLatin1()
+            .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -230,7 +231,10 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: One of the monitored temperatures has exceeded at least the warning threshold, 0: No raised temperatures (Bit 7).").toLatin1().data());
+        tr("1: One of the monitored temperatures has exceeded at least the warning threshold, 0: "
+           "No raised temperatures (Bit 7).")
+            .toLatin1()
+            .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -241,9 +245,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Target has reached, 0: is moving (Bit 10).")
-            .toLatin1()
-            .data());
+        tr("1: Target has reached, 0: is moving (Bit 10).").toLatin1().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -254,7 +256,10 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not reached (Bit 11).").toLatin1().data());
+        tr("1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not "
+           "reached (Bit 11).")
+            .toLatin1()
+            .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -265,7 +270,8 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: New set-point has been loaded, 0: Previous set-point being changed or already reached (Bit 12).")
+        tr("1: New set-point has been loaded, 0: Previous set-point being changed or already "
+           "reached (Bit 12).")
             .toLatin1()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
@@ -278,7 +284,8 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Permissible range for the following error exceeded, 0: The actual position follows the instructions without a following error (Bit 13).")
+        tr("1: Permissible range for the following error exceeded, 0: The actual position follows "
+           "the instructions without a following error (Bit 13).")
             .toLatin1()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
@@ -534,13 +541,13 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
-    if (!retValue.containsError())
+    /*if (!retValue.containsError())
     {
         mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
-    }
+    }*/
 
     if (!retValue.containsError())
     {
@@ -2079,6 +2086,10 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             }
         }
 
+        int status;
+        retVal += getStatusword(status);
+        decodeStatusWord();
+
         // emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
         sendStatusUpdate(false);
 
@@ -2113,6 +2124,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);
     }
+
 
     return retVal;
 }
