@@ -573,9 +573,6 @@ ito::RetVal ThorlabsDMH::init(
         }
     }
 
-    // resize zernike vector
-    m_currentZernike.fill(0.0, m_params["zernikeCount"].getVal<int>() + 4);
-
     if (!retValue.containsError())
     {
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
@@ -662,7 +659,8 @@ ito::RetVal ThorlabsDMH::execFunc(
 
         if (!retValue.containsError())
         {
-            QVector<double> targetZernike = m_currentZernike;
+            QVector<double> targetZernike;
+            targetZernike.fill(0.0, 15);
 
             for (int i = 0; i < numIDs; i++)
             {
@@ -712,8 +710,6 @@ ito::RetVal ThorlabsDMH::execFunc(
                     tr("Error during set segment voltage: THORLABS error: %s").toLatin1().data(),
                     buf);
             }
-
-            m_currentZernike = targetZernike;
         }
     }
     else if (funcName == "relaxMirror")
