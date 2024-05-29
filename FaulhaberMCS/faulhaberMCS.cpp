@@ -1194,6 +1194,8 @@ ito::RetVal FaulhaberMCS::getPos(
         }
     }
 
+    sendStatusUpdate();
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -2056,6 +2058,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
+    // reset interrupt flag
+    resetInterrupt();
+
     // if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) // all axis
@@ -2069,6 +2074,19 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
+        if (!done && isInterrupted())
+        {
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+            retVal += waitForIntParam("operationEnabled", 1);
+
+            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
+            done = true;
+            sendStatusUpdate();
+            return retVal;
+        }
+
         if (!retVal.containsError())
         {
             // short delay of 60ms
@@ -2106,26 +2124,8 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             }
         }
 
+        sendStatusUpdate();
         retVal += updateStatusMCS();
-
-        // emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
-        sendStatusUpdate(false);
-
-        // now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
-        if (!done && isInterrupted())
-        {
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
-            retVal += waitForIntParam("operationEnabled", 1);
-
-            // set the status of all axes from moving to interrupted (only if moving was set before)
-            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-            sendStatusUpdate(true);
-
-            retVal += ito::RetVal(ito::retError, 0, "interrupt occurred");
-            done = true;
-            return retVal;
-        }
 
         if (timer.hasExpired(timeoutMS)) // timeout during movement
         {
@@ -2135,14 +2135,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
             sendStatusUpdate(true);
         }
-    }
-
-    if (timeout)
-    {
-        // timeout occurred, set the status of all currently moving axes to timeout
-        replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
-        retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
-        sendStatusUpdate(true);
     }
 
 

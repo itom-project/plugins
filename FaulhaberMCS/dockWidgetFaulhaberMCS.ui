@@ -208,6 +208,24 @@
         <property name="numAxis">
          <number>1</number>
         </property>
+        <property name="defaultAxisUnit">
+         <enum>MotorAxisController::UnitAU</enum>
+        </property>
+        <property name="defaultAxisType">
+         <enum>MotorAxisController::TypeLinear</enum>
+        </property>
+        <property name="defaultRelativeStepSize">
+         <double>100.000000000000000</double>
+        </property>
+        <property name="defaultDecimals">
+         <number>0</number>
+        </property>
+        <property name="movementTypeVisible">
+         <bool>true</bool>
+        </property>
+        <property name="arbitraryUnit">
+         <string/>
+        </property>
        </widget>
       </item>
      </layout>
