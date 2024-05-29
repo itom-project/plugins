@@ -34,6 +34,8 @@
 #include <qstringlist.h>
 #include <qwaitcondition.h>
 
+#include <iostream>
+
 #include "dockWidgetFaulhaberMCS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -132,6 +134,26 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "switch",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Enable (1) or Disable (0) switch.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "voltage",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Enable (1) or Disable (0) voltage.").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
 
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
@@ -182,7 +204,7 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "fault",
-        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        ito::ParamBase::Int,
         0,
         1,
         0,
@@ -205,7 +227,7 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "quickStop",
-        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        ito::ParamBase::Int,
         0,
         1,
         0,
@@ -541,14 +563,6 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
-    /*if (!retValue.containsError())
-    {
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
-    }*/
-
     if (!retValue.containsError())
     {
         int serial;
@@ -649,6 +663,13 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0);
+    }
+
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -657,6 +678,8 @@ ito::RetVal FaulhaberMCS::init(
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
+    Sleep(100);
 
     setInitialized(true);
     return retValue;
@@ -676,6 +699,7 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
             mmProtCloseCom();
             mmProtCloseInterface();
         }
+
         FreeLibrary(m_hProtocolDll);
         m_hProtocolDll = nullptr;
     }
@@ -867,10 +891,12 @@ ito::RetVal FaulhaberMCS::setParam(
             if (operation == 0)
             {
                 mmProtSendCommand(m_node, 0x0000, eMomancmd_DiOp, 0, 0); // disable operation
+                retValue += waitForIntParam("operationEnabled", 0);
             }
             else if (operation == 1)
             {
                 mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0); // enable operation
+                retValue += waitForIntParam("operationEnabled", 1);
             }
             else
             {
@@ -882,17 +908,21 @@ ito::RetVal FaulhaberMCS::setParam(
                         .toLatin1()
                         .data());
             }
+
+            retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "power")
         {
-            int operation = val->getVal<int>();
-            if (operation == 0)
+            int power = val->getVal<int>();
+            if (power == 0)
             {
                 mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0); // shutdown
+                retValue += waitForIntParam("switchedOn", 0);
             }
-            else if (operation == 1)
+            else if (power == 1)
             {
                 mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0); // switch on
+                retValue += waitForIntParam("switchedOn", 1);
             }
             else
             {
@@ -900,10 +930,26 @@ ito::RetVal FaulhaberMCS::setParam(
                     ito::retError,
                     0,
                     tr("Value (%1) of parameter 'power' must be 0 or 1.")
-                        .arg(operation)
+                        .arg(power)
                         .toLatin1()
                         .data());
             }
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "fault")
+        {
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0); // fault reset
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "voltage")
+        {
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_disable, 0, 0); // stop
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "quickstop")
+        {
+            retValue += quickstop();
+            retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "torqueGain")
         {
@@ -1647,7 +1693,6 @@ ito::RetVal FaulhaberMCS::quickstop()
 {
     ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
-    // mmProtSendCommand(m_node, 0x0002, eMomancmd_quickstop, 0, 0);
     if (mmProtSetObj(
             m_node, 0x0002, 0x00, eMomancmd_quickstop, sizeof(eMomancmd_quickstop), abortMessage) !=
         eMomanprot_ok)
@@ -2125,6 +2170,44 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         sendStatusUpdate(true);
     }
 
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::waitForIntParam(
+    const char* parameter, const int& newValue, const int& timeoutMS, const int& sleepMS)
+{
+    ito::RetVal retVal = ito::retOk;
+    QElapsedTimer timer;
+
+    int value;
+    int status;
+
+    timer.start();
+    while (!retVal.containsWarningOrError())
+    {
+        Sleep(sleepMS);
+
+        std::cout << parameter << ": " << m_params[parameter].getVal<int>() << "\n" << std::endl;
+        retVal += getStatusword(status);
+        value = m_params[parameter].getVal<int>();
+
+        if (value == newValue)
+        {
+            break;
+        }
+
+        if (timer.hasExpired(timeoutMS)) // timeout during movement
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                9999,
+                QString("timeout occurred during setParam of %1").arg(parameter).toLatin1().data());
+            break;
+        }
+    }
+    std::cout << parameter << ": " << m_params[parameter].getVal<int>() << "\n" << std::endl;
 
     return retVal;
 }

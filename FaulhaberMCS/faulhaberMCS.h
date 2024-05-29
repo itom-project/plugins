@@ -81,6 +81,12 @@ private:
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
         const int flags = 0 /*for your use*/);
 
+    ito::RetVal waitForIntParam(
+        const char* parameter,
+        const int& newValue,
+        const int& timeoutMS = 1000,
+        const int& sleepMS = 10);
+
     ito::RetVal updateStatus(); // optional method to obtain the status and position of all
                                 // connected axes
 
