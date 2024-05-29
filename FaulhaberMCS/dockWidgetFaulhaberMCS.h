@@ -37,7 +37,7 @@ class DockWidgetFaulhaberMCS : public ito::AbstractAddInDockWidget
     Q_OBJECT
 
 public:
-    DockWidgetFaulhaberMCS(ito::AddInActuator* actuator);
+    DockWidgetFaulhaberMCS(int uniqueID, ito::AddInActuator* actuator);
     ~DockWidgetFaulhaberMCS(){};
 
 private:

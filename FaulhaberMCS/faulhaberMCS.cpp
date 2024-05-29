@@ -96,8 +96,8 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_hProtocolDll(nullptr), m_async(0), m_nrOfAxes(1), m_node(1), m_statusWord(0),
-    m_isComOpen(false)
+    AddInActuator(), m_hProtocolDll(nullptr), m_async(0), m_numOfAxes(1), m_node(1),
+    m_statusWord(0), m_isComOpen(false)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", NULL);
@@ -157,15 +157,15 @@ FaulhaberMCS::FaulhaberMCS() :
 
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
-        "statusword",
+        "statusWord",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         65535,
         0,
-        tr("16bit statusword to CiA 402. It indicates the status of the drive unit.")
+        tr("16bit statusWord to CiA 402. It indicates the status of the drive unit.")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 65535, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 65535, 1, "statusWord"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -175,9 +175,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
-
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "readyToSwitchOn"));
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
         "switchedOn",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -187,10 +187,9 @@ FaulhaberMCS::FaulhaberMCS() :
         tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "switchedOn"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "operationEnabled",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -198,10 +197,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "operationEnabled"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "fault",
         ito::ParamBase::Int,
@@ -209,10 +207,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Error present, 0: No error present (Bit 3).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "fault"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "voltageEnabled",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -220,11 +217,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "voltageEnabled"));
     m_params.insert(paramVal.getName(), paramVal);
 
-
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "quickStop",
         ito::ParamBase::Int,
@@ -232,10 +227,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "quickStop"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "switchOnDisabled",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -243,10 +237,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "switchOnDisabled"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "warning",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -257,10 +250,9 @@ FaulhaberMCS::FaulhaberMCS() :
            "No raised temperatures (Bit 7).")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "warning"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "targetReached",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -268,10 +260,9 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Target has reached, 0: is moving (Bit 10).").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "targetReached"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "internalLimitActive",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -282,10 +273,9 @@ FaulhaberMCS::FaulhaberMCS() :
            "reached (Bit 11).")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "internalLimitActive"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "setPointAcknowledged",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -296,10 +286,9 @@ FaulhaberMCS::FaulhaberMCS() :
            "reached (Bit 12).")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "setPointAcknowledged"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param(
         "followingError",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
@@ -310,7 +299,7 @@ FaulhaberMCS::FaulhaberMCS() :
            "the instructions without a following error (Bit 13).")
             .toLatin1()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "statusword"));
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "followingError"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category device parameter ---------------------------//
@@ -434,13 +423,13 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
-    m_currentPos.fill(0.0, m_nrOfAxes);
-    m_currentStatus.fill(0, m_nrOfAxes);
-    m_targetPos.fill(0.0, m_nrOfAxes);
+    m_currentPos.fill(0.0, m_numOfAxes);
+    m_currentStatus.fill(0, m_numOfAxes);
+    m_targetPos.fill(0.0, m_numOfAxes);
 
     // the following lines create and register the plugin's dock widget. Delete these lines if the
     // plugin does not have a dock widget.
-    DockWidgetFaulhaberMCS* dw = new DockWidgetFaulhaberMCS(this);
+    DockWidgetFaulhaberMCS* dw = new DockWidgetFaulhaberMCS(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable |
@@ -629,7 +618,7 @@ ito::RetVal FaulhaberMCS::init(
     {
         int torqueGain, torqueTime, velocityGain, velocityTime, velocityDeviationThreshold,
             velocityDeviationTime, velocityWarningThreshold, velocityIntegralPartOption,
-            ambientTemp, statusword;
+            ambientTemp;
         retValue += getTorqueGain(torqueGain);
         retValue += getTorqueIntegralTime(torqueTime);
 
@@ -642,7 +631,7 @@ ito::RetVal FaulhaberMCS::init(
 
         retValue += getAmbientTemperature(ambientTemp);
 
-        retValue += getStatusword(statusword);
+        retValue += updateStatusMCS();
         if (!retValue.containsError())
         {
             m_params["torqueGain"].setVal<int>(torqueGain);
@@ -657,7 +646,7 @@ ito::RetVal FaulhaberMCS::init(
 
             m_params["ambientTemperature"].setVal<int>(ambientTemp);
 
-            m_params["statusword"].setVal<int>(statusword);
+            m_params["statusWord"].setVal<int>(m_statusWord);
         }
     }
 
@@ -665,11 +654,21 @@ ito::RetVal FaulhaberMCS::init(
     {
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
+        retValue += waitForIntParam("quickStop", 0);
+
         mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0);
+        retValue += waitForIntParam("fault", 0);
     }
 
     if (!retValue.containsError())
     {
+        int pos;
+        retValue += getPosMCS(pos);
+        m_currentPos[0] = pos;
+        m_targetPos[0] = pos;
+        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorAvailable;
+        sendStatusUpdate(false);
+
         emit parametersChanged(m_params);
     }
 
@@ -678,8 +677,6 @@ ito::RetVal FaulhaberMCS::init(
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-
-    Sleep(100);
 
     setInitialized(true);
     return retValue;
@@ -817,13 +814,12 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 it->setVal<int>(option);
             }
         }
-        else if (key == "statusword")
+        else if (key == "statusWord")
         {
-            int status;
-            retValue += getStatusword(status);
+            retValue += updateStatusMCS();
             if (!retValue.containsError())
             {
-                it->setVal<int>(status);
+                it->setVal<int>(m_statusWord);
             }
         }
 
@@ -946,11 +942,6 @@ ito::RetVal FaulhaberMCS::setParam(
             mmProtSendCommand(m_node, 0x0000, eMomancmd_disable, 0, 0); // stop
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "quickstop")
-        {
-            retValue += quickstop();
-            retValue += it->copyValueFrom(&(*val));
-        }
         else if (key == "torqueGain")
         {
             int gain = val->getVal<int>();
@@ -1009,8 +1000,7 @@ ito::RetVal FaulhaberMCS::setParam(
 
     if (!retValue.containsError())
     {
-        int status;
-        retValue += getStatusword(status);
+        retValue += updateStatusMCS();
         emit parametersChanged(
             m_params); // send changed parameters to any connected dialogs or dock-widgets
     }
@@ -1105,7 +1095,7 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
     {
         foreach (const int& i, axis)
         {
-            if (i >= 0 && i < m_nrOfAxes)
+            if (i >= 0 && i < m_numOfAxes)
             {
                 // todo: set axis i to origin (current position is considered to be the 0-position).
             }
@@ -1187,7 +1177,7 @@ ito::RetVal FaulhaberMCS::getPos(
 
     foreach (const int i, axis)
     {
-        if (i >= 0 && i < m_nrOfAxes)
+        if (i >= 0 && i < m_numOfAxes)
         {
             int intPos;
             retValue += getPosMCS(intPos);
@@ -1257,7 +1247,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
     {
         foreach (const int i, axis)
         {
-            if (i < 0 || i >= m_nrOfAxes)
+            if (i < 0 || i >= m_numOfAxes)
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
@@ -1313,7 +1303,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(6000, axis); // WaitForAnswer(60000, axis);
+            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -1381,7 +1371,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
     {
         foreach (const int i, axis)
         {
-            if (i < 0 || i >= m_nrOfAxes)
+            if (i < 0 || i >= m_numOfAxes)
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
@@ -1438,7 +1428,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
             // call waitForDone in order to wait until all axes reached their target or a given
             // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
             // function
-            retValue += waitForDone(6000, axis); // WaitForAnswer(60000, axis);
+            retValue += waitForDone(60000, axis); // WaitForAnswer(60000, axis);
 
             // release the wait condition now, if async is false (itom waits until now if async is
             // false, hence in the synchronous mode)
@@ -1689,30 +1679,10 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(double& pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::quickstop()
+ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
-    unsigned int abortMessage;
-    if (mmProtSetObj(
-            m_node, 0x0002, 0x00, eMomancmd_quickstop, sizeof(eMomancmd_quickstop), abortMessage) !=
-        eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during quickstop method with error message: '%1'!")
-                .arg(mmProtGetAbortMessage(abortMessage))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getStatusword(int& status)
-{
-    ito::RetVal retVal(ito::retOk);
-    eMomanprot error = mmProtGetObj(m_node, 0x6041, 0x0, status);
+    eMomanprot error = mmProtGetObj(m_node, 0x6041, 0x0, m_statusWord);
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
@@ -1725,10 +1695,35 @@ ito::RetVal FaulhaberMCS::getStatusword(int& status)
     }
     else
     {
-        m_statusWord = status;
-        decodeStatusWord();
+        m_params["statusWord"].setVal<int>(m_statusWord);
+
+        m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
+        m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
+        m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
+        m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
+        m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
+        m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
+        m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
+        m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
+        m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
+        m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
+        m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 : 0);
+        m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
+
+        emit parametersChanged(m_params);
     }
 
+    if (m_params["operationEnabled"].getVal<int>())
+    {
+        setStatus(
+            m_currentStatus[0], ito::actuatorEnabled | ito::actuatorAvailable | ito::actStatusMask);
+    }
+    else
+    {
+        replaceStatus(m_currentStatus[0], ito::actuatorEnabled, !ito::actuatorEnabled);
+    }
+
+    sendStatusUpdate();
     return retVal;
 }
 
@@ -2038,24 +2033,6 @@ ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(int& option)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FaulhaberMCS::decodeStatusWord()
-{
-    m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
-    m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
-    m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
-    m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
-    m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
-    m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
-    m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
-    m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
-    m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
-    m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
-    m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 : 0);
-    m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
-    emit parametersChanged(m_params);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 int FaulhaberMCS::doubleToInteger(double& value)
 {
     return int(std::round(value * 100) / 100);
@@ -2079,18 +2056,17 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
-    timer.start();
-
     // if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) // all axis
     {
-        for (int i = 0; i < m_nrOfAxes; i++)
+        for (int i = 0; i < m_numOfAxes; i++)
         {
             _axis.append(i);
         }
     }
 
+    timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
         if (!retVal.containsError())
@@ -2110,10 +2086,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += getPosMCS(currentPos);
             m_currentPos[i] = double(currentPos);
 
-            retVal += getTargetPosMCS(targetPos);
-            m_targetPos[i] = double(targetPos);
+            retVal += updateStatusMCS();
 
-            if (targetPos != currentPos) // wait for completion
+            if (!m_params["targetReached"].getVal<int>()) // wait for completion
             {
                 setStatus(
                     m_currentStatus[i],
@@ -2131,9 +2106,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             }
         }
 
-        int status;
-        retVal += getStatusword(status);
-        decodeStatusWord();
+        retVal += updateStatusMCS();
 
         // emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
         sendStatusUpdate(false);
@@ -2141,7 +2114,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         // now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
-            retVal += quickstop();
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
+            mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+            retVal += waitForIntParam("operationEnabled", 1);
 
             // set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
@@ -2182,7 +2157,6 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
     QElapsedTimer timer;
 
     int value;
-    int status;
 
     timer.start();
     while (!retVal.containsWarningOrError())
@@ -2190,7 +2164,7 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
         Sleep(sleepMS);
 
         std::cout << parameter << ": " << m_params[parameter].getVal<int>() << "\n" << std::endl;
-        retVal += getStatusword(status);
+        retVal += updateStatusMCS();
         value = m_params[parameter].getVal<int>();
 
         if (value == newValue)
@@ -2221,7 +2195,7 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
 ito::RetVal FaulhaberMCS::updateStatus()
 {
     ito::RetVal retVal = ito::retOk;
-    for (int i = 0; i < m_nrOfAxes; i++)
+    for (int i = 0; i < m_numOfAxes; i++)
     {
         m_currentStatus[i] = m_currentStatus[i] |
             ito::actuatorAvailable; // set this if the axis i is available, else use

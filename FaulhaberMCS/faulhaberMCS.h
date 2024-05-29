@@ -74,7 +74,7 @@ public:
 private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
-    int m_nrOfAxes;
+    int m_numOfAxes;
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
@@ -109,8 +109,8 @@ private:
     tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
 
     int m_node;
-    int m_statusWord;
     bool m_isComOpen;
+    int m_statusWord;
 
     enum statuswordBits
     {
@@ -175,8 +175,6 @@ public slots:
     ito::RetVal getAmbientTemperature(int& temp);
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(double& pos);
-    ito::RetVal quickstop();
-    ito::RetVal getStatusword(int& status);
     ito::RetVal getTorqueGain(int& gain);
     ito::RetVal setTorqueGain(int& gain);
     ito::RetVal getTorqueIntegralTime(int& time);
@@ -194,8 +192,7 @@ public slots:
     ito::RetVal getVelocityIntegralPartOption(int& option);
     ito::RetVal setVelocityIntegralPartOption(int& option);
 
-    void decodeStatusWord();
-
+    ito::RetVal updateStatusMCS();
 
     int doubleToInteger(double& value);
 

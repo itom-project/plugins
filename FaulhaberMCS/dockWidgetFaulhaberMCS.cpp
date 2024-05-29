@@ -24,10 +24,11 @@
 #include "motorAxisController.h"
 #include <iostream>
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetFaulhaberMCS::DockWidgetFaulhaberMCS(ito::AddInActuator* actuator) :
+DockWidgetFaulhaberMCS::DockWidgetFaulhaberMCS(int uniqueID, ito::AddInActuator* actuator) :
     AbstractAddInDockWidget(actuator), m_pActuator(actuator), m_inEditing(false), m_firstRun(true)
 {
     ui.setupUi(this);
+    ui.lblIdentifier->setText(QString::number(uniqueID));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,6 +46,8 @@ void DockWidgetFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
     ui.radioButtonInternalLimitActive->setChecked(params["internalLimitActive"].getVal<int>());
     ui.radioButtonSetPointAcknowledged->setChecked(params["setPointAcknowledged"].getVal<int>());
     ui.radioButtonFollowingError->setCheckable(params["followingError"].getVal<int>());
+
+    ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
