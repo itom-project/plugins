@@ -652,12 +652,22 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        // TODO delete if status works well. User must execute the right command to start motor
         mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
         mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
         retValue += waitForIntParam("quickStop", 0);
 
         mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0);
         retValue += waitForIntParam("fault", 0);
+
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
+        retValue += waitForIntParam("switchedOn", 0);
+
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
+        retValue += waitForIntParam("switchedOn", 1);
+
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
+        retValue += waitForIntParam("operationEnabled", 1);
     }
 
     if (!retValue.containsError())
@@ -666,9 +676,8 @@ ito::RetVal FaulhaberMCS::init(
         retValue += getPosMCS(pos);
         m_currentPos[0] = pos;
         m_targetPos[0] = pos;
-        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorAvailable;
+        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
         sendStatusUpdate(false);
-
         emit parametersChanged(m_params);
     }
 
@@ -1715,16 +1724,6 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
         emit parametersChanged(m_params);
     }
 
-    if (m_params["operationEnabled"].getVal<int>())
-    {
-        setStatus(
-            m_currentStatus[0], ito::actuatorEnabled | ito::actuatorAvailable | ito::actStatusMask);
-    }
-    else
-    {
-        replaceStatus(m_currentStatus[0], ito::actuatorEnabled, !ito::actuatorEnabled);
-    }
-
     sendStatusUpdate();
     return retVal;
 }
@@ -2058,8 +2057,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
-    // reset interrupt flag
-    resetInterrupt();
 
     // if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
@@ -2089,9 +2086,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         if (!retVal.containsError())
         {
-            // short delay of 60ms
+            // short delay of 10ms
             waitMutex.lock();
-            waitCondition.wait(&waitMutex, 60);
+            waitCondition.wait(&waitMutex, 10);
             waitMutex.unlock();
             setAlive();
         }
@@ -2100,13 +2097,16 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         {
             int currentPos;
             int targetPos;
-
             retVal += getPosMCS(currentPos);
             m_currentPos[i] = double(currentPos);
 
-            retVal += updateStatusMCS();
+            retVal += getTargetPosMCS(targetPos);
+            m_targetPos[i] = double(targetPos);
 
-            if (!m_params["targetReached"].getVal<int>()) // wait for completion
+            // retVal += updateStatusMCS();
+
+            // if (!m_params["targetReached"].getVal<int>()) // wait for completion
+            if (targetPos != currentPos)
             {
                 setStatus(
                     m_currentStatus[i],
@@ -2123,9 +2123,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                 done = true;
             }
         }
-
-        sendStatusUpdate();
         retVal += updateStatusMCS();
+        sendStatusUpdate(false);
+
 
         if (timer.hasExpired(timeoutMS)) // timeout during movement
         {
@@ -2136,7 +2136,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             sendStatusUpdate(true);
         }
     }
-
 
     return retVal;
 }
@@ -2155,7 +2154,6 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
     {
         Sleep(sleepMS);
 
-        std::cout << parameter << ": " << m_params[parameter].getVal<int>() << "\n" << std::endl;
         retVal += updateStatusMCS();
         value = m_params[parameter].getVal<int>();
 
@@ -2173,7 +2171,6 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
             break;
         }
     }
-    std::cout << parameter << ": " << m_params[parameter].getVal<int>() << "\n" << std::endl;
 
     return retVal;
 }
