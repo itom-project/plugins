@@ -104,11 +104,11 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
 Please notice: Currently, this plugin only works for Vistek drivers up to version 1.5.2. If you want to use a 2.x series of the Vistek drivers, \
 use the GenICam plugin of itom that is able to communicate with Vistek USB3 and GigE cameras.");
 
-    m_author = "H. Gilbergs, ITO, Universität Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();

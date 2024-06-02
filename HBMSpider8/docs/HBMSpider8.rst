@@ -111,3 +111,10 @@ An instance of this plugin has the following parameters:
     in combination with the offsets values. Offset is first.
 
     *Value range: [-inf, inf], Default: 1.0*
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release
+    *Value range: [-inf, inf], Default: 1.0*

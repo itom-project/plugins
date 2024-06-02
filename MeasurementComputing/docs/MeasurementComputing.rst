@@ -367,4 +367,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.0.0: This plugin has been compiled using CBW library version 1.89
 * itom setup 4.1.0: This plugin has been compiled using CBW library version 1.89
-* itom setup 4.3.0: This plugin has been compiled using MCC DAQ Software library version 6.73
+* itom setup 4.3.0: This plugin has been compiled using MCC DAQ Software library version 6.73.0

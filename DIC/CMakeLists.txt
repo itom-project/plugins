@@ -114,7 +114,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dicPrivate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolationMats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolation.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
@@ -132,6 +132,10 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dicSpline.cpp
     #add further source files here
 )
+
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if (CUDA_FOUND)
     list(APPEND PLUGIN_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/dicInterpolation.hu)

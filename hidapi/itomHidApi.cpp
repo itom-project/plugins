@@ -66,11 +66,11 @@ To connect to a device you need the vendor id and the product id.\n\
 \n\
 The setVal and getVal functions will write and read on the output or on the feature.");
 
-    m_author = "M. Gronle, ITO, Universität of Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("vendor_id", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0, tr("The vendor id of the device to connect to (0 will return a list of all devices if 'print_info_about_all_devices' is 1).").toLatin1().data());

@@ -62,3 +62,10 @@ An instance of this plugin has the following parameters:
     Use axes limits and limit switches
 
     *1 values required, Value range: [0, 1], Default: [0]*
+
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

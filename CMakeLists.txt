@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.12...3.29)
-project(itom_plugins)
-
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
@@ -15,6 +11,26 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 if(NOT EXISTS ${ITOM_SDK_DIR})
     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+message(
+    STATUS "------------------- PROJECT itom_plugins ---------------------")
+# Retrieve Version Number and Identifier from GIT-TAG
+include(${ITOM_SDK_DIR}/cmake/VersionFromGit.cmake)
+version_from_git(
+  LOG       ON
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
+# define cmake project and version number
+project(itom_plugins VERSION ${GIT_VERSION})
+set(itom_plugins_VERSION_IDENTIFIERS ${GIT_IDENTIFIERS})
+
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+message(
+    STATUS "------------------- Version = ${itom_plugins_VERSION} -----------------------\n")
+
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
@@ -422,7 +438,7 @@ endif()
 
 # QuantumComposer
 if(WIN32)
-    option(PLUGIN_QuantumComposer "Build with this plugin." ON)
+    option(PLUGIN_QuantumComposer "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_QuantumComposer)
         add_subdirectory(QuantumComposer)
     endif(PLUGIN_QuantumComposer)

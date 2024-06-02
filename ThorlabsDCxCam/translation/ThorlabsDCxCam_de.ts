@@ -299,7 +299,7 @@ The plugin has been compiled using the IDS library version %1.%2.
 
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.
 
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, Universität of Stuttgart.</source>
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

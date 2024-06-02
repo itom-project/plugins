@@ -73,7 +73,7 @@ if(THORLABS_IVI_VISA_LIBRARIES)
         ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsCCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsCCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsCCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -99,6 +99,9 @@ if(THORLABS_IVI_VISA_LIBRARIES)
     set(PLUGIN_RCC
         #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

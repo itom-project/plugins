@@ -36,7 +36,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -50,6 +50,9 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.ui
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 set(PLUGIN_RCC
     #add absolute paths to any *.qrc resource files here

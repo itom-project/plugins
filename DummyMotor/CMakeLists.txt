@@ -37,7 +37,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 
 )
@@ -52,6 +52,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.cpp
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 #Add version information to the plugIn-dll under MSVC
 if(MSVC)

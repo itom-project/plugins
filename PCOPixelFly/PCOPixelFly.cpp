@@ -97,11 +97,11 @@ Please install first the necessary drivers for the camera and grabber board from
 drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates \
 on 64bit Windows systems.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, Universität Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("boardNumber", ito::ParamBase::Int, 0, 3, 0, NULL);

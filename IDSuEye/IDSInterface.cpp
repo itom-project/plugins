@@ -98,7 +98,7 @@ The plugin has been compiled using the IDS library version %1.%2. \n\
 \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, Universität of Stuttgart.";
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.";
     m_detaildescription = tr(docstring).arg(major).arg(minor);*/
     m_detaildescription = tr(
 "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
@@ -119,16 +119,16 @@ The plugin has been compiled using the IDS library version %1.%2. You can run it
 \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, Universität of Stuttgart. \n\
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart. \n\
 \n\
 Note on supported sensor bit depths on monochrome cameras: The plugin may list a supported bit depth of 16 bit even if the camera explicitly does not support 16 bit color mode. The returned 16 bit images are most probably a MSB-Aligned representation of the maximum supported bit depth. (See IDS uEye handbook, appendix Color- and Dataformat)").arg(major).arg(minor).arg(major).arg(minor / 10);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr(GITVERSION);
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID (user-definable in IDS camera manager) of the camera to open (0: the next free camera will opened [default], 1-254: specific camera ID)").toLatin1().data());
     m_initParamsOpt.append(param);

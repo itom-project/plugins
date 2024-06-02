@@ -3694,7 +3694,7 @@ struct {
               <entry>none</entry><entry>0x74</entry>
               <entry><link linkend="sec.USBnewGetOwner">Get owner</link></entry><entry>NA</entry></row>
             <row><entry>0x06</entry><entry>0x201</entry>
-              <entry>"Cornell Universität" &lt;NUL&gt;</entry><entry>0x54</entry>
+              <entry>"Cornell University" &lt;NUL&gt;</entry><entry>0x54</entry>
               <entry><link linkend="sec.USBnewSetOwner">Set owner</link></entry><entry>0x05</entry></row>
             <row><entry>0x13</entry><entry>0x201</entry>
               <entry>none</entry><entry>0x58</entry>

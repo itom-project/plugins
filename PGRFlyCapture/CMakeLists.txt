@@ -80,7 +80,7 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPGRFlyCapture.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPGRFlyCapture.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PGRFlyCapture.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -97,6 +97,9 @@ if(FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR)
 
     set(PLUGIN_RCC
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Add version information to the plugIn-dll under MSVC
     if(MSVC)

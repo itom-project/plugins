@@ -81,11 +81,11 @@ HolographyInterface::HolographyInterface()
 
     m_description = QObject::tr("Algorithms used for holographic optical systems");
     m_detaildescription = QObject::tr("This DLL contains several algorithms for holography.");
-    m_author = "UFAL, Universidade Federal de Alagoas, ITO Universität of Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     NTHREADS = QThread::idealThreadCount();

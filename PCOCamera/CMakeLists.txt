@@ -70,7 +70,7 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPCOCamera.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPCOCamera.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOCamera.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -81,6 +81,9 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOCamera.cpp
         #add further source files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Append rc file to the source files for adding information about the plugin
     # to the properties of the DLL under Visual Studio.
