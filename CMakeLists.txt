@@ -438,7 +438,7 @@ endif()
 
 # QuantumComposer
 if(WIN32)
-    option(PLUGIN_QuantumComposer "Build with this plugin." OFF)
+    option(PLUGIN_QuantumComposer "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
     if(PLUGIN_QuantumComposer)
         add_subdirectory(QuantumComposer)
     endif(PLUGIN_QuantumComposer)
