@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`LibUSB`
 **Type**:       :plugintype:`LibUSB`
 **License**:    :pluginlicense:`LibUSB`
-**Platforms**:  Windows (Vista, 7, 8)
+**Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
 **Devices**:    Any generic USB devices
 **Author**:     :pluginauthor:`LibUSB`
 =============== ========================================================================================================

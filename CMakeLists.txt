@@ -95,7 +95,7 @@ if(PLUGIN_BasicGPLFilters)
 endif(PLUGIN_BasicGPLFilters)
 
 # HidApi
-option(PLUGIN_HidApi "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_HidApi "Build with this plugin." ON)
 if(PLUGIN_HidApi)
     add_subdirectory(hidapi)
 endif(PLUGIN_HidApi)
@@ -117,7 +117,7 @@ if(WIN32)
 endif()
 
 # CyUSB
-option(PLUGIN_CyUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_CyUSB "Build with this plugin." ON)
 if(PLUGIN_CyUSB)
     add_subdirectory(CyUSB)
 endif(PLUGIN_CyUSB)
@@ -146,17 +146,17 @@ if(PLUGIN_dispWindow)
     add_subdirectory(dispWindow)
 endif(PLUGIN_dispWindow)
 
-# dslrRemote2 - not yet
-option(PLUGIN_DslrRemote2 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_DslrRemote2)
-    add_subdirectory(DslrRemote2)
-endif(PLUGIN_DslrRemote2)
-
-# dslrRemote - not yet
-option(PLUGIN_DslrRemote "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+# dslrRemote
+option(PLUGIN_DslrRemote "Build with this plugin." ON)
 if(PLUGIN_DslrRemote)
     add_subdirectory(DslrRemote)
 endif(PLUGIN_DslrRemote)
+
+# dslrRemote2
+option(PLUGIN_DslrRemote2 "Build with this plugin." ON)
+if(PLUGIN_DslrRemote2)
+    add_subdirectory(DslrRemote2)
+endif(PLUGIN_DslrRemote2)
 
 # DummyGrabber
 option(PLUGIN_DummyGrabber "Build with this plugin." ON)
@@ -195,7 +195,7 @@ if(PLUGIN_FittingFilters)
 endif(PLUGIN_FittingFilters)
 
 # FireGrabber
-option(PLUGIN_FireGrabber "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_FireGrabber "Build with this plugin." ON)
 if(PLUGIN_FireGrabber)
     add_subdirectory(FireGrabber)
 endif(PLUGIN_FireGrabber)
@@ -263,7 +263,7 @@ if(PLUGIN_LibModbus)
 endif(PLUGIN_LibModbus)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_LIBUSB "Build with this plugin." ON)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
@@ -438,7 +438,7 @@ endif()
 
 # QuantumComposer
 if(WIN32)
-    option(PLUGIN_QuantumComposer "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+    option(PLUGIN_QuantumComposer "Build with this plugin." ON)
     if(PLUGIN_QuantumComposer)
         add_subdirectory(QuantumComposer)
     endif(PLUGIN_QuantumComposer)

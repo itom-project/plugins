@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`FireGrabber`
 **License**:    :pluginlicense:`FireGrabber`
 **Platforms**:  Windows, Linux
-**Devices**:    Cameras supported by FirePackage from Allied Vision
+**Devices**:    Cameras supported by FirePackage from Allied Vision and remotely controlled via Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`FireGrabber`
 =============== ========================================================================================================
 
@@ -28,6 +28,13 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: FireGrabber
+
+
+Dependencies
+============
+
+FireGrabber plugin depends on LibUSB.
+
 
 Parameters
 ===========

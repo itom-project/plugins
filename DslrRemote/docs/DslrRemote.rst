@@ -26,6 +26,12 @@ The following parameters are mandatory or optional for initializing an instance 
         :plugin: DslrRemote
 
 
+Dependencies
+============
+
+DSLR Remote depends on LibUSB.
+
+
 Changelog
 ==========
 
