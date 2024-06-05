@@ -19,7 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-#find_package(LibUSB QUIET)
+find_package(LibUSB QUIET)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
