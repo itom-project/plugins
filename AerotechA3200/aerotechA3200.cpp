@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define ITOM_IMPORT_API
+#define  ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 #include "AerotechA3200.h"
