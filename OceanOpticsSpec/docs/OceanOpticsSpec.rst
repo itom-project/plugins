@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`OceanOpticsSpec`
 **License**:    :pluginlicense:`OceanOpticsSpec`
 **Platforms**:  Windows, Linux ready but not tested
-**Devices**:    Ocean Optics Spectrometers remotely controlled via the Itom LibUSB Plugin. 
+**Devices**:    Ocean Optics Spectrometers remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`OceanOpticsSpec`
 =============== ========================================================================================================
 

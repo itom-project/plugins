@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`QuantumComposer`
 **License**:    :pluginlicense:`QuantumComposer`
 **Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
-**Devices**:    Any generic USB devices controled remotely Itom LibUSB Plugin. 
+**Devices**:    Any generic USB devices controled remotely Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`QuantumComposer`
 =============== ========================================================================================================
 

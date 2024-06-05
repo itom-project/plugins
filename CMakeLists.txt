@@ -43,7 +43,7 @@ option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON."
 if(NOT BUILD_TARGET64)
     if(WIN32)
         option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-        if(PLUGIN_aerotechA3200)
+        if(PLUGIN_aerotechA3200 )
             add_subdirectory(AerotechA3200)
         endif(PLUGIN_aerotechA3200)
     endif()
@@ -117,7 +117,7 @@ if(WIN32)
 endif()
 
 # CyUSB
-option(PLUGIN_CyUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_CyUSB "Build with this plugin." ON)
 if(PLUGIN_CyUSB)
     add_subdirectory(CyUSB)
 endif(PLUGIN_CyUSB)
@@ -151,7 +151,7 @@ option(PLUGIN_DslrRemote "Build with this plugin." ON)
 if(PLUGIN_DslrRemote)
     add_subdirectory(DslrRemote)
 endif(PLUGIN_DslrRemote)
-
+C:/Users/fn103196/workspace/itomProject/build
 # dslrRemote2
 option(PLUGIN_DslrRemote2 "Build with this plugin." ON)
 if(PLUGIN_DslrRemote2)
