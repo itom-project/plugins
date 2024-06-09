@@ -303,7 +303,7 @@ if(PLUGIN_NEWPORT_2936)
 endif(PLUGIN_NEWPORT_2936)
 
 # Newport Conex LDS
-option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ON)
+option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_NEWPORT_CONEXLDS)
     add_subdirectory(NewportConexLDS)
 endif(PLUGIN_NEWPORT_CONEXLDS)
