@@ -573,11 +573,11 @@ ito::RetVal ThorlabsDMH::init(
         }
     }
 
-    if (!retValue.containsError())
+    /*if (!retValue.containsError())
     {
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
         retValue += execFunc("relaxMirror", _dummy, _dummy, _dummy, nullptr);
-    }
+    }*/
 
     // An error occurs if the device has no power
     retValue += getError();
@@ -660,7 +660,7 @@ ito::RetVal ThorlabsDMH::execFunc(
         if (!retValue.containsError())
         {
             QVector<double> targetZernike;
-            targetZernike.fill(0.0, 15);
+            targetZernike.fill(0.0, 16);
 
             for (int i = 0; i < numIDs; i++)
             {
