@@ -29,7 +29,7 @@ itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) #Start the project, init compiler settings and set default configurations for plugins
 itom_find_package_qt(ON Widgets Xml LinguistTools)
 
-if(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
+if(OpenCV_FOUND AND OPENMP_FOUND)
 
     if(OPENMP_FOUND)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -110,6 +110,9 @@ if(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
     itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-else(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
-    message(WARNING "${target_name}-Dependency OpenCV-${OpenCV_FOUND}, LAPACKE-${LAPACKE_FOUND} and/or OpenMP-${OPENMP_FOUND} could not be found. ${target_name} will not be build")
-endif(OpenCV_FOUND AND LAPACKE_FOUND AND OPENMP_FOUND)
+else(OpenCV_FOUND AND OPENMP_FOUND)
+    message(FATAL_ERROR "${target_name}-Dependency OpenCV  and/or OpenMP could not be found. ${target_name} will not be build")
+    if(NOT LAPACKE_FOUND)
+        message(FATAL_ERROR "${target_name}-Dependency LAPACKE could not be found. ${target_name} will not be build")
+    endif(NOT LAPACKE_FOUND)
+endif(OpenCV_FOUND AND OPENMP_FOUND)
