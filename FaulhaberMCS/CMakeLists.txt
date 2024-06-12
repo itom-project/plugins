@@ -113,4 +113,6 @@ if(FAULHABER_MOMANLIB_ROOT)
 
     itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
 
+else(FAULHABER_MOMANLIB_ROOT)
+    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(FAULHABER_MOMANLIB_ROOT)

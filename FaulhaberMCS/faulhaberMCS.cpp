@@ -23,6 +23,8 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
+#define NOMINMAX
+
 #include "faulhaberMCS.h"
 #include "gitVersion.h"
 #include "pluginVersion.h"
