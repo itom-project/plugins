@@ -158,12 +158,6 @@ if(PLUGIN_DslrRemote2)
     add_subdirectory(DslrRemote2)
 endif(PLUGIN_DslrRemote2)
 
-# dslrRemote2
-option(PLUGIN_DslrRemote2 "Build with this plugin." ON)
-if(PLUGIN_DslrRemote2)
-    add_subdirectory(DslrRemote2)
-endif(PLUGIN_DslrRemote2)
-
 # DummyGrabber
 option(PLUGIN_DummyGrabber "Build with this plugin." ON)
 if(PLUGIN_DummyGrabber)
