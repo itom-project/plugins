@@ -151,7 +151,7 @@ option(PLUGIN_DslrRemote "Build with this plugin." ON)
 if(PLUGIN_DslrRemote)
     add_subdirectory(DslrRemote)
 endif(PLUGIN_DslrRemote)
-C:/Users/fn103196/workspace/itomProject/build
+
 # dslrRemote2
 option(PLUGIN_DslrRemote2 "Build with this plugin." ON)
 if(PLUGIN_DslrRemote2)
