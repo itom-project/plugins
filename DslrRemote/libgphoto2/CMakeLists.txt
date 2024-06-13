@@ -88,6 +88,8 @@ endif()
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
+add_dependencies(${target_name} libltdl)
+
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ../libgphoto2_port/$(Configuration)/libgphoto2_port
     ../libtool/$(Configuration)/libltdl

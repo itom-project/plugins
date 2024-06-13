@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`AvantesAvaSpec`
 **License**:    :pluginlicense:`AvantesAvaSpec`
 **Platforms**:  Windows, Linux ready but not tested
-**Devices**:    Avantes AvaSpec Spectrometer
+**Devices**:    Avantes AvaSpec Spectrometer remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`AvantesAvaSpec`
 =============== ========================================================================================================
 
@@ -24,6 +24,11 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: AvantesAvaSpec
+
+Dependencies
+============
+
+Itom AvaSpec Plugin depends on LibUSB.
 
 Parameters
 ===========

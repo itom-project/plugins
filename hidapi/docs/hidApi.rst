@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`HidApi`
 **License**:    :pluginlicense:`HidApi`
 **Platforms**:  Windows, Linux, Mac
-**Devices**:    Any generic HID device
+**Devices**:    Any generic HID device remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`HidApi`
 =============== ========================================================================================================
 
@@ -24,6 +24,13 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: HidApi
+
+
+Dependencies
+============
+
+HidApi plugin depends on LibUSB.
+
 
 Parameters
 ===========
