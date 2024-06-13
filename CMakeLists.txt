@@ -117,7 +117,7 @@ if(WIN32)
 endif()
 
 # CyUSB
-option(PLUGIN_CyUSB "Build with this plugin." ON)
+option(PLUGIN_CyUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_CyUSB)
     add_subdirectory(CyUSB)
 endif(PLUGIN_CyUSB)
