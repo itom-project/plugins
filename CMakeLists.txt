@@ -263,7 +263,7 @@ if(PLUGIN_LibModbus)
 endif(PLUGIN_LibModbus)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." ON)
+option(PLUGIN_LIBUSB "Build with this plugin." OFF)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
