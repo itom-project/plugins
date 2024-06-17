@@ -32,7 +32,6 @@ else(BUILD_SHARED_LIBS)
     set(LIBRARY_TYPE STATIC)
 endif(BUILD_SHARED_LIBS)
 
-if(LibUSB_INCLUDE_DIRS)
 
 if(WIN32)
     add_subdirectory(regex)
@@ -104,6 +103,8 @@ else()
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LIBGPHOTO_LIBRARIES})
 endif()
 
+add_dependencies(${target_name} LibUSB)
+
 if(WIN32)
     add_dependencies(${target_name} regex)
     add_dependencies(${target_name} libltdl)
@@ -129,7 +130,4 @@ endif()
 
 else(WIN32 OR LIBGPHOTO_FOUND)
     message(SEND_ERROR "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
-endif()
-else(LibUSB_INCLUDE_DIRS)
-    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")
 endif()
