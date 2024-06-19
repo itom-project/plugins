@@ -68,8 +68,6 @@ add_library(${target_name} SHARED
     ${PLUGIN_RCC}
     )
 
-add_dependencies(${target_name} LibUSB)
-
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
