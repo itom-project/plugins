@@ -82,6 +82,14 @@ if(WIN32)
     endif(PLUGIN_AVTVimba)
 endif()
 
+# AVTVimbaX
+if(WIN32)
+    option(PLUGIN_AVTVimbaX "Build with this plugin." ON)
+    if(PLUGIN_AVTVimbaX)
+        add_subdirectory(AVTVimbaX)
+    endif(PLUGIN_AVTVimbaX)
+endif()
+
 # BasicFilters
 option(PLUGIN_BasicFilters "Build with this plugin." ON)
 if(PLUGIN_BasicFilters)
