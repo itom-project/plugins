@@ -44,7 +44,7 @@ if (WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/Common.h
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/DebugPrintOut.h
@@ -81,6 +81,9 @@ if (WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoDevices.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoInput.cpp
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Add version information to the plugIn-dll under MSVC
     if (MSVC)

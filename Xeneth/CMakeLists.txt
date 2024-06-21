@@ -59,7 +59,7 @@ if(XENETH_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetXeneth.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Xeneth.h
         ${CMAKE_CURRENT_SOURCE_DIR}/XenethInterface.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -86,6 +86,9 @@ if(XENETH_INCLUDE_DIR)
     set(PLUGIN_RCC
         #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

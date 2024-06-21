@@ -53,7 +53,7 @@ if(HIDAPI_REQUIREMENTS_FOUND)
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -85,12 +85,17 @@ if(HIDAPI_REQUIREMENTS_FOUND)
         set(HIDAPI_LIBRARIES )
     endif(WIN32)
 
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
     #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+
+    add_dependencies(${target_name} LibUSB)
 
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)

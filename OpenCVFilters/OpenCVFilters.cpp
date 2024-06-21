@@ -102,11 +102,11 @@ methods via the cv2 python package. The wrapped methods within this plugin can s
 In addition to the cv2 methods, they can sometimes operate on multi-plane dataObjects, preserve \n\
 the tags and meta information and save protocol data.");
 
-    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, Universität Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     NTHREADS = QThread::idealThreadCount();

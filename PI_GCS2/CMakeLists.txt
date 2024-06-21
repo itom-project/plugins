@@ -56,7 +56,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/PIPiezoCtrl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/PI_GCS2Interface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -71,6 +71,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/PIPiezoCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PI_GCS2Interface.cpp
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 set(PLUGIN_RCC
     #add absolute paths to any *.qrc resource files here

@@ -52,7 +52,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/LibModBus.h
     #${CMAKE_CURRENT_SOURCE_DIR}/dialogLibModBus.h
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibModBus.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
@@ -63,6 +63,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/LibModBus.cpp
     #add further source files here
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

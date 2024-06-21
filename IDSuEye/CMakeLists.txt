@@ -110,7 +110,7 @@ if(IDS_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.h
         ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
@@ -122,6 +122,9 @@ if(IDS_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.cpp
         #add further source files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Append rc file to the source files for adding information about the plugin
     # to the properties of the DLL under Visual Studio.

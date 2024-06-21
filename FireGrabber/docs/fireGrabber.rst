@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`FireGrabber`
 **License**:    :pluginlicense:`FireGrabber`
 **Platforms**:  Windows, Linux
-**Devices**:    Cameras supported by FirePackage from Allied Vision
+**Devices**:    Cameras supported by FirePackage from Allied Vision and remotely controlled via Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`FireGrabber`
 =============== ========================================================================================================
 
@@ -20,6 +20,7 @@ Overview
 For cameras from Allied Vision it is recommended to use the new Vimba interface and the itom plugin AVTVimba. This
 supports more types of cameras and features than the deprecated FirePackage driver from Allied Vision.
 
+
 Initialization
 ==============
 
@@ -27,6 +28,13 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: FireGrabber
+
+
+Dependencies
+============
+
+FireGrabber plugin depends on LibUSB.
+
 
 Parameters
 ===========
@@ -71,3 +79,9 @@ An instance of this plugin has the following internal parameters:
     Startvalue for ROI
 **y1**: {int}
     Stopvalue for ROI
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

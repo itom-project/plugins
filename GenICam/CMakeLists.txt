@@ -51,7 +51,7 @@ if(GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.h
         ${CMAKE_CURRENT_SOURCE_DIR}/GenTL_v1_5.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PFNC.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -72,6 +72,9 @@ if(GENICAM_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/deviceContainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/datatypes.cpp
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     set(PLUGIN_RCC
     )

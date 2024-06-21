@@ -38,11 +38,11 @@ if(NIDAQMX_FOUND)
         #add all linker directories
     )
 
-    set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	set(PLUGIN_HEADERS
+		${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmx.h
+		${CMAKE_CURRENT_SOURCE_DIR}/dialogNI-DAQmx.h
+		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNI-DAQmx.h
+		${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/NI-PeripheralClasses.h
         ${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmxError.h
@@ -57,6 +57,9 @@ if(NIDAQMX_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/NI-DAQmxError.cpp
         #add further source files here
     )
+
+	#Define Version in pluginVersion.h
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

@@ -20,9 +20,6 @@ if(LibUSB_INCLUDE_DIRS)
             endif(BUILD_UNICODE)
     add_definitions(-DPTP_DLL)
 
-
-
-
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
     include_directories(

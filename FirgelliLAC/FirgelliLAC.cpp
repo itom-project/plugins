@@ -128,11 +128,11 @@ plugin might deliver wrong values. At startup, the motor is always moved to its 
 in order to be able to subsequently provide right position values. This behaviour is mandatory\n\
 and cannot be changed (due to the driver of the controller board).");
 
-    m_author = "H. Bieger, M. Gronle, ITO, Universität Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.append(ito::Param("spoolMax", ito::ParamBase::Double, 20.0, new ito::DoubleMeta(0.0,100000.0), tr("Maximum length of spool (mm) [default 20.0 mm]").toLatin1().data()));

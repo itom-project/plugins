@@ -43,7 +43,7 @@ if(CYAPI_INCLUDE_DIRS)
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/ItomCyUSB.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -56,6 +56,9 @@ if(CYAPI_INCLUDE_DIRS)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetItomCyUSB.cpp
     )
 
+	#Define Version in pluginVersion.h
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
     set(PLUGIN_RCC
     )
 
@@ -67,6 +70,8 @@ if(CYAPI_INCLUDE_DIRS)
     endif()
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+
+    add_dependencies(${target_name} LibUSB)
 
     # Qt: enable all automoc, autouic and autorcc.
     set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)

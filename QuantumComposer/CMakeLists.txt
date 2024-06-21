@@ -38,7 +38,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/quantumComposer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogQuantumComposer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetQuantumComposer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -57,6 +57,9 @@ set(PLUGIN_UI
 
 set(PLUGIN_RCC
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 add_library(${target_name} SHARED
     ${PLUGIN_SOURCES}

@@ -57,10 +57,10 @@ INCLUDE_DIRECTORIES(
 
 
 set(PLUGIN_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/Spider8.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Spider8.h
+	${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.h
+	${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.h
+	${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -69,6 +69,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Spider8.cpp
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
