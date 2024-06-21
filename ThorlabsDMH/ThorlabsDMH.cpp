@@ -1696,7 +1696,7 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("did not get manufaturer name, maybe device is already connected with "
+            QObject::tr("did not get manufacturer name, maybe device is already connected with "
                         "THORLABS software.")
                 .toLatin1()
                 .data(),
