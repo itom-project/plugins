@@ -88,8 +88,8 @@ private:
 
     ViChar m_resourceName[TLDFM_BUFFER_SIZE];
     ViSession m_insrumentHdl;
-    QVector<double> m_currentZernike; /*!< vector (same length than number of zernike terms)
-                                         containing the current zernikes*/
+
+    static QList<QString> openedDevices;
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
@@ -101,6 +101,7 @@ private:
 
     ito::RetVal selectInstrument();
     ito::RetVal getDeviceInfo();
+    ito::RetVal getError();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
