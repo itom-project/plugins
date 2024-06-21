@@ -179,7 +179,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "manufacturerName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Manufaturer name").toLatin1().data());
+        tr("Manufacturer name").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -245,7 +245,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
         new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("commom voltage of Mirror Segments").toLatin1().data());
+        tr("common voltage of Mirror Segments").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -504,7 +504,7 @@ ito::RetVal ThorlabsDMH::close(ItomSharedSemaphore* waitCond)
 
     // todo:
     //  - disconnect the device if not yet done
-    //  - this funtion is considered to be the "inverse" of init.
+    //  - this function is considered to be the "inverse" of init.
 
     TLDFMX_close(m_insrumentHdl);
 
@@ -985,7 +985,7 @@ ito::RetVal ThorlabsDMH::getPos(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("axis %i not available. only Segments betweeen 0 and %i").toLatin1().data(),
+                    tr("axis %i not available. only Segments between 0 and %i").toLatin1().data(),
                     axis[i],
                     m_nrOfAxes - 1);
             }
@@ -1358,7 +1358,7 @@ ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axi
 
     if (timeout)
     {
-        // timeout occured, set the status of all currently moving axes to timeout
+        // timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);
@@ -1480,7 +1480,7 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal(
             ito::retError,
             1,
-            QObject::tr("did not get manufaturer name, maybe device is already connected with "
+            QObject::tr("did not get manufacturer name, maybe device is already connected with "
                         "THORLABS software.")
                 .toLatin1()
                 .data());
@@ -1590,7 +1590,7 @@ void ThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
     The configuration dialog should emit reject() or accept() depending if the user wanted to close
    the dialog using the ok or cancel button. If ok has been clicked (accept()), this method calls
    applyParameters of the configuration dialog in order to force the dialog to send all changed
-   parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself
+   parameters to the plugin. If the user clicks an apply button, the configuration dialog itself
    must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function

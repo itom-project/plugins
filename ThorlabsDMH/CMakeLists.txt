@@ -61,9 +61,9 @@ if(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsDMH.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsDMH.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsDMH.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -83,8 +83,11 @@ if(THORLABS_DFMX_INCLUDE_DIR AND THORLABS_DFM_x86_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED
         ${PLUGIN_SOURCES}
