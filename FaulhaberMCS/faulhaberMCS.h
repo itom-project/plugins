@@ -75,6 +75,7 @@ private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
     int m_numOfAxes;
+    int m_waitForDoneTimeout = 60000;
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
@@ -100,10 +101,11 @@ private:
     tdmmProtReadAnswer mmProtReadAnswer;
     tdmmProtDecodeAnswStr mmProtDecodeAnswStr;
     tdmmProtGetStrObj mmProtGetStrObj;
-    tdmmProtSetObj mmProtSetObj;
+    tdmmProtSetStrObj mmProtSetStrObj;
     tdmmProtGetAbortMessage mmProtGetAbortMessage;
     tdmmProtGetErrorMessage mmProtGetErrorMessage;
     tdmmProtGetObj mmProtGetObj;
+    tdmmProtSetObj mmProtSetObj;
     tdmmProtFindConnection mmProtFindConnection;
     tdmmProtSendMotionCommand mmProtSendMotionCommand;
     tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
@@ -191,6 +193,10 @@ public slots:
     ito::RetVal setVelocityWarningThreshold(int& thres);
     ito::RetVal getVelocityIntegralPartOption(int& option);
     ito::RetVal setVelocityIntegralPartOption(int& option);
+    ito::RetVal getTorqueLimits(int limits[]);
+    ito::RetVal setTorqueLimits(int limits[]);
+    ito::RetVal getOperationMode(int& mode);
+    ito::RetVal setOperationMode(int& mode);
 
     ito::RetVal updateStatusMCS();
 

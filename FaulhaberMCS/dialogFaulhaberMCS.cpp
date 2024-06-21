@@ -43,12 +43,7 @@ DialogFaulhaberMCS::DialogFaulhaberMCS(ito::AddInActuator* actuator) :
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogFaulhaberMCS::~DialogFaulhaberMCS()
-{
-    QSharedPointer<ito::ParamBase> p(
-        new ito::ParamBase("enableConfiguration", ito::ParamBase::Int, 0));
-    setPluginParameter(p, msgLevelWarningAndError);
-};
+DialogFaulhaberMCS::~DialogFaulhaberMCS(){};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
