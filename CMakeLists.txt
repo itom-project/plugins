@@ -39,6 +39,12 @@ include(ItomBuildMacros)
 # ITOM Shipment
 option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
 
+# LibUSB
+option(PLUGIN_LIBUSB "Build with this plugin." ON)
+if(PLUGIN_LIBUSB)
+    add_subdirectory(LibUSB)
+endif(PLUGIN_LIBUSB)
+
 # AerotechA3200
 if(NOT BUILD_TARGET64)
     if(WIN32)
@@ -68,10 +74,10 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
 # AvantesAvaSpec
-option(PLUGIN_AvantesAvaSpec "Build with this plugin." ON)
-if(PLUGIN_AvantesAvaSpec)
+option(PLUGIN_AvantesAvaSpec "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
         add_subdirectory(AvantesAvaSpec)
-endif(PLUGIN_AvantesAvaSpec)
+endif(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
 
 # AVTVimba
 if(WIN32)
@@ -94,10 +100,10 @@ if(PLUGIN_BasicGPLFilters)
 endif(PLUGIN_BasicGPLFilters)
 
 # HidApi
-option(PLUGIN_HidApi "Build with this plugin." ON)
-if(PLUGIN_HidApi)
+option(PLUGIN_HidApi "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_HidApi AND PLUGIN_LIBUSB)
     add_subdirectory(hidapi)
-endif(PLUGIN_HidApi)
+endif(PLUGIN_HidApi AND PLUGIN_LIBUSB)
 
 # cmu1394
 if(WIN32)
@@ -146,13 +152,13 @@ if(PLUGIN_dispWindow)
 endif(PLUGIN_dispWindow)
 
 # dslrRemote
-option(PLUGIN_DslrRemote "Build with this plugin." ON)
+option(PLUGIN_DslrRemote "Build with this plugin." OFF)
 if(PLUGIN_DslrRemote)
     add_subdirectory(DslrRemote)
 endif(PLUGIN_DslrRemote)
 
 # dslrRemote2
-option(PLUGIN_DslrRemote2 "Build with this plugin." ON)
+option(PLUGIN_DslrRemote2 "Build with this plugin." OFF)
 if(PLUGIN_DslrRemote2)
     add_subdirectory(DslrRemote2)
 endif(PLUGIN_DslrRemote2)
@@ -261,12 +267,6 @@ if(PLUGIN_LibModbus)
     add_subdirectory(libmodbus)
 endif(PLUGIN_LibModbus)
 
-# LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." ON)
-if(PLUGIN_LIBUSB)
-    add_subdirectory(LibUSB)
-endif(PLUGIN_LIBUSB)
-
 # MeasurementComputing
 if(WIN32)
 option(PLUGIN_MeasurementComputing "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
@@ -302,7 +302,7 @@ if(PLUGIN_NEWPORT_2936)
 endif(PLUGIN_NEWPORT_2936)
 
 # Newport Conex LDS
-option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ON)
+option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_NEWPORT_CONEXLDS)
     add_subdirectory(NewportConexLDS)
 endif(PLUGIN_NEWPORT_CONEXLDS)
@@ -326,10 +326,10 @@ if(PLUGIN_NITWidySWIR)
 endif(PLUGIN_NITWidySWIR)
 
 # OceanOpticsSpec
-option(PLUGIN_OceanOpticsSpec "Build with this plugin." ON)
-if(PLUGIN_OceanOpticsSpec)
+option(PLUGIN_OceanOpticsSpec "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_OceanOpticsSpec AND PLUGIN_LIBUSB)
     add_subdirectory(OceanOpticsSpec)
-endif(PLUGIN_OceanOpticsSpec)
+endif(PLUGIN_OceanOpticsSpec AND PLUGIN_LIBUSB)
 
 # OpenCVFilters
 option(PLUGIN_OpenCVFilters "Build with this plugin." ON)
