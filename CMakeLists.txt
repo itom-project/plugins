@@ -59,7 +59,6 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
     endif()
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
-
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
     option(PLUGIN_andorSDK3 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
@@ -263,7 +262,7 @@ if(PLUGIN_LibModbus)
 endif(PLUGIN_LibModbus)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." OFF)
+option(PLUGIN_LIBUSB "Build with this plugin." ON)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
