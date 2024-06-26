@@ -36,11 +36,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)
 
-# ITOM Shipment
-option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
+# ITOM BUILD OPTIONS
+option(ITOM_BUILD_SETUP "If ITOM is build to provide a setup installer, turn this option ON." OFF)
+option(ITOM_BUILD_TEST "If ITOM is build to all Plugins to be tested, turn this option ON." OFF)
+
+include(C:/Users/fn103196/workspace/itomProject/itom/cmake/ItomPluginOption.cmake)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." OFF)
+itom_plugin_option(PLUGIN_LIBUSB)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
