@@ -40,7 +40,7 @@ include(ItomBuildMacros)
 option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
 
 # LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." OFF)
+option(PLUGIN_LIBUSB "Build with this plugin." ON)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
 endif(PLUGIN_LIBUSB)
@@ -64,7 +64,6 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
         endif(PLUGIN_aerotechEnsemble)
     endif()
 endif(BUILD_QTVERSION STREQUAL "Qt5")
-
 
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
