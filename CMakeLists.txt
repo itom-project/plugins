@@ -373,16 +373,6 @@ if(WIN32)
     endif(PLUGIN_PCOCamera)
 endif()
 
-# PCOSensicam
-if(WIN32)
-    if(BUILD_QTVERSION STREQUAL "Qt5")
-        option(PLUGIN_PCOSensicam "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-        if(PLUGIN_PCOSensicam)
-            add_subdirectory(PCOSensicam)
-        endif(PLUGIN_PCOSensicam)
-    endif(BUILD_QTVERSION STREQUAL "Qt5")
-endif()
-
 # PCOPixelFly
 if(WIN32)
     option(PLUGIN_PCOPixelFly "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
@@ -580,14 +570,6 @@ option(PLUGIN_UhlText "Build with this plugin." ON)
 if(PLUGIN_UhlText)
     add_subdirectory(UhlText)
 endif(PLUGIN_UhlText)
-
-# USBMotion3XIII
-if(WIN32)
-    option(PLUGIN_USBMotion3XIII "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_USBMotion3XIII)
-        add_subdirectory(USBMotion3XIII)
-    endif(PLUGIN_USBMotion3XIII)
-endif()
 
 # V4L2
 if(UNIX AND NOT APPLE)
