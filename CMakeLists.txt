@@ -47,6 +47,7 @@ message(STATUS "ITOM_BUILD_TEST: ${ITOM_BUILD_TEST}")
 include(C:/Users/fn103196/workspace/itomProject/itom/cmake/ItomPluginOption.cmake)
 
 # LibUSB
+
 itom_plugin_option(PLUGIN_LIBUSB)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
@@ -67,7 +68,6 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
         add_subdirectory(AerotechEnsemble)
     endif(PLUGIN_aerotechEnsemble)
 endif(BUILD_QTVERSION STREQUAL "Qt5")
-
 
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
