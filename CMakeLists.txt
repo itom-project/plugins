@@ -69,7 +69,6 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
     endif(PLUGIN_aerotechEnsemble)
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
-
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
     itom_plugin_option(PLUGIN_andorSDK3)
