@@ -44,7 +44,8 @@ option(ITOM_BUILD_TEST "If ITOM is build to all Plugins to be tested, turn this 
 #set(ITOM_BUILD_TEST OFF CACHE BOOL "If ITOM is build to all Plugins to be tested, turn this option ON.")
 message(STATUS "ITOM_BUILD_TEST: ${ITOM_BUILD_TEST}")
 
-include(C:/Users/fn103196/workspace/itomProject/itom/cmake/ItomPluginOption.cmake)
+#include itom_plugin_option macro
+include(${CMAKE_SOURCE_DIR}/itom/cmake/ItomPluginOption.cmake)
 
 # LibUSB
 itom_plugin_option(PLUGIN_LIBUSB)
