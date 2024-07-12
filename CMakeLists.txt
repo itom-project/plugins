@@ -58,9 +58,15 @@ if(PLUGIN_AvantesAvaSpec)
         add_subdirectory(AvantesAvaSpec)
 endif(PLUGIN_AvantesAvaSpec)
 
+# AvantesSDK
+option(PLUGIN_AvantesSDK "Build with this plugin." ON)
+if(PLUGIN_AvantesSDK)
+        add_subdirectory(AvantesSDK)
+endif(PLUGIN_AvantesSDK)
+
 # AVTVimba
 if(WIN32)
-    option(PLUGIN_AVTVimba "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+    option(PLUGIN_AVTVimba "Build with this plugin." ON)
     if(PLUGIN_AVTVimba)
         add_subdirectory(AVTVimba)
     endif(PLUGIN_AVTVimba)
