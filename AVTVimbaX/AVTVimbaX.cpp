@@ -63,7 +63,7 @@ The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0. \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");
 
-    m_author = "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
+    m_author = "F. Hetzel (ITO Uni Stuttgart), J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
