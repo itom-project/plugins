@@ -177,22 +177,18 @@ public slots:
     ito::RetVal getAmbientTemperature(int& temp);
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(double& pos);
-    ito::RetVal getTorqueGain(int& gain);
-    ito::RetVal setTorqueGain(int& gain);
-    ito::RetVal getTorqueIntegralTime(int& time);
-    ito::RetVal setTorqueIntegralTime(int& time);
-    ito::RetVal getVelocityGain(int& gain);
-    ito::RetVal setVelocityGain(int& gain);
-    ito::RetVal getVelocityIntegralTime(int& time);
-    ito::RetVal setVelocityIntegralTime(int& time);
-    ito::RetVal getVelocityDeviationThreshold(int& thres);
-    ito::RetVal setVelocityDeviationThreshold(int& thres);
-    ito::RetVal getVelocityDeviationTime(int& time);
-    ito::RetVal setVelocityDeviationTime(int& time);
-    ito::RetVal getVelocityWarningThreshold(int& thres);
-    ito::RetVal setVelocityWarningThreshold(int& thres);
-    ito::RetVal getVelocityIntegralPartOption(int& option);
-    ito::RetVal setVelocityIntegralPartOption(int& option);
+
+    ito::RetVal getMaxMotorSpeed(int& speed);
+    ito::RetVal setMaxMotorSpeed(int& speed);
+    ito::RetVal getProfileVelocity(int& speed);
+    ito::RetVal setProfileVelocity(int& speed);
+    ito::RetVal getAcceleration(int& acceleration);
+    ito::RetVal setAcceleration(int& acceleration);
+    ito::RetVal getDeceleration(int& deceleration);
+    ito::RetVal setDeceleration(int& deceleration);
+    ito::RetVal getQuickStopDeceleration(int& deceleration);
+    ito::RetVal setQuickStopDeceleration(int& deceleration);
+
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(int limits[]);
     ito::RetVal getOperationMode(int& mode);
