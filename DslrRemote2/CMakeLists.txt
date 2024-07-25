@@ -75,6 +75,7 @@ endif(WIN32)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
+add_dependencies(${target_name} libptp2)
 add_dependencies(${target_name} LibUSB)
 
 # Qt: enable all automoc, autouic and autorcc.
