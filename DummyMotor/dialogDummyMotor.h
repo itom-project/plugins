@@ -61,6 +61,7 @@ class DialogDummyMotor : public ito::AbstractAddInConfigDialog
         int m_numaxis;    //!    Number of axis of this device
         bool m_firstRun;
         ito::AddInBase *m_actuator;
+        QPointer<ito::AddInBase> m_pluginPointer;
 
         void enableGUI(bool enabled);
 
