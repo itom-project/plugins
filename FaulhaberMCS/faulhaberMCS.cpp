@@ -53,7 +53,7 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
 \n\
 It was implemented and tested with:\n\
 \n\
-* Series MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/ \n\
+* Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/ \n\
 \n\
 It requires the Communication Library MomanLib: https://www.faulhaber.com/en/support/drive-electronics/#c65284.");
 
@@ -231,6 +231,15 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "homed",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("homed (1) or not homed (0).").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
@@ -383,7 +392,7 @@ FaulhaberMCS::FaulhaberMCS() :
     //------------------------------- category Motion control ---------------------------//
     paramVal = ito::Param(
         "maxMotorSpeed", ito::ParamBase::Int, 0, tr("Max motor speed in 1/min.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(1, std::numeric_limits<int>::max(), 1, "Motion control"));
+    paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -391,7 +400,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Profile velocity in 1/min.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(1, std::numeric_limits<int>::max(), 1, "Motion control"));
+    paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -1030,27 +1039,66 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    if (isMotorMoving())
+    // check axis index
+    foreach (const int& i, axis)
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("motor is running. Further action is not possible").toLatin1().data());
+        if (i >= m_numOfAxes)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
+        }
     }
 
     if (!retValue.containsError())
     {
-        // todo:
-        // start calibrating the given axes and don't forget to regularly call setAlive().
-        // this is important if the calibration needs more time than the timeout time of itom (e.g.
-        // 5sec). itom regularly checks the alive flag and only drops to a timeout if setAlive() is
-        // not regularly called (at least all 3-4 secs).
-    }
+        if (isMotorMoving())
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
 
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
+            if (waitCond)
+            {
+                waitCond->release();
+                waitCond->returnValue = retValue;
+            }
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
+
+            retValue += waitForDone(5000, axis); // should drop into timeout
+            retValue = ito::retOk;
+
+            foreach (const int& i, axis)
+            {
+                int mode;
+                // int mode = 1;
+                // retValue += setOperationMode(mode, 0x06); // change to profile position
+
+                mode = 6;
+                retValue += setOperationMode(mode); // change to homing mode
+
+                mode = 37; // set current position to 0
+                retValue += setHomingMode(mode);
+
+                mode = 1;
+                retValue += setOperationMode(mode); // change to profile position
+            }
+
+            if (!retValue.containsError())
+            {
+                m_params["homed"].setVal<int>(1);
+            }
+
+            if (waitCond)
+            {
+                waitCond->release();
+                waitCond->returnValue = retValue;
+            }
+
+            sendStatusUpdate();
+        }
     }
 
     return retValue;
@@ -1899,6 +1947,25 @@ ito::RetVal FaulhaberMCS::setQuickStopDeceleration(int& deceleration)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setHomingMode(int& mode)
+{
+    ito::RetVal retVal(ito::retOk);
+    unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x6098, 0x00, mode, sizeof(mode), abortMessage);
+    if (error != eMomanprot_ok)
+    {
+        retVal += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during set quickstop deceleration method with error message: '%1'!")
+                .arg(mmProtGetErrorMessage(error))
+                .toLatin1()
+                .data());
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTorqueLimits(int limits[])
 {
     ito::RetVal retVal(ito::retOk);
@@ -1957,12 +2024,12 @@ ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setOperationMode(int& mode)
+ito::RetVal FaulhaberMCS::setOperationMode(int& mode, /*const*/ int subindex)
 {
     ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
 
-    eMomanprot error = mmProtSetObj(m_node, 0x6060, 0x00, mode, sizeof(mode), abortMessage);
+    eMomanprot error = mmProtSetObj(m_node, 0x6060, subindex, mode, sizeof(mode), abortMessage);
 
     if (error != eMomanprot_ok)
     {

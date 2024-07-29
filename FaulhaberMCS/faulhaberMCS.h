@@ -139,15 +139,15 @@ public slots:
     ito::RetVal init(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        ItomSharedSemaphore* waitCond = NULL);
+        ItomSharedSemaphore* waitCond = nullptr);
 
     ito::RetVal close(ItomSharedSemaphore* waitCond);
 
-    ito::RetVal calib(const int axis, ItomSharedSemaphore* waitCond = NULL);
-    ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal calib(const int axis, ItomSharedSemaphore* waitCond = nullptr);
+    ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
 
-    ito::RetVal setOrigin(const int axis, ItomSharedSemaphore* waitCond = NULL);
-    ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore* waitCond = NULL);
+    ito::RetVal setOrigin(const int axis, ItomSharedSemaphore* waitCond = nullptr);
+    ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore* waitCond = nullptr);
 
     ito::RetVal getStatus(QSharedPointer<QVector<int>> status, ItomSharedSemaphore* waitCond);
 
@@ -157,13 +157,15 @@ public slots:
         QSharedPointer<QVector<double>> pos,
         ItomSharedSemaphore* waitCond);
 
-    ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond = NULL);
     ito::RetVal setPosAbs(
-        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
+        const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
+    ito::RetVal setPosAbs(
+        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
-    ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond = NULL);
     ito::RetVal setPosRel(
-        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = NULL);
+        const int axis, const double pos, ItomSharedSemaphore* waitCond = nullptr);
+    ito::RetVal setPosRel(
+        const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
     // Faulhaber MCS methods
     ito::RetVal getSerialNumber(int& serialNum);
@@ -189,10 +191,11 @@ public slots:
     ito::RetVal getQuickStopDeceleration(int& deceleration);
     ito::RetVal setQuickStopDeceleration(int& deceleration);
 
+    ito::RetVal setHomingMode(int& mode);
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(int limits[]);
     ito::RetVal getOperationMode(int& mode);
-    ito::RetVal setOperationMode(int& mode);
+    ito::RetVal setOperationMode(int& mode, int subindex=0x00);
 
     ito::RetVal updateStatusMCS();
 
