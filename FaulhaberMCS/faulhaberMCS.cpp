@@ -658,6 +658,7 @@ ito::RetVal FaulhaberMCS::init(
 
             m_params["ambientTemperature"].setVal<int>(ambientTemp);
             m_params["statusWord"].setVal<int>(m_statusWord);
+            m_params["homed"].setVal<int>(m_params["setPointAcknowledged"].getVal<int>());
         }
     }
 
@@ -1073,22 +1074,38 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
             foreach (const int& i, axis)
             {
                 int mode;
-                // int mode = 1;
-                // retValue += setOperationMode(mode, 0x06); // change to profile position
+                retValue += updateStatusMCS();
+                if (!retValue.containsError())
+                {
+                    mode = 1;
+                    retValue += setOperationMode(mode); // change to profile position
+                }
 
-                mode = 6;
-                retValue += setOperationMode(mode); // change to homing mode
+                if (!retValue.containsError())
+                {
+                    mode = 6;
+                    retValue += setOperationMode(mode); // change to homing mode
+                }
 
-                mode = 37; // set current position to 0
-                retValue += setHomingMode(mode);
+                retValue += updateStatusMCS();
+                if (!retValue.containsError())
+                {
+                    mode = 37; // set current position to 0
+                    retValue += setHomingMode(mode);
+                }
 
-                mode = 1;
-                retValue += setOperationMode(mode); // change to profile position
+                if (!retValue.containsError())
+                {
+                    mode = 1;
+                    retValue += setOperationMode(mode); // change to profile position
+                }
+
+                retValue += updateStatusMCS();
             }
 
             if (!retValue.containsError())
             {
-                m_params["homed"].setVal<int>(1);
+                m_params["homed"].setVal<int>(m_params["setPointAcknowledged"].getVal<int>());
             }
 
             if (waitCond)
@@ -1759,153 +1776,100 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
+ito::RetVal FaulhaberMCS::convertErrorCode(
+    const eMomanprot& error,
+    const QString& functionName,
+    /*const*/ const unsigned int& abortMessage)
 {
-    ito::RetVal retVal(ito::retOk);
-    eMomanprot error = mmProtGetObj(m_node, 0x6080, 0x00, speed);
+    ito::RetVal retVal;
     if (error != eMomanprot_ok)
     {
         retVal += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during get max motor speed method with error message: '%1'!")
+            tr("Error during function '%1' with error message: '%2' and abort "
+               "message: '%3'.")
+                .arg(functionName)
                 .arg(mmProtGetErrorMessage(error))
+                .arg(abortMessage)
                 .toLatin1()
                 .data());
     }
+    else
+    {
+        retVal = ito::retOk;
+    }
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
+{
+    eMomanprot error = mmProtGetObj(m_node, 0x6080, 0x00, speed);
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setMaxMotorSpeed(int& speed)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error = mmProtSetObj(m_node, 0x6080, 0x00, speed, sizeof(speed), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set max motor speed method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getProfileVelocity(int& speed)
 {
-    ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6081, 0x00, speed);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get velocity method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setProfileVelocity(int& speed)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error = mmProtSetObj(m_node, 0x6081, 0x00, speed, sizeof(speed), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set velocity method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getAcceleration(int& acceleration)
 {
-    ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6083, 0x00, acceleration);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get acceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setAcceleration(int& acceleration)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error =
         mmProtSetObj(m_node, 0x6083, 0x00, acceleration, sizeof(acceleration), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set acceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeceleration(int& deceleration)
 {
-    ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6084, 0x00, deceleration);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get deceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setDeceleration(int& deceleration)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error =
         mmProtSetObj(m_node, 0x6084, 0x00, deceleration, sizeof(deceleration), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set deceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1913,135 +1877,64 @@ ito::RetVal FaulhaberMCS::getQuickStopDeceleration(int& deceleration)
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6085, 0x00, deceleration);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get quickstop deceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setQuickStopDeceleration(int& deceleration)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error =
         mmProtSetObj(m_node, 0x6085, 0x00, deceleration, sizeof(deceleration), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set quickstop deceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingMode(int& mode)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error = mmProtSetObj(m_node, 0x6098, 0x00, mode, sizeof(mode), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set quickstop deceleration method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTorqueLimits(int limits[])
 {
-    ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x60E1, 0x00, limits[0]);
     error = mmProtGetObj(m_node, 0x60E0, 0x00, limits[1]);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get torque limits method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setTorqueLimits(int limits[])
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
     eMomanprot error =
         mmProtSetObj(m_node, 0x60E1, 0x00, limits[0], sizeof(limits[0]), abortMessage);
     error = mmProtSetObj(m_node, 0x60E0, 0x00, limits[1], sizeof(limits[1]), abortMessage);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set torque limit method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
 {
-    ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6060, 0x00, mode);
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during get operation mode method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setOperationMode(int& mode, /*const*/ int subindex)
+ito::RetVal FaulhaberMCS::setOperationMode(int& mode)
 {
-    ito::RetVal retVal(ito::retOk);
     unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x6060, 0x00, mode, sizeof(mode), abortMessage);
 
-    eMomanprot error = mmProtSetObj(m_node, 0x6060, subindex, mode, sizeof(mode), abortMessage);
-
-    if (error != eMomanprot_ok)
-    {
-        retVal += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during set operation mode method with error message: '%1'!")
-                .arg(mmProtGetErrorMessage(error))
-                .toLatin1()
-                .data());
-    }
-    return retVal;
+    return convertErrorCode(error, __func__, abortMessage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2051,13 +1944,6 @@ int FaulhaberMCS::doubleToInteger(double& value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method must be overwritten from ito::AddInActuator
-/*!
-    WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is
-   indicated) have stopped or a timeout or user interruption occurred. The timeout can be given in
-   milliseconds, or -1 if no timeout should be considered. The flag-parameter can be used for your
-   own purpose.
-*/
 ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
@@ -2068,8 +1954,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
-
-    // if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) // all axis
     {

@@ -177,27 +177,38 @@ public slots:
     ito::RetVal getPosMCS(int& pos);
     ito::RetVal getTargetPosMCS(int& pos);
     ito::RetVal getAmbientTemperature(int& temp);
+
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(double& pos);
 
     ito::RetVal getMaxMotorSpeed(int& speed);
     ito::RetVal setMaxMotorSpeed(int& speed);
+
     ito::RetVal getProfileVelocity(int& speed);
     ito::RetVal setProfileVelocity(int& speed);
+
     ito::RetVal getAcceleration(int& acceleration);
     ito::RetVal setAcceleration(int& acceleration);
+
     ito::RetVal getDeceleration(int& deceleration);
     ito::RetVal setDeceleration(int& deceleration);
+
     ito::RetVal getQuickStopDeceleration(int& deceleration);
     ito::RetVal setQuickStopDeceleration(int& deceleration);
 
+
     ito::RetVal setHomingMode(int& mode);
+
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(int limits[]);
+
     ito::RetVal getOperationMode(int& mode);
-    ito::RetVal setOperationMode(int& mode, int subindex=0x00);
+    ito::RetVal setOperationMode(int& mode);
 
     ito::RetVal updateStatusMCS();
+
+    ito::RetVal convertErrorCode(
+        const eMomanprot& error, const QString& functionName, const unsigned int& abortMessage = 0);
 
     int doubleToInteger(double& value);
 
