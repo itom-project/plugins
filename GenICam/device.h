@@ -55,7 +55,15 @@ using namespace GENAPI_NAMESPACE;
 class GenTLDevice : public BasePort
 {
 public:
-    GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval);
+    GenTLDevice(
+        QSharedPointer<QLibrary> lib,
+        GenTL::DEV_HANDLE devHandle,
+        const QByteArray &deviceID,
+        const QByteArray &modelName,
+        const QByteArray &identifier,
+        int verbose,
+        ito::RetVal &retval);
+
     ~GenTLDevice();
 
     QByteArray getDeviceID() const { return m_deviceID; }
@@ -77,6 +85,7 @@ protected:
     GenTL::DEV_HANDLE m_cameraHandle;
     QByteArray m_deviceID;
     QByteArray m_identifier;
+    QByteArray m_modelName;
     GenTL::EVENT_HANDLE m_errorEvent;
 };
 

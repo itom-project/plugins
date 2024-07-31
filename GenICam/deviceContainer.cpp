@@ -770,7 +770,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 qDebug() << id << vendor << model << identifier;
 
 
-                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, m_verbose, retval);
+                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, model, identifier, m_verbose, retval);
                 if (!retval.containsError())
                 {
                     return QSharedPointer<GenTLDevice>( gtld );
