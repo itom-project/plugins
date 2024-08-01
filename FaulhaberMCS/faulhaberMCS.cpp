@@ -897,7 +897,7 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "operationMode")
         {
-            int mode = val->getVal<int>();
+            uint8_t mode = uint8_t(val->getVal<int>());
             retValue += setOperationMode(mode);
             retValue += it->copyValueFrom(&(*val));
         }
@@ -1075,13 +1075,11 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
             foreach (const int& i, axis)
             {
-                int mode;
-                retValue += updateStatusMCS();
-                if (!retValue.containsError())
-                {
-                    mode = 1;
-                    retValue += setOperationMode(mode); // change to profile position
-                }
+            }
+
+            foreach (const int& i, axis)
+            {
+                uint8_t mode;
 
                 if (!retValue.containsError())
                 {
@@ -1089,7 +1087,6 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
                     retValue += setOperationMode(mode); // change to homing mode
                 }
 
-                retValue += updateStatusMCS();
                 if (!retValue.containsError())
                 {
                     mode = 37; // set current position to 0
@@ -1098,16 +1095,52 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
                 if (!retValue.containsError())
                 {
-                    mode = 1;
-                    retValue += setOperationMode(mode); // change to profile position
+                    mode = 0x000F;
+                    retValue += setControlword(mode, 2);
+                    retValue += updateStatusMCS();
+
+                    if (!(m_statusWord & targetReached) && !(m_statusWord & setPointAcknowledged))
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("target not reached during homing").toLatin1().data());
+                    }
+                    else if (m_statusWord & followingError)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError, 0, tr("Error occurs during homing. ").toLatin1().data());
+                    }
+                    else
+                    {
+                        m_targetPos[i] = 0.0;
+                        sendTargetUpdate();
+                    }
+
+                    mode = 0x001F;
+                    retValue += setControlword(mode, 2);
+
+
+                    int currentPos;
+                    retValue += getPosMCS(currentPos);
+
+                    m_currentPos[i] = currentPos;
+                    setStatus(
+                        m_currentStatus[i],
+                        ito::actuatorAtTarget,
+                        ito::actSwitchesMask | ito::actStatusMask);
                 }
 
-                retValue += updateStatusMCS();
+                if (!retValue.containsError())
+                {
+                    mode = 1;
+                    retValue += setOperationMode(mode); // change to profile operation mode
+                }
             }
 
             if (!retValue.containsError())
             {
-                m_params["homed"].setVal<int>(m_params["setPointAcknowledged"].getVal<int>());
+                m_params["homed"].setVal<int>(1);
             }
 
             if (waitCond)
@@ -1608,21 +1641,11 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
         if (error == eMomanprot_ok)
         {
             // Enable Operation:
-            error = mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage);
+            error = mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, sizeof(0), abortMessage);
             if (error == eMomanprot_ok)
             {
                 // Move absolute:
-                error = mmProtSetObj(m_node, 0x6040, 0x00, 0x003F, 2, abortMessage);
-                if (error != eMomanprot_ok)
-                {
-                    retVal += ito::RetVal(
-                        ito::retError,
-                        0,
-                        tr("Error during get position method with error message: '%1'!")
-                            .arg(mmProtGetAbortMessage(abortMessage))
-                            .toLatin1()
-                            .data());
-                }
+                retVal += setControlword(0x003F, 2);
             }
         }
     }
@@ -1649,21 +1672,11 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
             if (error == eMomanprot_ok)
             {
                 // Move relative:
-                error = mmProtSetObj(m_node, 0x6040, 0x00, 0x007F, 2, abortMessage);
-                if (error != eMomanprot_ok)
-                {
-                    retVal += ito::RetVal(
-                        ito::retError,
-                        0,
-                        tr("Error during get position method with error message: '%1'!")
-                            .arg(mmProtGetAbortMessage(abortMessage))
-                            .toLatin1()
-                            .data());
-                }
+                retVal += setControlword(0x007F, 2);
             }
         }
     }
-    return retVal;
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1671,11 +1684,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
     eMomanprot error = mmProtGetObj(m_node, 0x6041, 0x0, m_statusWord);
-    if (error != eMomanprot_ok)
-    {
-        retVal += convertErrorCode(error, __func__);
-    }
-    else
+    if (error == eMomanprot_ok)
     {
         m_params["statusWord"].setVal<int>(m_statusWord);
 
@@ -1696,7 +1705,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
     }
 
     sendStatusUpdate();
-    return retVal;
+    return convertErrorCode(error, __func__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1816,11 +1825,10 @@ ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setHomingMode(const int& mode)
+ito::RetVal FaulhaberMCS::setHomingMode(const uint8_t& mode)
 {
     unsigned int abortMessage;
-    int8_t homing = int8_t(mode);
-    eMomanprot error = mmProtSetObj(m_node, 0x6098, 0x00, homing, sizeof(homing), abortMessage);
+    eMomanprot error = mmProtSetObj(m_node, 0x6098, 0x00, mode, sizeof(mode), abortMessage);
 
     return convertErrorCode(error, __func__, abortMessage);
 }
@@ -1854,12 +1862,28 @@ ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setOperationMode(const int& mode)
+ito::RetVal FaulhaberMCS::setOperationMode(const uint8_t& mode)
 {
     unsigned int abortMessage;
-    int8_t operationMode = int8_t(mode);
-    eMomanprot error =
-        mmProtSetObj(m_node, 0x6060, 0x00, operationMode, sizeof(operationMode), abortMessage);
+    eMomanprot error = mmProtSetObj(m_node, 0x6060, 0x00, mode, sizeof(mode), abortMessage);
+
+    return convertErrorCode(error, __func__, abortMessage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getControlword(int& word)
+{
+    ito::RetVal retVal(ito::retOk);
+    eMomanprot error = mmProtGetObj(m_node, 0x6040, 0x00, word);
+
+    return convertErrorCode(error, __func__);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setControlword(const uint8_t& word, const int& len)
+{
+    unsigned int abortMessage;
+    eMomanprot error = mmProtSetObj(m_node, 0x6040, 0x00, word, len, abortMessage);
 
     return convertErrorCode(error, __func__, abortMessage);
 }

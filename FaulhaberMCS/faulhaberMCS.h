@@ -197,14 +197,16 @@ public slots:
     ito::RetVal setQuickStopDeceleration(const int& deceleration);
 
 
-    ito::RetVal setHomingMode(const int& mode);
+    ito::RetVal setHomingMode(const uint8_t& mode);
 
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(const int limits[]);
 
     ito::RetVal getOperationMode(int& mode);
-    ito::RetVal setOperationMode(const int& mode);
+    ito::RetVal setOperationMode(const uint8_t& mode);
 
+    ito::RetVal getControlword(int& word);
+    ito::RetVal setControlword(const uint8_t& word, const int& len);
     ito::RetVal updateStatusMCS();
 
     ito::RetVal convertErrorCode(
