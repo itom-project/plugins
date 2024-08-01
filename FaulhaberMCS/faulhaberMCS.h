@@ -77,6 +77,25 @@ private:
     int m_numOfAxes;
     int m_waitForDoneTimeout = 60000;
 
+    int m_node;
+    int m_statusWord;
+
+    enum statuswordBits
+    {
+        readyToSwitchOn = 1 << 0,
+        switchedOn = 1 << 1,
+        operationEnabled = 1 << 2,
+        fault = 1 << 3,
+        voltageEnabled = 1 << 4,
+        quickStop = 1 << 5,
+        switchOnDisabled = 1 << 6,
+        warning = 1 << 7,
+        targetReached = 1 << 10,
+        internalLimitActive = 1 << 11,
+        setPointAcknowledged = 1 << 12,
+        followingError = 1 << 13
+    };
+
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
@@ -109,26 +128,6 @@ private:
     tdmmProtFindConnection mmProtFindConnection;
     tdmmProtSendMotionCommand mmProtSendMotionCommand;
     tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
-
-    int m_node;
-    bool m_isComOpen;
-    int m_statusWord;
-
-    enum statuswordBits
-    {
-        readyToSwitchOn = 1 << 0,
-        switchedOn = 1 << 1,
-        operationEnabled = 1 << 2,
-        fault = 1 << 3,
-        voltageEnabled = 1 << 4,
-        quickStop = 1 << 5,
-        switchOnDisabled = 1 << 6,
-        warning = 1 << 7,
-        targetReached = 1 << 10,
-        internalLimitActive = 1 << 11,
-        setPointAcknowledged = 1 << 12,
-        followingError = 1 << 13
-    };
 
 
 public slots:
@@ -212,6 +211,7 @@ public slots:
     ito::RetVal convertErrorCode(
         const eMomanprot& error, const QString& functionName, const unsigned int& abortMessage = 0);
 
+    ito::RetVal homingCurrentPosToZero(const int& axis, const QElapsedTimer& timer);
     int doubleToInteger(const double& value);
 
 private slots:

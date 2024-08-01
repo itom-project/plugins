@@ -104,8 +104,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_hProtocolDll(nullptr), m_async(0), m_numOfAxes(1), m_node(1),
-    m_statusWord(0), m_isComOpen(false)
+    AddInActuator(), m_hProtocolDll(nullptr), m_async(0), m_numOfAxes(1), m_node(1), m_statusWord(0)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
@@ -549,21 +548,7 @@ ito::RetVal FaulhaberMCS::init(
         int baud = paramsOpt->at(0).getVal<int>();
 
         error = mmProtOpenCom(m_node, port, baud);
-        if (error != eMomanprot_ok)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error during opening COM Port with error message: '%1'!")
-                    .arg(mmProtGetErrorMessage(error))
-                    .toLatin1()
-                    .data());
-            m_isComOpen = false;
-        }
-        else
-        {
-            m_isComOpen = true;
-        }
+        retValue += convertErrorCode(error, __func__);
     }
 
     if (!retValue.containsError())
@@ -713,12 +698,9 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
 
     if (m_hProtocolDll)
     {
-        if (m_isComOpen)
-        {
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
-            mmProtCloseCom();
-            mmProtCloseInterface();
-        }
+        mmProtSendCommand(m_node, 0x0000, eMomancmd_stop, 0, 0);
+        mmProtCloseCom();
+        mmProtCloseInterface();
 
         FreeLibrary(m_hProtocolDll);
         m_hProtocolDll = nullptr;
@@ -822,10 +804,6 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         else if (key == "statusWord")
         {
             retValue += updateStatusMCS();
-            if (!retValue.containsError())
-            {
-                it->setVal<int>(m_statusWord);
-            }
         }
         else if (key == "torqueLimits")
         {
@@ -897,8 +875,7 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "operationMode")
         {
-            uint8_t mode = uint8_t(val->getVal<int>());
-            retValue += setOperationMode(mode);
+            retValue += setOperationMode(uint8_t(val->getVal<int>()));
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "operation")
@@ -954,48 +931,62 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "fault")
         {
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0); // fault reset
-            retValue += it->copyValueFrom(&(*val));
+            if (val->getVal<int>())
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0); // fault reset
+                retValue += it->copyValueFrom(&(*val));
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Set the parameter value to 1 for fault reset.").toLatin1().data());
+            }
         }
         else if (key == "voltage")
         {
-            mmProtSendCommand(m_node, 0x0000, eMomancmd_disable, 0, 0); // stop
-            retValue += it->copyValueFrom(&(*val));
+            if (val->getVal<int>())
+            {
+                mmProtSendCommand(m_node, 0x0000, eMomancmd_disable, 0, 0); // stop
+                retValue += it->copyValueFrom(&(*val));
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Set the parameter value to 1 to disable voltage.").toLatin1().data());
+            }
         }
         else if (key == "maxMotorSpeed")
         {
-            int speed = val->getVal<int>();
-            retValue += setMaxMotorSpeed(speed);
+            retValue += setMaxMotorSpeed(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "profileVelocity")
         {
-            int speed = val->getVal<int>();
-            retValue += setProfileVelocity(speed);
+            retValue += setProfileVelocity(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "acceleration")
         {
-            int acceleration = val->getVal<int>();
-            retValue += setAcceleration(acceleration);
+            retValue += setAcceleration(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "deceleration")
         {
-            int deceleration = val->getVal<int>();
-            retValue += setDeceleration(deceleration);
+            retValue += setDeceleration(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "quickStopDeceleration")
         {
-            int deceleration = val->getVal<int>();
-            retValue += setQuickStopDeceleration(deceleration);
+            retValue += setQuickStopDeceleration(val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "torqueLimits")
         {
-            int* limits = val->getVal<int*>();
-            retValue += setTorqueLimits(limits);
+            retValue += setTorqueLimits(val->getVal<int*>());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -1072,69 +1063,15 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
             retValue += waitForDone(5000, axis); // should drop into timeout
             retValue = ito::retOk;
+            QElapsedTimer* timer = new QElapsedTimer();
+            timer->start();
 
-            foreach (const int& i, axis)
+            for (const int& i : axis)
             {
-            }
-
-            foreach (const int& i, axis)
-            {
-                uint8_t mode;
-
-                if (!retValue.containsError())
+                if (auto result = homingCurrentPosToZero(i, *timer); result.containsError())
                 {
-                    mode = 6;
-                    retValue += setOperationMode(mode); // change to homing mode
-                }
-
-                if (!retValue.containsError())
-                {
-                    mode = 37; // set current position to 0
-                    retValue += setHomingMode(mode);
-                }
-
-                if (!retValue.containsError())
-                {
-                    mode = 0x000F;
-                    retValue += setControlword(mode, 2);
-                    retValue += updateStatusMCS();
-
-                    if (!(m_statusWord & targetReached) && !(m_statusWord & setPointAcknowledged))
-                    {
-                        retValue += ito::RetVal(
-                            ito::retError,
-                            0,
-                            tr("target not reached during homing").toLatin1().data());
-                    }
-                    else if (m_statusWord & followingError)
-                    {
-                        retValue += ito::RetVal(
-                            ito::retError, 0, tr("Error occurs during homing. ").toLatin1().data());
-                    }
-                    else
-                    {
-                        m_targetPos[i] = 0.0;
-                        sendTargetUpdate();
-                    }
-
-                    mode = 0x001F;
-                    retValue += setControlword(mode, 2);
-
-
-                    int currentPos;
-                    retValue += getPosMCS(currentPos);
-
-                    m_currentPos[i] = currentPos;
-                    setStatus(
-                        m_currentStatus[i],
-                        ito::actuatorAtTarget,
-                        ito::actSwitchesMask | ito::actStatusMask);
-                }
-
-                if (!retValue.containsError())
-                {
-                    mode = 1;
-                    retValue += setOperationMode(mode); // change to profile operation mode
+                    retValue += result;
+                    break;
                 }
             }
 
@@ -1150,8 +1087,77 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
             }
 
             sendStatusUpdate();
+            DELETE_AND_SET_NULL(timer);
         }
     }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis, const QElapsedTimer& timer)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    uint8_t mode = 6;
+    retValue += setOperationMode(mode); // Set to homing mode
+
+    if (retValue.containsError())
+        return retValue;
+
+    mode = 37;
+    retValue += setHomingMode(mode);
+    if (retValue.containsError())
+        return retValue;
+
+    mode = 0x000F; // Start homing
+    retValue += setControlword(mode, 2);
+
+    while (!retValue.containsWarningOrError())
+    {
+        Sleep(1);
+        retValue += updateStatusMCS();
+
+        if (!(m_statusWord & targetReached) && !(m_statusWord & setPointAcknowledged))
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Target not reached during homing").toLatin1().data());
+        }
+        else if (m_statusWord & followingError)
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
+        }
+        else
+        {
+            m_targetPos[axis] = 0.0;
+            sendTargetUpdate();
+            break;
+        }
+
+        if (timer.hasExpired(1000)) // Timeout during movement
+        {
+            retValue += ito::RetVal(
+                ito::retError, 9999, QString("Timeout occurred during homing").toLatin1().data());
+            break;
+        }
+    }
+
+    mode = 0x001F;
+    retValue += setControlword(mode, 2);
+
+    int currentPos;
+    retValue += getPosMCS(currentPos);
+
+    m_currentPos[axis] = currentPos;
+    setStatus(
+        m_currentStatus[axis], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+
+    if (retValue.containsError())
+        return retValue;
+
+    mode = 1;
+    retValue += setOperationMode(mode); // Set to profile operation mode
 
     return retValue;
 }
@@ -1917,7 +1923,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
-        if (!done && isInterrupted())
+        if (!done && isInterrupted()) // movement interrupted
         {
             mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
             mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
@@ -1930,7 +1936,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             return retVal;
         }
 
-        if (!retVal.containsError())
+        if (!retVal.containsError()) // short delay to reduce CPU load
         {
             // short delay of 10ms
             waitMutex.lock();
@@ -1941,18 +1947,17 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         for (int i = 0; i < axis.size(); ++i) // Check for completion
         {
-            int currentPos;
-            int targetPos;
-            retVal += getPosMCS(currentPos);
-            m_currentPos[i] = double(currentPos);
-
-            retVal += getTargetPosMCS(targetPos);
-            m_targetPos[i] = double(targetPos);
-
-            // retVal += updateStatusMCS();
-
-            // if (!m_params["targetReached"].getVal<int>()) // wait for completion
-            if (targetPos != currentPos)
+            retVal += updateStatusMCS();
+            if ((m_statusWord & targetReached) && (m_statusWord & setPointAcknowledged))
+            {
+                setStatus(
+                    m_currentStatus[i],
+                    ito::actuatorAtTarget,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                done = true;
+                break;
+            }
+            else
             {
                 setStatus(
                     m_currentStatus[i],
@@ -1960,15 +1965,16 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = false;
             }
-            else // movement completed
-            {
-                setStatus(
-                    m_currentStatus[i],
-                    ito::actuatorAtTarget,
-                    ito::actSwitchesMask | ito::actStatusMask);
-                done = true;
-            }
+
+            int currentPos;
+            int targetPos;
+            retVal += getPosMCS(currentPos);
+            m_currentPos[i] = double(currentPos);
+
+            retVal += getTargetPosMCS(targetPos);
+            m_targetPos[i] = double(targetPos);
         }
+
         retVal += updateStatusMCS();
         sendStatusUpdate(false);
 
@@ -1988,14 +1994,17 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::waitForIntParam(
-    const char* parameter, const int& newValue, const int& timeoutMS, const int& sleepMS)
+    const char* parameter,
+    const int& newValue,
+    /*const*/ const int& timeoutMS,
+    /*const*/ const int& sleepMS)
 {
     ito::RetVal retVal = ito::retOk;
-    QElapsedTimer timer;
+    QElapsedTimer* timer = new QElapsedTimer();
 
     int value;
 
-    timer.start();
+    timer->start();
     while (!retVal.containsWarningOrError())
     {
         Sleep(sleepMS);
@@ -2008,7 +2017,7 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
             break;
         }
 
-        if (timer.hasExpired(timeoutMS)) // timeout during movement
+        if (timer->hasExpired(timeoutMS)) // timeout during movement
         {
             retVal += ito::RetVal(
                 ito::retError,
@@ -2017,7 +2026,7 @@ ito::RetVal FaulhaberMCS::waitForIntParam(
             break;
         }
     }
-
+    DELETE_AND_SET_NULL(timer);
     return retVal;
 }
 
