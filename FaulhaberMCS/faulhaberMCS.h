@@ -211,7 +211,7 @@ public slots:
     ito::RetVal convertErrorCode(
         const eMomanprot& error, const QString& functionName, const unsigned int& abortMessage = 0);
 
-    ito::RetVal homingCurrentPosToZero(const int& axis, const QElapsedTimer& timer);
+    ito::RetVal homingCurrentPosToZero(const int& axis);
     int doubleToInteger(const double& value);
 
 private slots:

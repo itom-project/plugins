@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>335</width>
-    <height>407</height>
+    <height>410</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,6 +20,18 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
    <item row="2" column="0">
     <widget class="QGroupBox" name="groupBoxDeviceStatus">
      <property name="enabled">

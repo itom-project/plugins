@@ -1043,6 +1043,7 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
         }
     }
 
+    // homing routine if motor is not moving
     if (!retValue.containsError())
     {
         if (isMotorMoving())
@@ -1061,14 +1062,9 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
 
-            retValue += waitForDone(5000, axis); // should drop into timeout
-            retValue = ito::retOk;
-            QElapsedTimer* timer = new QElapsedTimer();
-            timer->start();
-
             for (const int& i : axis)
             {
-                if (auto result = homingCurrentPosToZero(i, *timer); result.containsError())
+                if (auto result = homingCurrentPosToZero(i); result.containsError())
                 {
                     retValue += result;
                     break;
@@ -1087,7 +1083,6 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
             }
 
             sendStatusUpdate();
-            DELETE_AND_SET_NULL(timer);
         }
     }
 
@@ -1095,53 +1090,61 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis, const QElapsedTimer& timer)
+ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 {
     ito::RetVal retValue = ito::retOk;
+    QElapsedTimer timer;
+    timer.start();
 
+    // Set to homing mode
     uint8_t mode = 6;
-    retValue += setOperationMode(mode); // Set to homing mode
-
+    retValue += setOperationMode(mode);
     if (retValue.containsError())
         return retValue;
 
+    // Apply homing mode
     mode = 37;
     retValue += setHomingMode(mode);
     if (retValue.containsError())
         return retValue;
 
-    mode = 0x000F; // Start homing
+    // Start homing
+    mode = 0x000F;
     retValue += setControlword(mode, 2);
 
     while (!retValue.containsWarningOrError())
     {
+        isAlive();
         Sleep(1);
         retValue += updateStatusMCS();
 
-        if (!(m_statusWord & targetReached) && !(m_statusWord & setPointAcknowledged))
+        if (!(m_statusWord & targetReached) &&
+            !(m_statusWord & setPointAcknowledged)) // target still not reached
         {
             retValue += ito::RetVal(
                 ito::retError, 0, tr("Target not reached during homing").toLatin1().data());
         }
-        else if (m_statusWord & followingError)
+        else if (m_statusWord & followingError) // error during homing
         {
             retValue +=
                 ito::RetVal(ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
         }
-        else
+        else // target reached
         {
             m_targetPos[axis] = 0.0;
             sendTargetUpdate();
             break;
         }
 
-        if (timer.hasExpired(1000)) // Timeout during movement
+        // Timeout during movement
+        if (timer.hasExpired(10000))
         {
             retValue += ito::RetVal(
                 ito::retError, 9999, QString("Timeout occurred during homing").toLatin1().data());
             break;
         }
     }
+
 
     mode = 0x001F;
     retValue += setControlword(mode, 2);
@@ -1156,8 +1159,9 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis, const QElapsed
     if (retValue.containsError())
         return retValue;
 
+    // Set to profile operation mode
     mode = 1;
-    retValue += setOperationMode(mode); // Set to profile operation mode
+    retValue += setOperationMode(mode);
 
     return retValue;
 }
