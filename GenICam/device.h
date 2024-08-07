@@ -61,12 +61,16 @@ public:
         const QByteArray &deviceID,
         const QByteArray &modelName,
         const QByteArray &identifier,
+        const QByteArray &serialNumber,
         int verbose,
         ito::RetVal &retval);
 
     ~GenTLDevice();
 
     QByteArray getDeviceID() const { return m_deviceID; }
+
+    //!< returns the serial number of this device or an empty string if not available
+    QByteArray getSerialNumber() const { return m_serialNumber; }
 
     QSharedPointer<GenTLDataStream> getDataStream(ito::int32 streamIndex, ito::RetVal &retval);
 
@@ -84,6 +88,7 @@ protected:
     QSharedPointer<QTimer> m_callbackParameterChangedTimer;
     GenTL::DEV_HANDLE m_cameraHandle;
     QByteArray m_deviceID;
+    QByteArray m_serialNumber;
     QByteArray m_identifier;
     QByteArray m_modelName;
     GenTL::EVENT_HANDLE m_errorEvent;

@@ -87,6 +87,13 @@ protected:
 
     void printBufferInfo(const char *prefix, GenTL::BUFFER_HANDLE buffer);
 
+    enum SpecialModelType
+    {
+        NoSpecialType,
+        IDS_U3_38Jx,
+        IDS_U3_33Fx
+    };
+
     GenTL::DS_HANDLE m_handle;
     GenTL::EVENT_HANDLE m_newBufferEvent;
     GenTL::EVENT_HANDLE m_errorEvent;
@@ -117,6 +124,7 @@ protected:
     int m_verbose;
     bool m_flushAllBuffersToInput; //see init parameter with the same name
     QByteArray m_modelName;
+    SpecialModelType m_specialModelType; // some models require some special data treatment. This member is for a fast lookup of this.
 
     std::vector<char> m_charBuffer_cache;
 

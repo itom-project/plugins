@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -53,6 +53,8 @@ public:
     int getNumDevices() const;
 
     QSharedPointer<GenTLDevice> getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval);
+
+    static const QByteArray SerialNumberPrefix;
 
 protected:
     ito::RetVal printDeviceInfo(const char* sDeviceID) const;

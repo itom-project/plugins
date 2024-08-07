@@ -1532,7 +1532,7 @@ QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= 
         m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 1    << 1          << 1    << 1      << 1      << 1;
 
         // add IDS imaging specific values
-        m_supportedFormats << PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS; // PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS
+        m_supportedFormats << PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS;
         m_supportedFormatsBpp << 10;
         m_supportedFormatsColor << 1;
 

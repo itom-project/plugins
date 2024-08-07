@@ -41,7 +41,7 @@ GenTLDataStream::GenTLDataStream(
     m_lib(lib), m_newBufferEvent(GENTL_INVALID_HANDLE), m_errorEvent(GENTL_INVALID_HANDLE),
     m_acquisitionStarted(false), m_payloadSize(0), m_timeoutMS(0), m_usePreAllocatedBuffer(-1),
     m_endianessChanged(true), m_verbose(verbose), m_flushAllBuffersToInput(false),
-    m_modelName(modelName)
+    m_modelName(modelName), m_specialModelType(NoSpecialType)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -116,6 +116,43 @@ GenTLDataStream::GenTLDataStream(
     if (!retval.containsError())
     {
         // check how much memory the event need to have and allocate it
+    }
+
+    // some camera models require some special data treatment. For a fast lookup for this is the
+    // often called data conversion methods, the model name is analyzed here and transformed to a
+    // enum value, that can be accessed in a fast switch case
+    if (m_modelName.startsWith("U3-38J"))
+    {
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+        m_specialModelType = IDS_U3_38Jx;
+
+        // this camera supports the following image formats:
+        //
+        // U3-38J6XLE-C-HQ:
+        // BayerRG10g40IDS
+        // BayerRG12g24IDS (not supported by this plugin)
+        //
+        // U3-38J6XLE-M-GL:
+        // Mono10g40IDS (not supported by this plugin)
+        // Mono12g24IDS (not supported by this plugin)
+
+    }
+    else if (m_modelName.startsWith("U3-33F"))
+    {
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+        m_specialModelType = IDS_U3_33Fx;
+
+        // this camera supports the following image formats:
+        //
+        // U3-33F4XLS-M-GL:
+        // Mono8
+        // Mono10g40IDS (not supported by this plugin)
+        // Mono12g24IDS (not supported by this plugin)
+        //
+        // U3-33F4XLS-C-HQ:
+        // BayerRG8
+        // BayerRG10g40IDS
+        // BayerRG12g24IDS (not supported by this plugin)
     }
 }
 
@@ -1532,8 +1569,30 @@ ito::RetVal GenTLDataStream::copyMono8ToDataObject(
     bool littleEndian,
     ito::DataObject& dobj)
 {
+    size_t real_height = height;
+
+    // some IDS camera models have additional image lines at the front, which are black and
+    // are skipped by IDS Peak. Here, we have to do this manually!
+    switch (m_specialModelType)
+    {
+    case IDS_U3_38Jx:
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+        //real_height -= 38;
+        real_height = dobj.getSize(0); // safer
+        ptr += 38 * width * 5 / 4;
+        break;
+    case IDS_U3_33Fx:
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+        //real_height -= 65;
+        real_height = dobj.getSize(0); // safer
+        ptr += 65 * width * 5 / 4;
+        break;
+    default:
+        break;
+    }
+
     // little or big endian is idle for mono8:
-    return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
+    return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, real_height);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1671,8 +1730,29 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
     ito::DataObject& dobj)
 {
     ito::RetVal retVal = ito::retOk;
+    size_t real_height = height;
 
-    cv::Mat sourceImage = cv::Mat(height, width, CV_8UC1, (void*)ptr);
+    // some IDS camera models have additional image lines at the front, which are black and
+    // are skipped by IDS Peak. Here, we have to do this manually!
+    switch (m_specialModelType)
+    {
+    case IDS_U3_38Jx:
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+        //real_height -= 38;
+        real_height = dobj.getSize(0); // safer
+        ptr += 38 * width;
+        break;
+    case IDS_U3_33Fx:
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+        //real_height -= 65;
+        real_height = dobj.getSize(0); // safer
+        ptr += 65 * width;
+        break;
+    default:
+        break;
+    }
+
+    cv::Mat sourceImage = cv::Mat(real_height, width, CV_8UC1, (void*)ptr);
 
     cv::Mat rgbImage;
 #if (CV_MAJOR_VERSION > 3)
@@ -1685,7 +1765,7 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
     ito::RgbaBase32* rowPtrDst;
     const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
 
-    for (int y = 0; y < height; y++)
+    for (int y = 0; y < real_height; y++)
     {
         rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
@@ -1711,19 +1791,22 @@ ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(const char* pt
 
     // some IDS camera models have additional image lines at the front, which are black and
     // are skipped by IDS Peak. Here, we have to do this manually!
-    if (m_modelName.startsWith("U3-38Jx"))
+    switch (m_specialModelType)
     {
+    case IDS_U3_38Jx:
         // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
         //real_height -= 38;
         real_height = dobj.getSize(0); // safer
         ptr += 38 * width * 5 / 4;
-    }
-    else if (m_modelName.startsWith("U3-33Fx"))
-    {
+        break;
+    case IDS_U3_33Fx:
         // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
         //real_height -= 65;
         real_height = dobj.getSize(0); // safer
         ptr += 65 * width * 5 / 4;
+        break;
+    default:
+        break;
     }
 
     if (m_charBuffer_cache.size() < width * real_height)
