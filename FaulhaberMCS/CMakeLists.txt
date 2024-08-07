@@ -17,102 +17,89 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SD
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
-set(FAULHABER_MOMANLIB_ROOT "" CACHE PATH "path to the Faulaber Momanlib root directory")
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 
-if(FAULHABER_MOMANLIB_ROOT)
-    find_path(FAULHABER_MOMANLIB_INCLUDE_DIR NAMES Momanusb.h PATHS "${FAULHABER_MOMANLIB_ROOT}/Lib64/Include")
+include(ItomBuildMacros)
 
-    find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+itom_init_cmake_policy(3.12)
+itom_find_package_qt(ON Core Widgets LinguistTools)
 
-    include(ItomBuildMacros)
+itom_init_plugin_library(${target_name})
 
-    itom_init_cmake_policy(3.12)
-    itom_find_package_qt(ON Core Widgets LinguistTools)
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
+    ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
+    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
+)
 
-    itom_init_plugin_library(${target_name})
+link_directories(
+    #add all linker directories
+)
 
-    include_directories(
-        ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
-        ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-        ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) as well as necessary 3rd party directories (e.g. from OpenCV)
-        ${FAULHABER_MOMANLIB_INCLUDE_DIR}
+set(PLUGIN_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
+)
+
+set(PLUGIN_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.cpp
+    #add further source files here
+)
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
+if(MSVC)
+    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+endif()
+
+set(PLUGIN_UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.ui
+)
+
+set(PLUGIN_RCC
+    #add absolute paths to any *.qrc resource files here
+)
+
+add_library(${target_name} SHARED
+    ${PLUGIN_SOURCES}
+    ${PLUGIN_HEADERS}
+    ${PLUGIN_UI}
+    ${PLUGIN_RCC}
     )
 
-    link_directories(
-        #add all linker directories
+set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
+target_link_libraries(${target_name}
+    ${ITOM_SDK_LIBRARIES}
+    ${QT5_LIBRARIES}
+    ${VISUALLEAKDETECTOR_LIBRARIES}
     )
 
-    set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-        ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
+set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
+itom_library_translation(
+    QM_FILES
+    TARGET ${target_name}
+    FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
     )
 
-    set(PLUGIN_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.cpp
-        #add further source files here
-    )
+itom_configure_plugin_documentation(${target_name} FaulhaberMCS)
 
-    #Define Version in pluginVersion.h
-    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+set(COPY_SOURCES "")
+set(COPY_DESTINATIONS "")
 
-    if(MSVC)
-        list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-    endif()
+itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 
-    set(PLUGIN_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.ui
-    )
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    set(PLUGIN_RCC
-        #add absolute paths to any *.qrc resource files here
-    )
+set(BINARY_FILES "")
 
-    add_library(${target_name} SHARED
-        ${PLUGIN_SOURCES}
-        ${PLUGIN_HEADERS}
-        ${PLUGIN_UI}
-        ${PLUGIN_RCC}
-        )
-
-    set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
-
-    target_link_libraries(${target_name}
-        ${ITOM_SDK_LIBRARIES}
-        ${QT5_LIBRARIES}
-        ${VISUALLEAKDETECTOR_LIBRARIES}
-        )
-
-    set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
-    itom_library_translation(
-        QM_FILES
-        TARGET ${target_name}
-        FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
-        )
-
-    itom_configure_plugin_documentation(${target_name} FaulhaberMCS)
-
-    set(COPY_SOURCES "")
-    set(COPY_DESTINATIONS "")
-
-    itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    itom_add_plugin_qm_files_to_copy_list(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-
-    itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
-    set(BINARY_FILES
-        "${FAULHABER_MOMANLIB_ROOT}/Lib64/Bin/Interface/COM/Mocom.dll"
-        "${FAULHABER_MOMANLIB_ROOT}/Lib64/Bin/Protocol/COM/CO_RS232.dll"
-        )
-
-    itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)
-
-else(FAULHABER_MOMANLIB_ROOT)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
-endif(FAULHABER_MOMANLIB_ROOT)
+itom_post_build_copy_files_to_lib_folder(${target_name} BINARY_FILES)

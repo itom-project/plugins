@@ -23,8 +23,6 @@
 #ifndef FAULHABERMCS_H
 #define FAULHABERMCS_H
 
-#include "Momancmd.h"
-#include "Momanprot.h"
 #include "common/addInInterface.h"
 #include "dialogFaulhaberMCS.h"
 #include "dockWidgetFaulhaberMCS.h"
@@ -72,6 +70,9 @@ public:
     }; //!< indicates that this plugin has got a configuration dialog
 
 private:
+    ito::AddInDataIO* m_pSerialIO;
+    int m_delayAfterSendCommandMS;
+    int m_requestTimeOutMS;
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
     int m_numOfAxes;
@@ -101,34 +102,18 @@ private:
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
         const int flags = 0 /*for your use*/);
 
-    ito::RetVal waitForIntParam(
-        const char* parameter,
-        const int& newValue,
-        const int& timeoutMS = 1000,
-        const int& sleepMS = 10);
-
     ito::RetVal updateStatus(); // optional method to obtain the status and position of all
                                 // connected axes
 
-    HINSTANCE m_hProtocolDll;
-
-    tdmmProtInitInterface mmProtInitInterface;
-    tdmmProtCloseInterface mmProtCloseInterface;
-    tdmmProtOpenCom mmProtOpenCom;
-    tdmmProtCloseCom mmProtCloseCom;
-    tdmmProtSendCommand mmProtSendCommand;
-    tdmmProtReadAnswer mmProtReadAnswer;
-    tdmmProtDecodeAnswStr mmProtDecodeAnswStr;
-    tdmmProtGetStrObj mmProtGetStrObj;
-    tdmmProtSetStrObj mmProtSetStrObj;
-    tdmmProtGetAbortMessage mmProtGetAbortMessage;
-    tdmmProtGetErrorMessage mmProtGetErrorMessage;
-    tdmmProtGetObj mmProtGetObj;
-    tdmmProtSetObj mmProtSetObj;
-    tdmmProtFindConnection mmProtFindConnection;
-    tdmmProtSendMotionCommand mmProtSendMotionCommand;
-    tdmmProtCheckMotionCommand mmProtCheckMotionCommand;
-
+    // SeralIO functions
+    ito::RetVal sendCommand(const QByteArray& command);
+    ito::RetVal readString(QByteArray& result, int& len);
+    ito::RetVal sendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer);
+    ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
+    ito::RetVal sendQuestionWithAnswerDoubleArray(
+        const QByteArray& questionCommand, double* answer, const int number);
+    ito::RetVal sendQuestionWithAnswerInteger(const QByteArray& questionCommand, int& answer);
+    void filterCommand(const QByteArray& questionCommand, QByteArray& answer);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -207,9 +192,6 @@ public slots:
     ito::RetVal getControlword(int& word);
     ito::RetVal setControlword(const uint8_t& word, const int& len);
     ito::RetVal updateStatusMCS();
-
-    ito::RetVal convertErrorCode(
-        const eMomanprot& error, const QString& functionName, const unsigned int& abortMessage = 0);
 
     ito::RetVal homingCurrentPosToZero(const int& axis);
     int doubleToInteger(const double& value);

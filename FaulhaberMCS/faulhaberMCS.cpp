@@ -53,11 +53,9 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
     m_detaildescription =
         QObject::tr("This plugin is an actuator plugin to control servo motors from Faulhaber.\n\
 \n\
-It was implemented and tested with:\n\
+It was implemented for RS232 communication and tested with:\n\
 \n\
-* Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/ \n\
-\n\
-It requires the Communication Library MomanLib: https://www.faulhaber.com/en/support/drive-electronics/#c65284.");
+* Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
@@ -66,21 +64,21 @@ It requires the Communication Library MomanLib: https://www.faulhaber.com/en/sup
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
+    ito::Param paramVal(
+        "serialIOInstance",
+        ito::ParamBase::HWRef | ito::ParamBase::In,
+        nullptr,
+        tr("An opened serial port of 'SerialIO' plugin instance.").toLatin1().data());
+    paramVal.setMeta(new ito::HWMeta("Communication"), true);
+    m_initParamsMand.append(paramVal);
+
     ito::Param paramVal = ito::Param(
-        "COMPort",
+        "Node",
         ito::ParamBase::Int,
         1,
         new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Communication"),
-        tr("COM port of device.").toLatin1().data());
+        tr("Node number of device.").toLatin1().data());
     m_initParamsMand.append(paramVal);
-
-    paramVal = ito::Param(
-        "baudrate",
-        ito::ParamBase::Int,
-        112500,
-        new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Communication"),
-        tr("Baudrate in Bit/s of COM port.").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -104,7 +102,8 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_hProtocolDll(nullptr), m_async(0), m_numOfAxes(1), m_node(1), m_statusWord(0)
+    AddInActuator(), m_delayAfterSendCommandMS(10), m_async(0), m_numOfAxes(1), m_node(1),
+    m_statusWord(0), m_requestTimeOutMS(5000)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
@@ -461,94 +460,31 @@ ito::RetVal FaulhaberMCS::init(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    eMomanprot error;
 
-    m_hProtocolDll = LoadLibraryA("CO_RS232.dll");
-    if (m_hProtocolDll == nullptr)
+    if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
+            ->getBasePlugin()
+            ->getType() &
+        (ito::typeDataIO | ito::typeRawIO))
     {
-        retValue +=
-            ito::RetVal(ito::retError, 0, tr("CO_RS232.dll cannot be loaded!").toLatin1().data());
+        // Us given SerialIO instance
+        m_pSerialIO = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
+        m_node = paramsMand->at(1).getVal<int>();
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!")
+                .toLatin1()
+                .data());
     }
 
     if (!retValue.containsError())
     {
-        // Needed functions of the communication library:
-        bool ok = true;
-        mmProtInitInterface =
-            (tdmmProtInitInterface)GetProcAddress(m_hProtocolDll, "mmProtInitInterface");
-        ok &= mmProtInitInterface != nullptr;
-        mmProtCloseInterface =
-            (tdmmProtCloseInterface)GetProcAddress(m_hProtocolDll, "mmProtCloseInterface");
-        ok &= mmProtCloseInterface != nullptr;
-        mmProtOpenCom = (tdmmProtOpenCom)GetProcAddress(m_hProtocolDll, "mmProtOpenCom");
-        ok &= mmProtOpenCom != nullptr;
-        mmProtCloseCom = (tdmmProtCloseCom)GetProcAddress(m_hProtocolDll, "mmProtCloseCom");
-        ok &= mmProtCloseCom != nullptr;
-        mmProtSendCommand =
-            (tdmmProtSendCommand)GetProcAddress(m_hProtocolDll, "mmProtSendCommand");
-        ok &= mmProtSendCommand != nullptr;
-        mmProtReadAnswer = (tdmmProtReadAnswer)GetProcAddress(m_hProtocolDll, "mmProtReadAnswer");
-        ok &= mmProtReadAnswer != nullptr;
-        mmProtDecodeAnswStr =
-            (tdmmProtDecodeAnswStr)GetProcAddress(m_hProtocolDll, "mmProtDecodeAnswStr");
-        ok &= mmProtDecodeAnswStr != nullptr;
-        mmProtGetStrObj = (tdmmProtGetStrObj)GetProcAddress(m_hProtocolDll, "mmProtGetStrObj");
-        ok &= mmProtGetStrObj != nullptr;
-        mmProtSetStrObj = (tdmmProtSetStrObj)GetProcAddress(m_hProtocolDll, "mmProtSetStrObj");
-        ok &= mmProtSetStrObj != nullptr;
-        mmProtSetObj = (tdmmProtSetObj)GetProcAddress(m_hProtocolDll, "mmProtSetObj");
-        ok &= mmProtSetObj != nullptr;
-        mmProtGetAbortMessage =
-            (tdmmProtGetAbortMessage)GetProcAddress(m_hProtocolDll, "mmProtGetAbortMessage");
-        ok &= mmProtGetAbortMessage != nullptr;
-        mmProtGetErrorMessage =
-            (tdmmProtGetErrorMessage)GetProcAddress(m_hProtocolDll, "mmProtGetErrorMessage");
-        ok &= mmProtGetErrorMessage != nullptr;
-        mmProtGetObj = (tdmmProtGetObj)GetProcAddress(m_hProtocolDll, "mmProtGetObj");
-        ok &= mmProtGetObj != nullptr;
-        mmProtFindConnection =
-            (tdmmProtFindConnection)GetProcAddress(m_hProtocolDll, "mmProtFindConnection");
-        ok &= mmProtFindConnection != nullptr;
-        mmProtSendMotionCommand =
-            (tdmmProtSendMotionCommand)GetProcAddress(m_hProtocolDll, "mmProtSendMotionCommand");
-        ok &= mmProtSendMotionCommand != nullptr;
-        mmProtCheckMotionCommand =
-            (tdmmProtCheckMotionCommand)GetProcAddress(m_hProtocolDll, "mmProtCheckMotionCommand");
-        ok &= mmProtCheckMotionCommand != nullptr;
-
-        if (!ok)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error during definition of function forcommunication library!")
-                    .toLatin1()
-                    .data());
-        }
-    }
-
-    if (!retValue.containsError())
-    {
-        error = mmProtInitInterface((char*)"Mocom.dll", nullptr, nullptr);
-        if (error != eMomanprot_ok)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error during loading MC3USB.dll with error message: '%1'!")
-                    .arg(mmProtGetErrorMessage(error))
-                    .toLatin1()
-                    .data());
-        }
-    }
-
-    if (!retValue.containsError())
-    {
-        int port = paramsMand->at(0).getVal<int>();
-        int baud = paramsOpt->at(0).getVal<int>();
-
-        error = mmProtOpenCom(m_node, port, baud);
-        retValue += convertErrorCode(error, __func__);
+        QSharedPointer<QVector<ito::ParamBase>> _dummy;
+        m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+        m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
 
     if (!retValue.containsError())
@@ -2069,6 +2005,239 @@ ito::RetVal FaulhaberMCS::updateStatus()
     sendStatusUpdate();
 
     return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
+{
+    ito::RetVal retVal;
+    retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
+
+    if (m_delayAfterSendCommandMS > 0)
+    {
+        QMutex mutex;
+        mutex.lock();
+        QWaitCondition waitCondition;
+        waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
+        mutex.unlock();
+    }
+    setAlive();
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::readString(QByteArray& result, int& len)
+{
+    ito::RetVal retValue = ito::retOk;
+    QElapsedTimer timer;
+
+    bool done = false;
+    int curFrom = 0;
+    int pos = 0;
+
+    int buflen = 100;
+    QSharedPointer<int> curBufLen(new int);
+    QSharedPointer<char> curBuf(new char[buflen]);
+    result = "";
+
+    QByteArray endline;
+
+    QSharedPointer<ito::Param> param(new ito::Param("endline"));
+    retValue += m_pSerialIO->getParam(param, nullptr);
+
+    if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
+    {
+        char* temp = param->getVal<char*>(); // borrowed reference
+        int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
+        endline = QByteArray::fromRawData(temp, len);
+    }
+    else
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("could not read endline parameter from serial port").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        len = 0;
+        timer.start();
+        QThread::msleep(m_delayAfterSendCommandMS);
+
+        while (!done && !retValue.containsError())
+        {
+            *curBufLen = buflen;
+            retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
+
+
+            if (!retValue.containsError())
+            {
+                result += QByteArray(curBuf.data(), *curBufLen);
+                pos = result.indexOf(endline, curFrom);
+                curFrom = qMax(0, result.length() - 3);
+
+                if (pos >= 0) // found
+                {
+                    done = true;
+                    result = result.left(pos);
+                }
+            }
+
+            if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    m_delayAfterSendCommandMS,
+                    tr("timeout during read string.").toLatin1().data());
+            }
+        }
+
+        len = result.length();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendQuestionWithAnswerString(
+    const QByteArray& questionCommand, QByteArray& answer)
+{
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
+    int readSigns;
+    ito::RetVal retValue = sendCommand(questionCommand_);
+    retValue += readString(answer, readSigns);
+    filterCommand(questionCommand, answer);
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDouble(
+    const QByteArray& questionCommand, double& answer)
+{
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
+    int readSigns;
+    QByteArray answerStr;
+    bool ok;
+
+    ito::RetVal retValue = sendCommand(questionCommand_);
+    retValue += readString(answerStr, readSigns);
+
+    if (questionCommand_.contains("?"))
+    {
+        questionCommand_.replace("?", "");
+    }
+
+    filterCommand(questionCommand_, answerStr);
+    answer = answerStr.toDouble(&ok);
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(answerStr.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
+    const QByteArray& questionCommand, double* answer, const int number)
+{
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
+    int readSigns;
+    QByteArray answerStr;
+    bool ok = true;
+    ito::RetVal retValue = sendCommand(questionCommand_);
+    retValue += readString(answerStr, readSigns);
+
+    if (questionCommand_.contains("?"))
+    {
+        questionCommand_.replace("?", "");
+    }
+
+    filterCommand(questionCommand_, answerStr);
+
+    QRegularExpression regex("-?\\d+(\\.\\d+)?");
+    QRegularExpressionMatchIterator matchIterator = regex.globalMatch(answerStr);
+
+    // Extract and print all matched values
+    int n = 0;
+    QRegularExpressionMatch match;
+    QString matchedValue;
+    while (matchIterator.hasNext() && ok)
+    {
+        match = matchIterator.next();
+        matchedValue = match.captured();
+        answer[n] = matchedValue.toDouble(&ok);
+        n++;
+    }
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
+                .arg(answerStr.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendQuestionWithAnswerInteger(
+    const QByteArray& questionCommand, int& answer)
+{
+    QByteArray questionCommand_ = QString::number(m_controllerAddress).toUtf8() + questionCommand;
+    int readSigns;
+    QByteArray _answer;
+    bool ok;
+    ito::RetVal retValue = sendCommand(questionCommand_);
+    retValue += readString(_answer, readSigns);
+
+    if (questionCommand_.contains("?"))
+    {
+        questionCommand_.replace("?", "");
+    }
+
+    filterCommand(questionCommand_, _answer);
+    answer = _answer.toInt(&ok);
+
+    if (!ok)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::filterCommand(const QByteArray& questionCommand, QByteArray& answer)
+{
+    QRegularExpression regex("^(" + questionCommand + ")\\s*(.+)$");
+    QRegularExpressionMatch match = regex.match(answer);
+
+    if (match.hasMatch())
+    {
+        int index = answer.indexOf(match.captured(0).toUtf8().data());
+
+        if (index != -1)
+        {
+            answer.remove(index, questionCommand.length());
+        }
+        answer = answer.trimmed();
+    }
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
