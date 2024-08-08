@@ -113,7 +113,6 @@ private:
     ito::RetVal sendQuestionWithAnswerDoubleArray(
         const QByteArray& questionCommand, double* answer, const int number);
     ito::RetVal sendQuestionWithAnswerInteger(const QByteArray& questionCommand, int& answer);
-    void filterCommand(const QByteArray& questionCommand, QByteArray& answer);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -152,7 +151,7 @@ public slots:
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
     // Faulhaber MCS methods
-    ito::RetVal getSerialNumber(int& serialNum);
+    /*ito::RetVal getSerialNumber(int& serialNum);
     ito::RetVal getVendorID(int& id);
     ito::RetVal getProductCode(int& code);
     ito::RetVal getRevisionNumber(int& num);
@@ -191,9 +190,11 @@ public slots:
 
     ito::RetVal getControlword(int& word);
     ito::RetVal setControlword(const uint8_t& word, const int& len);
-    ito::RetVal updateStatusMCS();
-
+    ito::RetVal updateStatusMCS();*/
     ito::RetVal homingCurrentPosToZero(const int& axis);
+
+    uint8_t CRC(const std::vector<uint8_t>& msg);
+
     int doubleToInteger(const double& value);
 
 private slots:
