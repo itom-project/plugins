@@ -91,8 +91,6 @@ Put a detailed description about what the plugin is doing, what is needed to get
 */
 ThorlabsDMHInterface::~ThorlabsDMHInterface()
 {
-    m_initParamsMand.clear();
-    m_initParamsOpt.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +153,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "name",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "ThorlabsDMH",
-        "name of the plugin");
+        "Name of the plugin.");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -164,8 +162,8 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         0,
         1,
         m_async,
-        tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async), here "
-           "only sync supported")
+        tr("Toggles if motor has to wait until end of movement (0: sync) or not (1: async). Only "
+           "sync supported.")
             .toLatin1()
             .data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
@@ -189,40 +187,40 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "manufacturerName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Manufacturer name").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+        tr("Manufacturer name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "instrumentName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Instrument name").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+        tr("Instrument name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "serialNumber",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("serial Number").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+        tr("Serial number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "extensionDriver",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Extension driver").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+        tr("Extension driver.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "firmware",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Firmware").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device Info"), true);
+        tr("Firmware.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     // ----------------- Segments -----------------
@@ -230,64 +228,64 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "numSegments",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 15, 1, "Device Parameter"),
-        tr("number of Segments").toLatin1().data());
+        new ito::IntMeta(0, 15, 1, "Device parameter"),
+        tr("Number of segments.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "minVoltageMirror",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("min voltage of Mirror Segments").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Min voltage of mirror segments.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "maxVoltageMirror",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("max voltage of Mirror Segments").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Max voltage of mirror segments.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "commonVoltageMirror",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("common voltage of Mirror Segments").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Common voltage of mirror segments.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "numTipTilt",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 15, 1, "Device Parameter"),
-        tr("number of of Tip/Tilt Elements").toLatin1().data());
+        new ito::IntMeta(0, 15, 1, "Device parameter"),
+        tr("Number of tip/tilt elements.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "minVoltageTipTilt",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("min voltage Tip/Tilt").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Min tip/tilt voltage.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "maxVoltageTipTilt",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("max voltage Tip/Tilt").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Max tip/tilt voltage.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "commonVoltageTipTilt",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device Parameter"),
-        tr("common voltage Tip/Tilt").toLatin1().data());
+        new ito::DoubleMeta(0.0, 300.0, 0.0, "Device parameter"),
+        tr("Common tip/tilt voltage.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // ----------------- Zernike -----------------
@@ -295,40 +293,40 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "minZernikeAmplitude",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device Parameter"),
-        tr("min Zernike Amplitude").toLatin1().data());
+        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device parameter"),
+        tr("Min Zernike amplitude.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "maxZernikeAmplitude",
         ito::ParamBase::Double | ito::ParamBase::Readonly,
         0.0,
-        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device Parameter"),
-        tr("max Zernike Amplitude").toLatin1().data());
+        new ito::DoubleMeta(-1.0, 1.0, 0.0, "Device parameter"),
+        tr("Max Zernike amplitude.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "zernikeCount",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 15, 1, "Device Parameter"),
-        tr("zernike Count").toLatin1().data());
+        new ito::IntMeta(0, 15, 1, "Device parameter"),
+        tr("Zernike count.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "systemMeasurementSteps",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 100, 1, "Device Parameter"),
-        tr("system Measurement Steps").toLatin1().data());
+        new ito::IntMeta(0, 100, 1, "Device parameter"),
+        tr("System measurement steps.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "relaxSteps",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 100, 1, "Device Parameter"),
-        tr("relax Steps").toLatin1().data());
+        new ito::IntMeta(0, 100, 1, "Device parameter"),
+        tr("Relax steps.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // initialize the current position vector, the status vector and the target position vector
@@ -368,24 +366,6 @@ ito::RetVal ThorlabsDMH::init(
 
     QString serial = paramsOpt->at(0).getVal<const char*>();
 
-    // steps todo:
-    //  - get all initialization parameters
-    //  - try to detect your device
-    //  - establish a connection to the device
-    //  - synchronize the current parameters of the device with the current values of parameters
-    //  inserted in m_params
-    //  - if an identifier string of the device is available, set it via
-    //  setIdentifier("yourIdentifier")
-    //  - set m_nrOfAxes to the number of axes
-    //  - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding
-    //  values
-    //  - call emit parametersChanged(m_params) in order to propagate the current set of parameters
-    //  in m_params to connected dock widgets...
-    //  - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-
-    // Find resources
-    // retValue = selectInstrument();
-
     ViUInt32 deviceCount = 0;
     int choice = 0;
 
@@ -399,7 +379,10 @@ ito::RetVal ThorlabsDMH::init(
         retValue += ito::RetVal(
             ito::retError,
             1,
-            QObject::tr("Device at SerialNo %1 already connected").arg(serial).toLatin1().data());
+            QObject::tr("Device at SerialNo %1 is already connected.")
+                .arg(serial)
+                .toLatin1()
+                .data());
     }
 
     if (!retValue.containsError())
@@ -408,7 +391,7 @@ ito::RetVal ThorlabsDMH::init(
         if ((TL_ERROR_RSRC_NFOUND == err) || (0 == deviceCount))
         {
             retValue += ito::RetVal(
-                ito::retError, 1, QObject::tr("No THORLABS instruments found").toLatin1().data());
+                ito::retError, 1, QObject::tr("No THORLABS instruments found.").toLatin1().data());
         }
     }
 
@@ -451,8 +434,10 @@ ito::RetVal ThorlabsDMH::init(
             retValue += ito::RetVal::format(
                 ito::retError,
                 1,
-                tr("Error during initialisation: THORLABS error: %s").toLatin1().data(),
-                buf);
+                tr("Error during initialisation: THORLABS error: '%1'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
     }
 
@@ -461,7 +446,7 @@ ito::RetVal ThorlabsDMH::init(
     {
         if (!m_resourceName)
         {
-            retValue += ito::RetVal(ito::retError, 1, tr("No device found!").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 1, tr("No device found.").toLatin1().data());
         }
 
         err = TLDFMX_init(m_resourceName, VI_TRUE, VI_TRUE, &m_insrumentHdl);
@@ -474,8 +459,10 @@ ito::RetVal ThorlabsDMH::init(
             retValue += ito::RetVal::format(
                 ito::retError,
                 1,
-                tr("Error during initialisation: THORLABS error: %s").toLatin1().data(),
-                buf);
+                tr("Error during initialisation: THORLABS error: '%s'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
 
         // get device info
@@ -509,8 +496,10 @@ ito::RetVal ThorlabsDMH::init(
             retValue += ito::RetVal::format(
                 ito::retError,
                 1,
-                tr("Error during getting parameter: THORLABS error: %s").toLatin1().data(),
-                buf);
+                tr("Error during getting parameter: THORLABS error: '%s'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
         else
         {
@@ -547,7 +536,12 @@ ito::RetVal ThorlabsDMH::init(
             TLDFMX_error_message(m_insrumentHdl, err, buf);
 
             retValue += ito::RetVal::format(
-                ito::retError, 1, tr("Error during getting parameter!").toLatin1().data(), buf);
+                ito::retError,
+                1,
+                tr("Error during getting parameter: THORLABS error: '%s'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
         else
         {
@@ -569,7 +563,12 @@ ito::RetVal ThorlabsDMH::init(
             TLDFMX_error_message(m_insrumentHdl, err, buf);
 
             retValue += ito::RetVal::format(
-                ito::retError, 1, tr("Error during resetting!").toLatin1().data(), buf);
+                ito::retError,
+                1,
+                tr("Error during getting parameter: THORLABS error: '%s'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
     }
 
@@ -654,7 +653,13 @@ ito::RetVal ThorlabsDMH::execFunc(
         if (numIDs != numZernikes)
         {
             retValue += ito::RetVal(
-                ito::retError, 1, tr("not same amount of IDs and values given!").toLatin1().data());
+                ito::retError,
+                1,
+                tr("Not same amount of IDs (length: '%1') and values (length: '%1') given.")
+                    .arg(numIDs)
+                    .arg(numZernikes)
+                    .toLatin1()
+                    .data());
         }
 
         if (!retValue.containsError())
@@ -689,10 +694,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during calculate zernike pattern: THORLABS error: %s")
+                    tr("Error during calculate zernike pattern: THORLABS error: '%1'")
+                        .arg(buf)
                         .toLatin1()
-                        .data(),
-                    buf);
+                        .data());
             }
 
             // Set voltages to device, the pattern is already range checked
@@ -707,8 +712,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during set segment voltage: THORLABS error: %s").toLatin1().data(),
-                    buf);
+                    tr("Error during set segment voltage: THORLABS error: '%1'")
+                        .arg(buf)
+                        .toLatin1()
+                        .data());
             }
         }
     }
@@ -743,8 +750,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during relaxing mirror: THORLABS error: %s").toLatin1().data(),
-                    buf);
+                    tr("Error during relaxing mirror: THORLABS error: '%1'.")
+                        .arg(buf)
+                        .toLatin1()
+                        .data());
             }
 
             err = TLDFM_set_segment_voltages(m_insrumentHdl, relaxPattern);
@@ -757,8 +766,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during relaxing mirror: THORLABS error: %s").toLatin1().data(),
-                    buf);
+                    tr("Error during relaxing mirror: THORLABS error: '%1'.")
+                        .arg(buf)
+                        .toLatin1()
+                        .data());
             }
 
             isFirstStep = VI_FALSE;
@@ -783,8 +794,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                     retValue += ito::RetVal::format(
                         ito::retError,
                         1,
-                        tr("Error during relaxing mirror: THORLABS error: %s").toLatin1().data(),
-                        buf);
+                        tr("Error during relaxing mirror: THORLABS error: '%1'.")
+                            .arg(buf)
+                            .toLatin1()
+                            .data());
                 }
 
                 err = TLDFM_set_segment_voltages(m_insrumentHdl, relaxPattern);
@@ -797,8 +810,10 @@ ito::RetVal ThorlabsDMH::execFunc(
                     retValue += ito::RetVal::format(
                         ito::retError,
                         1,
-                        tr("Error during relaxing mirror: THORLABS error: %s").toLatin1().data(),
-                        buf);
+                        tr("Error during relaxing mirror: THORLABS error: '%1'.")
+                            .arg(buf)
+                            .toLatin1()
+                            .data());
                 }
 
                 // short delay
@@ -814,7 +829,7 @@ ito::RetVal ThorlabsDMH::execFunc(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("function name '%1' does not exist")
+            tr("Function name '%1' does not exist.")
                 .arg(funcName.toLatin1().data())
                 .toLatin1()
                 .data());
@@ -907,23 +922,7 @@ ito::RetVal ThorlabsDMH::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (!retValue.containsError())
     {
-        if (key == "async")
-        {
-            m_async = val->getVal<int>();
-            // check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom(&(*val));
-        }
-        else if (key == "demoKey2")
-        {
-            // check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom(&(*val));
-        }
-        else
-        {
-            // all parameters that don't need further checks can simply be assigned
-            // to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom(&(*val));
-        }
+        retValue += it->copyValueFrom(&(*val));
     }
 
     if (!retValue.containsError())
@@ -960,7 +959,7 @@ ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* wai
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue =
-        ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
+        ito::RetVal(ito::retWarning, 0, tr("Calibration not possible.").toLatin1().data());
 
     // check device for error
     retValue += getError();
@@ -970,7 +969,7 @@ ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* wai
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("motor is running. Further action is not possible").toLatin1().data());
+            tr("Motor is running. Further action is not possible.").toLatin1().data());
     }
 
     if (!retValue.containsError())
@@ -981,7 +980,7 @@ ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* wai
         if (err)
         {
             retValue +=
-                ito::RetVal(ito::retError, 0, tr("error by resetting mirror!").toLatin1().data());
+                ito::RetVal(ito::retError, 0, tr("Error by resetting mirror.").toLatin1().data());
         }
     }
 
@@ -1047,7 +1046,7 @@ ito::RetVal ThorlabsDMH::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitC
     retValue += ito::RetVal(
         ito::retWarning,
         0,
-        tr("not needed and not implemented for this actauator").toLatin1().data());
+        tr("Not needed and not implemented for this actauator.").toLatin1().data());
 
     if (waitCond)
     {
@@ -1132,8 +1131,10 @@ ito::RetVal ThorlabsDMH::getPos(
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            tr("Error during get segment voltages: THORLABS error: %s").toLatin1().data(),
-            buf);
+            tr("Error during get segment voltages: THORLABS error: '%1'.")
+                .arg(buf)
+                .toLatin1()
+                .data());
     }
     else
     {
@@ -1150,9 +1151,11 @@ ito::RetVal ThorlabsDMH::getPos(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("axis %i not available. only Segments between 0 and %i").toLatin1().data(),
-                    axis[i],
-                    m_nrOfAxes - 1);
+                    tr("Axis '%1' not available. Only segments between 0 and %2")
+                        .arg(axis[i])
+                        .arg(m_nrOfAxes - 1)
+                        .toLatin1()
+                        .data());
             }
         }
     }
@@ -1207,7 +1210,7 @@ ito::RetVal ThorlabsDMH::setPosAbs(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
+            tr("Motor is running. Additional actions are not possible.").toLatin1().data());
     }
     else
     {
@@ -1219,7 +1222,7 @@ ito::RetVal ThorlabsDMH::setPosAbs(
             if (i < 0 || i >= m_nrOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("Axis %i not available.").toLatin1().data(), i);
             }
             else
             {
@@ -1253,8 +1256,10 @@ ito::RetVal ThorlabsDMH::setPosAbs(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during set segment voltage: THORLABS error: %s").toLatin1().data(),
-                    buf);
+                    tr("Error during set segment voltage: THORLABS error: '%1'.")
+                        .arg(buf)
+                        .toLatin1()
+                        .data());
             }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
@@ -1348,7 +1353,7 @@ ito::RetVal ThorlabsDMH::setPosRel(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
+            tr("Motor is running. Additional actions are not possible.").toLatin1().data());
     }
     else
     {
@@ -1365,7 +1370,7 @@ ito::RetVal ThorlabsDMH::setPosRel(
             if (i < 0 || i >= m_nrOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("Axis '%1' not available").arg(i).toLatin1().data());
             }
             else
             {
@@ -1399,8 +1404,10 @@ ito::RetVal ThorlabsDMH::setPosRel(
                 retValue += ito::RetVal::format(
                     ito::retError,
                     1,
-                    tr("Error during set segment voltage: THORLABS error: %s").toLatin1().data(),
-                    buf);
+                    tr("Error during set segment voltage: THORLABS error: '%1'.")
+                        .arg(buf)
+                        .toLatin1()
+                        .data());
             }
 
             // emit the signal targetChanged with m_targetPos as argument, such that all connected
@@ -1499,8 +1506,10 @@ ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axi
             retVal += ito::RetVal::format(
                 ito::retError,
                 1,
-                tr("Error during get segment voltages: THORLABS error: %s").toLatin1().data(),
-                buf);
+                tr("Error during get segment voltages: THORLABS error: '%1'.")
+                    .arg(buf)
+                    .toLatin1()
+                    .data());
         }
 
         done = true; // assume all axes at target
@@ -1626,7 +1635,7 @@ ito::RetVal ThorlabsDMH::selectInstrument()
         retValue += ito::RetVal(
             ito::retError,
             1,
-            QObject::tr("No matching instruments found, Maybe device is not connected.")
+            QObject::tr("No matching instruments found, maybe device is not connected.")
                 .toLatin1()
                 .data());
         return retValue;
@@ -1667,8 +1676,10 @@ ito::RetVal ThorlabsDMH::selectInstrument()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("Error in select instrument: THORLABS error: %s").toLatin1().data(),
-            buf);
+            QObject::tr("Error in select instrument: THORLABS error: '%1'.")
+                .arg(buf)
+                .toLatin1()
+                .data());
     }
     return retValue;
 }
@@ -1696,7 +1707,7 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("did not get manufacturer name, maybe device is already connected with "
+            QObject::tr("Did not get manufacturer name, maybe device is already connected with "
                         "THORLABS software.")
                 .toLatin1()
                 .data(),
@@ -1718,8 +1729,10 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("did not get instrument name: THORLABS error: %s").toLatin1().data(),
-            buf);
+            QObject::tr("Did not get instrument name: THORLABS error: '%1'.")
+                .arg(buf)
+                .toLatin1()
+                .data());
     }
 
     if (!retValue.containsError())
@@ -1737,8 +1750,10 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("did not get serial number: THORLABS error: %s").toLatin1().data(),
-            buf);
+            QObject::tr("did not get serial number: THORLABS error: '%1'.")
+                .arg(buf)
+                .toLatin1()
+                .data());
     }
     if (!retValue.containsError())
     {
@@ -1756,8 +1771,7 @@ ito::RetVal ThorlabsDMH::getDeviceInfo()
         retValue += ito::RetVal::format(
             ito::retError,
             1,
-            QObject::tr("did not get firmware: THORLABS error: %s").toLatin1().data(),
-            buf);
+            QObject::tr("did not get firmware: THORLABS error: '%1'.").arg(buf).toLatin1().data());
     }
 
     if (!retValue.containsError())
@@ -1784,15 +1798,16 @@ ito::RetVal ThorlabsDMH::getError()
         if (err == TLDFM_ERROR_INTERNAL_PWR)
         {
             retValue += ito::RetVal::format(
-                ito::retError, 1, QObject::tr("%s, check Power connection").toLatin1().data(), buf);
+                ito::retError,
+                1,
+                QObject::tr("'%1', check power connection").arg(buf).toLatin1().data());
         }
         else
         {
             retValue += ito::RetVal::format(
                 ito::retError,
                 1,
-                QObject::tr("Mirror has following error msg: %s").toLatin1().data(),
-                buf);
+                QObject::tr("Mirror has following error msg: '%1'.").arg(buf).toLatin1().data());
         }
     }
 
