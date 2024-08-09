@@ -11,7 +11,7 @@ except:
 distCoeff = dataObject.zeros([12,1], dtype='float64')
 distCoeff[0, 0] = 0.9
 distCoeff[1, 0] = 0.9
-filenameBase = "dic_rb_x0{0:d}_y0{1:d}".format(int(distCoeff[0, 0] * 10), int(distCoeff[1, 0] * 10))
+filenameBase = f"dic_rb_x0{int(distCoeff[0, 0] * 10):d}_y0{int(distCoeff[1, 0] * 10):d}"
 imageDef = dataObject()
 filter("DICGenImages", imageOrig, imageDef, 0, distCoeff)
 genImages = {'imageOrig' : imageOrig, 'imageDef' : imageDef}

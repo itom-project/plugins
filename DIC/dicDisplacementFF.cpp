@@ -55,7 +55,7 @@ int doCalcCoordFF(cell *thisCell, Eigen::VectorXd *coeffMat, ito::DataObject *pt
 //                ito::float64 dy = (cy - nrows / 2) / nrows;
                 for (int cx = 0; cx < ncols; cx++)
                 {
-                    // 1.0 * makes calculation float othwerwise it is int
+                    // 1.0 * makes calculation float otherwise it is int
 //                    ito::float64 dx = (cx - ncols / 2) / ncols;
                     ito::float64 n1 = 1.0 * (ncols - 1 - cx) * (nrows - 1 - cy) / (nrows - 1) / (ncols - 1);
                     ito::float64 n2 = 1.0 * cx * (nrows - 1 - cy) / (nrows - 1) / (ncols - 1);
@@ -381,7 +381,7 @@ Journal of Strain Analysis 47(3), 2012");
 
     correlCoeffVec->zeros((ncellsx + 1) * (ncellsy + 1), ito::tFloat64);
 
-    // do a dummy interpolation to cache AMat for preceeding calls
+    // do a dummy interpolation to cache AMat for proceeding calls
     ito::DataObject dummyPos, dummyRes;
     dummyPos.zeros(1, 2, ito::tFloat64);
     retVal += doInterpolate(inFieldDef, &dummyPos, &dummyRes, flags & 14, 1, 0);

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "SerialIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -35,7 +35,7 @@
 
 #include "SerialIO.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -341,7 +341,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 // http://pronix.linuxdelta.de/C/Linuxprogrammierung/Linuxsystemprogrammieren_C_Kurs_Kapitel6.shtml
 // http://www.koders.com/cpp/fidD25BB0849B79991C7049EB1A3E2583EBB9CF6034.aspx
 
-    // xon/xoff - software flow controll
+    // xon/xoff - software flow control
     if (params.flow & 1)
     {
         options.c_iflag |= (IXON|IXOFF|IXANY);
@@ -463,7 +463,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     }
     m_serParams.parity = params.parity;
 
-    // xon/xoff - software flow controll
+    // xon/xoff - software flow control
     if (params.flow & 1)
     {
         dcbSerialParams.fInX = TRUE;
@@ -545,7 +545,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 //    timeouts.WriteTotalTimeoutMultiplier = 0;
     timeouts.WriteTotalTimeoutMultiplier = params.timeout; // Set timeout in [ms]
     if (!SetCommTimeouts(m_dev, &timeouts))              // Write the parameters
-        return ito::RetVal(ito::retError, 0, QObject::tr("error setting timeout").toLatin1().data());   // Error while writting the parameters
+        return ito::RetVal(ito::retError, 0, QObject::tr("error setting timeout").toLatin1().data());   // Error while writing the parameters
 #endif
 
     const char testBuf[3] = {0, 0, 0};
@@ -572,7 +572,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     \param[in] stopbits        Number of stop bits after every n bits
     \param[in] parity          Toggle parity check options
     \param[in] flow            Flow control bitmask
-    \param[in] sendDelay       Write every character seperated with delay or (=0) complete buffer at once
+    \param[in] sendDelay       Write every character separated with delay or (=0) complete buffer at once
     \param[in] timeout         Time to wait until timeout in [ms]
 
     \return retOk
@@ -603,7 +603,7 @@ const ito::RetVal SerialPort::setparams(const int baud, const char* endline, con
     \param[in] stopbits        Number of stop bits after every n bits
     \param[in] parity          Toggle parity check options
     \param[in] flow            Flow control bitmask
-    \param[in] sendDelay       Write every character seperated with delay or (=0) complete buffer at once
+    \param[in] sendDelay       Write every character separated with delay or (=0) complete buffer at once
     \param[in] timeout         Time to wait until timeout in [ms]
 
     \return retOk
@@ -1046,7 +1046,7 @@ SerialIOInterface::SerialIOInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = \
 "SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
-The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. \n\
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilities of the operating system. \n\
 \n\
 flow bitmask \n\
 -------------- \n\
@@ -1078,7 +1078,7 @@ Example \n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ";
     m_detaildescription = tr(docstring);*/
     m_detaildescription = tr("SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
-The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. \n\
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilities of the operating system. \n\
 \n\
 flow bitmask \n\
 -------------- \n\
@@ -1109,12 +1109,13 @@ Example\n\
     answer = bytearray(9) #supposed length is 9 characters\n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns");
 
-    m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
+
 #ifndef WIN32
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);
@@ -1401,7 +1402,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // mandatory parameters
     if (paramsMand == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("Mandatory paramers are NULL").toLatin1().data());
+        retval = ito::RetVal(ito::retError, 0, tr("Mandatory parameters are NULL").toLatin1().data());
         goto end;
     }
 
@@ -1421,7 +1422,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // optional parameters
     if (paramsOpt == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("Optinal paramers are NULL").toLatin1().data());
+        retval = ito::RetVal(ito::retError, 0, tr("Optional parameters are NULL").toLatin1().data());
         goto end;
     }
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ThorlabsBDCServo" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -86,7 +86,7 @@ ThorlabsBDCServoInterface::ThorlabsBDCServoInterface()
 
     m_description = QObject::tr("ThorlabsBDCServo");
     m_detaildescription = QObject::tr(
-        "ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs: \n\
+"ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs: \n\
 \n\
 * Benchtop DC Servo (M30XY) \n\
 \n\
@@ -96,11 +96,11 @@ Please install the Kinesis driver package in advance with the same bit-version (
 \n\
 This plugin has been tested with the Benchtop DC Servo M30XY. \n");
 
-    m_author = "J. Krauter, TRUMPF SE + Co. KG, Ditzingen";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param(
@@ -124,14 +124,14 @@ This plugin has been tested with the Benchtop DC Servo M30XY. \n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class ThorlabsBDCServoInterface with the name ThorlabsBDCServoInterface
+// this macro registers the class ThorlabsBDCServoInterface with the name ThorlabsBDCServoInterface
 // as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized
    (e.g. by a Python call) with mandatory or optional parameters (m_initParamsMand and
-   m_initParamsOpt) by the ThorlabsBDCServo::init. The widged window is created at this position.
+   m_initParamsOpt) by the ThorlabsBDCServo::init. The widget window is created at this position.
 */
 ThorlabsBDCServo::ThorlabsBDCServo() :
     AddInActuator(), m_async(0), m_opened(false), m_numChannels(0)
@@ -250,7 +250,7 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             0,
             1,
             m_async,
-            tr("asychronous (1) or synchronous (0) mode").toLatin1().data()));
+            tr("asynchronous (1) or synchronous (0) mode").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
@@ -594,12 +594,12 @@ ito::RetVal ThorlabsBDCServo::close(ItomSharedSemaphore* waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail It is used to set the parameter of type int/double with key "name" stored in m_params
-   and the corresponding member variabels. This function is defined by the actuator class and
+   and the corresponding member variables. This function is defined by the actuator class and
    overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -638,13 +638,13 @@ ito::RetVal ThorlabsBDCServo::getParam(
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail It is used to set the parameter of type char* with key "name" stored in m_params and the
-   corresponding member variabels. This function is defined by the actuator class and overwritten at
+   corresponding member variables. This function is defined by the actuator class and overwritten at
    this position. If the "ctrl-type" is set, ThorlabsBDCServo::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -721,7 +721,7 @@ ito::RetVal ThorlabsBDCServo::setParam(
             else
             {
                 const int* values =
-                    val->getVal<int*>(); // are alway m_numChannels values due to meta information
+                    val->getVal<int*>(); // are always m_numChannels values due to meta information
                 for (int i = 0; i < m_numChannels; ++i)
                 {
                     if (values[i])
@@ -856,7 +856,7 @@ ito::RetVal ThorlabsBDCServo::setParam(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the
    case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
@@ -869,7 +869,7 @@ ito::RetVal ThorlabsBDCServo::calib(const int axis, ItomSharedSemaphore* waitCon
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In
    the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
@@ -1045,7 +1045,7 @@ ito::RetVal ThorlabsBDCServo::getStatus(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in
    mm.
 
     \param [in] axis        Axisnumber
@@ -1071,7 +1071,7 @@ ito::RetVal ThorlabsBDCServo::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in
    mm. In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -1118,8 +1118,8 @@ ito::RetVal ThorlabsBDCServo::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The
-   value in device independet in mm. This function calls ThorlabsBDCServo::SetPos(axis, pos,
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The
+   value in device independent in mm. This function calls ThorlabsBDCServo::SetPos(axis, pos,
    "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -1136,8 +1136,8 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos"
-   . The value in device independet in mm. If the size of the vector is more then 1 element, this
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos"
+   . The value in device independent in mm. If the size of the vector is more then 1 element, this
    function returns an error. This function calls ThorlabsBDCServo::SetPos(axis, pos,
    "ABSOLUTCOMMAND")
 
@@ -1271,8 +1271,8 @@ ito::RetVal ThorlabsBDCServo::setPosAbs(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The
-   value in device independet in mm. This function calls ThorlabsBDCServo::SetPos(axis, pos,
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The
+   value in device independent in mm. This function calls ThorlabsBDCServo::SetPos(axis, pos,
    "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -1300,8 +1300,8 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos"
-   . The value in device independet in mm. If the size of the vector is more then 1 element, this
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos"
+   . The value in device independent in mm. If the size of the vector is more then 1 element, this
    function returns an error. This function calls ThorlabsBDCServo::SetPos(axis, pos,
    "ABSOLUTCOMMAND")
 
@@ -1431,8 +1431,8 @@ ito::RetVal ThorlabsBDCServo::setPosRel(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the
-   position after ever positioning command. It sends the current postion and the status to the
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the
+   position after ever positioning command. It sends the current position and the status to the
    world.
 
     \sa SMCSetPos
@@ -1542,7 +1542,7 @@ ito::RetVal ThorlabsBDCServo::waitForDone(
         if (timer.hasExpired(timeoutMS))  // timeout during movement
         {
             timeout = true;
-            // timeout occured, set the status of all currently moving axes to timeout
+            // timeout occurred, set the status of all currently moving axes to timeout
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
             retVal += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
             sendStatusUpdate(true);
@@ -1619,7 +1619,7 @@ ito::RetVal ThorlabsBDCServo::checkError(short value, const char* message)
                 message);
         case 4:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+                ito::retError, 1, "%s: An I/O Error has occurred in the FTDI chip.", message);
         case 5:
             return ito::RetVal::format(
                 ito::retError,
@@ -1656,10 +1656,10 @@ ito::RetVal ThorlabsBDCServo::checkError(short value, const char* message)
                 ito::retError, 1, "%s: Bad function pointer detected.", message);
         case 20:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+                ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 21:
             return ito::RetVal::format(
-                ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+                ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 32:
             return ito::RetVal::format(
                 ito::retError, 1, "%s: Attempt to open a device that was already open.", message);

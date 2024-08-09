@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),,
-Universit�t Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),,
+Universität Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut f�r Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -79,11 +79,11 @@ For compiling this plugin, you need to install the Thorlabs PM100x Instrument Dr
 Then set the CMake variable Thorlabs_IVI_VISA_INCLUDE_DIR to the include directory (e.g. C:/Program Files/IVI Foundation/VISA/Win64/Include)";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Robin Hahn, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
@@ -152,14 +152,14 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
     paramVal = ito::Param("power_range", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("power range [W]; will be set to the next bigger possible value").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("auto_range", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr(" shows if the auto power range is wether on (1) or off(2) ").toLatin1().data());
+    paramVal = ito::Param("auto_range", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr(" shows if the auto power range is whether on (1) or off(2) ").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("measurement_mode", ito::ParamBase::String | ito::ParamBase::In, NULL , tr("Get / set the current measurement mode (values 'absolute' or 'relative')").toLatin1().data());
-	ito::StringMeta measurement_mode_meta(ito::StringMeta::String);
-	measurement_mode_meta.addItem("absolute");
-	measurement_mode_meta.addItem("relative");
-	paramVal.setMeta(&measurement_mode_meta, false);
+    ito::StringMeta measurement_mode_meta(ito::StringMeta::String);
+    measurement_mode_meta.addItem("absolute");
+    measurement_mode_meta.addItem("relative");
+    paramVal.setMeta(&measurement_mode_meta, false);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("reference_power", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("reference power for relative measurements").toLatin1().data());
@@ -178,15 +178,15 @@ ito::RetVal ThorlabsPowerMeterInterface::closeThisInst(ito::AddInBase **addInIns
     registerExecFunc("zero_device", pMand, pOpt, pOut, tr("function to set the zero value of the device").toLatin1().data());
 
 
-	if (hasGuiSupport())
-	{
-		//the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
-		DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
+    if (hasGuiSupport())
+    {
+        //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
+        DockWidgetThorlabsPowerMeter *dw = new DockWidgetThorlabsPowerMeter(this);
 
-		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
-	}
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
     QString deviceName = paramsOpt->at(0).getVal<char*>();
     QList<QByteArray> foundDevices;
     QList<QString> deviceInfo;
-    ViSession	defaultRM = VI_NULL;
+    ViSession    defaultRM = VI_NULL;
     ViSession  resMgr = VI_NULL;      //resource manager
     ViUInt32   count = 0;            //counts found devices
     ViStatus status;
@@ -246,7 +246,7 @@ ito::RetVal ThorlabsPowerMeter::init(QVector<ito::ParamBase> *paramsMand, QVecto
             if (!retval.containsError())
             {
                 foundDevices.append(rsrcDescr);
-                deviceInfo.append(QString("%1 (%2): S/N%3\t%4\tadress: %5\n").arg(i + 1).arg((available) ? "FREE" : "LOCK").arg(sernr).arg(name).arg(rsrcDescr));
+                deviceInfo.append(QString("%1 (%2): S/N%3\t%4\taddress: %5\n").arg(i + 1).arg((available) ? "FREE" : "LOCK").arg(sernr).arg(name).arg(rsrcDescr));
             }
 
         }
@@ -457,7 +457,7 @@ ito::RetVal ThorlabsPowerMeter::getParam(QSharedPointer<ito::Param> val, ItomSha
     QString suffix;
     QMap<QString,ito::Param>::iterator it;
 
-    retValue += synchronizeParams(bPowerRange); // make shure that power_range is up to date... this is important since the power_range is continously changed if auto_range is true
+    retValue += synchronizeParams(bPowerRange); // make sure that power_range is up to date... this is important since the power_range is continuously changed if auto_range is true
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -906,7 +906,7 @@ ito::RetVal ThorlabsPowerMeter::checkError(ViStatus err)
     return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to aqcuire and get a image
+//! method called to acquire and get a image
 /*!
     This method is invoked from the dock widget to get a value in the autograbbing mode.
     \param [in,out] QSharedPointer to return the measured value.
@@ -953,7 +953,7 @@ ito::RetVal ThorlabsPowerMeter::acquireAutograbbing(QSharedPointer<double> value
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -1182,18 +1182,18 @@ ito::RetVal ThorlabsPowerMeter::synchronizeParams(int what /*=sAll*/)
         retval += checkError(PM(getPowerRefState)(m_instrument, &mode));
         if (!retval.containsError())
         {
-			if (mode == PM(POWER_REF_ON))
-			{
-				retval += m_params["measurement_mode"].setVal<const char*>("relative");
-			}
-			else if (mode == PM(POWER_REF_OFF))
-			{
-				retval += m_params["measurement_mode"].setVal<const char*>("absolute");
-			}
-			else
-			{
-				retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
-			}
+            if (mode == PM(POWER_REF_ON))
+            {
+                retval += m_params["measurement_mode"].setVal<const char*>("relative");
+            }
+            else if (mode == PM(POWER_REF_OFF))
+            {
+                retval += m_params["measurement_mode"].setVal<const char*>("absolute");
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("received invalid mode from device").toLatin1().data());
+            }
         }
     }
 

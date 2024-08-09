@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PI_GCS2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -83,17 +83,17 @@ The parameters of the serial port (besides port number) are set automatically du
 WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
 PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination. \n\
 \n\
-WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.\
+WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum available position.\
 In the case of a higher maximum position, set the plugin parameter \"posLimitHigh\". ");
 
-    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communication parameters will be set by this piezo-controller).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
@@ -102,4 +102,4 @@ In the case of a higher maximum position, set the plugin parameter \"posLimitHig
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)

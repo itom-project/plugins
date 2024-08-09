@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FileGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -25,7 +25,7 @@
 
 #include "FileGrabber.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #ifndef WIN32
@@ -93,7 +93,7 @@ ito::RetVal FileGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: FileGrabber) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
@@ -133,11 +133,11 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
 
 
 
-    m_author = "W. Lyda, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.clear();
@@ -170,7 +170,7 @@ FileGrabberInterface::~FileGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class FileGrabberInterface with the name FileGrabberinterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class FileGrabberInterface with the name FileGrabberinterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -518,7 +518,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         filter = "*.tif";
     }
 
-    if (exObj != NULL && nrPreLoading >= 0)   // Check if an external object provided and if so, set the interal image stack to this external data object
+    if (exObj != NULL && nrPreLoading >= 0)   // Check if an external object provided and if so, set the internal image stack to this external data object
     {
         if (exObj->getDims() != 3 && !retVal.containsError())
         {
@@ -879,12 +879,12 @@ ito::RetVal FileGrabber::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the FileGrabber, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the FileGrabber, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal FileGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1174,11 +1174,6 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
     int ret = 0;
-//    int timeOutMS = (int)(m_params["time_out"].getVal<double>() * 1000 + 0.5);
-
-//    unsigned long imglength = 0;
-//    long lcopysize = 0;
-
     int current_image = m_params["current_image"].getVal<int>();
     m_params["current_image"].setVal<int>((current_image + 1) % m_params["number_of_images"].getVal<int>());
 

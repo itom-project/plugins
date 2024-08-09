@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "V4L2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -284,7 +284,7 @@ ito::RetVal Device::grab_frame(unsigned char* dest)
     //dequeue buffer
     if (-1 == xioctl(m_fd, VIDIOC_DQBUF, &frame_buffer))
     {
-        //this case happens very often, dequeue is erroneus, why? we ignore it ...
+        //this case happens very often, dequeue is erroneous, why? we ignore it ...
         return retValue;
         //return retValue += ito::RetVal(ito::retError, 0, QObject::tr("Could not dequeue buffer on device: %1. E: %2").arg(m_dev_name).arg(errno).toLatin1().data());
     }
@@ -676,7 +676,7 @@ ito::RetVal Device::set_fmt(int number)
     v4l2_format fmt;
 
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    //get the new values from the m_formatlist at position number choosen by the user
+    //get the new values from the m_formatlist at position number chosen by the user
     if (number != -1){
         fmt.fmt.pix.width = m_formatlist.at(number).m_width;
         fmt.fmt.pix.height = m_formatlist.at(number).m_height;
@@ -786,7 +786,7 @@ ito::RetVal Device::fetch_ctrls()
     return retValue;
 }
 
-//print all availabe ctrls with their data, i.e. brightness, with min, max,step, value,default
+//print all available ctrls with their data, i.e. brightness, with min, max,step, value, default
 ito::RetVal Device::print_ctrls()
 {
     ito::RetVal retValue(ito::retOk);

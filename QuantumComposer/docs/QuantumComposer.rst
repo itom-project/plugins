@@ -6,8 +6,8 @@
 **Summary**:    :pluginsummary:`QuantumComposer`
 **Type**:       :plugintype:`QuantumComposer`
 **License**:    :pluginlicense:`QuantumComposer`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
+**Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
+**Devices**:    Any generic USB device.
 **Author**:     :pluginauthor:`QuantumComposer`
 =============== ========================================================================================================
 
@@ -107,7 +107,7 @@ These parameters are available and can be used to configure the **QuantumCompose
 
     *Match: ["LOW", "HIGH"], Default: "LOW"*
 **gateMode**: str
-    Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: output
+    Global gate mode of the system output. (DIS: disabled, PULS: pulse inhibit, OUTP: output
     inhibit, CHAN: channel).cycle).
 
     *Match: ["DIS", "PULS", "OUTP", "CHAN"], Default: "DIS"*
@@ -183,7 +183,7 @@ These parameters are available and can be used to configure the **QuantumCompose
 
     *Value range: [0, 1], Default: 1*
 **statesList**: Sequence[int]
-    List of states to enalbe/disable channels listed in the parameter channelIndexList. List
+    List of states to enable/disable channels listed in the parameter channelIndexList. List
     must have the same length as the parameter channelIndexList.
 
     *Allowed number of values: 1 - 8, Value range: [0, 1], Default: [0, 0, 1, 1, 1, 1, 1, 1]*
@@ -310,7 +310,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param statesList: List of states to enalbe/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.
+    :param statesList: List of states to enable/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.
     :type statesList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelPolarities', channelIndexList, polaritiesList)

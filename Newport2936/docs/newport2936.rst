@@ -68,7 +68,7 @@ Parameters
 Usage:
 ======
 Download the **Computer Interface Software v3.0.4 (39.4 MB, ZIP)** data from https://www.newport.com/p/2936-R.
-Unzip the file and run the Setup.exe programm.
+Unzip the file and run the Setup.exe program.
 Set the Windows Environment variable NEWPORT_2936_ROOT to installation path (e.g. C:\Program Files\Newport\Newport USB Driver\).
 
 Additional functions (exec functions)

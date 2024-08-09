@@ -83,7 +83,7 @@ Compilation
 ============
 
 For compiling this plugin, download the latest pco.sensicam SDK (pco Software-Development-Toolkit) from https://www.excelitas.com/product/discontinued-pco-scientific-cameras
-and install it on your computer. Then set the CMake variable *PCO_SENSICAM_SDK_DIR** or the environment path vairable **PCO_SENSICAM_ROOT** to the base directory of the pco.sensicam (e.g. C:\Program Files (x86)\Digital Camera Toolbox\Sensicam SDK).
+and install it on your computer. Then set the CMake variable *PCO_SENSICAM_SDK_DIR** or the environment path variable **PCO_SENSICAM_ROOT** to the base directory of the pco.sensicam (e.g. C:\Program Files (x86)\Digital Camera Toolbox\Sensicam SDK).
 In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board etc. If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
 
 Changelog

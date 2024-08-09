@@ -42,7 +42,7 @@ parameters can be changed using *setParam*.
 **ctrlId**: {str}, read-only
     device information string
 **current_status**: {intArray}, read-only
-    This intArray stores the status of each controller. While no error occures, the controller should be
+    This intArray stores the status of each controller. While no error occurs, the controller should be
     notReferenced (LED = orange)
     Referenced (LED = green)
     ConfigMode (LED = red [blinking])
@@ -51,7 +51,7 @@ parameters can be changed using *setParam*.
 **async**: {int} [0,1]
     Defines if the code continues while a controller is processing a task.
 **accel**: {doubleArray}
-    Array of the accelerations of each axis. Notice that if the acceleration is too high, errors can occure because of physical boundaries. These boundaries might be changeable due the serialport. For further information refer to the datasheet.
+    Array of the accelerations of each axis. Notice that if the acceleration is too high, errors can occur because of physical boundaries. These boundaries might be changeable due the serialport. For further information refer to the data sheet.
 **calib_mode**: {intArray} [0,4]
     Defines the calibration mode, each axis performs when exec_calib is called with an 1 for the corresponding axis.
     0 use MZ switch and encoder Index.
@@ -60,7 +60,7 @@ parameters can be changed using *setParam*.
     3 use EoR- switch and encoder Index.
     4 use EoR- switch only.
 **config_state**: {intArray} [0,1]
-    Defines wheather an axis switches to config mode. Notice that if an axis is in referenced state a reset is automatically performed to set the axis to notRef state and further into config state.
+    Defines whether an axis switches to config mode. Notice that if an axis is in referenced state a reset is automatically performed to set the axis to notRef state and further into config state.
 **speed**: {doubleArray}
     Array of the velocity of each axis.
 **exec_calib**: {intArray} [0,1]
@@ -105,4 +105,4 @@ Switch acceleration, velocity and calib_mode
 Known Issues
 ============
 
-In special cases an error occures that leaves the controller in notReferenced state with an error. The LED is constantly red. In this case you have to read the error buffer by sending xTE and xTS where x is the controller number. Notice that the hardware numbers from 1..32 not 0..31 as itom does. Afterwards you can switch into the config mode using xPW1. Choose another calibration mode xHTy, leave the config mode xPW0 and recalibrate the controller with xOR. Further you can send reset commands to the controller (xRS) or unplug the powersupply.
+In special cases an error occurs that leaves the controller in notReferenced state with an error. The LED is constantly red. In this case you have to read the error buffer by sending xTE and xTS where x is the controller number. Notice that the hardware numbers from 1..32 not 0..31 as itom does. Afterwards you can switch into the config mode using xPW1. Choose another calibration mode xHTy, leave the config mode xPW0 and recalibrate the controller with xOR. Further you can send reset commands to the controller (xRS) or unplug the powersupply.

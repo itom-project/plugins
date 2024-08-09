@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2018, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -46,8 +46,8 @@
 
 //int XimeaInterface::m_instCounter = 5;  // initialization starts with five due to normal boards are 0..4
 
-static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized boards (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized cameras */
+static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successful initialized boards (max = 5) */
+static char Initnum = 0;    /*!< Number of successful initialized cameras */
 
 #ifndef XI_PRMM_DIRECT_UPDATE //workaround for very old APIs
     #define XI_PRMM_DIRECT_UPDATE ""
@@ -76,11 +76,12 @@ XimeaInterface::XimeaInterface()
     m_description = QObject::tr("Ximea xiQ-Camera");
     m_detaildescription = QObject::tr("Plugin for cameras from XIMEA that run with the XIMEA API. \n\
 This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ042RG-CM) under Windows.");
-    m_author = "C. Kohler, twip optical solutions GmbH, Stuttgart, J. Krauter, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / do not copy Ximea-DLLs");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
@@ -92,8 +93,8 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
     paramVal = ito::Param("bandwidthLimit", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 0, "bandwidth limit in Mb/sec. If 0 the maximum bandwidth of the USB3 controller is used [default]. The allowed value range depends on the device and will be checked at startup.");
     m_initParamsOpt.append(paramVal);
 
-	paramVal = ito::Param("lensAvialable", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toggle if lens settings are avialable");
-	m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("lensAvialable", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toggle if lens settings are available");
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -263,8 +264,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("filter_pattern_offset_y", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Offset of the hyperspectral bayer pattern in y direction").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("aperture_value", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 5.0 ,0.0 , tr("Current aperture Value").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("aperture_value", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 5.0 ,0.0 , tr("Current aperture Value").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
 
 
@@ -293,7 +294,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
     int icam_number = (*paramsOpt)[0].getVal<int>();
     int iscolor = 0;
-	bool lensAvialable = paramsOpt->at(3).getVal<int>() == 1;
+    bool lensAvialable = paramsOpt->at(3).getVal<int>() == 1;
     XI_RETURN ret;
 
     QFile paramFile;
@@ -336,7 +337,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 float testGain = 0.0;
                 if (pxiSetParam(m_handle, XI_PRM_GAIN, &testGain, sizeof(float), xiTypeFloat) == XI_RESOURCE_OR_FUNCTION_LOCKED)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("this camera cannot be configured and used since it is propably used by another process").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("this camera cannot be configured and used since it is probably used by another process").toLatin1().data());
                 }
             }
 
@@ -572,22 +573,22 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                         static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(32);
                     }
                 }
-				if (!retValue.containsError())
-				{
-					//check if lens settings are avialable
-/*					XI_SWITCH value = XI_ON;
-					XI_RETURN error = pxiSetParam(m_handle, XI_PRM_LENS_MODE, &value, sizeof(int), intType);
-					if (error != 100)
-					{
-						m_params["aperture_value"].setFlags(0);
-					}*/
+                if (!retValue.containsError())
+                {
+                    //check if lens settings are available
+/*                    XI_SWITCH value = XI_ON;
+                    XI_RETURN error = pxiSetParam(m_handle, XI_PRM_LENS_MODE, &value, sizeof(int), intType);
+                    if (error != 100)
+                    {
+                        m_params["aperture_value"].setFlags(0);
+                    }*/
 
-					if (lensAvialable)
-					{
-						m_params["aperture_value"].setFlags(0);
-					}
+                    if (lensAvialable)
+                    {
+                        m_params["aperture_value"].setFlags(0);
+                    }
 
-				}
+                }
 
                 // reset timestamp for MQ and MD cameras
                 if (m_family == familyMD || m_family == familyMQ)
@@ -759,7 +760,7 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
             msg = tr("Freeing channel error").toLatin1().data();
         break;
         case 6:
-            msg = tr("Freeing bandwith error").toLatin1().data();
+            msg = tr("Freeing bandwidth error").toLatin1().data();
         break;
         case 7:
             msg = tr("Read block error").toLatin1().data();
@@ -873,10 +874,10 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
             msg = tr("Data can't be processed").toLatin1().data();
         break;
         case 45:
-            msg = tr("Error occured and acquisition has been stoped or didn't start").toLatin1().data();
+            msg = tr("Error occurred and acquisition has been stopped or didn't start").toLatin1().data();
         break;
         case 46:
-            msg = tr("Acquisition has been stoped with error").toLatin1().data();
+            msg = tr("Acquisition has been stopped with error").toLatin1().data();
         break;
         case 47:
             msg = tr("Input ICC profile missed or corrupted").toLatin1().data();
@@ -903,7 +904,7 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
             msg = tr("TM file was not loaded successfully from resources").toLatin1().data();
         break;
         case 55:
-            msg = tr("Device has been reseted, abnormal initial state").toLatin1().data();
+            msg = tr("Device has been reset, abnormal initial state").toLatin1().data();
         break;
         case 56:
             msg = tr("No Devices found").toLatin1().data();
@@ -997,7 +998,7 @@ ito::RetVal Ximea::LoadLib(void)
 #endif
         if (!ximeaLib)
         {
-			int error = GetLastError();
+            int error = GetLastError();
             return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"xiapiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #else
@@ -1016,7 +1017,7 @@ ito::RetVal Ximea::LoadLib(void)
 #endif
         if (!ximeaLib)
         {
-			int error = GetLastError();
+            int error = GetLastError();
             return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"xiapiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #endif
@@ -1143,7 +1144,7 @@ ito::RetVal Ximea::LoadLib(void)
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -1190,7 +1191,7 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -1261,7 +1262,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 break;
             case 32:
                 format = XI_RGB32;
-				bitppix = m_params["max_sensor_bitdepth"].getVal<int>();
+                bitppix = m_params["max_sensor_bitdepth"].getVal<int>();
                 break;
             default:
                 retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
@@ -1270,11 +1271,11 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             if (!retValue.containsError())
             {
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &format, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(format));
-				retValue += checkError(pxiSetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, sizeof(int), xiTypeInteger), "set XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, sizeof(int), xiTypeInteger), "set XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
             }
 
 #ifdef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
-			//does not work for api 4.04 or 4.06
+            //does not work for api 4.04 or 4.06
             /*if (!retValue.containsError() && bpp == XI_RGB32)
             {
                 bpp = 255;
@@ -1623,13 +1624,13 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
            m_params["sizez"].setVal<int>(channels);
            synchronizeCameraSettings(sRoi);
         }
-		else if (QString::compare(key, "aperture_value",Qt::CaseInsensitive) == 0)
-		{
-		float aperture = val->getVal<double>();
-		retValue += checkError(pxiSetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, sizeof(float), xiTypeFloat), "set XI_PRM_LENS_APERTURE_VALUE", QString::number(aperture));
-		retValue += synchronizeCameraSettings(sLens);
+        else if (QString::compare(key, "aperture_value",Qt::CaseInsensitive) == 0)
+        {
+        float aperture = val->getVal<double>();
+        retValue += checkError(pxiSetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, sizeof(float), xiTypeFloat), "set XI_PRM_LENS_APERTURE_VALUE", QString::number(aperture));
+        retValue += synchronizeCameraSettings(sLens);
 
-		}
+        }
         else
         {
             it->copyValueFrom(&(*val));
@@ -1970,13 +1971,13 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y / patternEdgeLength, (sizeMax_y - m_params["filter_pattern_offset_y"].getVal<int>())/ patternEdgeLength, sizeInc_y / patternEdgeLength + 1));
 
 
-            int x0 = std::ceil((offset_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? waht happens if ceil(0)...
+            int x0 = std::ceil((offset_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? what happens if ceil(0)...
             m_params["x0"].setVal<int>(x0);
             int hyperSizeMin_x = std::ceil(float(offsetMin_x - m_params["filter_pattern_offset_x"].getVal<int>()) / patternEdgeLength);
             int hyperSizeMax_x = std::floor(float(sizeMax_x - sizeMin_x) / patternEdgeLength);
             m_params["x0"].setMeta(new ito::IntMeta(hyperSizeMin_x, hyperSizeMax_x, offsetInc_x/patternEdgeLength+1));
 
-            int y0 = std::ceil((offset_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? waht happens if ceil(0)...
+            int y0 = std::ceil((offset_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength); //todo is ceil a good option? what happens if ceil(0)...
             m_params["y0"].setVal<int>(y0);
             int hyperSizeMin_y = std::ceil(float(offsetMin_y - m_params["filter_pattern_offset_y"].getVal<int>()) / patternEdgeLength);
             int hyperSizeMax_y = std::floor(float(sizeMax_y - sizeMin_y) / patternEdgeLength);
@@ -2136,20 +2137,20 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPO_MODE, &(gpo_mode[i-1]),&intSize, &intType), "get:" XI_PRM_GPO_MODE);
         }
     }
-	if (what & sLens)
-	{
-		if (!(m_params["aperture_value"].getFlags() & ito::ParamBase::Readonly))
-		{
-			float maxAperture, minAperture, aperture;
-			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MAX, &maxAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MAX");
-			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MIN, &minAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MIN");
-			retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE");
-			minAperture = std::round(minAperture * 10.) / 10.;
-			maxAperture = std::round(maxAperture * 10.) / 10.;
-			m_params["aperture_value"].setMeta(new ito::DoubleMeta(minAperture, maxAperture, 0.1), true);
-			m_params["aperture_value"].setVal<double>(aperture);
-		}
-	}
+    if (what & sLens)
+    {
+        if (!(m_params["aperture_value"].getFlags() & ito::ParamBase::Readonly))
+        {
+            float maxAperture, minAperture, aperture;
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MAX, &maxAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MAX");
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE XI_PRM_INFO_MIN, &minAperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE MIN");
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_LENS_APERTURE_VALUE, &aperture, &floatSize, &floatType), "get XI_PRM_LENS_APERTURE_VALUE");
+            minAperture = std::round(minAperture * 10.) / 10.;
+            maxAperture = std::round(maxAperture * 10.) / 10.;
+            m_params["aperture_value"].setMeta(new ito::DoubleMeta(minAperture, maxAperture, 0.1), true);
+            m_params["aperture_value"].setVal<double>(aperture);
+        }
+    }
 
     return retValue;
 }
@@ -2300,12 +2301,12 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                     break;
                 }
 
-				m_acqRetVal += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
+                m_acqRetVal += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
 
                 if (!m_acqRetVal.containsError())
                 {
 //#ifndef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
-					//set alpha values to 255.
+                    //set alpha values to 255.
                     if (m_data.getType() == ito::tRGBA32)
                     {
                         ito::Rgba32 *colordata = (ito::Rgba32*)(img.bp);

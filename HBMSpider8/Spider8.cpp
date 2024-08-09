@@ -24,6 +24,7 @@
 
 #include "Spider8.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -64,12 +65,12 @@ Spider8Interface::Spider8Interface()
 The installation needs an initialized serial port";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Christian Kohler, Uniersidade Federal de Alagoas (UFAL)";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
     ito::Param paramVal("SerialIO", ito::ParamBase::HWRef, NULL, tr("Open com-port where Spider8 device is connected").toLatin1().data());
@@ -344,7 +345,7 @@ ito::RetVal Spider8Funcs::hbmSetBaud(const int baud)
 
     //after setting baud rate a reset is performed and we need to run EST?
     // we loop a little here as the answers returning from the Spider8 are little bit confusion.
-    // first we get a ?, then a 10001 (parity error) then everyting is fine ...
+    // first we get a ?, then a 10001 (parity error) then every ting is fine ...
     for (int nt = 0; nt < 3; nt++)
     {
         retValue += m_pSer->setVal("EST?", 4, NULL);
@@ -1287,11 +1288,11 @@ Spider8::Spider8() : AddInDataIO(),
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("samplingRate", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 9600.0, 1200.0, tr("sampling rate for measurement").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("trigger", ito::ParamBase::String | ito::ParamBase::In, "", tr("trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, leve: -32769 ... 32767").toLatin1().data());
+    paramVal = ito::Param("trigger", ito::ParamBase::String | ito::ParamBase::In, "", tr("trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, level: -32769 ... 32767").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bufferManagement", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("0: clear data on second read out, 1: clear data on first read out").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numSamples", ito::ParamBase::Int | ito::ParamBase::In, 1, 2000000000, 1200, tr("number of samples for one measurment cycle").toLatin1().data());
+    paramVal = ito::Param("numSamples", ito::ParamBase::Int | ito::ParamBase::In, 1, 2000000000, 1200, tr("number of samples for one measurement cycle").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("preTrgSamples", ito::ParamBase::Int | ito::ParamBase::In, 1, 500, 1, tr("number of samples recorded before trigger is active").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1394,7 +1395,7 @@ ito::RetVal Spider8::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         if (!retValue.containsWarningOrError())
         {
             retValue += m_pSpider->hbmListChannels(m_channels);
-            // fill m_param channel paramters
+            // fill m_param channel Parameters
             QSharedPointer<ito::Param> p(new ito::Param("aiChParams", ito::ParamBase::String));
             getParam(p, NULL);
         }
@@ -1628,7 +1629,7 @@ ito::RetVal Spider8::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
             *val = it.value();
         }
 /*
-        // Task Paramters
+        // Task Parameters
         else if (key == "taskStatus")
         {
             QStringList res;
@@ -1638,8 +1639,6 @@ ito::RetVal Spider8::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
                 ch.append(t->getName());
                 if (t->isInitialized())
                 {
-                    // Hier muss noch der status ausgelesen werden
-                    // ist der Task running oder was auch immer
                     if (t->isDone())
                     {
                         ch.append("0");
@@ -1825,7 +1824,7 @@ ito::RetVal Spider8::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("insufficent parameters or command wrong formated").toLatin1().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("insufficient parameters or command wrong formatted").toLatin1().data());
                 }
             }
         }
@@ -1967,11 +1966,11 @@ ito::RetVal Spider8::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 */
     if (retval.containsWarning())
     {
-        retval += ito::RetVal::format(ito::retWarning, 0, tr("Warning occured while starting read task. \n Code: %i").toLatin1().data(), retval.errorCode());
+        retval += ito::RetVal::format(ito::retWarning, 0, tr("Warning occurred while starting read task. \n Code: %i").toLatin1().data(), retval.errorCode());
     }
     else if (retval.containsError())
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Error occured while starting read task. \n Code: %i").toLatin1().data(), retval.errorCode());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Error occurred while starting read task. \n Code: %i").toLatin1().data(), retval.errorCode());
     }
     else
     {
@@ -2093,7 +2092,7 @@ ito::RetVal Spider8::readAnalog(ito::DataObject *externalDataObject)
         ito::int32 retSize = -1;
         double vScale = 1;
 
-        // TODO: Hier muss die Skala an den hoechsten Range angepasst werden und alle Reihen im Datenobject entsprechend ihres Ranges durchmultipliziert werden
+        // TODO: Here, the scale needs to be adjusted to the highest range, and all rows in the data object need to be multiplied accordingly to their range.
         //m_channels m_taskMap.value("ai")->getChList()
         //m_channels.getAllChannelOfType(niBaseChannel::chTypeAnalog)[0]->
         m_data.setAxisScale(2, vScale);
@@ -2211,13 +2210,13 @@ ito::RetVal Spider8::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += readAnalog();
         if (m_params["numCycles"].getVal<int>() != 0 && m_params["numSamples"].getVal<int>() != 1)
             m_aInIsAcquired = false;
-        // Die folgende zeile stoppt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
+        // The following line stops the task to be able to restart it. Resources are preserved. Consider outsourcing it to a separate function.
         // error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
 //        retValue += m_taskMap.value("ai")->stop();
     }
     else if (m_dInIsAcquired)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("The digital read mode is not supported yet, because an external clock source is neccesary").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("The digital read mode is not supported yet, because an external clock source is necessary").toLatin1().data());
         // retValue += readDigital();
         //m_dInIsAcquired = false;
     }
@@ -2278,7 +2277,7 @@ ito::RetVal Spider8::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
         else if (m_dInIsAcquired)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("The digital read mode is not supported yet, because an external clock source is neccesary").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("The digital read mode is not supported yet, because an external clock source is necessary").toLatin1().data());
             //retValue += readDigital();
             m_dInIsAcquired = false;
         }
@@ -2305,7 +2304,7 @@ ito::RetVal Spider8::setVal(const char *data, const int length, ItomSharedSemaph
  /*
     if (dObj->getDims() != 2 || dObj->getSize(0) != m_taskMap.value("ao")->getChCount() || dObj->getSize(1) != m_taskMap.value("ao")->getSamplesToRW())
     {
-        retValue += ito::RetVal::format(ito::retWarning, 0, tr("Error occured: given Dataobject has wrong dimensions.").toLatin1().data(), 0);
+        retValue += ito::RetVal::format(ito::retWarning, 0, tr("Error occurred: given Dataobject has wrong dimensions.").toLatin1().data(), 0);
     }
 
     if (!retValue.containsError())
@@ -2323,11 +2322,11 @@ ito::RetVal Spider8::setVal(const char *data, const int length, ItomSharedSemaph
 */
     if (error > 0)
     {
-        retValue += ito::RetVal::format(ito::retWarning, 0, tr("Warning occured while starting read task. \n Code: %i").toLatin1().data(), error);
+        retValue += ito::RetVal::format(ito::retWarning, 0, tr("Warning occurred while starting read task. \n Code: %i").toLatin1().data(), error);
     }
     else if (error < 0)
     {
-        retValue += ito::RetVal::format(ito::retError, 0, tr("Error occured while starting read task. \n Code: %i").toLatin1().data(), error);
+        retValue += ito::RetVal::format(ito::retError, 0, tr("Error occurred while starting read task. \n Code: %i").toLatin1().data(), error);
     }
     else
     {
@@ -2377,7 +2376,7 @@ void Spider8::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.

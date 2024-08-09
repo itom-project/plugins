@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -79,10 +79,10 @@ NiDAQmxInterface::NiDAQmxInterface()
 The installation needs the NI-DAQmx Library that can be downloaded from the NI website \n(https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).");
 
     m_author = PLUGIN_AUTHOR;
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("taskType", ito::ParamBase::String, "analogInput", tr("type of the task related to this instance of the NI-DAQmx plugin (analogInput, digitalInput, analogOutput, digitalOutput)").toLatin1().data());
@@ -1763,7 +1763,7 @@ void NiDAQmx::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -2061,7 +2061,7 @@ ito::RetVal NiDAQmx::readAnalog(int32 &readNumSamples)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// not supported yet, because an external clock source is neccesary, marc: todo: similar to readAnalog
+// not supported yet, because an external clock source is necessary, marc: todo: similar to readAnalog
 ito::RetVal NiDAQmx::readDigital(int32 &readNumSamples)
 {
     // right now I only support 8 line Ports! Some devices have 16 or 32 lines per port!

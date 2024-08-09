@@ -24,7 +24,7 @@
 
 #include "DslrRemote.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #ifndef WIN32
@@ -87,7 +87,7 @@ ito::RetVal DslrRemoteInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: DslrRemote) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
@@ -113,9 +113,9 @@ You can initialize this camera either as a 2D sensor with a width and height >= 
 \n\
 This plugin can also be used as template for other grabber.";*/
 
-	m_description = QObject::tr("A virtual white noise grabber");
+    m_description = QObject::tr("A virtual white noise grabber");
 //    m_detaildescription = QObject::tr(docstring);
-	m_detaildescription = QObject::tr(
+    m_detaildescription = QObject::tr(
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
@@ -126,13 +126,12 @@ You can initialize this camera either as a 2D sensor with a width and height >= 
 \n\
 This plugin can also be used as template for other grabber.");
 
-    m_author = "Universidade Federal de Alagoas (UFAL)";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = CREATEVERSION(1,4,0);
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);
-
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
     m_initParamsMand.clear();
 
     ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
@@ -155,7 +154,7 @@ DslrRemoteInterface::~DslrRemoteInterface()
     m_initParamsOpt.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------// this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
+//----------------------------------------------------------------------------------------------------------------------------------// this macro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -196,7 +195,7 @@ void DslrRemote::message_func(GPContext *context, const char *format, va_list ar
 const ito::RetVal DslrRemote::showConfDialog(void)
 {
 //    return apiShowConfigurationDialog(this, new DialogDslrRemote(this));
-	return ito::RetVal(ito::retWarning, 0, tr("not yet implemented").toLatin1().data());
+    return ito::RetVal(ito::retWarning, 0, tr("not yet implemented").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -301,7 +300,7 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     }
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
-    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
+    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber height
     if (sizeY > 1 && sizeY % 4 != 0)
     {
         retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
@@ -426,8 +425,8 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
     if (retValue == ito::retOk)
     {
-		//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
-		retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
     if (!retValue.containsError())
@@ -437,8 +436,8 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
     if (waitCond)
     {
-		waitCond->returnValue = retValue;
-		waitCond->release();
+        waitCond->returnValue = retValue;
+        waitCond->release();
     }
 
     return retValue;
@@ -596,12 +595,12 @@ ito::RetVal DslrRemote::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the DslrRemote, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the DslrRemote, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal DslrRemote::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -707,7 +706,7 @@ ito::RetVal DslrRemote::acquire(const int /*trigger*/, ItomSharedSemaphore *wait
     else
     {
         m_isgrabbing = true;
-//		m_isgrabbing = false;
+//        m_isgrabbing = false;
     }
 
     return retValue;

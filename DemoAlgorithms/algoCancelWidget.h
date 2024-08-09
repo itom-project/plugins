@@ -71,8 +71,8 @@ private slots:
 
         QVector<ito::ParamBase> paramsMand, paramsOpt, paramsOut;
 
-        //start the asychronous call. filterCallFinished will be called if the m_filterFunc method finished (either because it was finished or because the observer has been cancelled)
-        //the call must be asychronous, else, the cancel button would not be executable
+        //start the asynchronous call. filterCallFinished will be called if the m_filterFunc method finished (either because it was finished or because the observer has been cancelled)
+        //the call must be asynchronous, else, the cancel button would not be executable
         m_filterCall = QtConcurrent::run(m_filterFunc, &paramsMand, &paramsOpt, &paramsOut, observer);
         m_filterCallWatcher.setFuture(m_filterCall);
     }

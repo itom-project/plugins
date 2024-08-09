@@ -72,18 +72,19 @@ Different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) are impleme
 It is used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.\n\
 This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.\n\
 It is initialized by actuator(\"PIHexapodCtrl\", SerialIO, Controller Type (e.g. 'E662')).\n\
-Stageparamters can be set directly by setParam(\"STAGEPARAMETER\", value).\n\
+Stage parameters can be set directly by setParam(\"STAGEPARAMETER\", value).\n\
 WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.\n\
 Hence, stages should not be mixed up.\n\
 \n\
 If the device is newly started, all axes have to be initialized first. This is done using the command myMotor.calib(0,1,2,3,4,5) in order \n\
 to initialize the x,y,z,u,v and w axis, respectively.");
-    m_author = "W. Lyda, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("LGPL");
-    m_aboutThis = tr(GITVERSION);
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (If connected via Serial-Port).").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -94,7 +95,7 @@ to initialize the x,y,z,u,v and w axis, respectively.");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PIHexapodCtrlInterface with the name PIHexapodCtrlInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class PIHexapodCtrlInterface with the name PIHexapodCtrlInterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +126,7 @@ const ito::RetVal PIHexapodCtrl::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIHexapodCtrl::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIHexapodCtrl::init. The widget window is created at this position.
 */
 PIHexapodCtrl::PIHexapodCtrl() :
     AddInActuator(),
@@ -174,13 +175,13 @@ PIHexapodCtrl::PIHexapodCtrl() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PIHexapodCtrl", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_scale = 1; // PI is programmed in µm, this evil Programm sents in mm
+    m_scale = 1; // PI is programmed in Âµm, this evil Program sents in mm
     m_async = 0;
     m_hasHardwarePositionLimit = false;
 
     paramVal = ito::Param("identifier", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Identifier string of device (*idn?)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1.0) or sychronous (0.0) mode").toLatin1().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1.0) or synchronous (0.0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 6, 6, 6, tr("Number of axes (here always 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -198,10 +199,10 @@ PIHexapodCtrl::PIHexapodCtrl() :
     paramVal = ito::Param("axesNames", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("semicolon-separated list of the names of all connected axes").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	double pivotPoint[] = { 0.0, 0.0, 0.0 };
-	paramVal = ito::Param("pivotPoint", ito::ParamBase::DoubleArray, 3, pivotPoint, tr("current pivot point (x,y,z)").toLatin1().data());
-	paramVal.setMeta(new ito::DoubleArrayMeta(-500.0, 500.0, 0.0, 3, 3, 1), true);
-	m_params.insert(paramVal.getName(), paramVal);
+    double pivotPoint[] = { 0.0, 0.0, 0.0 };
+    paramVal = ito::Param("pivotPoint", ito::ParamBase::DoubleArray, 3, pivotPoint, tr("current pivot point (x,y,z)").toLatin1().data());
+    paramVal.setMeta(new ito::DoubleArrayMeta(-500.0, 500.0, 0.0, 3, 3, 1), true);
+    m_params.insert(paramVal.getName(), paramVal);
 
     m_targetPos = QVector<double>(11,0.0);
     m_currentStatus = QVector<int>(11, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -209,7 +210,7 @@ PIHexapodCtrl::PIHexapodCtrl() :
 
     if (hasGuiSupport())
     {
-        // This is for the docking widged
+        // This is for the docking widget
         //now create dock widget for this plugin
         DockWidgetPIHexapodCtrl *dockWidget = new DockWidgetPIHexapodCtrl(getID(), this);    // Create a new non-modal dialog
 
@@ -223,12 +224,12 @@ PIHexapodCtrl::PIHexapodCtrl() :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -304,14 +305,14 @@ ito::RetVal PIHexapodCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, PIHexapodCtrl::PISwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -385,17 +386,17 @@ ito::RetVal PIHexapodCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 m_params["speed"].setVal<double>(speed);
             }
         }
-		else if (key == "pivotPoint")
-		{
-			if (hasIndex)
-			{
-				retValue += ito::RetVal(ito::retError, 0, "indexed based setting of pivotPoint not implemented. Pass an array with three values (x,y,z).");
-			}
-			else
-			{
-				retValue += setPivotPoint(val->getVal<const double*>());
-			}
-		}
+        else if (key == "pivotPoint")
+        {
+            if (hasIndex)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "indexed based setting of pivotPoint not implemented. Pass an array with three values (x,y,z).");
+            }
+            else
+            {
+                retValue += setPivotPoint(val->getVal<const double*>());
+            }
+        }
         else
         {
             retValue += it->copyValueFrom(&(*val));
@@ -429,7 +430,7 @@ ito::RetVal PIHexapodCtrl::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-	m_threadID = QThread::currentThreadId();
+    m_threadID = QThread::currentThreadId();
 
     ito::AddInBase * pSer = reinterpret_cast<ito::AddInBase *>((*paramsOpt)[0].getVal<void *>());
     char *ipchar = (*paramsOpt)[1].getVal<char *>();
@@ -496,7 +497,7 @@ ito::RetVal PIHexapodCtrl::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
         retval += PISendQuestionWithAnswerDouble("VEL?", speed, 100);
         m_params["speed"].setVal<double>(speed);
 
-		retval += updatePivotPoint();
+        retval += updatePivotPoint();
     }
 
     if (waitCond)
@@ -525,22 +526,22 @@ ito::RetVal PIHexapodCtrl::close(ItomSharedSemaphore *waitCond)
 
     if (m_connection && m_connection->isOpen())
     {
-		if (m_threadID == QThread::currentThreadId())
-		{
-			//this is a workaround if the unwanted case occurs, that the close method is directly called from itom whereas init has been called in the plugin thread.
-			//sending events over TCP/IP is not allowed from different threads!
-			PIDummyRead();
-			PISendCommand("#24");// Stop
-			PISendCommand("#27"); // ESC
-			m_connection->disconnectFromHost();
-			m_connection->waitForDisconnected(3000);
-			DELETE_AND_SET_NULL(m_connection);
-		}
-		else
-		{
-			QMetaObject::invokeMethod(this, "threadSafeClose");
-			Sleep(1000);
-		}
+        if (m_threadID == QThread::currentThreadId())
+        {
+            //this is a workaround if the unwanted case occurs, that the close method is directly called from itom whereas init has been called in the plugin thread.
+            //sending events over TCP/IP is not allowed from different threads!
+            PIDummyRead();
+            PISendCommand("#24");// Stop
+            PISendCommand("#27"); // ESC
+            m_connection->disconnectFromHost();
+            m_connection->waitForDisconnected(3000);
+            DELETE_AND_SET_NULL(m_connection);
+        }
+        else
+        {
+            QMetaObject::invokeMethod(this, "threadSafeClose");
+            Sleep(1000);
+        }
     }
 
     if (waitCond)
@@ -555,18 +556,18 @@ ito::RetVal PIHexapodCtrl::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PIHexapodCtrl::threadSafeClose()
 {
-	//this is a workaround if the unwanted case occurs, that the close method is directly called from itom whereas init has been called in the plugin thread.
-	//sending events over TCP/IP is not allowed from different threads!
-	PIDummyRead();
-	PISendCommand("#24");// Stop
-	PISendCommand("#27"); // ESC
-	m_connection->disconnectFromHost();
-	m_connection->waitForDisconnected(3000);
-	DELETE_AND_SET_NULL(m_connection);
+    //this is a workaround if the unwanted case occurs, that the close method is directly called from itom whereas init has been called in the plugin thread.
+    //sending events over TCP/IP is not allowed from different threads!
+    PIDummyRead();
+    PISendCommand("#24");// Stop
+    PISendCommand("#27"); // ESC
+    m_connection->disconnectFromHost();
+    m_connection->waitForDisconnected(3000);
+    DELETE_AND_SET_NULL(m_connection);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -579,7 +580,7 @@ ito::RetVal PIHexapodCtrl::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -597,32 +598,32 @@ ito::RetVal PIHexapodCtrl::calib(const QVector<int> axis, ItomSharedSemaphore *w
         cmd.append(m_axesNames[axis[i]]);
     }
 
-	PIDummyRead();
+    PIDummyRead();
 
-	for (int i = 0; i < axis.size(); i++)
-	{
-		setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-	}
-	sendStatusUpdate(true);
+    for (int i = 0; i < axis.size(); i++)
+    {
+        setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+    }
+    sendStatusUpdate(true);
 
     retval += PISendCommand(cmd);
 
-	for (int i = 0; i < 10; ++i)
-	{
-		PICheckStatus(10000); //it seems that the stage "freezes" during init.
-		PIDummyRead();
-	}
+    for (int i = 0; i < 10; ++i)
+    {
+        PICheckStatus(10000); //it seems that the stage "freezes" during init.
+        PIDummyRead();
+    }
 
     if (!retval.containsError())
     {
         retval += waitForDone(3000000, axis); //WaitForAnswer(60000, axis);
     }
 
-	for (int i = 0; i < axis.size(); i++)
-	{
-		replaceStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actuatorAtTarget);
-	}
-	sendStatusUpdate(true);
+    for (int i = 0; i < axis.size(); i++)
+    {
+        replaceStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actuatorAtTarget);
+    }
+    sendStatusUpdate(true);
 
     if (waitCond)
     {
@@ -634,7 +635,7 @@ ito::RetVal PIHexapodCtrl::calib(const QVector<int> axis, ItomSharedSemaphore *w
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of a single axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of a single axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -647,7 +648,7 @@ ito::RetVal PIHexapodCtrl::setOrigin(const int axis, ItomSharedSemaphore * /*wai
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of various axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of various axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector with numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -692,7 +693,7 @@ ito::RetVal PIHexapodCtrl::getStatus(QSharedPointer<QVector<int> > status, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -749,7 +750,7 @@ ito::RetVal PIHexapodCtrl::getPos(const int axis, QSharedPointer<double> pos, It
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -762,7 +763,7 @@ ito::RetVal PIHexapodCtrl::getPos(const QVector<int> axis, QSharedPointer<QVecto
     ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retval = checkAxisVector(axis);
-	ito::RetVal retval2;
+    ito::RetVal retval2;
     QByteArray answer;
 
     if (!retval.containsError())
@@ -774,16 +775,16 @@ ito::RetVal PIHexapodCtrl::getPos(const QVector<int> axis, QSharedPointer<QVecto
             question += m_axesNames[axis[i]];
 
         }
-		retval2  = PISendQuestionWithAnswerString(question, answer, 200);
+        retval2  = PISendQuestionWithAnswerString(question, answer, 200);
 
-		if (retval2.containsError() && retval2.errorCode() == PI_READTIMEOUT)
-		{
-			Sleep(100);
-			int readSigns = 0;
-			retval2 = PIReadString(answer, readSigns, 200);
-		}
+        if (retval2.containsError() && retval2.errorCode() == PI_READTIMEOUT)
+        {
+            Sleep(100);
+            int readSigns = 0;
+            retval2 = PIReadString(answer, readSigns, 200);
+        }
 
-		retval += retval2;
+        retval += retval2;
     }
 
     if (!retval.containsError())
@@ -858,7 +859,7 @@ inline ito::RetVal PIHexapodCtrl::checkAxisVector(const QVector<int> &axis)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PIHexapodCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -878,7 +879,7 @@ ito::RetVal PIHexapodCtrl::setPosAbs(const int axis, const double pos, ItomShare
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PIHexapodCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -895,7 +896,7 @@ ito::RetVal PIHexapodCtrl::setPosAbs(const QVector<int> axis, QVector<double> po
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PIHexapodCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -915,7 +916,7 @@ ito::RetVal PIHexapodCtrl::setPosRel(const int axis, const double pos, ItomShare
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PIHexapodCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -932,8 +933,8 @@ ito::RetVal PIHexapodCtrl::setPosRel(const QVector<int> axis, QVector<double> po
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa PISetPos
     \return retOk
@@ -991,15 +992,15 @@ ito::RetVal PIHexapodCtrl::PICheckStatus(int timeoutMS /*= 200*/)
     int a;
     int flag;
 
-	retVal += PISendQuestionWithAnswerString("STA?", answer, timeoutMS);
+    retVal += PISendQuestionWithAnswerString("STA?", answer, timeoutMS);
     qDebug() << "Status: " << answer;
 
-	if (retVal.containsError() && retVal.errorCode() == PI_READTIMEOUT)
-	{
-		Sleep(100);
-		int readSigns = 0;
-		retVal = PIReadString(answer, readSigns, timeoutMS);
-	}
+    if (retVal.containsError() && retVal.errorCode() == PI_READTIMEOUT)
+    {
+        Sleep(100);
+        int readSigns = 0;
+        retVal = PIReadString(answer, readSigns, timeoutMS);
+    }
 
     if (!retVal.containsError())
     {
@@ -1137,7 +1138,7 @@ ito::RetVal PIHexapodCtrl::PIDummyRead(void) /*!< reads buffer of serial port wi
             {
                 QByteArray bdarray(buffersize, 0);
                 bdarray = m_connection->read(buffersize);
-				qDebug() << "unused answer from device: " << bdarray;
+                qDebug() << "unused answer from device: " << bdarray;
             }
         }
     }
@@ -1223,7 +1224,7 @@ ito::RetVal PIHexapodCtrl::PIReadString(QByteArray &result, int &len, int timeou
                 }
                 else
                 {
-					count++;
+                    count++;
                     //qDebug("timeout");
                 }
 
@@ -1312,7 +1313,7 @@ ito::RetVal PIHexapodCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &last
 {
     bool errorAvailable = true;
     ito::RetVal retValue(ito::retOk);
-	ito::RetVal retVal2;
+    ito::RetVal retVal2;
     QByteArray buffer;
     QByteArray errorText;
     int readSigns = 0;
@@ -1325,13 +1326,13 @@ ito::RetVal PIHexapodCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &last
         retValue += PISendCommand("ERR?");
         retVal2 =  PIReadString(buffer, readSigns, 200);
 
-		if (retVal2.containsError() && retVal2.errorCode() == PI_READTIMEOUT)
-		{
-			Sleep(200);
-			retVal2 = PIReadString(buffer, readSigns, 500);
-		}
+        if (retVal2.containsError() && retVal2.errorCode() == PI_READTIMEOUT)
+        {
+            Sleep(200);
+            retVal2 = PIReadString(buffer, readSigns, 500);
+        }
 
-		retValue += retVal2;
+        retValue += retVal2;
 
         if (!retValue.containsError())
         {
@@ -1414,7 +1415,7 @@ ito::RetVal PIHexapodCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &last
                         lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 cannot be initialized/is not initialized").toLatin1().data()));
                     break;
                     case 48:
-                        lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 communications error").toLatin1().data()));
+                        lastErrors.append(QPair<int,QByteArray>(errorNo, tr("F-361 communication error").toLatin1().data()));
                     break;
                     case 53:
                         lastErrors.append(QPair<int,QByteArray>(errorNo, tr("MOV! command motion in progress").toLatin1().data()));
@@ -1699,7 +1700,7 @@ ito::RetVal PIHexapodCtrl::PIIdentifyAndInitializeSystem(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -1713,7 +1714,7 @@ ito::RetVal PIHexapodCtrl::PISetPos(const QVector<int> &axis,  const QVector<dou
     bool released = false;
     bool outOfRange = false;
     QByteArray cmdTotal;
-	isInterrupted(); //reset interrupt
+    isInterrupted(); //reset interrupt
 
     if (!retval.containsError())
     {
@@ -1724,7 +1725,7 @@ ito::RetVal PIHexapodCtrl::PISetPos(const QVector<int> &axis,  const QVector<dou
             retval += getPos(axis, actPos, NULL);
             for (int i = 0; i < axis.size(); i++)
             {
-				qDebug() << m_targetPos[axis[i]] << posMM[i] << (*actPos)[i];
+                qDebug() << m_targetPos[axis[i]] << posMM[i] << (*actPos)[i];
                 m_targetPos[axis[i]] = (posMM[i] + (*actPos)[i]);
             }
         }
@@ -1746,19 +1747,19 @@ ito::RetVal PIHexapodCtrl::PISetPos(const QVector<int> &axis,  const QVector<dou
                 cmdTotal.append(QByteArray::number(m_targetPos[axis[i]], 'g'));
             }
 
-			for (int i = 0; i < axis.size(); i++)
-			{
-				setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-			}
-			sendStatusUpdate(false);
+            for (int i = 0; i < axis.size(); i++)
+            {
+                setStatus(m_currentStatus[axis[i]], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            }
+            sendStatusUpdate(false);
 
-			sendTargetUpdate();
-			retval += PISendCommand(cmdTotal);
+            sendTargetUpdate();
+            retval += PISendCommand(cmdTotal);
 
-			QVector<QPair<int, QByteArray> > lastError;
-			retval += PIGetLastErrors(lastError);
-			retval += convertPIErrorsToRetVal(lastError);
-		}
+            QVector<QPair<int, QByteArray> > lastError;
+            retval += PIGetLastErrors(lastError);
+            retval += convertPIErrorsToRetVal(lastError);
+        }
 
         if (!retval.containsError())
         {
@@ -1798,11 +1799,11 @@ ito::RetVal PIHexapodCtrl::PISetPos(const QVector<int> &axis,  const QVector<dou
         }
     }
 
-	if (waitCond && !released)
-	{
-		waitCond->returnValue = retval;
-		waitCond->release();
-	}
+    if (waitCond && !released)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
 
     return retval;
 }
@@ -1814,57 +1815,57 @@ ito::RetVal PIHexapodCtrl::waitForDone(const int timeoutMS, const QVector<int> a
     QMutex waitMutex;
     QWaitCondition waitCondition;
     bool atTarget = false;
-	int timeouts = 0;
+    int timeouts = 0;
 
     QElapsedTimer timer;
     timer.start();
 
     while (!atTarget && !retVal.containsError() && timer.elapsed() < timeoutMS)
     {
-		if (isInterrupted())
-		{
-			PIDummyRead();
-			PISendCommand("#24");// Stop
-			PISendCommand("#27"); // ESC
-			PISendCommand("STP");
-			PIDummyRead();
-			replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
-			retVal += ito::RetVal(ito::retError, PI_INTERRUPT, tr("interrupt occurred").toLatin1().data());
-		}
-		else
-		{
-			retVal += PICheckStatus();
+        if (isInterrupted())
+        {
+            PIDummyRead();
+            PISendCommand("#24");// Stop
+            PISendCommand("#27"); // ESC
+            PISendCommand("STP");
+            PIDummyRead();
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            retVal += ito::RetVal(ito::retError, PI_INTERRUPT, tr("interrupt occurred").toLatin1().data());
+        }
+        else
+        {
+            retVal += PICheckStatus();
 
-			if (retVal.containsError() && retVal.errorCode() == PI_READTIMEOUT)
-			{
-				timeouts++;
-				if (timeouts < 20)
-				{
-					retVal = ito::retOk;
-				}
-				else
-				{
-					//qDebug() << "timeout in waitForDone";
-				}
-			}
-			else
-			{
-				timeouts = 0;
-			}
+            if (retVal.containsError() && retVal.errorCode() == PI_READTIMEOUT)
+            {
+                timeouts++;
+                if (timeouts < 20)
+                {
+                    retVal = ito::retOk;
+                }
+                else
+                {
+                    //qDebug() << "timeout in waitForDone";
+                }
+            }
+            else
+            {
+                timeouts = 0;
+            }
 
-			atTarget = true;
-			for (int i = 0; i < m_numAxis; ++i)
-			{
-				if (m_currentStatus[i] & ito::actuatorMoving)
-				{
-					atTarget = false;
-					break;
-				}
-			}
-		}
+            atTarget = true;
+            for (int i = 0; i < m_numAxis; ++i)
+            {
+                if (m_currentStatus[i] & ito::actuatorMoving)
+                {
+                    atTarget = false;
+                    break;
+                }
+            }
+        }
     }
 
-	PIDummyRead();
+    PIDummyRead();
 
     /*QByteArray answer;
     retVal += PISendQuestionWithAnswerString("STA?", answer, timeoutMS);
@@ -1877,7 +1878,7 @@ ito::RetVal PIHexapodCtrl::waitForDone(const int timeoutMS, const QVector<int> a
 
     retVal += PICheckStatus();*/
 
-	qDebug() << retVal.containsError() << retVal.errorCode() << "vor getPos";
+    qDebug() << retVal.containsError() << retVal.errorCode() << "for getPos";
 
     QSharedPointer<QVector<double> > sharedpos = QSharedPointer<QVector<double> >(new QVector<double>);
     sharedpos->resize(m_numAxis);
@@ -1885,10 +1886,10 @@ ito::RetVal PIHexapodCtrl::waitForDone(const int timeoutMS, const QVector<int> a
     QVector<int> axes(m_numAxis);
     for (int i = 0; i < m_numAxis; i++)
     {
-		axes[i] = i;
+        axes[i] = i;
         (*sharedpos)[0] = 0.0;
     }
-	retVal += getPos(axes, sharedpos, NULL);
+    retVal += getPos(axes, sharedpos, NULL);
 
     for (int i = 0; i < m_numAxis; i++)
     {
@@ -1898,7 +1899,7 @@ ito::RetVal PIHexapodCtrl::waitForDone(const int timeoutMS, const QVector<int> a
         }
     }
 
-	PIDummyRead();
+    PIDummyRead();
 
     sendStatusUpdate(false);
     sendTargetUpdate();
@@ -1989,69 +1990,69 @@ void PIHexapodCtrl::dockWidgetVisibilityChanged(bool visible)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIHexapodCtrl::updatePivotPoint()
 {
-	QByteArray answer(0);
-	ito::RetVal retValue = PISendQuestionWithAnswerString("SPI?", answer, 1000);
-	if (!retValue.containsError() && answer.length() > 0)
-	{
-		const char names[3] = { 'R', 'S', 'T' };
-		double result[3] = { 0.0, 0.0, 0.0 };
-		for (int i = 0; i < 3; i++)
-		{
-			if (answer.contains(names[i]))
-			{
-				int fpos = answer.indexOf(names[i]);
-				int lpos = answer.indexOf('\n', fpos);
-				if (lpos == -1)
-				{
-					lpos = answer.length();
-				}
+    QByteArray answer(0);
+    ito::RetVal retValue = PISendQuestionWithAnswerString("SPI?", answer, 1000);
+    if (!retValue.containsError() && answer.length() > 0)
+    {
+        const char names[3] = { 'R', 'S', 'T' };
+        double result[3] = { 0.0, 0.0, 0.0 };
+        for (int i = 0; i < 3; i++)
+        {
+            if (answer.contains(names[i]))
+            {
+                int fpos = answer.indexOf(names[i]);
+                int lpos = answer.indexOf('\n', fpos);
+                if (lpos == -1)
+                {
+                    lpos = answer.length();
+                }
 
-				int lpos1 = answer.indexOf(" \n", fpos);
-				if (lpos1 != -1 && lpos1 < lpos)
-				{
-					lpos = lpos1;
-				}
-				int len = lpos - fpos - 2;
-				if (len > 0)
-				{
-					result[i] = answer.mid(fpos + 2, len).toDouble();
-				}
-			}
-			else
-			{
-				retValue += ito::RetVal::format(ito::retError, 0, tr("getting pivot point: coordinate name '%c' does not exist").toLatin1().data(), names[i]);
-			}
-		}
+                int lpos1 = answer.indexOf(" \n", fpos);
+                if (lpos1 != -1 && lpos1 < lpos)
+                {
+                    lpos = lpos1;
+                }
+                int len = lpos - fpos - 2;
+                if (len > 0)
+                {
+                    result[i] = answer.mid(fpos + 2, len).toDouble();
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, tr("getting pivot point: coordinate name '%c' does not exist").toLatin1().data(), names[i]);
+            }
+        }
 
-		double* pivotPoint = m_params["pivotPoint"].getVal<double*>();
-		memcpy(pivotPoint, result, 3 * sizeof(double));
-	}
+        double* pivotPoint = m_params["pivotPoint"].getVal<double*>();
+        memcpy(pivotPoint, result, 3 * sizeof(double));
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIHexapodCtrl::setPivotPoint(const double *values)
 {
-	ito::RetVal retValue;
+    ito::RetVal retValue;
 
-	QByteArray command("SPI R");
-	command.reserve(40);
-	command.append(QByteArray::number(values[0], 'g', 6));
-	command.append(" S");
-	command.append(QByteArray::number(values[1], 'g', 6));
-	command.append(" T");
-	command.append(QByteArray::number(values[2], 'g', 6));
+    QByteArray command("SPI R");
+    command.reserve(40);
+    command.append(QByteArray::number(values[0], 'g', 6));
+    command.append(" S");
+    command.append(QByteArray::number(values[1], 'g', 6));
+    command.append(" T");
+    command.append(QByteArray::number(values[2], 'g', 6));
 
-	retValue += PISendCommand(command);
+    retValue += PISendCommand(command);
 
-	QVector<QPair<int, QByteArray> > lastError;
-	retValue += PIGetLastErrors(lastError);
-	retValue += convertPIErrorsToRetVal(lastError);
+    QVector<QPair<int, QByteArray> > lastError;
+    retValue += PIGetLastErrors(lastError);
+    retValue += convertPIErrorsToRetVal(lastError);
 
-	updatePivotPoint();
+    updatePivotPoint();
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2071,8 +2072,8 @@ ito::RetVal PIHexapodCtrl::execFunc(const QString funcName, QSharedPointer<QVect
 
         if (!retValue.containsError())
         {
-			double values[] = { param1->getVal<double>(), param2->getVal<double>(), param3->getVal<double>() };
-			retValue += setPivotPoint(values);
+            double values[] = { param1->getVal<double>(), param2->getVal<double>(), param3->getVal<double>() };
+            retValue += setPivotPoint(values);
         }
     }
     else if (funcName == "getPivotPoint")
@@ -2084,10 +2085,10 @@ ito::RetVal PIHexapodCtrl::execFunc(const QString funcName, QSharedPointer<QVect
         if (!retValue.containsError())
         {
             QByteArray answer(0);
-			retValue += updatePivotPoint();
-			if (!retValue.containsError())
-			{
-				const double *result = m_params["pivotPoint"].getVal<const double*>();
+            retValue += updatePivotPoint();
+            if (!retValue.containsError())
+            {
+                const double *result = m_params["pivotPoint"].getVal<const double*>();
                 param1->setVal<double>(result[0]);
                 param2->setVal<double>(result[1]);
                 param3->setVal<double>(result[2]);
@@ -2114,13 +2115,13 @@ ito::RetVal PIHexapodCtrl::execFunc(const QString funcName, QSharedPointer<QVect
 
             QVector<double> tarPos(6);
             int delay = (int)(param3->getVal<double>()*1000 + 0.5);
-            for (int cylce = 0; cylce < param1->getVal<int>(); cylce++)
+            for (int cycle = 0; cycle < param1->getVal<int>(); cycle++)
             {
-                tarPos[0] = amp * qCos(cylce/10.0);
-                tarPos[1] = amp * qSin(cylce/10.0);
-                tarPos[2] = amp/3 * qSin(cylce/3.0);
-                tarPos[3] = amp/2 * qSin(cylce/5.0);
-                tarPos[4] = amp/2 * qCos(cylce/5.0);
+                tarPos[0] = amp * qCos(cycle/10.0);
+                tarPos[1] = amp * qSin(cycle/10.0);
+                tarPos[2] = amp/3 * qSin(cycle/3.0);
+                tarPos[3] = amp/2 * qSin(cycle/5.0);
+                tarPos[4] = amp/2 * qCos(cycle/5.0);
                 tarPos[5] = 0.0;
                 retValue += PISetPos(axis, tarPos, false, NULL);
                 setAlive();

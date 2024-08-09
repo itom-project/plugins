@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite analog input task with a reference trigger.
 
 Demo script for acquiring a finite (but unknown) number of analog
@@ -18,7 +16,7 @@ value has to be given, too (see parameter 'startTriggerLevel').
 
 The stop trigger is given by a so called reference trigger. This
 can only be enabled for finite, input tasks. However, such a trigger
-will implicitely let the finite task behave like a continuous task.
+will implicitly let the finite task behave like a continuous task.
 This means, that you have to continuously retrieve the newest data using
 'getVal' or 'copyVal' such that the internal buffer does not overflow.
 The stop event for the task is defined by three conditions, that have

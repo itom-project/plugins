@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **accel**: {seq. of int}
     motor shaft acceleration, range: 1..65.535 [default 2.364]
 **async**: {int}
-    asychronous (1) or sychronous (0) [default] mode
+    asynchronous (1) or synchronous (0) [default] mode
 **axisID**: {seq. of int}
     internal ID of axis
 **axisSteps**: {seq. of float}, read-only
@@ -79,3 +79,9 @@ They both run at 10 full steps per mm (1) (hence: linear axes):
 
 ser = dataIO("SerialIO",4,115200,"\r",8,1)
 mot = actuator("NanotecStepMotor",ser,[1,4],[10,10],[1,1])
+
+
+Changelog
+==========
+
+* itom setup 2.1.0: Release

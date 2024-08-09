@@ -91,3 +91,9 @@ An instance of this plugin has the following parameters:
     size in y (rows) [px]
 
     *Value range: [4:4:480], Default: 480*
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

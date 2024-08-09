@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`LibUSB`
 **Type**:       :plugintype:`LibUSB`
 **License**:    :pluginlicense:`LibUSB`
-**Platforms**:  Windows (Vista, 7, 8)
+**Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
 **Devices**:    Any generic USB devices
 **Author**:     :pluginauthor:`LibUSB`
 =============== ========================================================================================================
@@ -99,6 +99,7 @@ In this case you have to compile LibUSB by yourself using your version of Visual
         /MS64/static --> this must contain the newly built **libusb-1.0.lib** from {sources}/Win64/static (if 64bit build)
 
 5. Set the CMake variable **LibUSB_DIR** to this new folder or define a windows environment variable **LIBUSB_ROOT**.
+
 
 Changelog
 =========

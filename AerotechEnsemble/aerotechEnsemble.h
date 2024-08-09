@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechEnsemble" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "common/addInInterface.h"
 
 #include "dialogAerotechEnsemble.h"    //! This is the configuration dialog
-#include "dockWidgetAerotechEnsemble.h"    //! This is the controll dialog
+#include "dockWidgetAerotechEnsemble.h"    //! This is the control dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -64,7 +64,7 @@ class AerotechEnsemble : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        AerotechEnsemble();    //!< Constructur
+        AerotechEnsemble();    //!< Constructor
         ~AerotechEnsemble();    //! Destructor
 
         //void timerEvent( QTimerEvent *event );

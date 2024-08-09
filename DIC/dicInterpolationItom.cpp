@@ -136,7 +136,7 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
                 break;
 
                 default:
-                    return ito::RetVal(ito::retError, 0, QObject::tr("invalid data type / not implemeneted yet").toLatin1().data());
+                    return ito::RetVal(ito::retError, 0, QObject::tr("invalid data type / not implemented yet").toLatin1().data());
             }
         }
         else
@@ -185,13 +185,13 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
                 break;
 
                 default:
-                    return ito::RetVal(ito::retError, 0, QObject::tr("invalid data type / not implemeneted yet").toLatin1().data());
+                    return ito::RetVal(ito::retError, 0, QObject::tr("invalid data type / not implemented yet").toLatin1().data());
             }
         }
     }
     else if (algo >= 1)
     {
-        // beware this implementation is inteded for dense point field interpolations. For 'sparse', i.e. interpolation points
+        // beware this implementation is intended for dense point field interpolations. For 'sparse', i.e. interpolation points
         // have a large spacing between them the calculation of the fullfield A matrix does not make sense and the code
         // should be adapted accordingly
         if (outFieldPtr->getSize(1) != 2 || outFieldPtr->getSize(0) != positionsdPtr->getSize(0) || outFieldPtr->getType() != inFieldPtr->getType())
@@ -250,7 +250,7 @@ ito::RetVal doInterpolate(ito::DataObject *inFieldPtr, ito::DataObject *position
 /*static*/ ito::RetVal DIC::DICInterpolation(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal(ito::retOk);
-	ito::DataObject *inFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>();
+    ito::DataObject *inFieldPtr = paramsMand->at(0).getVal<ito::DataObject*>();
     ito::DataObject *outFieldPtr = paramsMand->at(1).getVal<ito::DataObject*>();
     ito::DataObject *positionsdPtr = paramsMand->at(2).getVal<ito::DataObject*>();
     int algo = paramsOpt->at(0).getVal<int>();

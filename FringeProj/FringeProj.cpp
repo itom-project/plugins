@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FringeProj" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -80,7 +80,7 @@ struct tvArray3D {
 *   @param [out] bitshift       order of two numbers with the bitshifts for the graycode bits
 *
 *   This function calculates a lookup table for the transformation of bitplane stack values to code index values.
-*   This a necessary step in the gray code calculation as the gray code does not form ordered acending numbers in
+*   This a necessary step in the gray code calculation as the gray code does not form ordered ascending numbers in
 *   a binray number system. To speed up the calculation afterwards a lookup table is calculated here which gives
 *   the according ordered number for a gray code bitplane stack number.
 */
@@ -128,11 +128,11 @@ int CalcBPS2CILut(const char maxBits, unsigned short *BPS2CITable, unsigned shor
 //----------------------------------------------------------------------------------------------------------------------------------
 /** calculate codeindexmap out of a number of graycode images.
 *   @param [in]  images     the recorded graycode images
-*   @param [in]  contThreas absolut minimum threashold (modulation) for a valid graycode pixel
+*   @param [in]  contThreas absolute minimum threshold (modulation) for a valid graycode pixel
 *   @param [out] CiMap      codeindex map (fringe order map)
 *
-*   The first two images (entirely black and white) are used to calculate the threashold for each pixel.
-*   Using this threashold for each image of the sequence the pixel bit values (0 or 1) are determined.
+*   The first two images (entirely black and white) are used to calculate the threshold for each pixel.
+*   Using this threshold for each image of the sequence the pixel bit values (0 or 1) are determined.
 *   The result of this calculus is a graycode code word which does not directly represent an ordered
 *   fringe number. To convert the gc code word to an ordered fringe number the lookup table calculated
 *   with the \ref CalcBPS2CILut function is used.
@@ -245,13 +245,13 @@ template int CalcCIMap<ito::uint16>(struct tvArray3D **images, const float contT
 //----------------------------------------------------------------------------------------------------------------------------------
 /** calculate the modulus 2 pi phase map of a sequence of 4 90° shifted phase images
 *   @param [in]  images     the recorded fringe images (90° shifted)
-*   @param [in]  contThreas absolut minimum threashold (modulation) for a valid phase pixel
+*   @param [in]  contThreas absolute minimum threshold (modulation) for a valid phase pixel
 *   @param [in]  overExp    gray level over which recorded intensity values are overexposed, i.e. the phase for that pixel invalid
 *   @param [out] PhaseMap   the calculated modulo 2 pi phase map
 *   @param [out] ModulationMap the calculated modulation map
 *
 *   For all pixels the modulo 2 pi phase map is calculated using the simple carré algorithm atan2pi((I2 - I4) / (I1 - I3))
-*   in addition it is checked if the modulation for this pixel is above the threashold and the maximum recorded intensity
+*   in addition it is checked if the modulation for this pixel is above the threshold and the maximum recorded intensity
 *   below the overexposed value, otherwise the pixel is marked as invalid.
 */
 template<typename _Tp> ito::RetVal calcPhaseMap4Tmpl(const ito::DataObject *source, const float contThreas, const _Tp overExp, ito::DataObject &phaseMap, ito::DataObject &modulationMap)
@@ -352,13 +352,13 @@ template<typename _Tp> ito::RetVal calcPhaseMap4Tmpl(const ito::DataObject *sour
 //----------------------------------------------------------------------------------------------------------------------------------
 /** calculate the modulus 2 pi phase map of a sequence of equally shifted fringe images
 *   @param [in]  images     the recorded fringe images
-*   @param [in]  contThreas absolut minimum threashold (modulation) for a valid phase pixel
+*   @param [in]  contThreas absolute minimum threshold (modulation) for a valid phase pixel
 *   @param [in]  overExp    gray level over which recorded intensity values are overexposed, i.e. the phase for that pixel invalid
 *   @param [out] PhaseMap   the calculated modulo 2 pi phase map
 *   @param [out] ModulationMap the calculated modulation map
 *
 *   For all pixels the modulo 2 pi phase map is calculated using the sum of sines and cosines. It is important that the phase
-*   shifts are equal for all images. As in the version for four images the contrast threashold and overexposure are
+*   shifts are equal for all images. As in the version for four images the contrast threshold and overexposure are
 *   checked and out of boundaries pixels are marked invalid.
 */
 template<typename _Tp> ito::RetVal calcPhaseMapNTmpl(const ito::DataObject *source, const float contThreas, const _Tp overExp, ito::DataObject &phaseMap, ito::DataObject &modulationMap)
@@ -437,14 +437,14 @@ template<typename _Tp> ito::RetVal calcPhaseMapNTmpl(const ito::DataObject *sour
 
 //-----------------------------------------------------------------------------
 /** unwrap a modulo 2 pi phase map using a gray code code index map
-*   @param [in]  contThreas contrast threashold for a valid pixel
+*   @param [in]  contThreas contrast threshold for a valid pixel
 *   @param [in]  maxpha     maximum valid phase value
 *   @param [in]  CiMap      code index map out of graycode images
 *   @param [in]  RawPhase   modulo 2 pi phase map
 *   @param [out] PhaseMap   unwrapped phase map
 *
 *   The modulo 2 pi phase map is unwrapped using the code index map out of the graycode images. If a pixel has a contrast value
-*   below the threashold or a phase value above the maximum phase value it is marked invalid.
+*   below the threshold or a phase value above the maximum phase value it is marked invalid.
 */
 int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2D **CiMap, struct tFloatArray2D **RawPhase, struct tFloatArray2D **ModulationMap, struct tFloatArray2D **PhaseMap)
 {
@@ -536,12 +536,12 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
 *   @param [in]  images     the recorded phase images
 *   @param [in]  numBits    number of graycode bits
 *   @param [in]  numPhaShift number of phase shifted images
-*   @param [in]  contThreas contrast threashold for a pixel to become valid
+*   @param [in]  contThreas contrast threshold for a pixel to become valid
 *   @param [in]  overExp    maximum intensity value
 *   @param [out] PhaseMap   the unwrapped phase map
 *   @param [out] ModulationMap modulation map
 *
-*   In principle this is just a conveniance function summing up the above functions for calculating a raw phase map
+*   In principle this is just a convenience function summing up the above functions for calculating a raw phase map
 *   out of phase shifted images, calculate a code index map out of gray code images and to unwrap the raw phase
 *   using the code index map. Anyway the function should give a speed up compared to a separate call to all the
 *   functions above. In case the intermediate results aren't required this function should be used to calculate
@@ -580,12 +580,14 @@ FringeProjInterface::FringeProjInterface()
 
     m_description = QObject::tr("Algorithms used for fringe projection (phase shifting and Gray code)");
     m_detaildescription = QObject::tr("This DLL contains several reconstruction algorithms for fringe projection.");
-    m_author = "C. Kohler, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
+
 
     NTHREADS  = QThread::idealThreadCount();
 }
@@ -674,7 +676,7 @@ ito::RetVal FringeProj::close(ItomSharedSemaphore * /*waitCond*/)
 *
 *    mand. Params:
 *        - images, the graycode images
-*        - contThreas contrast threashold for a valid pixel
+*        - contThreas contrast threshold for a valid pixel
 *        - ciMap, the calculated codeindex map
 */
 ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
@@ -684,7 +686,7 @@ ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector
 
     if (!retval.containsError())
     {
-        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Continous 3D-image stack (uint8 or uint16)").toLatin1().data());
+        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Continuous 3D-image stack (uint8 or uint16)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("contThres", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Threshold for contrast. Only pixels with ((bright-dark) > contThres) will be considered").toLatin1().data());
         paramsMand->append(param);
@@ -784,8 +786,8 @@ ito::RetVal FringeProj::calcCiMap(QVector<ito::ParamBase> *paramsMand, QVector<i
 *
 *    mand. Params:
 *        - images, the four 90° phase shifted images
-*        - contThreas contrast threashold for a valid pixel
-*        - overExp, over exposed threashold for a valid pixel
+*        - contThreas contrast threshold for a valid pixel
+*        - overExp, over exposed threshold for a valid pixel
 *        - phaseMap, the calculated modulo 2 pi phase map
 *        - modulationMap, the modulation map
 */
@@ -864,8 +866,8 @@ ito::RetVal FringeProj::calcPhaseMap4(QVector<ito::ParamBase> *paramsMand, QVect
 *
 *    mand. Params:
 *        - images, the n equally shifted fringe images
-*        - contThreas contrast threashold for a valid pixel
-*        - overExp, over exposed threashold for a valid pixel
+*        - contThreas contrast threshold for a valid pixel
+*        - overExp, over exposed threshold for a valid pixel
 *        - phaseMap, the calculated modulo 2 pi phase map
 *        - modulationMap, the modulation map
 */
@@ -876,9 +878,9 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
 
     if (!retval.containsError())
     {
-        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N x Y x X continous image stack").toLatin1().data());
+        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N x Y x X continuous image stack").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("contThreas", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
+        param = ito::Param("contThreas", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Contrast threshold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("overExp", ito::ParamBase::Int | ito::ParamBase::In, 0, 65535, 255, tr("Value for over-exposed pixels or 0 if it should not be considered").toLatin1().data());
         paramsMand->append(param);
@@ -943,7 +945,7 @@ ito::RetVal FringeProj::calcPhaseMapN(QVector<ito::ParamBase> *paramsMand, QVect
 *    @param [in]    paramsOpt    optional parameters for cimap calculation
 *
 *    mand. Params:
-*        - contThreas contrast threashold for a valid pixel
+*        - contThreas contrast threshold for a valid pixel
 *        - maxPha, maximum phase for a valid pixel
 *        - ciMap, the code index map - calculated from the graycode images
 *        - rawPhase, the modulo 2 pi phase map
@@ -957,7 +959,7 @@ ito::RetVal FringeProj::unwrapPhaseGrayParams(QVector<ito::Param> *paramsMand, Q
 
     if (!retval.containsError())
     {
-        param = ito::Param("contThreas", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
+        param = ito::Param("contThreas", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Contrast threshold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("maxPha", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 65535.0, tr("Highest possible unwrapped phase").toLatin1().data());
         paramsMand->append(param);

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut fÃ¼r Technische Optik, UniversitÃ¤t Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -458,12 +458,12 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the IDSuEye, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the IDSuEye, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal Xeneth::startDevice(ItomSharedSemaphore *waitCond)
 {

@@ -205,7 +205,7 @@
     </message>
     <message>
         <location line="+15"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -263,7 +263,7 @@
     </message>
     <message>
         <location line="+4"/>
-        <source>asychronous (1) or synchronous (0) mode</source>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

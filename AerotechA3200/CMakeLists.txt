@@ -48,7 +48,7 @@ else(BUILD_TARGET64)
         ${CMAKE_CURRENT_SOURCE_DIR}/aerotechA3200.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechA3200.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -67,7 +67,10 @@ else(BUILD_TARGET64)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechA3200.cpp
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Define Version in global.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()

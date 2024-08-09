@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -25,7 +25,7 @@
 
 #include "DummyGrabber.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #ifndef WIN32
@@ -149,7 +149,7 @@ ito::RetVal DummyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: DummyGrabber) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
@@ -190,12 +190,12 @@ You can initialize this camera either as a 2D sensor with a width and height >= 
 \n\
 This plugin can also be used as template for other grabber.");
 
-    m_author = "C. Kohler, W. Lyda, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = CREATEVERSION(1,4,0);
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
 
@@ -228,7 +228,7 @@ DummyGrabberInterface::~DummyGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     ito::RetVal retVal;
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
-    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
+    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber height
 
     if (sizeY > 1 && sizeY % 4 != 0)
     {
@@ -700,12 +700,12 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the DummyGrabber, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the DummyGrabber, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal DummyGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {

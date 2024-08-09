@@ -90,7 +90,7 @@ if(XERCESC_FOUND AND XSD_FOUND)
             set(XSD_LIB_POSTFIX "_vc100")
             set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")
         else()
-            # since we don't knwo wether we are on windows or not, we just undefined and see what happens
+            # since we don't know whether we are on windows or not, we just undefined and see what happens
             unset(XSDLIB_PATH_POSTFIX)
         endif()
 
@@ -118,7 +118,7 @@ if(XERCESC_FOUND AND XSD_FOUND)
 
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -128,12 +128,13 @@ if(XERCESC_FOUND AND XSD_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/x3pio.cpp
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
 
-
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 

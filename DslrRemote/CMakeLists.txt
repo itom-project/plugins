@@ -32,7 +32,6 @@ else(BUILD_SHARED_LIBS)
     set(LIBRARY_TYPE STATIC)
 endif(BUILD_SHARED_LIBS)
 
-if(LibUSB_INCLUDE_DIRS)
 
 if(WIN32)
     add_subdirectory(regex)
@@ -64,7 +63,7 @@ endif(WIN32)
         )
 
     set(PLUGIN_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
     )
@@ -76,11 +75,14 @@ endif(WIN32)
         ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
     )
 
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
@@ -100,6 +102,8 @@ if(WIN32)
 else()
     target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${LIBGPHOTO_LIBRARIES})
 endif()
+
+add_dependencies(${target_name} LibUSB)
 
 if(WIN32)
     add_dependencies(${target_name} regex)
@@ -126,7 +130,4 @@ endif()
 
 else(WIN32 OR LIBGPHOTO_FOUND)
     message(SEND_ERROR "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
-endif()
-else(LibUSB_INCLUDE_DIRS)
-    message(SEND_ERROR "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")
 endif()

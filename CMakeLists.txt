@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.12...3.29)
-project(itom_plugins)
-
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})
@@ -16,6 +12,26 @@ if(NOT EXISTS ${ITOM_SDK_DIR})
     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
 endif(NOT EXISTS ${ITOM_SDK_DIR})
 
+message(
+    STATUS "------------------- PROJECT itom_plugins ---------------------")
+# Retrieve Version Number and Identifier from GIT-TAG
+include(${ITOM_SDK_DIR}/cmake/VersionFromGit.cmake)
+version_from_git(
+  LOG       ON
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
+# define cmake project and version number
+project(itom_plugins VERSION ${GIT_VERSION})
+set(itom_plugins_VERSION_IDENTIFIERS ${GIT_IDENTIFIERS})
+
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
+
+message(
+    STATUS "------------------- Version = ${itom_plugins_VERSION} -----------------------\n")
+
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)
@@ -23,26 +39,31 @@ include(ItomBuildMacros)
 # ITOM Shipment
 option(ITOM_BUILD_SHIPMENT "If ITOM is build for shipment, turn this option ON." OFF)
 
+# LibUSB
+option(PLUGIN_LIBUSB "Build with this plugin." ON)
+if(PLUGIN_LIBUSB)
+    add_subdirectory(LibUSB)
+endif(PLUGIN_LIBUSB)
+
 # AerotechA3200
 if(NOT BUILD_TARGET64)
-	if(WIN32)
-		option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-		if(PLUGIN_aerotechA3200 OR )
-    		add_subdirectory(AerotechA3200)
-		endif(PLUGIN_aerotechA3200)
-	endif()
+    if(WIN32)
+        option(PLUGIN_aerotechA3200 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+        if(PLUGIN_aerotechA3200 )
+            add_subdirectory(AerotechA3200)
+        endif(PLUGIN_aerotechA3200)
+    endif()
 endif(NOT BUILD_TARGET64)
 
 # AerotechEnsemble
 if(BUILD_QTVERSION STREQUAL "Qt5")
-	if(WIN32)
-		option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
-		if(PLUGIN_aerotechEnsemble)
-			add_subdirectory(AerotechEnsemble)
-		endif(PLUGIN_aerotechEnsemble)
-	endif()
+    if(WIN32)
+        option(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
+        if(PLUGIN_aerotechEnsemble)
+            add_subdirectory(AerotechEnsemble)
+        endif(PLUGIN_aerotechEnsemble)
+    endif()
 endif(BUILD_QTVERSION STREQUAL "Qt5")
-
 
 # AndorSDK3
 if(BUILD_QTVERSION STREQUAL "Qt5")
@@ -53,10 +74,10 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
 # AvantesAvaSpec
-option(PLUGIN_AvantesAvaSpec "Build with this plugin." ON)
-if(PLUGIN_AvantesAvaSpec)
+option(PLUGIN_AvantesAvaSpec "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
         add_subdirectory(AvantesAvaSpec)
-endif(PLUGIN_AvantesAvaSpec)
+endif(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
 
 # AvantesSDK
 option(PLUGIN_AvantesSDK "Build with this plugin." ON)
@@ -93,10 +114,10 @@ if(PLUGIN_BasicGPLFilters)
 endif(PLUGIN_BasicGPLFilters)
 
 # HidApi
-option(PLUGIN_HidApi "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_HidApi)
+option(PLUGIN_HidApi "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_HidApi AND PLUGIN_LIBUSB)
     add_subdirectory(hidapi)
-endif(PLUGIN_HidApi)
+endif(PLUGIN_HidApi AND PLUGIN_LIBUSB)
 
 # cmu1394
 if(WIN32)
@@ -144,17 +165,17 @@ if(PLUGIN_dispWindow)
     add_subdirectory(dispWindow)
 endif(PLUGIN_dispWindow)
 
-# dslrRemote2 - not yet
-option(PLUGIN_DslrRemote2 "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_DslrRemote2)
-    add_subdirectory(DslrRemote2)
-endif(PLUGIN_DslrRemote2)
-
-# dslrRemote - not yet
-option(PLUGIN_DslrRemote "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+# dslrRemote
+option(PLUGIN_DslrRemote "Build with this plugin." OFF)
 if(PLUGIN_DslrRemote)
     add_subdirectory(DslrRemote)
 endif(PLUGIN_DslrRemote)
+
+# dslrRemote2
+option(PLUGIN_DslrRemote2 "Build with this plugin." OFF)
+if(PLUGIN_DslrRemote2)
+    add_subdirectory(DslrRemote2)
+endif(PLUGIN_DslrRemote2)
 
 # DummyGrabber
 option(PLUGIN_DummyGrabber "Build with this plugin." ON)
@@ -193,7 +214,7 @@ if(PLUGIN_FittingFilters)
 endif(PLUGIN_FittingFilters)
 
 # FireGrabber
-option(PLUGIN_FireGrabber "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
+option(PLUGIN_FireGrabber "Build with this plugin." ON)
 if(PLUGIN_FireGrabber)
     add_subdirectory(FireGrabber)
 endif(PLUGIN_FireGrabber)
@@ -260,12 +281,6 @@ if(PLUGIN_LibModbus)
     add_subdirectory(libmodbus)
 endif(PLUGIN_LibModbus)
 
-# LibUSB
-option(PLUGIN_LIBUSB "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
-if(PLUGIN_LIBUSB)
-    add_subdirectory(LibUSB)
-endif(PLUGIN_LIBUSB)
-
 # MeasurementComputing
 if(WIN32)
 option(PLUGIN_MeasurementComputing "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
@@ -301,7 +316,7 @@ if(PLUGIN_NEWPORT_2936)
 endif(PLUGIN_NEWPORT_2936)
 
 # Newport Conex LDS
-option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ON)
+option(PLUGIN_NEWPORT_CONEXLDS "Build with this plugin." ${ITOM_BUILD_SHIPMENT})
 if(PLUGIN_NEWPORT_CONEXLDS)
     add_subdirectory(NewportConexLDS)
 endif(PLUGIN_NEWPORT_CONEXLDS)
@@ -325,10 +340,10 @@ if(PLUGIN_NITWidySWIR)
 endif(PLUGIN_NITWidySWIR)
 
 # OceanOpticsSpec
-option(PLUGIN_OceanOpticsSpec "Build with this plugin." ON)
-if(PLUGIN_OceanOpticsSpec)
+option(PLUGIN_OceanOpticsSpec "Build with this plugin (requires LibUSB as well)." ON)
+if(PLUGIN_OceanOpticsSpec AND PLUGIN_LIBUSB)
     add_subdirectory(OceanOpticsSpec)
-endif(PLUGIN_OceanOpticsSpec)
+endif(PLUGIN_OceanOpticsSpec AND PLUGIN_LIBUSB)
 
 # OpenCVFilters
 option(PLUGIN_OpenCVFilters "Build with this plugin." ON)

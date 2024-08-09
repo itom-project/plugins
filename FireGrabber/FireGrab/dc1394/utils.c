@@ -234,7 +234,7 @@ dc1394_get_color_coding_data_depth(dc1394color_coding_t color_coding, uint32_t *
     case DC1394_COLOR_CODING_MONO16S:
     case DC1394_COLOR_CODING_RGB16S:
     case DC1394_COLOR_CODING_RAW16:
-        // shoudn't we return the real bit depth (e.g. 12) instead of systematically 16?
+        // shouldn't we return the real bit depth (e.g. 12) instead of systematically 16?
         *bits = 16;
         return DC1394_SUCCESS;
     case DC1394_COLOR_CODING_AVT_MONO12:

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -34,7 +34,7 @@
 #include "common/addInInterface.h"
 
 #include "dialogDummyMotor.h"    //! This is the configuration dialog
-#include "dockWidgetDummyMotor.h"    //! This is the controll dialog
+#include "dockWidgetDummyMotor.h"    //! This is the control dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -80,7 +80,7 @@ class DummyMotorInterface : public ito::AddInInterfaceBase
 *   The DummyMotor-Class can be used where algorithms should be tested without actually
 *   using a specific hardware. The DummyMotor basically accepts setPos and getPos commands
 *   and keeps track of the position with an internal variable. The maximum number of
-*   axis is currently limited to 10 - just for programmers conveniance.
+*   axis is currently limited to 10 - just for programmers convenience.
 */
 class DummyMotor : public ito::AddInActuator
 {
@@ -93,13 +93,13 @@ class DummyMotor : public ito::AddInActuator
 
     protected:
         ~DummyMotor(); //!< Destructor
-        DummyMotor();    //!< Constructur
+        DummyMotor();    //!< Constructor
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
     private:
-        int m_numaxis;  //!< Number of axis currently aviable at this stage
-        int m_async;    //!< variable to set up async and sync positioning --> Syncrone means programm do not return until positioning was done.
+        int m_numaxis;  //!< Number of axis currently available at this stage
+        int m_async;    //!< variable to set up async and sync positioning --> Syncrone means program do not return until positioning was done.
         int m_scale;    // Its something to round from ITO mm into stepwith of the corresponding system
 
         // Cut here

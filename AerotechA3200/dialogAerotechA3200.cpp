@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -101,7 +101,7 @@ dialogAerotechA3200::dialogAerotechA3200(ito::AddInActuator *motor, QStringList 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @detail This function changes the values of the different GUI-elements according to the input paramVals
 *
-*\param[in] paramVals    Parameterlist with Motorparamters (m_params)
+*\param[in] paramVals    Parameterlist with Motorparameters (m_params)
 *\warning If the Keywords (parameters) "speed" and "accel" do not exist in the Parameterlist and the find is not used , this will crash!!
 *\sa AerotechA3200
 */
