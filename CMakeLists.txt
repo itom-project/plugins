@@ -357,14 +357,6 @@ itom_plugin_option(PLUGIN_PCOCamera)
         add_subdirectory(PCOCamera)
 endif(PLUGIN_PCOCamera)
 
-# PCOSensicam
-if(BUILD_QTVERSION STREQUAL "Qt5")
-    itom_plugin_option(PLUGIN_PCOSensicam)
-    if(PLUGIN_PCOSensicam)
-        add_subdirectory(PCOSensicam)
-    endif(PLUGIN_PCOSensicam)
-endif(BUILD_QTVERSION STREQUAL "Qt5")
-
 # PCOPixelFly
 itom_plugin_option(PLUGIN_PCOPixelFly)
     if(PLUGIN_PCOPixelFly)
@@ -532,12 +524,6 @@ itom_plugin_option(PLUGIN_UhlText)
 if(PLUGIN_UhlText)
     add_subdirectory(UhlText)
 endif(PLUGIN_UhlText)
-
-# USBMotion3XIII
-itom_plugin_option(PLUGIN_USBMotion3XIII)
-if(PLUGIN_USBMotion3XIII)
-    add_subdirectory(USBMotion3XIII)
-endif(PLUGIN_USBMotion3XIII)
 
 # V4L2
 itom_plugin_option(PLUGIN_V4L2)
