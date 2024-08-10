@@ -1,3 +1,4 @@
+
 macro(itom_plugin_option PLUGIN_ID)
 
     set(PLUGINS_LIST    # Legend: X = OFF, D = Default, S = Setup, T = Test
@@ -178,16 +179,11 @@ macro(itom_plugin_option PLUGIN_ID)
     # get column index
     if(WIN32)
         set(INDEX 1)
-    endif(WIN32)
-
-    if(APPLE)
+    elseif(APPLE)
         set(INDEX 3)
-    endif(APPLE)
-
-    if(UNIX)
+    elseif(UNIX)
         set(INDEX 4)
-    endif(UNIX)
-    # find out raspi
+    endif(WIN32)
 
     foreach(PLUGIN_ROW ${PLUGINS_LIST})
         # get row
@@ -199,21 +195,19 @@ macro(itom_plugin_option PLUGIN_ID)
             string(STRIP "${ELEMENT}" VALUE)
 
             # case DEFAULT
-            if(VALUE STREQUAL "D")
-                set(BUILD_OPTION ON)
+            if(PLUGIN_BUILD_OPTION STREQUAL "default" AND VALUE STREQUAL "D")
+                option(${PLUGIN_ID} "Build with this plugin." ON)
             # case SETUP
-            elseif(ITOM_BUILD_SETUP AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S"))
-                set(BUILD_OPTION ON)
+            elseif(PLUGIN_BUILD_OPTION STREQUAL "setup" AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S"))
+                option(${PLUGIN_ID} "Build with this plugin." ON)
+                SET(${PLUGIN_ID} ON CACHE BOOL "Build with this plugin." FORCE)
             # case TEST
-            elseif(ITOM_BUILD_TEST AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S" OR VALUE STREQUAL "T"))
-                set(BUILD_OPTION ON)
+            elseif(PLUGIN_BUILD_OPTION STREQUAL "test" AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S" OR VALUE STREQUAL "T"))
+                option(${PLUGIN_ID} "Build with this plugin." ON)
+                SET(${PLUGIN_ID} ON CACHE BOOL "Build with this plugin." FORCE)
             else()
-                set(BUILD_OPTION OFF)
+                option(${PLUGIN_ID} "Build with this plugin." OFF)
             endif()
         endif(MATCHSTRING)
     endforeach()
-
-
-    option(${PLUGIN_ID} "Build with this plugin." ${BUILD_OPTION})
-
 endmacro()

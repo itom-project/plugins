@@ -36,12 +36,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include(ItomBuildMacros)
 
-# ITOM BUILD OPTIONS
-option(ITOM_BUILD_SETUP "If ITOM is build to provide a setup installer, turn this option ON." OFF)
-option(ITOM_BUILD_TEST "If ITOM is build to all Plugins to be tested, turn this option ON." OFF)
+# PLUGIN BUILD OPTIONS
+set(PLUGIN_BUILD_OPTION "default" CACHE STRING "If ITOM plugin build options: default, setup, test")
+set_property(CACHE PLUGIN_BUILD_OPTION PROPERTY STRINGS default setup test)
 
 #include itom_plugin_option macro
-include(${CMAKE_SOURCE_DIR}/itom/cmake/ItomPluginOption.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/plugins_options.cmake)
 
 # LibUSB
 itom_plugin_option(PLUGIN_LIBUSB)
