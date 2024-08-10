@@ -40,12 +40,10 @@ include(ItomBuildMacros)
 option(ITOM_BUILD_SETUP "If ITOM is build to provide a setup installer, turn this option ON." OFF)
 option(ITOM_BUILD_TEST "If ITOM is build to all Plugins to be tested, turn this option ON." OFF)
 
-list(APPEND CMAKE_MODULE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(plugins_setup)
+#include itom_plugin_option macro
+include(${CMAKE_SOURCE_DIR}/itom/cmake/ItomPluginOption.cmake)
 
 # LibUSB
-
 itom_plugin_option(PLUGIN_LIBUSB)
 if(PLUGIN_LIBUSB)
     add_subdirectory(LibUSB)
@@ -409,6 +407,12 @@ if(PLUGIN_PMD_PICO)
     add_subdirectory(PmdPico)
 endif(PLUGIN_PMD_PICO)
 
+# QCam
+itom_plugin_option(PLUGIN_QCam)
+if(PLUGIN_QCam)
+    add_subdirectory(QCam)
+endif(PLUGIN_QCam)
+
 # QuantumComposer
 itom_plugin_option(PLUGIN_QuantumComposer)
 if(PLUGIN_QuantumComposer)
@@ -528,6 +532,12 @@ itom_plugin_option(PLUGIN_UhlText)
 if(PLUGIN_UhlText)
     add_subdirectory(UhlText)
 endif(PLUGIN_UhlText)
+
+# USBMotion3XIII
+itom_plugin_option(PLUGIN_USBMotion3XIII)
+if(PLUGIN_USBMotion3XIII)
+    add_subdirectory(USBMotion3XIII)
+endif(PLUGIN_USBMotion3XIII)
 
 # V4L2
 itom_plugin_option(PLUGIN_V4L2)
