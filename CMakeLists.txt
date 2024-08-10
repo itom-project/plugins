@@ -399,12 +399,6 @@ if(PLUGIN_PMD_PICO)
     add_subdirectory(PmdPico)
 endif(PLUGIN_PMD_PICO)
 
-# QCam
-itom_plugin_option(PLUGIN_QCam)
-if(PLUGIN_QCam)
-    add_subdirectory(QCam)
-endif(PLUGIN_QCam)
-
 # QuantumComposer
 itom_plugin_option(PLUGIN_QuantumComposer)
 if(PLUGIN_QuantumComposer)
