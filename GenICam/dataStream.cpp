@@ -1567,28 +1567,34 @@ ito::RetVal GenTLDataStream::copyMono8ToDataObject(
     const size_t& width,
     const size_t& height,
     bool littleEndian,
-    ito::DataObject& dobj)
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
 {
     size_t real_height = height;
 
-    // some IDS camera models have additional image lines at the front, which are black and
-    // are skipped by IDS Peak. Here, we have to do this manually!
-    switch (m_specialModelType)
+    if (considerModelWorkarounds)
     {
-    case IDS_U3_38Jx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
-        //real_height -= 38;
-        real_height = dobj.getSize(0); // safer
-        ptr += 38 * width * 5 / 4;
-        break;
-    case IDS_U3_33Fx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
-        //real_height -= 65;
-        real_height = dobj.getSize(0); // safer
-        ptr += 65 * width * 5 / 4;
-        break;
-    default:
-        break;
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width * 5 / 4;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width * 5 / 4;
+            break;
+        default:
+            break;
+        }
     }
 
     // little or big endian is idle for mono8:
@@ -1727,29 +1733,35 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
     const size_t& width,
     const size_t& height,
     bool littleEndian,
-    ito::DataObject& dobj)
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
 {
     ito::RetVal retVal = ito::retOk;
     size_t real_height = height;
 
-    // some IDS camera models have additional image lines at the front, which are black and
-    // are skipped by IDS Peak. Here, we have to do this manually!
-    switch (m_specialModelType)
+    if (considerModelWorkarounds)
     {
-    case IDS_U3_38Jx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
-        //real_height -= 38;
-        real_height = dobj.getSize(0); // safer
-        ptr += 38 * width;
-        break;
-    case IDS_U3_33Fx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
-        //real_height -= 65;
-        real_height = dobj.getSize(0); // safer
-        ptr += 65 * width;
-        break;
-    default:
-        break;
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width;
+            break;
+        default:
+            break;
+        }
     }
 
     cv::Mat sourceImage = cv::Mat(real_height, width, CV_8UC1, (void*)ptr);
@@ -1783,30 +1795,41 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj)
+ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(
+    const char* ptr, 
+    const size_t& width, 
+    const size_t& height, 
+    bool littleEndian, 
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
 {
     // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/basics-raw-bayer-pixel-formats.html
 
     int real_height = height;
 
-    // some IDS camera models have additional image lines at the front, which are black and
-    // are skipped by IDS Peak. Here, we have to do this manually!
-    switch (m_specialModelType)
+    if (considerModelWorkarounds)
     {
-    case IDS_U3_38Jx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
-        //real_height -= 38;
-        real_height = dobj.getSize(0); // safer
-        ptr += 38 * width * 5 / 4;
-        break;
-    case IDS_U3_33Fx:
-        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
-        //real_height -= 65;
-        real_height = dobj.getSize(0); // safer
-        ptr += 65 * width * 5 / 4;
-        break;
-    default:
-        break;
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width * 5 / 4;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width * 5 / 4;
+            break;
+        default:
+            break;
+        }
     }
 
     if (m_charBuffer_cache.size() < width * real_height)
@@ -1835,7 +1858,8 @@ ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(const char* pt
         ptr += 5;
     }
 
-    auto retVal = copyBayerRG8ToColorDataObject(bayerRG8PtrStart, width, real_height, littleEndian, dobj);
+    // do not allow model modifications, since already considered in this method
+    auto retVal = copyBayerRG8ToColorDataObject(bayerRG8PtrStart, width, real_height, littleEndian, dobj, false);
 
     return retVal;
 }
