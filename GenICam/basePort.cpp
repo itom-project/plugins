@@ -278,7 +278,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegularExpression regExp("^local:(///)?([a-zA-Z0-9\\._\\- "
+        QRegularExpression regExp("^local:(///)?([a-zA-Z0-9@\\._\\- "
             "]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$",
             QRegularExpression::CaseInsensitiveOption);
 
