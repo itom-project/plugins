@@ -86,6 +86,10 @@ documentation of this plugin. \n\
 Colored pixel formats, with a single-color bitdepth of more than 8 bit are reduced to 8bit per color, since rgba32 is the single color \n\
 datatype of itom.dataObject. \n\
 \n\
+Please notice, that some cameras require more than one allocator buffer (see parameter 'numBuffers'). Sometimes, it is better to \n\
+set the parameter 'AcquisitionMode' to 'SingleFrame' instead of 'Continuous'. If a camera is not robustly working, try to change \n\
+these parameters before starting the device. \n\
+\n\
 This plugin has been tested with the following cameras: \n\
 \n\
 * Allied Vision, Manta (Firewire) \n\
@@ -102,7 +106,9 @@ This plugin has been tested with the following cameras: \n\
 * IDS Imaging, U3-3200SE-M-GL (USB3) \n\
 * IDS Imaging, U3-3800SE-M-GL (USB3) \n\
 * IDS Imaging, UI-5880CP-M-GL (GigE) \n\
-* IDS Imaging, U3-38J0XLE-C-HQ (USB3, only format BayerRG10g40IDS)";
+* IDS Imaging, U3-38J0XLE-C-HQ (USB3, only format BayerRG10g40IDS) \n\
+* IDS Imaging, U3-3280CP-C-HQ Rev 2.2 (USB3) \n\
+* IDS Imaging, U3-3280CP-M-GL Rev 2.2 (USB3)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
