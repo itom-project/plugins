@@ -121,7 +121,7 @@ private:
         const QByteArray& questionCommand, double* answer, const int number);
 
     ito::RetVal readRegisterWithAnswerString(
-        const uint16_t& address, const uint8_t& subindex, char*& answer);
+        const uint16_t& address, const uint8_t& subindex, QString& answer);
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
 
@@ -135,8 +135,13 @@ private:
 
     int doubleToInteger(const double& value);
 
-    ito::RetVal getSerialNumber(char*& serialNum);
-    ito::RetVal getDeviceType(char*& serialNum);
+    ito::RetVal getSerialNumber(QString& serialNum);
+    ito::RetVal getDeviceName(QString& name);
+    ito::RetVal getVendorID(QString& id);
+    ito::RetVal getProductCode(QString& code);
+    ito::RetVal getRevisionNumber(QString& num);
+    ito::RetVal getSoftwareVersion(QString& version);
+    ito::RetVal getAmbientTemperature(int& temp);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -176,14 +181,9 @@ public slots:
 
     // Faulhaber MCS methods
     /*
-    ito::RetVal getVendorID(int& id);
-    ito::RetVal getProductCode(int& code);
-    ito::RetVal getRevisionNumber(int& num);
-    ito::RetVal getDeviceName(const char*& name);
-    ito::RetVal getSoftwareVersion(const char*& version);
+
     ito::RetVal getPosMCS(int& pos);
     ito::RetVal getTargetPosMCS(int& pos);
-    ito::RetVal getAmbientTemperature(int& temp);
 
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(const double& pos);
