@@ -78,7 +78,14 @@ private:
     int m_numOfAxes;
     int m_waitForDoneTimeout = 60000;
 
-    int m_node;
+    uint8_t m_node;
+
+
+    uint8_t m_S = 0x53;
+    uint8_t m_E = 0x45;
+    uint8_t m_GET = 0x01;
+    uint8_t m_SET = 0x02;
+
     int m_statusWord;
 
     enum statuswordBits
@@ -106,13 +113,23 @@ private:
                                 // connected axes
 
     // SeralIO functions
-    ito::RetVal sendCommand(const QByteArray& command);
-    ito::RetVal readString(QByteArray& result, int& len);
+    ito::RetVal sendCommand(const QByteArray& command, QByteArray& response);
+    ito::RetVal readResponse(QByteArray& result, int& len);
     ito::RetVal sendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer);
     ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
     ito::RetVal sendQuestionWithAnswerDoubleArray(
         const QByteArray& questionCommand, double* answer, const int number);
-    ito::RetVal sendQuestionWithAnswerInteger(const QByteArray& questionCommand, int& answer);
+    ito::RetVal readRegisterWithAnswerInteger(
+        const uint16_t& address, const uint8_t& subindex, int& answer);
+
+    ito::RetVal homingCurrentPosToZero(const int& axis);
+
+    ito::RetVal readRegister(
+        const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response);
+    ito::RetVal parseResponse(const QByteArray& response, std::vector<uint8_t>& parsedResponse);
+
+    uint8_t CRC(const std::vector<uint8_t>& message);
+
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -191,9 +208,6 @@ public slots:
     ito::RetVal getControlword(int& word);
     ito::RetVal setControlword(const uint8_t& word, const int& len);
     ito::RetVal updateStatusMCS();*/
-    ito::RetVal homingCurrentPosToZero(const int& axis);
-
-    uint8_t CRC(const std::vector<uint8_t>& msg);
 
     int doubleToInteger(const double& value);
 

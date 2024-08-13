@@ -468,7 +468,7 @@ ito::RetVal FaulhaberMCS::init(
     {
         // Us given SerialIO instance
         m_pSerialIO = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
-        m_node = paramsMand->at(1).getVal<int>();
+        m_node = (uint8_t)paramsMand->at(1).getVal<int>();
     }
     else
     {
@@ -487,8 +487,18 @@ ito::RetVal FaulhaberMCS::init(
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
 
-    int answer;
-    retValue += sendQuestionWithAnswerInteger("53 07 01 01 18 10 04 f4 45", answer);
+    // int answer;
+    // retValue += sendQuestionWithAnswerInteger("53 07 01 01 18 10 04 f4 45", answer);
+
+
+    int serialNum, deviceType;
+    retValue += readRegisterWithAnswerInteger(0x1018, 0x04, serialNum);
+
+    std::cout << "Serial number: " << serialNum << "\n" << std::endl;
+
+    retValue += readRegisterWithAnswerInteger(0x1000, 0x00, deviceType);
+
+    std::cout << "device type: " << deviceType << "\n" << std::endl;
 
     if (!retValue.containsError())
     {
@@ -846,6 +856,58 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
             sendStatusUpdate();
         }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::readRegister(
+    const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response)
+{
+    ito::RetVal retValue = ito::retOk;
+    std::vector<uint8_t> command = {
+        m_node,
+        m_GET,
+        static_cast<uint8_t>(address & 0xFF),
+        static_cast<uint8_t>(address >> 8),
+        subindex};
+
+    std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
+    fullCommand.insert(fullCommand.end(), command.begin(), command.end());
+    fullCommand.push_back(CRC(fullCommand));
+    fullCommand.insert(fullCommand.begin(), m_S);
+    fullCommand.push_back(m_E);
+
+    QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
+    QByteArray answer;
+    retValue += sendCommand(data, answer);
+
+    retValue += parseResponse(answer, response);
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::parseResponse(
+    const QByteArray& response, std::vector<uint8_t>& parsedResponse)
+{
+    ito::RetVal retValue = ito::retOk;
+    std::vector<uint8_t> ansVector(response.begin(), response.end());
+
+    if (CRC(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
+        ansVector[ansVector.size() - 2])
+    {
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("Checksum mismatch for %1").arg(response).toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        parsedResponse = std::vector<uint8_t>(ansVector.begin() + 7, ansVector.end() - 2);
+    }
+    else
+    {
+        parsedResponse = {0};
     }
 
     return retValue;
@@ -1792,15 +1854,9 @@ ito::RetVal FaulhaberMCS::updateStatus()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
+ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command, QByteArray& response)
 {
     ito::RetVal retVal;
-
-    std::vector<uint8_t> full_command = {static_cast<uint8_t>(command.size() + 2)};
-    full_command.insert(full_command.end(), command.begin(), command.end());
-    full_command.push_back(CRC(full_command));
-    full_command.insert(full_command.begin(), 0x53);
-    full_command.push_back(0x45);
 
     retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
 
@@ -1813,11 +1869,15 @@ ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
         mutex.unlock();
     }
     setAlive();
+
+    int len;
+    ito::RetVal retValue = readResponse(response, len);
+
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readString(QByteArray& result, int& len)
+ito::RetVal FaulhaberMCS::readResponse(QByteArray& result, int& len)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
@@ -1830,25 +1890,6 @@ ito::RetVal FaulhaberMCS::readString(QByteArray& result, int& len)
     QSharedPointer<int> curBufLen(new int);
     QSharedPointer<char> curBuf(new char[buflen]);
     result = "";
-
-    QByteArray endline;
-
-    QSharedPointer<ito::Param> param(new ito::Param("endline"));
-    retValue += m_pSerialIO->getParam(param, nullptr);
-
-    if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
-    {
-        char* temp = param->getVal<char*>(); // borrowed reference
-        int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
-        endline = QByteArray::fromRawData(temp, len);
-    }
-    else
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("could not read endline parameter from serial port").toLatin1().data());
-    }
 
     if (!retValue.containsError())
     {
@@ -1865,14 +1906,7 @@ ito::RetVal FaulhaberMCS::readString(QByteArray& result, int& len)
             if (!retValue.containsError())
             {
                 result += QByteArray(curBuf.data(), *curBufLen);
-                pos = result.indexOf(endline, curFrom);
-                curFrom = qMax(0, result.length() - 3);
-
-                if (pos >= 0) // found
-                {
-                    done = true;
-                    result = result.left(pos);
-                }
+                done = true;
             }
 
             if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
@@ -1895,8 +1929,7 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerString(
 {
     QByteArray questionCommand_ = QString::number(m_node).toUtf8() + questionCommand;
     int readSigns;
-    ito::RetVal retValue = sendCommand(questionCommand_);
-    retValue += readString(answer, readSigns);
+    ito::RetVal retValue = sendCommand(questionCommand_, answer);
     return retValue;
 }
 
@@ -1909,8 +1942,7 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDouble(
     QByteArray answerStr;
     bool ok;
 
-    ito::RetVal retValue = sendCommand(questionCommand_);
-    retValue += readString(answerStr, readSigns);
+    ito::RetVal retValue = sendCommand(questionCommand_, answerStr);
 
     if (questionCommand_.contains("?"))
     {
@@ -1940,8 +1972,7 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
     int readSigns;
     QByteArray answerStr;
     bool ok = true;
-    ito::RetVal retValue = sendCommand(questionCommand_);
-    retValue += readString(answerStr, readSigns);
+    ito::RetVal retValue = sendCommand(questionCommand_, answerStr);
 
     if (questionCommand_.contains("?"))
     {
@@ -1978,45 +2009,37 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendQuestionWithAnswerInteger(
-    const QByteArray& questionCommand, int& answer)
+ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
+    const uint16_t& address, const uint8_t& subindex, int& answer)
 {
-    std::vector<uint8_t> command = {
-        uint8_t(m_node),
-        0x01,
-        static_cast<uint8_t>(0x1000 & 0xFF),
-        static_cast<uint8_t>(0x1000 >> 8),
-        0x00};
+    ito::RetVal retValue = ito::retOk;
+    std::vector<uint8_t> registerValue;
 
-    std::vector<uint8_t> full_command = {static_cast<uint8_t>(command.size() + 2)};
-    full_command.insert(full_command.end(), command.begin(), command.end());
-    full_command.push_back(CRC(full_command));
-    full_command.insert(full_command.begin(), 0x53);
-    full_command.push_back(0x45);
+    retValue += readRegister(address, subindex, registerValue);
 
-    int readSigns;
-    QByteArray _answer;
-    bool ok;
-
-    QByteArray data(reinterpret_cast<char*>(full_command.data()), full_command.size());
-    ito::RetVal retValue = sendCommand(data);
-    retValue += readString(_answer, readSigns);
-
-    answer = _answer.toInt(&ok);
-
-    if (!ok)
+    if (registerValue.size() > sizeof(int))
     {
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
-                .arg(_answer.constData())
+            tr("Error during SendQuestionWithAnswerIntege, converting to integer value.")
                 .toLatin1()
                 .data());
     }
+
+    answer = 0;
+    if (!retValue.containsError())
+    {
+        for (size_t i = 0; i < registerValue.size(); ++i)
+        {
+            answer |= static_cast<int>(registerValue[i]) << (8 * i);
+        }
+    }
+
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 uint8_t FaulhaberMCS::CRC(const std::vector<uint8_t>& msg)
 {
     uint8_t poly = 0xD5;
