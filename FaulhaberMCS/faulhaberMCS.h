@@ -113,12 +113,15 @@ private:
                                 // connected axes
 
     // SeralIO functions
-    ito::RetVal sendCommand(const QByteArray& command, QByteArray& response);
-    ito::RetVal readResponse(QByteArray& result, int& len);
-    ito::RetVal sendQuestionWithAnswerString(const QByteArray& questionCommand, QByteArray& answer);
+    ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
+    ito::RetVal readResponse(QByteArray& result);
+
     ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
     ito::RetVal sendQuestionWithAnswerDoubleArray(
         const QByteArray& questionCommand, double* answer, const int number);
+
+    ito::RetVal readRegisterWithAnswerString(
+        const uint16_t& address, const uint8_t& subindex, char*& answer);
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
 
@@ -130,6 +133,10 @@ private:
 
     uint8_t CRC(const std::vector<uint8_t>& message);
 
+    int doubleToInteger(const double& value);
+
+    ito::RetVal getSerialNumber(char*& serialNum);
+    ito::RetVal getDeviceType(char*& serialNum);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -168,7 +175,7 @@ public slots:
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
     // Faulhaber MCS methods
-    /*ito::RetVal getSerialNumber(int& serialNum);
+    /*
     ito::RetVal getVendorID(int& id);
     ito::RetVal getProductCode(int& code);
     ito::RetVal getRevisionNumber(int& num);
@@ -208,8 +215,6 @@ public slots:
     ito::RetVal getControlword(int& word);
     ito::RetVal setControlword(const uint8_t& word, const int& len);
     ito::RetVal updateStatusMCS();*/
-
-    int doubleToInteger(const double& value);
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);

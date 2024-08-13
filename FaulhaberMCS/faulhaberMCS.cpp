@@ -120,6 +120,14 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
+        "deviceType",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        tr("Device type.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
         "deviceName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
@@ -487,18 +495,27 @@ ito::RetVal FaulhaberMCS::init(
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
 
-    // int answer;
-    // retValue += sendQuestionWithAnswerInteger("53 07 01 01 18 10 04 f4 45", answer);
+
+    if (!retValue.containsError())
+    {
+        char* serialNumber = nullptr;
+        retValue += getSerialNumber(serialNumber);
+        if (!retValue.containsError())
+        {
+            m_params["serialNumber"].setVal<char*>(serialNumber);
+        }
+    }
 
 
-    int serialNum, deviceType;
-    retValue += readRegisterWithAnswerInteger(0x1018, 0x04, serialNum);
-
-    std::cout << "Serial number: " << serialNum << "\n" << std::endl;
-
-    retValue += readRegisterWithAnswerInteger(0x1000, 0x00, deviceType);
-
-    std::cout << "device type: " << deviceType << "\n" << std::endl;
+    if (!retValue.containsError())
+    {
+        char* device = nullptr;
+        retValue += getDeviceType(device);
+        if (!retValue.containsError())
+        {
+            m_params["deviceType"].setVal<char*>(device);
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -881,9 +898,13 @@ ito::RetVal FaulhaberMCS::readRegister(
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
     QByteArray answer;
-    retValue += sendCommand(data, answer);
+    retValue += sendCommandAndGetResponse(data, answer);
 
-    retValue += parseResponse(answer, response);
+    if (!retValue.containsError())
+    {
+        retValue += parseResponse(answer, response);
+    }
+
     return retValue;
 }
 
@@ -1377,16 +1398,21 @@ ito::RetVal FaulhaberMCS::setPosRel(
 
     return retValue;
 }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getSerialNumber(int& serialNum)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     eMomanprot error = mmProtGetObj(m_node, 0x1018, 0x04, serialNum);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getSerialNumber(char*& serialNum)
+{
+    ito::RetVal retVal = readRegisterWithAnswerString(0x1018, 0x04, serialNum);
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getDeviceType(char*& device)
+{
+    ito::RetVal retVal = readRegisterWithAnswerString(0x1000, 0x00, device);
+    return retVal;
+}
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::getVendorID(int& id)
 //{
@@ -1854,12 +1880,13 @@ ito::RetVal FaulhaberMCS::updateStatus()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command, QByteArray& response)
+ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, QByteArray& response)
 {
     ito::RetVal retVal;
 
     retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
 
+    // delay
     if (m_delayAfterSendCommandMS > 0)
     {
         QMutex mutex;
@@ -1870,66 +1897,50 @@ ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command, QByteArray& res
     }
     setAlive();
 
-    int len;
-    ito::RetVal retValue = readResponse(response, len);
+    if (!retVal.containsError())
+    {
+        ito::RetVal retValue = readResponse(response);
+    }
 
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readResponse(QByteArray& result, int& len)
+ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
 
     bool done = false;
-    int curFrom = 0;
-    int pos = 0;
 
     int buflen = 100;
     QSharedPointer<int> curBufLen(new int);
     QSharedPointer<char> curBuf(new char[buflen]);
     result = "";
 
-    if (!retValue.containsError())
+    timer.start();
+    QThread::msleep(m_delayAfterSendCommandMS);
+
+    while (!done && !retValue.containsError())
     {
-        len = 0;
-        timer.start();
-        QThread::msleep(m_delayAfterSendCommandMS);
+        *curBufLen = buflen;
+        retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
 
-        while (!done && !retValue.containsError())
+        if (!retValue.containsError())
         {
-            *curBufLen = buflen;
-            retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
-
-
-            if (!retValue.containsError())
-            {
-                result += QByteArray(curBuf.data(), *curBufLen);
-                done = true;
-            }
-
-            if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    m_delayAfterSendCommandMS,
-                    tr("timeout during read string.").toLatin1().data());
-            }
+            result += QByteArray(curBuf.data(), *curBufLen);
+            done = true;
         }
 
-        len = result.length();
+        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                m_delayAfterSendCommandMS,
+                tr("timeout during read string.").toLatin1().data());
+        }
     }
-    return retValue;
-}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendQuestionWithAnswerString(
-    const QByteArray& questionCommand, QByteArray& answer)
-{
-    QByteArray questionCommand_ = QString::number(m_node).toUtf8() + questionCommand;
-    int readSigns;
-    ito::RetVal retValue = sendCommand(questionCommand_, answer);
     return retValue;
 }
 
@@ -1942,7 +1953,7 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDouble(
     QByteArray answerStr;
     bool ok;
 
-    ito::RetVal retValue = sendCommand(questionCommand_, answerStr);
+    ito::RetVal retValue = sendCommandAndGetResponse(questionCommand_, answerStr);
 
     if (questionCommand_.contains("?"))
     {
@@ -1972,7 +1983,7 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
     int readSigns;
     QByteArray answerStr;
     bool ok = true;
-    ito::RetVal retValue = sendCommand(questionCommand_, answerStr);
+    ito::RetVal retValue = sendCommandAndGetResponse(questionCommand_, answerStr);
 
     if (questionCommand_.contains("?"))
     {
@@ -2009,6 +2020,42 @@ ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::readRegisterWithAnswerString(
+    const uint16_t& address, const uint8_t& subindex, char*& answer)
+{
+    ito::RetVal retValue = ito::retOk;
+    std::vector<uint8_t> registerValue;
+
+    retValue += readRegister(address, subindex, registerValue);
+
+    if (registerValue.size() > sizeof(int))
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Error during readRegisterWithAnswerString, converting to string value.")
+                .toLatin1()
+                .data());
+    }
+
+    if (!retValue.containsError())
+    {
+        uint32_t num = 0;
+        std::memcpy(&num, registerValue.data(), 4); // Assuming little-endian
+
+        // Step 2: Convert integer to string
+        std::ostringstream oss;
+        oss << num;
+        std::string str = oss.str();
+
+        // Step 3: Convert string to char*
+        answer = new char[str.size() + 1];
+        std::strcpy(answer, str.c_str());
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
     const uint16_t& address, const uint8_t& subindex, int& answer)
 {
@@ -2022,7 +2069,7 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during SendQuestionWithAnswerIntege, converting to integer value.")
+            tr("Error during SendQuestionWithAnswerInteger, converting to integer value.")
                 .toLatin1()
                 .data());
     }
