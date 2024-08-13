@@ -76,17 +76,16 @@ private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
     int m_numOfAxes;
-    int m_waitForDoneTimeout = 60000;
+    int m_waitForDoneTimeout;
+    int m_statusWord;
 
     uint8_t m_node;
-
 
     uint8_t m_S = 0x53;
     uint8_t m_E = 0x45;
     uint8_t m_GET = 0x01;
     uint8_t m_SET = 0x02;
 
-    int m_statusWord;
 
     enum statuswordBits
     {
@@ -113,6 +112,7 @@ private:
                                 // connected axes
 
     // SeralIO functions
+    ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
     ito::RetVal readResponse(QByteArray& result);
 
@@ -122,13 +122,23 @@ private:
 
     ito::RetVal readRegisterWithAnswerString(
         const uint16_t& address, const uint8_t& subindex, QString& answer);
+
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
+    ito::RetVal setRegisterWithAnswerInteger(
+        const uint16_t& address, const uint8_t& subindex, int& value, int& answer);
 
     ito::RetVal homingCurrentPosToZero(const int& axis);
 
     ito::RetVal readRegister(
         const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response);
+    void setRegister(const uint16_t& address, const uint8_t& subindex, int value, uint8_t length);
+    ito::RetVal setRegisterAndGetResponse(
+        const uint16_t& address,
+        const uint8_t& subindex,
+        int value,
+        uint8_t length,
+        std::vector<uint8_t>& response);
     ito::RetVal parseResponse(const QByteArray& response, std::vector<uint8_t>& parsedResponse);
 
     uint8_t CRC(const std::vector<uint8_t>& message);
@@ -142,6 +152,17 @@ private:
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getSoftwareVersion(QString& version);
     ito::RetVal getAmbientTemperature(int& temp);
+
+    ito::RetVal getPosMCS(int& pos);
+    ito::RetVal getTargetPosMCS(int& pos);
+
+    ito::RetVal getMaxMotorSpeed(int& speed);
+    void setMaxMotorSpeed(const int& speed);
+
+    ito::RetVal getAcceleration(int& acceleration);
+    ito::RetVal getDeceleration(int& deceleration);
+
+    ito::RetVal updateStatusMCS();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -182,22 +203,21 @@ public slots:
     // Faulhaber MCS methods
     /*
 
-    ito::RetVal getPosMCS(int& pos);
-    ito::RetVal getTargetPosMCS(int& pos);
+
+
 
     ito::RetVal setPosAbsMCS(double& pos);
     ito::RetVal setPosRelMCS(const double& pos);
 
-    ito::RetVal getMaxMotorSpeed(int& speed);
-    ito::RetVal setMaxMotorSpeed(const int& speed);
+
+
 
     ito::RetVal getProfileVelocity(int& speed);
     ito::RetVal setProfileVelocity(const int& speed);
 
-    ito::RetVal getAcceleration(int& acceleration);
     ito::RetVal setAcceleration(const int& acceleration);
 
-    ito::RetVal getDeceleration(int& deceleration);
+
     ito::RetVal setDeceleration(const int& deceleration);
 
     ito::RetVal getQuickStopDeceleration(int& deceleration);
@@ -213,8 +233,7 @@ public slots:
     ito::RetVal setOperationMode(const uint8_t& mode);
 
     ito::RetVal getControlword(int& word);
-    ito::RetVal setControlword(const uint8_t& word, const int& len);
-    ito::RetVal updateStatusMCS();*/
+    ito::RetVal setControlword(const uint8_t& word, const int& len);*/
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);

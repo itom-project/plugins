@@ -103,7 +103,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
     AddInActuator(), m_delayAfterSendCommandMS(10), m_async(0), m_numOfAxes(1), m_node(1),
-    m_statusWord(0), m_requestTimeOutMS(5000)
+    m_statusWord(0), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
@@ -183,11 +183,14 @@ FaulhaberMCS::FaulhaberMCS() :
     //------------------------------- category movement ---------------------------//
     paramVal = ito::Param(
         "async",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
         m_async,
-        tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data());
+        tr("Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is "
+           "implemented.")
+            .toLatin1()
+            .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -552,6 +555,32 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
+    if (!retValue.containsError())
+    {
+        retValue += getMaxMotorSpeed(answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["maxMotorSpeed"].setVal<int>(answerInteger);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += getAcceleration(answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["acceleration"].setVal<int>(answerInteger);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += getDeceleration(answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["deceleration"].setVal<int>(answerInteger);
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -575,12 +604,12 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        /*int pos;
+        int pos;
         retValue += getPosMCS(pos);
         m_currentPos[0] = pos;
         m_targetPos[0] = pos;
-        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled |
-        ito::actuatorAvailable;*/
+        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        retValue += updateStatusMCS();
         sendStatusUpdate(false);
         emit parametersChanged(m_params);
     }
@@ -647,21 +676,41 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "maxMotorSpeed")
         {
+            retValue += getMaxMotorSpeed(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "profileVelocity")
         {
         }
         else if (key == "acceleration")
         {
+            retValue += getAcceleration(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "deceleration")
         {
+            retValue += getDeceleration(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "quickStopDeceleration")
         {
         }
         else if (key == "statusWord")
         {
+            retValue += updateStatusMCS();
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(m_statusWord);
+            }
         }
         else if (key == "torqueLimits")
         {
@@ -719,13 +768,7 @@ ito::RetVal FaulhaberMCS::setParam(
 
     if (!retValue.containsError())
     {
-        if (key == "async")
-        {
-            m_async = val->getVal<int>();
-            // check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom(&(*val));
-        }
-        else if (key == "operationMode")
+        if (key == "operationMode")
         {
         }
         else if (key == "operation")
@@ -799,6 +842,9 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "maxMotorSpeed")
         {
+            setMaxMotorSpeed(val->getVal<int>());
+            int speed;
+            retValue += getMaxMotorSpeed(speed);
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "profileVelocity")
@@ -951,18 +997,57 @@ ito::RetVal FaulhaberMCS::readRegister(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::setRegister(
+    const uint16_t& address, const uint8_t& subindex, int value, uint8_t length)
+{
+    std::vector<uint8_t> command = {
+        m_node,
+        m_SET,
+        static_cast<uint8_t>(address & 0xFF),
+        static_cast<uint8_t>(address >> 8),
+        subindex};
+
+    for (int i = 0; i < length; i++)
+    {
+        command.push_back((value >> (8 * i)) & 0xFF);
+    }
+
+    std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
+    fullCommand.insert(fullCommand.end(), command.begin(), command.end());
+    fullCommand.push_back(CRC(fullCommand));
+    fullCommand.insert(fullCommand.begin(), m_S);
+    fullCommand.push_back(m_E);
+
+    QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
+    sendCommand(data);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setRegisterAndGetResponse(
+    const uint16_t& address,
+    const uint8_t& subindex,
+    int value,
+    uint8_t length,
+    std::vector<uint8_t>& response)
+{
+    setRegister(address, subindex, value, length);
+    QByteArray answer;
+    ito::RetVal retValue = readRegister(address, subindex, response);
+
+    if (!retValue.containsError())
+    {
+        retValue += parseResponse(answer, response);
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::parseResponse(
     const QByteArray& response, std::vector<uint8_t>& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
     std::vector<uint8_t> ansVector(response.begin(), response.end());
-
-    if (CRC(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
-        ansVector[ansVector.size() - 2])
-    {
-        retValue += ito::RetVal(
-            ito::retError, 0, tr("Checksum mismatch for %1").arg(response).toLatin1().data());
-    }
 
     if (!retValue.containsError())
     {
@@ -1002,8 +1087,8 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     while (!retValue.containsWarningOrError())
     {
         isAlive();
-        Sleep(1);
-        // retValue += updateStatusMCS();
+        Sleep(m_delayAfterSendCommandMS);
+        retValue += updateStatusMCS();
 
         if (!(m_statusWord & targetReached) &&
             !(m_statusWord & setPointAcknowledged)) // target still not reached
@@ -1037,7 +1122,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     // retValue += setControlword(mode, 2);
 
     int currentPos;
-    // retValue += getPosMCS(currentPos);
+    retValue += getPosMCS(currentPos);
 
     m_currentPos[axis] = currentPos;
     setStatus(
@@ -1173,7 +1258,7 @@ ito::RetVal FaulhaberMCS::getPos(
         if (i >= 0 && i < m_numOfAxes)
         {
             int intPos;
-            // retValue += getPosMCS(intPos);
+            retValue += getPosMCS(intPos);
             if (!retValue.containsError())
             {
                 m_currentPos[i] = intPos; // set m_currentPos[i] to the obtained position
@@ -1498,25 +1583,73 @@ ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
     return readRegisterWithAnswerInteger(0x232A, 0x08, temp);
 }
 
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     eMomanprot error = mmProtGetObj(m_node, 0x6064, 0x00, pos);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getTargetPosMCS(int& pos)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     eMomanprot error = mmProtGetObj(m_node, 0x6062, 0x00, pos);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
+{
+    return readRegisterWithAnswerInteger(0x6064, 0x00, pos);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTargetPosMCS(int& pos)
+{
+    return readRegisterWithAnswerInteger(0x6062, 0x00, pos);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
+{
+    return readRegisterWithAnswerInteger(0x6080, 0x00, speed);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::setMaxMotorSpeed(const int& speed)
+{
+    ito::RetVal retVal = ito::retOk;
+    setRegister(0x6080, 0x00, speed, sizeof(speed));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getAcceleration(int& acceleration)
+{
+    return readRegisterWithAnswerInteger(0x6083, 0x00, acceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getDeceleration(int& deceleration)
+{
+    return readRegisterWithAnswerInteger(0x6084, 0x00, deceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::updateStatusMCS()
+{
+    ito::RetVal retVal(ito::retOk);
+    retVal += readRegisterWithAnswerInteger(0x6062, 0x00, m_statusWord);
+
+    if (!retVal.containsError())
+    {
+        m_params["statusWord"].setVal<int>(m_statusWord);
+
+        m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
+        m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
+        m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
+        m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
+        m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
+        m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
+        m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
+        m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
+        m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
+        m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
+        m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 : 0);
+        m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
+
+        emit parametersChanged(m_params);
+    }
+
+    sendStatusUpdate();
+    return retVal;
+}
+
 //
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
@@ -1573,35 +1706,7 @@ ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
 //     return convertErrorCode(error, __func__);
 // }
 //
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::updateStatusMCS()
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     eMomanprot error = mmProtGetObj(m_node, 0x6041, 0x0, m_statusWord);
-//     if (error == eMomanprot_ok)
-//     {
-//         m_params["statusWord"].setVal<int>(m_statusWord);
-//
-//         m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
-//         m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
-//         m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
-//         m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
-//         m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
-//         m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
-//         m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
-//         m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
-//         m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
-//         m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
-//         m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 :
-//         0); m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
-//
-//         emit parametersChanged(m_params);
-//     }
-//
-//     sendStatusUpdate();
-//     return convertErrorCode(error, __func__);
-// }
-//
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::convertErrorCode(
 //     const eMomanprot& error,
@@ -1831,7 +1936,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         for (int i = 0; i < axis.size(); ++i) // Check for completion
         {
-            // retVal += updateStatusMCS();
+            retVal += updateStatusMCS();
             if ((m_statusWord & targetReached) && (m_statusWord & setPointAcknowledged))
             {
                 setStatus(
@@ -1850,16 +1955,16 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                 done = false;
             }
 
-            int currentPos;
-            int targetPos;
-            // retVal += getPosMCS(currentPos);
+            int currentPos = 0;
+            int targetPos = 0;
+            retVal += getPosMCS(currentPos);
             m_currentPos[i] = double(currentPos);
 
-            // retVal += getTargetPosMCS(targetPos);
+            retVal += getTargetPosMCS(targetPos);
             m_targetPos[i] = double(targetPos);
         }
 
-        // retVal += updateStatusMCS();
+        retVal += updateStatusMCS();
         sendStatusUpdate(false);
 
 
@@ -1892,7 +1997,7 @@ ito::RetVal FaulhaberMCS::updateStatus()
         // m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable;
 
         int intPos;
-        // retVal += getPosMCS(intPos);
+        retVal += getPosMCS(intPos);
 
         m_currentPos[i] = double(intPos);
 
@@ -1914,10 +2019,9 @@ ito::RetVal FaulhaberMCS::updateStatus()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, QByteArray& response)
+ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
 {
     ito::RetVal retVal;
-
     retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
 
     // delay
@@ -1930,10 +2034,18 @@ ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, Q
         mutex.unlock();
     }
     setAlive();
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, QByteArray& response)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendCommand(command);
 
     if (!retVal.containsError())
     {
-        ito::RetVal retValue = readResponse(response);
+        retVal += readResponse(response);
     }
 
     return retVal;
@@ -1946,6 +2058,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
     QElapsedTimer timer;
 
     bool done = false;
+    bool timeout = false;
 
     int buflen = 100;
     QSharedPointer<int> curBufLen(new int);
@@ -1955,7 +2068,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
     timer.start();
     QThread::msleep(m_delayAfterSendCommandMS);
 
-    while (!done && !retValue.containsError())
+    while (!done && !retValue.containsError() && !timeout)
     {
         *curBufLen = buflen;
         retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
@@ -1972,7 +2085,32 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
                 ito::retError,
                 m_delayAfterSendCommandMS,
                 tr("timeout during read string.").toLatin1().data());
+            timeout = true;
         }
+        else
+        {
+            setAlive();
+        }
+    }
+
+    uint8_t length = result[1];
+
+    result.truncate(2 + length);
+
+    std::vector<uint8_t> ansVector(result.begin(), result.end());
+
+    if (CRC(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
+        ansVector[ansVector.size() - 2])
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Checksum mismatch for %1").arg(QString::fromUtf8(result)).toLatin1().data());
+    }
+
+    if (CRC(std::vector<uint8_t>(result.begin() + 1, result.end() - 2)) !=
+        result[result.size() - 2])
+    {
     }
 
     return retValue;
@@ -2093,6 +2231,14 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
+    const uint16_t& address, const uint8_t& subindex, int& value, int& answer)
+{
+    setRegister(address, subindex, value, sizeof(value));
+    return readRegisterWithAnswerInteger(address, subindex, answer);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
