@@ -79,18 +79,6 @@ It was implemented for RS232 communication and tested with:\n\
         new ito::IntMeta(1, std::numeric_limits<int>::max(), 1, "Communication"),
         tr("Node number of device.").toLatin1().data());
     m_initParamsMand.append(paramVal);
-
-    paramVal = ito::Param(
-        "operationMode",
-        ito::ParamBase::Int,
-        -4,
-        10,
-        1,
-        tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
-           "activated, 1: PP, 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST")
-            .toLatin1()
-            .data());
-    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -114,7 +102,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_delayAfterSendCommandMS(10), m_async(0), m_numOfAxes(1), m_node(1),
+    AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000)
 {
     ito::Param paramVal(
@@ -508,17 +496,28 @@ ito::RetVal FaulhaberMCS::init(
 
 
     // ENABLE
+    retValue += updateStatusMCS();
     if (!retValue.containsError())
     {
-        updateStatusMCS();
         resetCommunication();
         startAll();
 
-        int mode = paramsOpt->at(0).getVal<int>();
-        retValue += setOperationMode(mode, answerInteger);
+        retValue += updateStatusMCS();
+        if (m_params["switchOnDisabled"].getVal<int>())
+        {
+            shutDown();
+            switchOn();
+            enableOperation();
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        int mode;
+        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), mode);
         if (!retValue.containsError())
         {
-            m_params["operationMode"].setVal<int>(answerInteger);
+            m_params["operationMode"].setVal<int>(mode);
         }
     }
 
@@ -1208,13 +1207,14 @@ ito::RetVal FaulhaberMCS::parseResponse(
     ito::RetVal retValue = ito::retOk;
     std::vector<uint8_t> ansVector(response.begin(), response.end());
 
-    if (!retValue.containsError())
+    if (!retValue.containsError() && ansVector.size() >= 7)
     {
         parsedResponse = std::vector<uint8_t>(ansVector.begin() + 7, ansVector.end() - 2);
     }
     else
     {
         parsedResponse = {0};
+        // todo
     }
 
     return retValue;
@@ -1639,7 +1639,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
 
             foreach (const int i, axis)
             {
-                // retValue += setPosRelMCS(pos[i]);
+                retValue += setPosRelMCS(pos[i]);
             }
 
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
@@ -1862,14 +1862,19 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(const double& pos)
     ito::RetVal retVal = ito::retOk;
     int answer;
     retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
-    setControlWord(0x0f);
-    setControlWord(0x3f);
+    setControlWord(0x000f);
+    setControlWord(0x003F);
     return ito::RetVal();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
 {
+    ito::RetVal retVal = ito::retOk;
+    int answer;
+    retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
+    setControlWord(0x000f);
+    setControlWord(0x007F);
     return ito::RetVal();
 }
 
