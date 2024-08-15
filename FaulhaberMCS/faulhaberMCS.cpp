@@ -79,6 +79,18 @@ It was implemented for RS232 communication and tested with:\n\
         new ito::IntMeta(1, std::numeric_limits<int>::max(), 1, "Communication"),
         tr("Node number of device.").toLatin1().data());
     m_initParamsMand.append(paramVal);
+
+    paramVal = ito::Param(
+        "operationMode",
+        ito::ParamBase::Int,
+        -4,
+        10,
+        1,
+        tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
+           "activated, 1: PP, 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST")
+            .toLatin1()
+            .data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -172,7 +184,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         -4,
         10,
-        0,
+        1,
         tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
            "activated, 1: PP, 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST")
             .toLatin1()
@@ -498,10 +510,16 @@ ito::RetVal FaulhaberMCS::init(
     // ENABLE
     if (!retValue.containsError())
     {
+        updateStatusMCS();
         resetCommunication();
         startAll();
-        int mode;
-        setOperationMode(1, mode);
+
+        int mode = paramsOpt->at(0).getVal<int>();
+        retValue += setOperationMode(mode, answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["operationMode"].setVal<int>(answerInteger);
+        }
     }
 
     if (!retValue.containsError())
@@ -813,9 +831,11 @@ ito::RetVal FaulhaberMCS::setParam(
             int operation = val->getVal<int>();
             if (operation == 0)
             {
+                disableOperation();
             }
             else if (operation == 1)
             {
+                enableOperation();
             }
             else
             {
@@ -835,9 +855,13 @@ ito::RetVal FaulhaberMCS::setParam(
             int power = val->getVal<int>();
             if (power == 0)
             {
+                shutDown();
+                updateStatusMCS();
             }
             else if (power == 1)
             {
+                switchOn();
+                updateStatusMCS();
             }
             else
             {
@@ -855,6 +879,8 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             if (val->getVal<int>())
             {
+                faultReset();
+                updateStatusMCS();
             }
             else
             {
@@ -868,6 +894,8 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             if (val->getVal<int>())
             {
+                disableVoltage();
+                updateStatusMCS();
             }
             else
             {
@@ -1201,7 +1229,8 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 
     // Set to homing mode
     uint8_t mode = 6;
-    // retValue += setOperationMode(mode);
+    int newMode;
+    retValue += setOperationMode(mode, newMode);
     if (retValue.containsError())
         return retValue;
 
@@ -1801,7 +1830,7 @@ ito::RetVal FaulhaberMCS::setOperationMode(const int& mode, int& newMode)
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
-    retVal += readRegisterWithAnswerInteger(0x6062, 0x00, m_statusWord);
+    retVal += readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
 
     if (!retVal.containsError())
     {
@@ -1940,14 +1969,7 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
 //     return convertErrorCode(error, __func__);
 // }
 //
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setControlword(const uint8_t& word, const int& len)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error = mmProtSetObj(m_node, 0x6040, 0x00, word, len, abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 int FaulhaberMCS::doubleToInteger(const double& value)
