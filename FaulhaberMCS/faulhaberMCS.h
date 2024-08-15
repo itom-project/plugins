@@ -94,7 +94,7 @@ private:
         operationEnabled = 1 << 2,
         fault = 1 << 3,
         voltageEnabled = 1 << 4,
-        quickStop = 1 << 5,
+        quickStopEnable = 1 << 5,
         switchOnDisabled = 1 << 6,
         warning = 1 << 7,
         targetReached = 1 << 10,
@@ -115,36 +115,54 @@ private:
     ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
     ito::RetVal readResponse(QByteArray& result);
+    ito::RetVal parseResponse(const QByteArray& response, std::vector<uint8_t>& parsedResponse);
+    uint8_t CRC(const std::vector<uint8_t>& message);
 
-    ito::RetVal sendQuestionWithAnswerDouble(const QByteArray& questionCommand, double& answer);
-    ito::RetVal sendQuestionWithAnswerDoubleArray(
-        const QByteArray& questionCommand, double* answer, const int number);
+    // READ REGISTER
+    ito::RetVal readRegister(
+        const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response);
 
     ito::RetVal readRegisterWithAnswerString(
         const uint16_t& address, const uint8_t& subindex, QString& answer);
-
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
-    ito::RetVal setRegisterWithAnswerInteger(
-        const uint16_t& address, const uint8_t& subindex, int& value, int& answer);
 
-    ito::RetVal homingCurrentPosToZero(const int& axis);
-
-    ito::RetVal readRegister(
-        const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response);
-    void setRegister(const uint16_t& address, const uint8_t& subindex, int value, uint8_t length);
+    // SET REGISTER
+    void setRegister(
+        const uint16_t& address, const uint8_t& subindex, const int& value, const uint8_t& length);
     ito::RetVal setRegisterAndGetResponse(
         const uint16_t& address,
         const uint8_t& subindex,
-        int value,
-        uint8_t length,
+        const int& value,
+        const uint8_t& length,
         std::vector<uint8_t>& response);
-    ito::RetVal parseResponse(const QByteArray& response, std::vector<uint8_t>& parsedResponse);
+    ito::RetVal setRegisterWithAnswerInteger(
+        const uint16_t& address, const uint8_t& subindex, const int& value, int& answer);
 
-    uint8_t CRC(const std::vector<uint8_t>& message);
+    // CONTROL WORD
+    void setControlWord(const uint16_t word);
+
+    void start();
+    void stop();
+    void resetCommunication();
+    void startAll();
+
+    void shutDown();
+    void switchOn();
+    void disable();
+    void quickStop();
+    void disableOperation();
+    void enableOperation();
+    void disableVoltage();
+    void faultReset();
+
+    // HOMING
+    ito::RetVal homingCurrentPosToZero(const int& axis);
 
     int doubleToInteger(const double& value);
+    int responseVectorToInteger(const std::vector<uint8_t>& response);
 
+    // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
     ito::RetVal getDeviceName(QString& name);
     ito::RetVal getVendorID(QString& id);
@@ -157,12 +175,28 @@ private:
     ito::RetVal getTargetPosMCS(int& pos);
 
     ito::RetVal getMaxMotorSpeed(int& speed);
-    void setMaxMotorSpeed(const int& speed);
+    ito::RetVal setMaxMotorSpeed(const int& speed, int& newSpeed);
 
     ito::RetVal getAcceleration(int& acceleration);
+    ito::RetVal setAcceleration(const int& acceleration, int& newAcceleration);
+
     ito::RetVal getDeceleration(int& deceleration);
+    ito::RetVal setDeceleration(const int& deceleration, int& newDeceleration);
+
+    ito::RetVal getQuickStopDeceleration(int& deceleration);
+    ito::RetVal setQuickStopDeceleration(const int& deceleration, int& newDeceleration);
+
+    ito::RetVal getProfileVelocity(int& speed);
+    ito::RetVal setProfileVelocity(const int& speed, int& newSpeed);
+
+    ito::RetVal getOperationMode(int& mode);
+    ito::RetVal setOperationMode(const int& mode, int& newMode);
 
     ito::RetVal updateStatusMCS();
+
+    // POSITION
+    ito::RetVal setPosAbsMCS(const double& pos);
+    ito::RetVal setPosRelMCS(const double& pos);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
@@ -204,33 +238,11 @@ public slots:
     /*
 
 
-
-
-    ito::RetVal setPosAbsMCS(double& pos);
-    ito::RetVal setPosRelMCS(const double& pos);
-
-
-
-
-    ito::RetVal getProfileVelocity(int& speed);
-    ito::RetVal setProfileVelocity(const int& speed);
-
-    ito::RetVal setAcceleration(const int& acceleration);
-
-
-    ito::RetVal setDeceleration(const int& deceleration);
-
-    ito::RetVal getQuickStopDeceleration(int& deceleration);
-    ito::RetVal setQuickStopDeceleration(const int& deceleration);
-
-
     ito::RetVal setHomingMode(const uint8_t& mode);
 
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(const int limits[]);
 
-    ito::RetVal getOperationMode(int& mode);
-    ito::RetVal setOperationMode(const uint8_t& mode);
 
     ito::RetVal getControlword(int& word);
     ito::RetVal setControlword(const uint8_t& word, const int& len);*/

@@ -464,6 +464,10 @@ ito::RetVal FaulhaberMCS::init(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    QString answerString = "";
+    int answerInteger = 0;
+
+
     if (reinterpret_cast<ito::AddInBase*>((*paramsMand)[0].getVal<void*>())
             ->getBasePlugin()
             ->getType() &
@@ -490,8 +494,16 @@ ito::RetVal FaulhaberMCS::init(
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
 
-    QString answerString = "";
-    int answerInteger = 0;
+
+    // ENABLE
+    if (!retValue.containsError())
+    {
+        resetCommunication();
+        startAll();
+        int mode;
+        setOperationMode(1, mode);
+    }
+
     if (!retValue.containsError())
     {
         retValue += getSerialNumber(answerString);
@@ -584,23 +596,23 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        // TODO delete if status works well. User must execute the right command to start motor
-        /*mmProtSendCommand(m_node, 0x0000, eMomancmd_start, 0, 0);
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_quickstop, 0, 0);
-        retValue += waitForIntParam("quickStop", 0);
-
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_faultreset, 0, 0);
-        retValue += waitForIntParam("fault", 0);
-
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_shutdown, 0, 0);
-        retValue += waitForIntParam("switchedOn", 0);
-
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_switchon, 0, 0);
-        retValue += waitForIntParam("switchedOn", 1);
-
-        mmProtSendCommand(m_node, 0x0000, eMomancmd_EnOp, 0, 0);
-        retValue += waitForIntParam("operationEnabled", 1);*/
+        retValue += getProfileVelocity(answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["profileVelocity"].setVal<int>(answerInteger);
+        }
     }
+
+    if (!retValue.containsError())
+    {
+        retValue += getQuickStopDeceleration(answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["quickStopDeceleration"].setVal<int>(answerInteger);
+        }
+    }
+
+    retValue += updateStatusMCS();
 
     if (!retValue.containsError())
     {
@@ -629,6 +641,10 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    shutDown();
+    disableOperation();
+    stop();
 
     if (waitCond)
     {
@@ -665,6 +681,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         int answerInteger = 0;
         if (key == "operationMode")
         {
+            retValue += getOperationMode(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "ambientTemperature")
         {
@@ -684,6 +705,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "profileVelocity")
         {
+            retValue += getProfileVelocity(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "acceleration")
         {
@@ -703,6 +729,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "quickStopDeceleration")
         {
+            retValue += getQuickStopDeceleration(answerInteger);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(answerInteger);
+            }
         }
         else if (key == "statusWord")
         {
@@ -770,6 +801,12 @@ ito::RetVal FaulhaberMCS::setParam(
     {
         if (key == "operationMode")
         {
+            int mode;
+            retValue += setOperationMode(val->getVal<int>(), mode);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "operation")
         {
@@ -842,26 +879,48 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "maxMotorSpeed")
         {
-            setMaxMotorSpeed(val->getVal<int>());
             int speed;
-            retValue += getMaxMotorSpeed(speed);
-            retValue += it->copyValueFrom(&(*val));
+            retValue += setMaxMotorSpeed(val->getVal<int>(), speed);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "profileVelocity")
         {
-            retValue += it->copyValueFrom(&(*val));
+            int velocity;
+            retValue += setProfileVelocity(val->getVal<int>(), velocity);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "acceleration")
         {
-            retValue += it->copyValueFrom(&(*val));
+            int acceleration;
+            retValue += setAcceleration(val->getVal<int>(), acceleration);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "deceleration")
         {
-            retValue += it->copyValueFrom(&(*val));
+            int deceleration;
+            retValue += setDeceleration(val->getVal<int>(), deceleration);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "quickStopDeceleration")
         {
-            retValue += it->copyValueFrom(&(*val));
+            int deceleration;
+            retValue += setQuickStopDeceleration(val->getVal<int>(), deceleration);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
         }
         else if (key == "torqueLimits")
         {
@@ -971,6 +1030,8 @@ ito::RetVal FaulhaberMCS::readRegister(
     const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response)
 {
     ito::RetVal retValue = ito::retOk;
+
+    // combine command
     std::vector<uint8_t> command = {
         m_node,
         m_GET,
@@ -998,8 +1059,8 @@ ito::RetVal FaulhaberMCS::readRegister(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::setRegister(
-    const uint16_t& address, const uint8_t& subindex, int value, uint8_t length)
-{
+    const uint16_t& address, const uint8_t& subindex, const int& value, const uint8_t& length)
+{ // combine command
     std::vector<uint8_t> command = {
         m_node,
         m_SET,
@@ -1026,20 +1087,90 @@ void FaulhaberMCS::setRegister(
 ito::RetVal FaulhaberMCS::setRegisterAndGetResponse(
     const uint16_t& address,
     const uint8_t& subindex,
-    int value,
-    uint8_t length,
+    const int& value,
+    const uint8_t& length,
     std::vector<uint8_t>& response)
 {
     setRegister(address, subindex, value, length);
-    QByteArray answer;
-    ito::RetVal retValue = readRegister(address, subindex, response);
+    return readRegister(address, subindex, response);
+}
 
-    if (!retValue.containsError())
-    {
-        retValue += parseResponse(answer, response);
-    }
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::setControlWord(const uint16_t word)
+{
+    setRegister(0x6040, 0x00, word, 2);
+}
 
-    return retValue;
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::start()
+{
+    setControlWord(0x0A);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::stop()
+{
+    setControlWord(0x0B);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::resetCommunication()
+{
+    setControlWord(0x06);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::startAll()
+{
+    setControlWord(0x0F);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::shutDown()
+{
+    setControlWord(0x10);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::switchOn()
+{
+    setControlWord(0x11);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::enableOperation()
+{
+    setControlWord(0x15);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::disable()
+{
+    setControlWord(0x12);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::disableOperation()
+{
+    setControlWord(0x14);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::disableVoltage()
+{
+    setControlWord(0x00);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::quickStop()
+{
+    setControlWord(0x13);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::faultReset()
+{
+    setControlWord(0x16);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1357,7 +1488,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
 
             foreach (const int i, axis)
             {
-                // retValue += setPosAbsMCS(m_targetPos[i]);
+                retValue += setPosAbsMCS(m_targetPos[i]);
             }
 
             // emit the signal sendStatusUpdate such that all connected slots gets informed about
@@ -1602,10 +1733,9 @@ ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FaulhaberMCS::setMaxMotorSpeed(const int& speed)
+ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const int& speed, int& newSpeed)
 {
-    ito::RetVal retVal = ito::retOk;
-    setRegister(0x6080, 0x00, speed, sizeof(speed));
+    return setRegisterWithAnswerInteger(0x6080, 0x00, speed, newSpeed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1614,10 +1744,57 @@ ito::RetVal FaulhaberMCS::getAcceleration(int& acceleration)
     return readRegisterWithAnswerInteger(0x6083, 0x00, acceleration);
 }
 
+ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration, int& newAcceleration)
+{
+    return setRegisterWithAnswerInteger(0x6083, 0x00, acceleration, newAcceleration);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeceleration(int& deceleration)
 {
     return readRegisterWithAnswerInteger(0x6084, 0x00, deceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setDeceleration(const int& deceleration, int& newDeceleration)
+{
+    return setRegisterWithAnswerInteger(0x6084, 0x00, deceleration, newDeceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getQuickStopDeceleration(int& deceleration)
+{
+    return readRegisterWithAnswerInteger(0x6085, 0x00, deceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration, int& newDeceleration)
+{
+    return setRegisterWithAnswerInteger(0x6085, 0x00, deceleration, newDeceleration);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getProfileVelocity(int& speed)
+{
+    return readRegisterWithAnswerInteger(0x6081, 0x00, speed);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setProfileVelocity(const int& speed, int& newSpeed)
+{
+    return setRegisterWithAnswerInteger(0x6081, 0x00, speed, newSpeed);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
+{
+    return readRegisterWithAnswerInteger(0x6060, 0x00, mode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setOperationMode(const int& mode, int& newMode)
+{
+    return setRegisterWithAnswerInteger(0x6060, 0x00, mode, newMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1635,7 +1812,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
         m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
         m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
         m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
-        m_params["quickStop"].setVal<int>(m_statusWord & quickStop ? 1 : 0);
+        m_params["quickStop"].setVal<int>(m_statusWord & quickStopEnable ? 1 : 0);
         m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
         m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
         m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
@@ -1650,7 +1827,24 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
     return retVal;
 }
 
-//
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPosAbsMCS(const double& pos)
+{
+    ito::RetVal retVal = ito::retOk;
+    int answer;
+    retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
+    setControlWord(0x0f);
+    setControlWord(0x3f);
+    return ito::RetVal();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
+{
+    return ito::RetVal();
+}
+
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
 //{
@@ -1708,122 +1902,6 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 //
 
 ////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::convertErrorCode(
-//     const eMomanprot& error,
-//     const QString& functionName,
-//     /*const*/ const unsigned int& abortMessage)
-//{
-//     ito::RetVal retVal;
-//     if (error != eMomanprot_ok)
-//     {
-//         retVal += ito::RetVal(
-//             ito::retError,
-//             0,
-//             tr("Error during function '%1' with error message: '%2' and abort "
-//                "message: '%3'.")
-//                 .arg(functionName)
-//                 .arg(error)
-//                 .arg(mmProtGetAbortMessage(abortMessage))
-//                 .toLatin1()
-//                 .data());
-//     }
-//     else
-//     {
-//         retVal = ito::retOk;
-//     }
-//     return retVal;
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
-//{
-//     eMomanprot error = mmProtGetObj(m_node, 0x6080, 0x00, speed);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const int& speed)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error = mmProtSetObj(m_node, 0x6080, 0x00, speed, sizeof(speed), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getProfileVelocity(int& speed)
-//{
-//     eMomanprot error = mmProtGetObj(m_node, 0x6081, 0x00, speed);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setProfileVelocity(const int& speed)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error = mmProtSetObj(m_node, 0x6081, 0x00, speed, sizeof(speed), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getAcceleration(int& acceleration)
-//{
-//     eMomanprot error = mmProtGetObj(m_node, 0x6083, 0x00, acceleration);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error =
-//         mmProtSetObj(m_node, 0x6083, 0x00, acceleration, sizeof(acceleration), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getDeceleration(int& deceleration)
-//{
-//     eMomanprot error = mmProtGetObj(m_node, 0x6084, 0x00, deceleration);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setDeceleration(const int& deceleration)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error =
-//         mmProtSetObj(m_node, 0x6084, 0x00, deceleration, sizeof(deceleration), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getQuickStopDeceleration(int& deceleration)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//     eMomanprot error = mmProtGetObj(m_node, 0x6085, 0x00, deceleration);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error =
-//         mmProtSetObj(m_node, 0x6085, 0x00, deceleration, sizeof(deceleration), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::setHomingMode(const uint8_t& mode)
 //{
 //     unsigned int abortMessage;
@@ -1852,22 +1930,6 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 //     return convertErrorCode(error, __func__, abortMessage);
 // }
 //
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
-//{
-//     eMomanprot error = mmProtGetObj(m_node, 0x6060, 0x00, mode);
-//
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setOperationMode(const uint8_t& mode)
-//{
-//     unsigned int abortMessage;
-//     eMomanprot error = mmProtSetObj(m_node, 0x6060, 0x00, mode, sizeof(mode), abortMessage);
-//
-//     return convertErrorCode(error, __func__, abortMessage);
-// }
 //
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::getControlword(int& word)
@@ -1891,6 +1953,17 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 int FaulhaberMCS::doubleToInteger(const double& value)
 {
     return int(std::round(value * 100) / 100);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int FaulhaberMCS::responseVectorToInteger(const std::vector<uint8_t>& response)
+{
+    int answer = 0;
+    for (size_t i = 0; i < response.size(); ++i)
+    {
+        answer |= static_cast<int>(response[i]) << (8 * i);
+    }
+    return answer;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2117,81 +2190,6 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDouble(
-    const QByteArray& questionCommand, double& answer)
-{
-    QByteArray questionCommand_ = QString::number(m_node).toUtf8() + questionCommand;
-    int readSigns;
-    QByteArray answerStr;
-    bool ok;
-
-    ito::RetVal retValue = sendCommandAndGetResponse(questionCommand_, answerStr);
-
-    if (questionCommand_.contains("?"))
-    {
-        questionCommand_.replace("?", "");
-    }
-
-    answer = answerStr.toDouble(&ok);
-
-    if (!ok)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
-                .arg(answerStr.constData())
-                .toLatin1()
-                .data());
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendQuestionWithAnswerDoubleArray(
-    const QByteArray& questionCommand, double* answer, const int number)
-{
-    QByteArray questionCommand_ = QString::number(m_node).toUtf8() + questionCommand;
-    int readSigns;
-    QByteArray answerStr;
-    bool ok = true;
-    ito::RetVal retValue = sendCommandAndGetResponse(questionCommand_, answerStr);
-
-    if (questionCommand_.contains("?"))
-    {
-        questionCommand_.replace("?", "");
-    }
-
-
-    QRegularExpression regex("-?\\d+(\\.\\d+)?");
-    QRegularExpressionMatchIterator matchIterator = regex.globalMatch(answerStr);
-
-    // Extract and print all matched values
-    int n = 0;
-    QRegularExpressionMatch match;
-    QString matchedValue;
-    while (matchIterator.hasNext() && ok)
-    {
-        match = matchIterator.next();
-        matchedValue = match.captured();
-        answer[n] = matchedValue.toDouble(&ok);
-        n++;
-    }
-
-    if (!ok)
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during SendQuestionWithAnswerDouble, converting %1 to double value.")
-                .arg(answerStr.constData())
-                .toLatin1()
-                .data());
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegisterWithAnswerString(
     const uint16_t& address, const uint8_t& subindex, QString& answer)
 {
@@ -2221,24 +2219,22 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
 
     retValue += readRegister(address, subindex, registerValue);
 
-    answer = 0;
-    if (!retValue.containsError())
-    {
-        for (size_t i = 0; i < registerValue.size(); ++i)
-        {
-            answer |= static_cast<int>(registerValue[i]) << (8 * i);
-        }
-    }
+    answer = responseVectorToInteger(registerValue);
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
-    const uint16_t& address, const uint8_t& subindex, int& value, int& answer)
+    const uint16_t& address, const uint8_t& subindex, const int& value, int& answer)
 {
-    setRegister(address, subindex, value, sizeof(value));
-    return readRegisterWithAnswerInteger(address, subindex, answer);
+    ito::RetVal retVal = ito::retOk;
+    std::vector<uint8_t> response;
+    retVal += setRegisterAndGetResponse(address, subindex, value, sizeof(value), response);
+
+    answer = responseVectorToInteger(response);
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
