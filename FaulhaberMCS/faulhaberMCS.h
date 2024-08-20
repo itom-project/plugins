@@ -86,7 +86,6 @@ private:
     uint8_t m_GET = 0x01;
     uint8_t m_SET = 0x02;
 
-
     enum statuswordBits
     {
         readyToSwitchOn = 1 << 0,
@@ -162,6 +161,7 @@ private:
     ito::RetVal getVendorID(QString& id);
     ito::RetVal getProductCode(QString& code);
     ito::RetVal getRevisionNumber(QString& num);
+    ito::RetVal getFirmware(QString& version);
     ito::RetVal getSoftwareVersion(QString& version);
     ito::RetVal getAmbientTemperature(int& temp);
 
@@ -186,13 +186,16 @@ private:
     ito::RetVal getOperationMode(int& mode);
     ito::RetVal setOperationMode(const int& mode, int& newMode);
 
+    ito::RetVal getTorqueLimits(int limits[]);
+    ito::RetVal setTorqueLimits(const int limits[], int newLimits[]);
+
     ito::RetVal updateStatusMCS();
 
     // POSITION
     ito::RetVal setPosAbsMCS(const double& pos);
     ito::RetVal setPosRelMCS(const double& pos);
 
-    //HOMING
+    // HOMING
     ito::RetVal setHomingMode(const int& mode);
 
 public slots:
@@ -231,13 +234,16 @@ public slots:
     ito::RetVal setPosRel(
         const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond = nullptr);
 
+    ito::RetVal execFunc(
+        const QString funcName,
+        QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+        QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+        ItomSharedSemaphore* waitCond = nullptr);
     // Faulhaber MCS methods
     /*
 
 
-
-    ito::RetVal getTorqueLimits(int limits[]);
-    ito::RetVal setTorqueLimits(const int limits[]);
 
 
     ito::RetVal getControlword(int& word);
