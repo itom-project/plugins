@@ -183,7 +183,7 @@ FaulhaberMCS::FaulhaberMCS() :
         10,
         1,
         tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
-           "activated, 1: PP, 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST")
+           "activated, 1: PP, 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST.")
             .toLatin1()
             .data());
     paramVal.setMeta(new ito::IntMeta(-4, 10, 1, "General"));
@@ -577,6 +577,7 @@ ito::RetVal FaulhaberMCS::init(
     if (!retValue.containsError())
     {
         resetCommunication();
+        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), answerInteger);
         startAll();
 
         retValue += updateStatusMCS();
@@ -590,7 +591,7 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), answerInteger);
+        retValue += getOperationMode(answerInteger);
         if (!retValue.containsError())
         {
             m_params["operationMode"].setVal<int>(answerInteger);
@@ -993,7 +994,7 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "maxMotorSpeed")
         {
             int speed;
-            retValue += setMaxMotorSpeed(val->getVal<int>(), speed);
+            retValue += setMaxMotorSpeed((uint32_t)val->getVal<int>(), speed);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1873,7 +1874,7 @@ ito::RetVal FaulhaberMCS::getMaxMotorSpeed(int& speed)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const int& speed, int& newSpeed)
 {
-    return setRegisterWithAnswerInteger(0x6080, 0x00, speed, newSpeed);
+    return setRegisterWithAnswerInteger(0x6080, 0x00, static_cast<uint32_t>(speed), newSpeed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1884,7 +1885,8 @@ ito::RetVal FaulhaberMCS::getAcceleration(int& acceleration)
 
 ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration, int& newAcceleration)
 {
-    return setRegisterWithAnswerInteger(0x6083, 0x00, acceleration, newAcceleration);
+    return setRegisterWithAnswerInteger(
+        0x6083, 0x00, static_cast<uint32_t>(acceleration), newAcceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1896,7 +1898,8 @@ ito::RetVal FaulhaberMCS::getDeceleration(int& deceleration)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setDeceleration(const int& deceleration, int& newDeceleration)
 {
-    return setRegisterWithAnswerInteger(0x6084, 0x00, deceleration, newDeceleration);
+    return setRegisterWithAnswerInteger(
+        0x6084, 0x00, static_cast<uint32_t>(deceleration), newDeceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1908,7 +1911,8 @@ ito::RetVal FaulhaberMCS::getQuickStopDeceleration(int& deceleration)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration, int& newDeceleration)
 {
-    return setRegisterWithAnswerInteger(0x6085, 0x00, deceleration, newDeceleration);
+    return setRegisterWithAnswerInteger(
+        0x6085, 0x00, static_cast<uint32_t>(deceleration), newDeceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1920,11 +1924,17 @@ ito::RetVal FaulhaberMCS::getProfileVelocity(int& speed)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setProfileVelocity(const int& speed, int& newSpeed)
 {
-    return setRegisterWithAnswerInteger(0x6081, 0x00, speed, newSpeed);
+    return setRegisterWithAnswerInteger(0x6081, 0x00, static_cast<uint32_t>(speed), newSpeed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
+{
+    return readRegisterWithAnswerInteger(0x6060, 0x00, mode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getOperationModeDisplay(int& mode)
 {
     return readRegisterWithAnswerInteger(0x6061, 0x00, mode);
 }
@@ -1932,7 +1942,8 @@ ito::RetVal FaulhaberMCS::getOperationMode(int& mode)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setOperationMode(const int& mode, int& newMode)
 {
-    return setRegister(0x606, 0x00, mode, sizeof(mode));
+    setRegister(0x6060, 0x00, static_cast<uint8_t>(mode), 1);
+    return getOperationMode(newMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1950,8 +1961,10 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 {
     ito::RetVal retVal = ito::retOk;
 
-    retVal += setRegisterWithAnswerInteger(0x60E0, 0x00, limits[0], newLimits[0]);
-    retVal += setRegisterWithAnswerInteger(0x60E1, 0x00, limits[1], newLimits[1]);
+    retVal +=
+        setRegisterWithAnswerInteger(0x60E0, 0x00, static_cast<uint16_t>(limits[0]), newLimits[0]);
+    retVal +=
+        setRegisterWithAnswerInteger(0x60E1, 0x00, static_cast<uint16_t>(limits[1]), newLimits[1]);
     return retVal;
 }
 

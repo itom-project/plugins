@@ -184,6 +184,7 @@ private:
     ito::RetVal setProfileVelocity(const int& speed, int& newSpeed);
 
     ito::RetVal getOperationMode(int& mode);
+    ito::RetVal getOperationModeDisplay(int& mode);
     ito::RetVal setOperationMode(const int& mode, int& newMode);
 
     ito::RetVal getTorqueLimits(int limits[]);
