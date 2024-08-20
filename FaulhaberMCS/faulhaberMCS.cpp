@@ -225,16 +225,6 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "voltage",
-        ito::ParamBase::Int,
-        0,
-        1,
-        m_async,
-        tr("Enable (1) or Disable (0) voltage.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
         "homed",
         ito::ParamBase::Int,
         0,
@@ -513,11 +503,10 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        int mode;
-        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), mode);
+        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), answerInteger);
         if (!retValue.containsError())
         {
-            m_params["operationMode"].setVal<int>(mode);
+            m_params["operationMode"].setVal<int>(answerInteger);
         }
     }
 
@@ -889,21 +878,6 @@ ito::RetVal FaulhaberMCS::setParam(
                     tr("Set the parameter value to 1 for fault reset.").toLatin1().data());
             }
         }
-        else if (key == "voltage")
-        {
-            if (val->getVal<int>())
-            {
-                disableVoltage();
-                updateStatusMCS();
-            }
-            else
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    tr("Set the parameter value to 1 to disable voltage.").toLatin1().data());
-            }
-        }
         else if (key == "maxMotorSpeed")
         {
             int speed;
@@ -996,58 +970,6 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    // check axis index
-    foreach (const int& i, axis)
-    {
-        if (i >= m_numOfAxes)
-        {
-            retValue += ito::RetVal(
-                ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
-        }
-    }
-
-    // homing routine if motor is not moving
-    if (!retValue.containsError())
-    {
-        if (isMotorMoving())
-        {
-            retValue += ito::RetVal(
-                ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
-
-            if (waitCond)
-            {
-                waitCond->release();
-                waitCond->returnValue = retValue;
-            }
-        }
-        else
-        {
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate();
-
-            for (const int& i : axis)
-            {
-                if (auto result = homingCurrentPosToZero(i); result.containsError())
-                {
-                    retValue += result;
-                    break;
-                }
-            }
-
-            if (!retValue.containsError())
-            {
-                m_params["homed"].setVal<int>(1);
-            }
-
-            if (waitCond)
-            {
-                waitCond->release();
-                waitCond->returnValue = retValue;
-            }
-
-            sendStatusUpdate();
-        }
-    }
 
     return retValue;
 }
@@ -1058,14 +980,13 @@ ito::RetVal FaulhaberMCS::readRegister(
 {
     ito::RetVal retValue = ito::retOk;
 
-    // combine command
+    // Combine command
     std::vector<uint8_t> command = {
         m_node,
         m_GET,
         static_cast<uint8_t>(address & 0xFF),
         static_cast<uint8_t>(address >> 8),
         subindex};
-
     std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
     fullCommand.insert(fullCommand.end(), command.begin(), command.end());
     fullCommand.push_back(CRC(fullCommand));
@@ -1108,18 +1029,6 @@ void FaulhaberMCS::setRegister(
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
     sendCommand(data);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setRegisterAndGetResponse(
-    const uint16_t& address,
-    const uint8_t& subindex,
-    const int& value,
-    const uint8_t& length,
-    std::vector<uint8_t>& response)
-{
-    setRegister(address, subindex, value, length);
-    return readRegister(address, subindex, response);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1227,22 +1136,14 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     QElapsedTimer timer;
     timer.start();
 
-    // Set to homing mode
-    uint8_t mode = 6;
     int newMode;
-    retValue += setOperationMode(mode, newMode);
-    if (retValue.containsError())
-        return retValue;
+    retValue += setOperationMode(6, newMode);
 
-    // Apply homing mode
-    mode = 37;
-    // retValue += setHomingMode(mode);
-    if (retValue.containsError())
-        return retValue;
+    retValue += setHomingMode(37);
 
     // Start homing
-    mode = 0x000F;
-    // retValue += setControlword(mode, 2);
+    uint8_t mode = 0x000F;
+    setControlWord(mode);
 
     while (!retValue.containsWarningOrError())
     {
@@ -1277,9 +1178,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
         }
     }
 
-
-    mode = 0x001F;
-    // retValue += setControlword(mode, 2);
+    setControlWord(0x001F);
 
     int currentPos;
     retValue += getPosMCS(currentPos);
@@ -1291,9 +1190,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     if (retValue.containsError())
         return retValue;
 
-    // Set to profile operation mode
-    mode = 1;
-    // retValue += setOperationMode(mode);
+    retValue += setOperationMode(1, newMode);
 
     return retValue;
 }
@@ -1322,35 +1219,58 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (isMotorMoving())
+
+    // check axis index
+    foreach (const int& i, axis)
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
-    }
-    else
-    {
-        foreach (const int& i, axis)
+        if (i >= m_numOfAxes)
         {
-            if (i >= 0 && i < m_numOfAxes)
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
+        }
+    }
+
+    // homing routine if motor is not moving
+    if (!retValue.containsError())
+    {
+        if (isMotorMoving())
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
+
+            if (waitCond)
             {
-                // todo: set axis i to origin (current position is considered to be the 0-position).
-            }
-            else
-            {
-                retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                waitCond->release();
+                waitCond->returnValue = retValue;
             }
         }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
-        retValue += updateStatus();
-    }
+            for (const int& i : axis)
+            {
+                if (auto result = homingCurrentPosToZero(i); result.containsError())
+                {
+                    retValue += result;
+                    break;
+                }
+            }
 
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
+            if (!retValue.containsError())
+            {
+                m_params["homed"].setVal<int>(1);
+            }
+
+            if (waitCond)
+            {
+                waitCond->release();
+                waitCond->returnValue = retValue;
+            }
+
+            sendStatusUpdate();
+        }
     }
     return retValue;
 }
@@ -1878,62 +1798,14 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
     return ito::RetVal();
 }
 
-
 ////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setPosAbsMCS(double& pos)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//
-//     unsigned int abortMessage;
-//     eMomanprot error;
-//
-//     // Modes of Operation = Profile Position Mode (1):
-//     error = mmProtSetObj(m_node, 0x6060, 0x00, 1, 1, abortMessage);
-//     if (error == eMomanprot_ok)
-//     {
-//         int intPos = doubleToInteger(pos);
-//         error = mmProtSetObj(m_node, 0x607A, 0x00, intPos, sizeof(intPos), abortMessage);
-//         if (error == eMomanprot_ok)
-//         {
-//             // Enable Operation:
-//             error = mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, sizeof(0), abortMessage);
-//             if (error == eMomanprot_ok)
-//             {
-//                 // Move absolute:
-//                 retVal += setControlword(0x003F, 2);
-//             }
-//         }
-//     }
-//     return convertErrorCode(error, __func__);
-// }
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
-//{
-//     ito::RetVal retVal(ito::retOk);
-//
-//     unsigned int abortMessage;
-//     eMomanprot error;
-//     // Modes of Operation = Profile Position Mode (1):
-//     error = mmProtSetObj(m_node, 0x6060, 0x00, 1, 1, abortMessage);
-//     if (error == eMomanprot_ok)
-//     {
-//         int intPos = doubleToInteger(pos);
-//         error = mmProtSetObj(m_node, 0x607A, 0x00, intPos, sizeof(intPos), abortMessage);
-//         if (error == eMomanprot_ok)
-//         {
-//             // Enable Operation:
-//             error = mmProtSetObj(m_node, 0x0000, eMomancmd_EnOp, 0, 0, abortMessage);
-//             if (error == eMomanprot_ok)
-//             {
-//                 // Move relative:
-//                 retVal += setControlword(0x007F, 2);
-//             }
-//         }
-//     }
-//     return convertErrorCode(error, __func__);
-// }
-//
+ito::RetVal FaulhaberMCS::setHomingMode(const int& mode)
+{
+    ito::RetVal retVal = ito::retOk;
+    int answer;
+    retVal += setRegisterWithAnswerInteger(0x6098, 0x00, mode, answer);
+    return ito::RetVal();
+}
 
 ////----------------------------------------------------------------------------------------------------------------------------------
 // ito::RetVal FaulhaberMCS::setHomingMode(const uint8_t& mode)
@@ -2255,13 +2127,8 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
 ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
     const uint16_t& address, const uint8_t& subindex, const int& value, int& answer)
 {
-    ito::RetVal retVal = ito::retOk;
-    std::vector<uint8_t> response;
-    retVal += setRegisterAndGetResponse(address, subindex, value, sizeof(value), response);
-
-    answer = responseVectorToInteger(response);
-
-    return retVal;
+    setRegister(address, subindex, value, sizeof(value));
+    return readRegisterWithAnswerInteger(address, subindex, answer);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

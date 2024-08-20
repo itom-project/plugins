@@ -130,12 +130,6 @@ private:
     // SET REGISTER
     void setRegister(
         const uint16_t& address, const uint8_t& subindex, const int& value, const uint8_t& length);
-    ito::RetVal setRegisterAndGetResponse(
-        const uint16_t& address,
-        const uint8_t& subindex,
-        const int& value,
-        const uint8_t& length,
-        std::vector<uint8_t>& response);
     ito::RetVal setRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, const int& value, int& answer);
 
@@ -198,6 +192,9 @@ private:
     ito::RetVal setPosAbsMCS(const double& pos);
     ito::RetVal setPosRelMCS(const double& pos);
 
+    //HOMING
+    ito::RetVal setHomingMode(const int& mode);
+
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
@@ -238,7 +235,6 @@ public slots:
     /*
 
 
-    ito::RetVal setHomingMode(const uint8_t& mode);
 
     ito::RetVal getTorqueLimits(int limits[]);
     ito::RetVal setTorqueLimits(const int limits[]);
