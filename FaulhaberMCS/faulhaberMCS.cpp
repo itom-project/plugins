@@ -1973,22 +1973,8 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
+    retVal += readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
 
-    while (m_statusWord == 0)
-    {
-        retVal += readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
-
-        if (retVal.containsError())
-        {
-            break;
-        }
-
-        if (m_statusWord == 0)
-        {
-            // Add a delay before checking the status again
-            Sleep(10);
-        }
-    }
 
     if (!retVal.containsError())
     {
