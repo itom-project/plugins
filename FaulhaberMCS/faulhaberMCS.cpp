@@ -1267,7 +1267,6 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 
     // Start homing
     setControlWord(0x000F);
-    retValue += updateStatusMCS();
 
     while (!retValue.containsWarningOrError())
     {
@@ -1275,7 +1274,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
         Sleep(m_delayAfterSendCommandMS);
         retValue += updateStatusMCS();
 
-        if (!(m_statusWord & targetReached) &&
+        if ((m_statusWord) && !(m_statusWord & targetReached) &&
             !(m_statusWord & setPointAcknowledged)) // target still not reached
         {
             retValue += ito::RetVal(
@@ -1294,7 +1293,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
         }
 
         // Timeout during movement
-        if (timer.hasExpired(10000))
+        if (timer.hasExpired(m_waitForDoneTimeout))
         {
             retValue += ito::RetVal(
                 ito::retError, 9999, QString("Timeout occurred during homing").toLatin1().data());
@@ -1303,7 +1302,6 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     }
 
     setControlWord(0x001F);
-    retValue += updateStatusMCS();
 
     int currentPos;
     retValue += getPosMCS(currentPos);
@@ -1317,6 +1315,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 
     retValue += setOperationMode(1, newMode);
 
+    retValue += updateStatusMCS();
     return retValue;
 }
 
