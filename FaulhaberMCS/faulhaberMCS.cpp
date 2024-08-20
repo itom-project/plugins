@@ -1266,8 +1266,8 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     retValue += setHomingMode(37);
 
     // Start homing
-    uint8_t mode = 0x000F;
-    setControlWord(mode);
+    setControlWord(0x000F);
+    retValue += updateStatusMCS();
 
     while (!retValue.containsWarningOrError())
     {
@@ -1303,6 +1303,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     }
 
     setControlWord(0x001F);
+    retValue += updateStatusMCS();
 
     int currentPos;
     retValue += getPosMCS(currentPos);
@@ -1972,7 +1973,22 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
-    retVal += readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
+
+    while (m_statusWord == 0)
+    {
+        retVal += readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
+
+        if (retVal.containsError())
+        {
+            break;
+        }
+
+        if (m_statusWord == 0)
+        {
+            // Add a delay before checking the status again
+            Sleep(10);
+        }
+    }
 
     if (!retVal.containsError())
     {
@@ -2006,7 +2022,7 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(const double& pos)
     retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
     setControlWord(0x000f);
     setControlWord(0x003F);
-    return ito::RetVal();
+    return updateStatusMCS();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2017,7 +2033,7 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
     retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
     setControlWord(0x000f);
     setControlWord(0x007F);
-    return ito::RetVal();
+    return updateStatusMCS();
 }
 
 ////----------------------------------------------------------------------------------------------------------------------------------
@@ -2025,7 +2041,7 @@ ito::RetVal FaulhaberMCS::setHomingMode(const int& mode)
 {
     ito::RetVal retVal = ito::retOk;
     int answer;
-    retVal += setRegisterWithAnswerInteger(0x6098, 0x00, mode, answer);
+    retVal += setRegisterWithAnswerInteger(0x6098, 0x00, static_cast<uint8_t>(mode), answer);
     return ito::RetVal();
 }
 
@@ -2069,6 +2085,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
+        Sleep(10);
         if (!done && isInterrupted()) // movement interrupted
         {
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
