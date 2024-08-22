@@ -1245,7 +1245,7 @@ ito::RetVal FaulhaberMCS::parseResponse(
     uint16_t index = static_cast<uint8_t>(ansVector[3]) | (static_cast<uint8_t>(ansVector[4]) << 8);
     uint8_t subIndex = static_cast<uint8_t>(ansVector[5]);
 
-    if ((command == 0x01) || (command == 0x02))
+    if ((command == 0x01) || (command == 0x02)) // SDO read, SDO write
     {
         if (!retValue.containsError())
         {
@@ -1253,14 +1253,19 @@ ito::RetVal FaulhaberMCS::parseResponse(
                 std::vector<uint8_t>(ansVector.begin() + 6, ansVector.begin() + length - 1);
         }
     }
-    else if (command == 0x05)
+    else if (command == 0x05) // status word notification
     {
-        // status word
         parsedResponse = std::vector<uint8_t>(ansVector.begin() + 6, ansVector.begin() + length);
     }
     else
     {
-        parsedResponse.clear();
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Unknown command received: %1")
+                .arg(static_cast<uint8_t>(command))
+                .toLatin1()
+                .data());
     }
 
     return retValue;
@@ -1657,7 +1662,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
             foreach (const int i, axis)
             {
                 retValue += setPosRelMCS(pos[i]);
-                m_targetPos[i] = m_currentPos[i] + pos[i];
+                m_currentPos[i] = pos[i];
             }
 
             sendTargetUpdate();
@@ -2079,6 +2084,8 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     bool done = false;
     bool timeout = false;
     char motor;
+    int currentPos = 0;
+    int targetPos = 0;
     QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
@@ -2113,8 +2120,14 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             setAlive();
         }
 
-        for (int i = 0; i < axis.size(); ++i) // Check for completion
+        foreach (auto i, axis) // Check for completion
         {
+            retVal += getPosMCS(currentPos);
+            m_currentPos[i] = double(currentPos);
+
+            retVal += getTargetPosMCS(targetPos);
+            m_targetPos[i] = double(targetPos);
+
             retVal += updateStatusMCS();
             if ((m_statusWord && m_params["targetReached"].getVal<int>()))
             {
@@ -2124,6 +2137,13 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actuatorAtTarget,
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
+
+                retVal += getPosMCS(currentPos);
+                m_currentPos[i] = double(currentPos);
+
+                retVal += getTargetPosMCS(targetPos);
+                m_targetPos[i] = double(targetPos);
+
                 break;
             }
             else
@@ -2134,18 +2154,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = false;
             }
-
-            int currentPos = 0;
-            int targetPos = 0;
-            retVal += getPosMCS(currentPos);
-            m_currentPos[i] = double(currentPos);
-
-            retVal += getTargetPosMCS(targetPos);
-            m_targetPos[i] = double(targetPos);
         }
 
         sendStatusUpdate(false);
-
 
         if (timer.hasExpired(timeoutMS)) // timeout during movement
         {
