@@ -1293,6 +1293,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 
         // Start homing
         setControlWord(0x000F);
+        setControlWord(0x001F);
 
         while (!retValue.containsWarningOrError())
         {
@@ -1300,12 +1301,8 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             Sleep(m_delayAfterSendCommandMS);
             retValue += updateStatusMCS();
 
-            if ((m_statusWord && m_params["targetReached"].getVal<int>()) &&
-                (m_statusWord &&
-                 m_params["setPointAcknowledged"].getVal<int>())) // homing successful
+            if (m_statusWord && m_params["setPointAcknowledged"].getVal<int>()) // homing successful
             {
-                m_targetPos[axis] = 0.0;
-
                 break;
             }
             else if (m_statusWord && m_params["followingError"].getVal<int>()) // error during
@@ -1326,12 +1323,12 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             }
         }
 
-        setControlWord(0x001F);
-
         int currentPos;
+        int targetPos;
         retValue += getPosMCS(currentPos);
-
         m_currentPos[axis] = currentPos;
+        retValue += getTargetPosMCS(targetPos);
+        m_targetPos[axis] = targetPos;
 
         if (retValue.containsError())
             return retValue;
@@ -2131,7 +2128,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += updateStatusMCS();
             if ((m_statusWord && m_params["targetReached"].getVal<int>()))
             {
-                // && (m_statusWord && m_params["setPointAcknowledged"].getVal<int>())
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorAtTarget,
