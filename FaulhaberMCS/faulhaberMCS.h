@@ -29,6 +29,8 @@
 #include <qsharedpointer.h>
 #include <windows.h>
 
+#include <bitset>
+
 //----------------------------------------------------------------------------------------------------------------------------------
 class FaulhaberMCSInterface : public ito::AddInInterfaceBase
 {
@@ -77,6 +79,7 @@ private:
                  //!< not return until positioning was done.
     int m_numOfAxes;
     int m_waitForDoneTimeout;
+    int m_waitForMCSTimeout;
     int m_statusWord;
 
     uint8_t m_node;
@@ -197,7 +200,7 @@ private:
     ito::RetVal setPosRelMCS(const double& pos);
 
     // HOMING
-    ito::RetVal setHomingMode(const int& mode);
+    ito::RetVal setHomingMode(const int& mode, int& newMode);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
