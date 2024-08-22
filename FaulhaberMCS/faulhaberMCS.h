@@ -89,22 +89,6 @@ private:
     uint8_t m_GET = 0x01;
     uint8_t m_SET = 0x02;
 
-    enum statuswordBits
-    {
-        readyToSwitchOn = 1 << 0,
-        switchedOn = 1 << 1,
-        operationEnabled = 1 << 2,
-        fault = 1 << 3,
-        voltageEnabled = 1 << 4,
-        quickStopEnable = 1 << 5,
-        switchOnDisabled = 1 << 6,
-        warning = 1 << 7,
-        targetReached = 1 << 10,
-        internalLimitActive = 1 << 11,
-        setPointAcknowledged = 1 << 12,
-        followingError = 1 << 13
-    };
-
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,

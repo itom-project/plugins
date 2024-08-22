@@ -1235,21 +1235,32 @@ ito::RetVal FaulhaberMCS::parseResponse(
     const QByteArray& response, std::vector<uint8_t>& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
-    std::vector<uint8_t> ansVector(response.begin(), response.end());
 
-    if (!retValue.containsError() && ansVector.size() >= 7)
+    uint8_t length = static_cast<uint8_t>(response[1]);
+
+    QByteArray ansVector = response.mid(1, length);
+
+    uint8_t nodeNumber = static_cast<uint8_t>(ansVector[1]);
+    uint8_t command = static_cast<uint8_t>(ansVector[2]);
+    uint16_t index = static_cast<uint8_t>(ansVector[3]) | (static_cast<uint8_t>(ansVector[4]) << 8);
+    uint8_t subIndex = static_cast<uint8_t>(ansVector[5]);
+
+    if ((command == 0x01) || (command == 0x02))
     {
-        parsedResponse = std::vector<uint8_t>(ansVector.begin() + 7, ansVector.end() - 2);
+        if (!retValue.containsError())
+        {
+            parsedResponse =
+                std::vector<uint8_t>(ansVector.begin() + 6, ansVector.begin() + length - 1);
+        }
+    }
+    else if (command == 0x05)
+    {
+        // status word
+        parsedResponse = std::vector<uint8_t>(ansVector.begin() + 6, ansVector.begin() + length);
     }
     else
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Response is too short. Expected at least 7 bytes, but got %1 bytes.")
-                .arg(ansVector.size())
-                .toLatin1()
-                .data());
+        parsedResponse.clear();
     }
 
     return retValue;
@@ -1284,14 +1295,16 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             Sleep(m_delayAfterSendCommandMS);
             retValue += updateStatusMCS();
 
-            if ((m_statusWord & targetReached) &&
-                (m_statusWord & setPointAcknowledged)) // homing successful
+            if ((m_statusWord && m_params["targetReached"].getVal<int>()) &&
+                (m_statusWord &&
+                 m_params["setPointAcknowledged"].getVal<int>())) // homing successful
             {
                 m_targetPos[axis] = 0.0;
 
                 break;
             }
-            else if (m_statusWord & followingError) // error during homing
+            else if (m_statusWord && m_params["followingError"].getVal<int>()) // error during
+                                                                               // homing
             {
                 retValue += ito::RetVal(
                     ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
@@ -1513,6 +1526,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
     }
     else
     {
+        // check if axis is available TODO for MCS
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_numOfAxes)
@@ -1526,68 +1540,46 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             }
         }
 
-        if (!retValue.containsError())
+        if (retValue.containsError())
         {
-            // set status of all given axes to moving and keep all flags related to the status and
-            // switches
-            for (int naxis = 0; naxis < axis.size(); naxis++)
+            if (waitCond)
             {
-                setStatus(
-                    m_currentStatus[naxis],
-                    ito::actuatorMoving,
-                    ito::actSwitchesMask | ito::actStatusMask);
-                sendStatusUpdate(false);
+                waitCond->returnValue = retValue;
+                waitCond->release();
             }
-
-            // emit the signal targetChanged with m_targetPos as argument, such that all connected
-            // slots gets informed about new targets
-            sendTargetUpdate();
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
             foreach (const int i, axis)
             {
-                retValue += setPosAbsMCS(m_targetPos[i]);
+                retValue += setPosAbsMCS(pos[i]);
+                m_targetPos[i] = pos[i];
             }
 
-            // emit the signal sendStatusUpdate such that all connected slots gets informed about
-            // changes in m_currentStatus and m_currentPos.
+            sendTargetUpdate();
+
+            if (m_async && waitCond) // async disabled
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+
+            retValue += waitForDone(m_waitForDoneTimeout, axis); // drops into timeout
+
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             sendStatusUpdate();
-            foreach (const int& a, axis)
-            {
-                replaceStatus(m_currentStatus[a], ito::actuatorMoving, ito::actuatorInterrupted);
-            }
-            sendStatusUpdate(false);
 
-            // release the wait condition now, if async is true (itom considers this method to be
-            // finished now due to the threaded call)
-            if (m_async && waitCond && !released)
+            if (!m_async && waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                released = true;
-            }
-
-            // call waitForDone in order to wait until all axes reached their target or a given
-            // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
-            // function
-            retValue += waitForDone(m_waitForDoneTimeout, axis);
-
-            // release the wait condition now, if async is false (itom waits until now if async is
-            // false, hence in the synchronous mode)
-            if (!m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-                released = true;
             }
         }
     }
 
-    // if the wait condition has not been released yet, do it now
-    if (waitCond && !released)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
 
     return retValue;
 }
@@ -1635,6 +1627,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
     }
     else
     {
+        // check if axis is available TODO for MCS
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_numOfAxes)
@@ -1648,72 +1641,50 @@ ito::RetVal FaulhaberMCS::setPosRel(
             }
         }
 
-        if (!retValue.containsError())
+        if (retValue.containsError())
         {
-            // set status of all given axes to moving and keep all flags related to the status and
-            // switches
-            for (int naxis = 0; naxis < axis.size(); naxis++)
+            if (waitCond)
             {
-                setStatus(
-                    m_currentStatus[naxis],
-                    ito::actuatorMoving,
-                    ito::actSwitchesMask | ito::actStatusMask);
-                sendStatusUpdate(false);
+                waitCond->returnValue = retValue;
+                waitCond->release();
             }
-
-            // emit the signal targetChanged with m_targetPos as argument, such that all connected
-            // slots gets informed about new targets
-            sendTargetUpdate();
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
 
             foreach (const int i, axis)
             {
                 retValue += setPosRelMCS(pos[i]);
+                m_targetPos[i] = m_currentPos[i] + pos[i];
             }
 
-            // emit the signal sendStatusUpdate such that all connected slots gets informed about
-            // changes in m_currentStatus and m_currentPos.
+            sendTargetUpdate();
+
+            if (m_async && waitCond) // async disabled
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+
+            retValue += waitForDone(m_waitForDoneTimeout, axis); // drops into timeout
+
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
             sendStatusUpdate();
-            foreach (const int& a, axis)
-            {
-                replaceStatus(m_currentStatus[a], ito::actuatorMoving, ito::actuatorInterrupted);
-            }
-            sendStatusUpdate(false);
 
-            // release the wait condition now, if async is true (itom considers this method to be
-            // finished now due to the threaded call)
-            if (m_async && waitCond && !released)
+            if (!m_async && waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                released = true;
-            }
-
-            // call waitForDone in order to wait until all axes reached their target or a given
-            // timeout expired the m_currentPos and m_currentStatus vectors are updated within this
-            // function
-            retValue += waitForDone(m_waitForDoneTimeout, axis);
-
-            // release the wait condition now, if async is false (itom waits until now if async is
-            // false, hence in the synchronous mode)
-            if (!m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-                released = true;
             }
         }
-    }
-
-    // if the wait condition has not been released yet, do it now
-    if (waitCond && !released)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
     }
 
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::execFunc(
     const QString funcName,
     QSharedPointer<QVector<ito::ParamBase>> paramsMand,
@@ -1755,14 +1726,14 @@ ito::RetVal FaulhaberMCS::execFunc(
 
         // Wait for the drive to respond
         // Assuming the statusword is available and can be read
-        while ((m_statusWord & (1 << setPointAcknowledged)) == 0 &&
-               (m_statusWord & (1 << targetReached)) == 0)
+        while ((m_statusWord & (1 << m_params["setPointAcknowledged"].getVal<int>())) == 0 &&
+               (m_statusWord & (1 << m_params["targetReached"].getVal<int>())) == 0)
         {
             updateStatusMCS();
         }
 
         // Check if the reference run was completed successfully
-        if ((m_statusWord & (1 << followingError)) != 0)
+        if ((m_statusWord & (1 << m_params["followingError"].getVal<int>())) != 0)
         {
             retValue +=
                 ito::RetVal(ito::retError, 0, tr("Error occurred during homing").toLatin1().data());
@@ -1982,14 +1953,20 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal(ito::retOk);
+    retVal = readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
 
     qint64 startTime = QDateTime::currentMSecsSinceEpoch();
     qint64 elapsedTime = 0;
-
-    retVal = readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
-
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
     while ((m_statusWord == 0) && (elapsedTime < m_waitForMCSTimeout))
     {
+        // short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+        waitMutex.unlock();
+        setAlive();
+
         ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
 
         if (retVal.containsError())
@@ -2009,19 +1986,35 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
     if (!retVal.containsError())
     {
         m_params["statusWord"].setVal<int>(m_statusWord);
+        std::bitset<16> statusBit = static_cast<std::bitset<16>>(m_statusWord);
 
-        m_params["readyToSwitchOn"].setVal<int>(m_statusWord & readyToSwitchOn ? 1 : 0);
-        m_params["switchedOn"].setVal<int>(m_statusWord & switchedOn ? 1 : 0);
-        m_params["operationEnabled"].setVal<int>(m_statusWord & operationEnabled ? 1 : 0);
-        m_params["fault"].setVal<int>(m_statusWord & fault ? 1 : 0);
-        m_params["voltageEnabled"].setVal<int>(m_statusWord & voltageEnabled ? 1 : 0);
-        m_params["quickStop"].setVal<int>(m_statusWord & quickStopEnable ? 1 : 0);
-        m_params["switchOnDisabled"].setVal<int>(m_statusWord & switchOnDisabled ? 1 : 0);
-        m_params["warning"].setVal<int>(m_statusWord & warning ? 1 : 0);
-        m_params["targetReached"].setVal<int>(m_statusWord & targetReached ? 1 : 0);
-        m_params["internalLimitActive"].setVal<int>(m_statusWord & internalLimitActive ? 1 : 0);
-        m_params["setPointAcknowledged"].setVal<int>(m_statusWord & setPointAcknowledged ? 1 : 0);
-        m_params["followingError"].setVal<int>(m_statusWord & followingError ? 1 : 0);
+        // Interpretation of bits
+        bool readyToSwitchOn = statusBit[0];
+        bool switchedOn = statusBit[1];
+        bool operationEnabled = statusBit[2];
+        bool fault = statusBit[3];
+        bool voltageEnabled = statusBit[4];
+        bool quickStop = statusBit[5];
+        bool switchOnDisabled = statusBit[6];
+        bool warning = statusBit[7];
+
+        bool targetReached = statusBit[10];
+        bool internalLimitActive = statusBit[11];
+        bool setPointAcknowledged = statusBit[12];
+        bool followingError = statusBit[13];
+
+        m_params["readyToSwitchOn"].setVal<int>((readyToSwitchOn ? true : false));
+        m_params["switchedOn"].setVal<int>((switchedOn ? true : false));
+        m_params["operationEnabled"].setVal<int>((operationEnabled ? true : false));
+        m_params["fault"].setVal<int>((fault ? true : false));
+        m_params["voltageEnabled"].setVal<int>((voltageEnabled ? true : false));
+        m_params["quickStop"].setVal<int>((quickStop ? true : false));
+        m_params["switchOnDisabled"].setVal<int>((switchOnDisabled ? true : false));
+        m_params["warning"].setVal<int>((warning ? true : false));
+        m_params["targetReached"].setVal<int>((targetReached ? true : false));
+        m_params["internalLimitActive"].setVal<int>((internalLimitActive ? true : false));
+        m_params["setPointAcknowledged"].setVal<int>((setPointAcknowledged ? true : false));
+        m_params["followingError"].setVal<int>((followingError ? true : false));
 
         emit parametersChanged(m_params);
     }
@@ -2035,7 +2028,9 @@ ito::RetVal FaulhaberMCS::setPosAbsMCS(const double& pos)
 {
     ito::RetVal retVal = ito::retOk;
     int answer;
-    retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
+    int val = doubleToInteger(pos);
+
+    setRegister(0x607a, 0x00, val, sizeof(val));
     setControlWord(0x000f);
     setControlWord(0x003F);
     return updateStatusMCS();
@@ -2046,7 +2041,9 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
 {
     ito::RetVal retVal = ito::retOk;
     int answer;
-    retVal += setRegisterWithAnswerInteger(0x607a, 0x00, doubleToInteger(pos), answer);
+    int val = doubleToInteger(pos);
+
+    setRegister(0x607a, 0x00, val, sizeof(val));
     setControlWord(0x000f);
     setControlWord(0x007F);
     return updateStatusMCS();
@@ -2098,7 +2095,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
-        Sleep(10);
         if (!done && isInterrupted()) // movement interrupted
         {
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
@@ -2112,7 +2108,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         {
             // short delay of 10ms
             waitMutex.lock();
-            waitCondition.wait(&waitMutex, 10);
+            waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
             waitMutex.unlock();
             setAlive();
         }
@@ -2120,8 +2116,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         for (int i = 0; i < axis.size(); ++i) // Check for completion
         {
             retVal += updateStatusMCS();
-            if ((m_statusWord & targetReached) && (m_statusWord & setPointAcknowledged))
+            if ((m_statusWord && m_params["targetReached"].getVal<int>()))
             {
+                // && (m_statusWord && m_params["setPointAcknowledged"].getVal<int>())
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorAtTarget,
@@ -2147,7 +2144,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             m_targetPos[i] = double(targetPos);
         }
 
-        retVal += updateStatusMCS();
         sendStatusUpdate(false);
 
 
@@ -2281,13 +2277,20 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
 
     std::vector<uint8_t> ansVector(result.begin(), result.end());
 
-    if (CRC(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
-        ansVector[ansVector.size() - 2])
+    if (!retValue.containsError() && (ansVector.size() >= 7))
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Checksum mismatch for %1").arg(QString::fromUtf8(result)).toLatin1().data());
+        if (CRC(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
+            ansVector[ansVector.size() - 2])
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Checksum mismatch for %1").arg(QString::fromUtf8(result)).toLatin1().data());
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("No response received").toLatin1().data());
     }
 
     return retValue;
@@ -2331,6 +2334,9 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
 {
     ito::RetVal retVal = ito::retOk;
 
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+
     setRegister(
         address, subindex, static_cast<uint8_t>(value), sizeof(static_cast<uint8_t>(value)));
     retVal += readRegisterWithAnswerInteger(address, subindex, answer);
@@ -2341,7 +2347,13 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
     while (answer != value)
     {
         retVal += updateStatusMCS();
-        isAlive();
+
+        // short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, 10);
+        waitMutex.unlock();
+        setAlive();
+
         retVal += readRegisterWithAnswerInteger(address, subindex, answer);
 
         if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
