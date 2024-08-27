@@ -115,9 +115,16 @@ private:
 
     // SET REGISTER
     void setRegister(
-        const uint16_t& address, const uint8_t& subindex, const int& value, const uint8_t& length);
+        const uint16_t& address,
+        const uint8_t& subindex,
+        const int32_t& value,
+        const uint8_t& length);
     ito::RetVal setRegisterWithAnswerInteger(
-        const uint16_t& address, const uint8_t& subindex, const int& value, int& answer);
+        const uint16_t& address,
+        const uint8_t& subindex,
+        const int& value,
+        const int& length,
+        int& answer);
 
     // CONTROL WORD
     void setControlWord(const uint16_t word);
