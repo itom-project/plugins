@@ -101,12 +101,12 @@ private:
     ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
     ito::RetVal readResponse(QByteArray& result);
-    ito::RetVal parseResponse(const QByteArray& response, std::vector<uint8_t>& parsedResponse);
-    uint8_t CRC(const std::vector<uint8_t>& message);
+    ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
+    uint8_t checksum(const std::vector<uint8_t>& message);
 
     // READ REGISTER
     ito::RetVal readRegister(
-        const uint16_t& address, const uint8_t& subindex, std::vector<uint8_t>& response);
+        const uint16_t& address, const uint8_t& subindex, std::vector<int>& response);
 
     ito::RetVal readRegisterWithAnswerString(
         const uint16_t& address, const uint8_t& subindex, QString& answer);
@@ -140,7 +140,7 @@ private:
     ito::RetVal homingCurrentPosToZero(const int& axis);
 
     int doubleToInteger(const double& value);
-    int responseVectorToInteger(const std::vector<uint8_t>& response);
+    int responseVectorToInteger(const std::vector<int>& response);
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
@@ -228,14 +228,6 @@ public slots:
         QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
         QSharedPointer<QVector<ito::ParamBase>> paramsOut,
         ItomSharedSemaphore* waitCond = nullptr);
-    // Faulhaber MCS methods
-    /*
-
-
-
-
-    ito::RetVal getControlword(int& word);
-    ito::RetVal setControlword(const uint8_t& word, const int& len);*/
 
 private slots:
     void dockWidgetVisibilityChanged(bool visible);
