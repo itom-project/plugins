@@ -100,18 +100,32 @@ private:
     // SeralIO functions
     ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
+    ito::RetVal new_sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
+
     ito::RetVal readResponse(QByteArray& result);
+    ito::RetVal new_readResponse(QByteArray& result);
     ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
+
+    ito::RetVal new_parseResponseToInteger32(QByteArray& response, ito::int32& parsedResponse);
     uint8_t checksum(const std::vector<uint8_t>& message);
+
+    uint8_t new_CalcCRC(const QByteArray& message);
+    bool verifyCRC(QByteArray& message);
 
     // READ REGISTER
     ito::RetVal readRegister(
         const uint16_t& address, const uint8_t& subindex, std::vector<int>& response);
 
+    ito::RetVal new_readRegister(
+        const uint16_t& address, const uint8_t& subindex, QByteArray& response);
+
     ito::RetVal readRegisterWithAnswerString(
         const uint16_t& address, const uint8_t& subindex, QString& answer);
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
+
+    ito::RetVal new_readRegisterWithAnswerInteger32(
+        const uint16_t& address, const uint8_t& subindex, ito::int32& answer);
 
     // SET REGISTER
     void setRegister(
@@ -159,8 +173,8 @@ private:
     ito::RetVal getSoftwareVersion(QString& version);
     ito::RetVal getAmbientTemperature(int& temp);
 
-    ito::RetVal getPosMCS(int& pos);
-    ito::RetVal getTargetPosMCS(int& pos);
+    ito::RetVal getPosMCS(ito::int32& pos);
+    ito::RetVal getTargetPosMCS(ito::int32& pos);
 
     ito::RetVal getMaxMotorSpeed(int& speed);
     ito::RetVal setMaxMotorSpeed(const int& speed, int& newSpeed);

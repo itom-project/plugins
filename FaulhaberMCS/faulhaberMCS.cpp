@@ -731,10 +731,12 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        int pos;
+        ito::int32 pos;
         retValue += getPosMCS(pos);
-        m_currentPos[0] = pos;
-        m_targetPos[0] = pos;
+
+        m_currentPos[0] = static_cast<double>(pos);
+        retValue += getTargetPosMCS(pos);
+        m_targetPos[0] = static_cast<double>(pos);
         m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
         retValue += updateStatusMCS();
         sendStatusUpdate(false);
@@ -1127,6 +1129,31 @@ ito::RetVal FaulhaberMCS::readRegister(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::new_readRegister(
+    const uint16_t& address, const uint8_t& subindex, QByteArray& response)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    // Combine command
+    std::vector<uint8_t> command = {
+        m_node,
+        m_GET,
+        static_cast<uint8_t>(address & 0xFF),
+        static_cast<uint8_t>(address >> 8),
+        subindex};
+    std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
+    fullCommand.insert(fullCommand.end(), command.begin(), command.end());
+    fullCommand.push_back(checksum(fullCommand));
+    fullCommand.insert(fullCommand.begin(), m_S);
+    fullCommand.push_back(m_E);
+
+    QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
+    retValue += new_sendCommandAndGetResponse(data, response);
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::setRegister(
     const uint16_t& address, const uint8_t& subindex, const int32_t& value, const uint8_t& length)
 { // combine command
@@ -1338,13 +1365,13 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             }
         }
 
-        int currentPos;
-        int targetPos;
+        ito::int32 currentPos;
+        ito::int32 targetPos;
         retValue += getPosMCS(currentPos);
-        m_currentPos[axis] = currentPos;
+        m_currentPos[axis] = static_cast<double>(currentPos);
 
         retValue += getTargetPosMCS(targetPos);
-        m_targetPos[axis] = targetPos;
+        m_targetPos[axis] = static_cast<double>(targetPos);
 
         if (retValue.containsError())
             return retValue;
@@ -1476,11 +1503,12 @@ ito::RetVal FaulhaberMCS::getPos(
     {
         if (i >= 0 && i < m_numOfAxes)
         {
-            int intPos;
+            ito::int32 intPos;
             retValue += getPosMCS(intPos);
             if (!retValue.containsError())
             {
-                m_currentPos[i] = intPos; // set m_currentPos[i] to the obtained position
+                m_currentPos[i] =
+                    static_cast<double>(intPos); // set m_currentPos[i] to the obtained position
                 (*pos)[i] = m_currentPos[i];
             }
         }
@@ -1869,15 +1897,15 @@ ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getPosMCS(int& pos)
+ito::RetVal FaulhaberMCS::getPosMCS(ito::int32& pos)
 {
-    return readRegisterWithAnswerInteger(0x6064, 0x00, pos);
+    return new_readRegisterWithAnswerInteger32(0x6064, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getTargetPosMCS(int& pos)
+ito::RetVal FaulhaberMCS::getTargetPosMCS(ito::int32& pos)
 {
-    return readRegisterWithAnswerInteger(0x6062, 0x00, pos);
+    return new_readRegisterWithAnswerInteger32(0x6062, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2182,10 +2210,10 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
         foreach (auto i, axis) // Check for completion
         {
             retVal += getPosMCS(currentPos);
-            m_currentPos[i] = double(currentPos);
+            m_currentPos[i] = static_cast<double>(currentPos);
 
             retVal += getTargetPosMCS(targetPos);
-            m_targetPos[i] = double(targetPos);
+            m_targetPos[i] = static_cast<double>(targetPos);
 
             retVal += updateStatusMCS();
             if ((m_statusWord && m_params["targetReached"].getVal<int>()))
@@ -2197,10 +2225,10 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                 done = true;
 
                 retVal += getPosMCS(currentPos);
-                m_currentPos[i] = double(currentPos);
+                m_currentPos[i] = static_cast<double>(currentPos);
 
                 retVal += getTargetPosMCS(targetPos);
-                m_targetPos[i] = double(targetPos);
+                m_targetPos[i] = static_cast<double>(targetPos);
 
                 break;
             }
@@ -2243,10 +2271,10 @@ ito::RetVal FaulhaberMCS::updateStatus()
     {
         m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable;
 
-        int intPos;
+        ito::int32 intPos;
         retVal += getPosMCS(intPos);
 
-        m_currentPos[i] = double(intPos);
+        m_currentPos[i] = static_cast<double>(intPos);
 
         if (m_params["targetReached"].getVal<int>())
         { // if you know that the axis i is at its target position, change from moving to
@@ -2274,13 +2302,6 @@ ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
 {
     ito::RetVal retVal;
     retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
-
-    QMutex mutex;
-    mutex.lock();
-    QWaitCondition waitCondition;
-    waitCondition.wait(&mutex, m_delayAfterSendCommandMS);
-    mutex.unlock();
-
     setAlive();
     return retVal;
 }
@@ -2294,6 +2315,21 @@ ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, Q
     if (!retVal.containsError())
     {
         retVal += readResponse(response);
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::new_sendCommandAndGetResponse(
+    const QByteArray& command, QByteArray& response)
+{
+    ito::RetVal retVal = ito::retOk;
+    retVal += sendCommand(command);
+
+    if (!retVal.containsError())
+    {
+        retVal += new_readResponse(response);
     }
 
     return retVal;
@@ -2370,6 +2406,52 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::new_readResponse(QByteArray& result)
+{
+    ito::RetVal retValue = ito::retOk;
+    QElapsedTimer timer;
+    bool done = false;
+
+    const int bufferSize = 100;
+    QSharedPointer<int> curBufLen(new int(bufferSize));
+    QSharedPointer<char> curBuf(new char[bufferSize]);
+    result.clear();
+
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+
+    timer.start();
+    while (!done && !retValue.containsError())
+    {
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+        waitMutex.unlock();
+        setAlive();
+
+        *curBufLen = bufferSize;
+        retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
+
+        if (!retValue.containsError())
+        {
+            result += QByteArray(curBuf.data(), *curBufLen);
+            if (result.size() >= 7)
+            {
+                done = true;
+            }
+        }
+
+        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+        {
+            return ito::RetVal(
+                ito::retError,
+                m_delayAfterSendCommandMS,
+                tr("timeout during read string.").toLatin1().data());
+        }
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegisterWithAnswerString(
     const uint16_t& address, const uint8_t& subindex, QString& answer)
 {
@@ -2398,6 +2480,16 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
 
     answer = responseVectorToInteger(registerValue);
 
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerInteger32(
+    const uint16_t& address, const uint8_t& subindex, ito::int32& answer)
+{
+    QByteArray response;
+    ito::RetVal retValue = new_readRegister(address, subindex, response);
+    retValue += new_parseResponseToInteger32(response, answer);
     return retValue;
 }
 
@@ -2450,6 +2542,69 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::new_parseResponseToInteger32(
+    QByteArray& response, ito::int32& parsedResponse)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    uint8_t SOF = static_cast<uint8_t>(response[0]);
+    uint8_t length = static_cast<uint8_t>(response[1]);
+    uint8_t nodeNumber = static_cast<uint8_t>(response[2]);
+    uint8_t command = static_cast<uint8_t>(response[3]);
+    uint16_t index = static_cast<uint8_t>(response[4]) | (static_cast<uint8_t>(response[5]) << 8);
+    uint8_t subIndex = static_cast<uint8_t>(response[6]);
+    QByteArray data = response.mid(7, 4); // 4 bytes data
+
+    if (!verifyCRC(response))
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("CRC mismatch").toLatin1().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        if ((command == 0x01) || (command == 0x02)) // SDO read, SDO write
+        {
+            std::memcpy(
+                &parsedResponse,
+                data.constData(),
+                sizeof(ito::int32)); // copy 4 bytes to parsedResponse
+        }
+        else if (command == 0x03) // error
+        {
+            std::memcpy(
+                &parsedResponse,
+                data.constData(),
+                sizeof(ito::int32)); // copy 4 bytes to parsedResponse
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during parse response with value: %1")
+                    .arg(parsedResponse)
+                    .toLatin1()
+                    .data());
+        }
+        else if (command == 0x05) // status word notification
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("status word notification").toLatin1().data());
+        }
+        else
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Unknown command received: %1")
+                    .arg(static_cast<uint8_t>(command))
+                    .toLatin1()
+                    .data());
+        }
+    }
+
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)
 {
     uint8_t poly = 0xD5;
@@ -2468,6 +2623,42 @@ uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)
     }
 
     return crc;
+}
+
+uint8_t FaulhaberMCS::new_CalcCRC(const QByteArray& message)
+{
+    uint8_t poly = 0xD5;
+    uint8_t crc = 0xFF;
+
+    for (auto byte : message)
+    {
+        crc ^= static_cast<uint8_t>(byte);
+        for (int i = 0; i < 8; i++)
+        {
+            if (crc & 0x01)
+                crc = (crc >> 1) ^ poly;
+            else
+                crc >>= 1;
+        }
+    }
+
+    return crc;
+}
+
+bool FaulhaberMCS::verifyCRC(QByteArray& message)
+{
+    // Calculate the CRC of the message excluding SOF, CRC, and EOF
+    uint8_t calculatedCRC = new_CalcCRC(message.mid(1, message.size() - 3));
+
+    // Extract the CRC from the message
+    uint8_t receivedCRC = static_cast<uint8_t>(message[message.size() - 2]);
+
+    // Compare the calculated CRC with the received CRC
+    if (calculatedCRC != receivedCRC)
+    {
+        return false;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
