@@ -107,16 +107,16 @@ private:
     ito::RetVal readResponse(QByteArray& result);
     ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
 
-    uint8_t calculateChecksum(const QByteArray& message);
+    ito::uint8 calculateChecksum(const QByteArray& message);
     bool verifyChecksum(QByteArray& message, ito::uint8& receivedCRC);
 
     // READ REGISTER
     ito::RetVal readRegister(
-        const uint16_t& address, const uint8_t& subindex, QByteArray& response);
+        const ito::uint16& address, const ito::uint8& subindex, QByteArray& response);
 
     template <typename T>
     ito::RetVal readRegisterWithParsedResponse(
-        const uint16_t& address, const uint8_t& subindex, T& answer);
+        const ito::uint16& address, const ito::uint8& subindex, T& answer);
     template <typename T> ito::RetVal parseResponse(QByteArray& response, T& parsedResponse);
 
     // SET REGISTER
@@ -131,6 +131,14 @@ private:
         const int& value,
         const int& length,
         int& answer);
+
+    template <typename T>
+    ito::RetVal setRegisterWithParsedResponse(
+        const ito::uint16& address,
+        const ito::uint8& subindex,
+        const ito::uint32& value,
+        const ito::uint8& length,
+        T& answer);
 
     // CONTROL WORD
     void setControlWord(const uint16_t word);
@@ -169,25 +177,26 @@ private:
     ito::RetVal getTargetPosMCS(ito::int32& pos);
 
     ito::RetVal getMaxMotorSpeed(ito::uint32& speed);
-    ito::RetVal setMaxMotorSpeed(const int& speed, int& newSpeed);
+    ito::RetVal setMaxMotorSpeed(const ito::uint32& speed, ito::uint32& newSpeed);
 
     ito::RetVal getAcceleration(ito::uint32& acceleration);
-    ito::RetVal setAcceleration(const int& acceleration, int& newAcceleration);
+    ito::RetVal setAcceleration(const ito::uint32& acceleration, ito::uint32& newAcceleration);
 
     ito::RetVal getDeceleration(ito::uint32& deceleration);
-    ito::RetVal setDeceleration(const int& deceleration, int& newDeceleration);
+    ito::RetVal setDeceleration(const ito::uint32& deceleration, ito::uint32& newDeceleration);
 
     ito::RetVal getQuickStopDeceleration(ito::uint32& deceleration);
-    ito::RetVal setQuickStopDeceleration(const int& deceleration, int& newDeceleration);
+    ito::RetVal setQuickStopDeceleration(
+        const ito::uint32& deceleration, ito::uint32& newDeceleration);
 
     ito::RetVal getProfileVelocity(ito::uint32& speed);
-    ito::RetVal setProfileVelocity(const int& speed, int& newSpeed);
+    ito::RetVal setProfileVelocity(const ito::uint32& speed, ito::uint32& newSpeed);
 
     ito::RetVal getOperationMode(ito::int8& mode);
-    ito::RetVal setOperationMode(const int& mode, ito::int8& newMode);
+    ito::RetVal setOperationMode(const ito::int8& mode, ito::int8& newMode);
 
     ito::RetVal getTorqueLimits(ito::uint16 limits[]);
-    ito::RetVal setTorqueLimits(const int limits[], int newLimits[]);
+    ito::RetVal setTorqueLimits(const ito::uint32 limits[], ito::uint32 newLimits[]);
 
     ito::RetVal updateStatusMCS();
 

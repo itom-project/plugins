@@ -709,7 +709,8 @@ ito::RetVal FaulhaberMCS::init(
     if (!retValue.containsError())
     {
         ito::int8 mode;
-        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), mode);
+        retValue +=
+            setOperationMode(static_cast<ito::int8>(m_params["operationMode"].getVal<int>()), mode);
         if (!retValue.containsError())
         {
             m_params["operationMode"].setVal<int>(mode);
@@ -1061,8 +1062,8 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "maxMotorSpeed")
         {
-            int speed;
-            retValue += setMaxMotorSpeed((uint32_t)val->getVal<int>(), speed);
+            ito::uint32 speed;
+            retValue += setMaxMotorSpeed(static_cast<ito::uint32>(val->getVal<int>()), speed);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1070,8 +1071,8 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "profileVelocity")
         {
-            int velocity;
-            retValue += setProfileVelocity(val->getVal<int>(), velocity);
+            ito::uint32 velocity;
+            retValue += setProfileVelocity(static_cast<ito::uint32>(val->getVal<int>()), velocity);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1079,8 +1080,8 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "acceleration")
         {
-            int acceleration;
-            retValue += setAcceleration(val->getVal<int>(), acceleration);
+            ito::uint32 acceleration;
+            retValue += setAcceleration(static_cast<ito::uint32>(val->getVal<int>()), acceleration);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1088,8 +1089,8 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "deceleration")
         {
-            int deceleration;
-            retValue += setDeceleration(val->getVal<int>(), deceleration);
+            ito::uint32 deceleration;
+            retValue += setDeceleration(static_cast<ito::uint32>(val->getVal<int>()), deceleration);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1097,8 +1098,9 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "quickStopDeceleration")
         {
-            int deceleration;
-            retValue += setQuickStopDeceleration(val->getVal<int>(), deceleration);
+            ito::uint32 deceleration;
+            retValue += setQuickStopDeceleration(
+                static_cast<ito::uint32>(val->getVal<int>()), deceleration);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1106,9 +1108,9 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "torqueLimits")
         {
-            int newLimits[] = {0, 0};
-            retValue += setTorqueLimits(val->getVal<int*>(), newLimits);
-
+            ito::uint32 newLimits[] = {0, 0};
+            ito::uint32 uint32Val = static_cast<ito::uint32>(*val->getVal<int*>());
+            retValue += setTorqueLimits(&uint32Val, newLimits);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1163,17 +1165,17 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegister(
-    const uint16_t& address, const uint8_t& subindex, QByteArray& response)
+    const ito::uint16& address, const ito::uint8& subindex, QByteArray& response)
 {
     ito::RetVal retValue = ito::retOk;
 
-    std::vector<uint8_t> command = {
+    std::vector<ito::uint8> command = {
         m_node,
         m_GET,
-        static_cast<uint8_t>(address & 0xFF),
-        static_cast<uint8_t>(address >> 8),
+        static_cast<ito::uint8>(address & 0xFF),
+        static_cast<ito::uint8>(address >> 8),
         subindex};
-    std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
+    std::vector<ito::uint8> fullCommand = {static_cast<ito::uint8>(command.size() + 2)};
     fullCommand.insert(fullCommand.end(), command.begin(), command.end());
 
     QByteArray CRC(reinterpret_cast<const char*>(fullCommand.data()), fullCommand.size());
@@ -1229,7 +1231,7 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
 
     setRegister(address, subindex, value, length);
     // retVal += readRegisterWithAnswerInteger(address, subindex, answer);
-    // TODO
+    //  TODO
 
     QElapsedTimer timer;
     timer.start();
@@ -1993,10 +1995,9 @@ ito::RetVal FaulhaberMCS::getMaxMotorSpeed(ito::uint32& speed)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const int& speed, int& newSpeed)
+ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const ito::uint32& speed, ito::uint32& newSpeed)
 {
-    ito::uint32 s = static_cast<uint32_t>(speed);
-    return setRegisterWithAnswerInteger(0x6080, 0x00, s, sizeof(s), newSpeed);
+    return setRegisterWithParsedResponse<ito::uint32>(0x6080, 0x00, speed, sizeof(speed), newSpeed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2005,10 +2006,11 @@ ito::RetVal FaulhaberMCS::getAcceleration(ito::uint32& acceleration)
     return readRegisterWithParsedResponse<ito::uint32>(0x6083, 0x00, acceleration);
 }
 
-ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration, int& newAcceleration)
+ito::RetVal FaulhaberMCS::setAcceleration(
+    const ito::uint32& acceleration, ito::uint32& newAcceleration)
 {
-    ito::uint32 a = static_cast<uint32_t>(acceleration);
-    return setRegisterWithAnswerInteger(0x6083, 0x00, a, sizeof(a), newAcceleration);
+    return setRegisterWithParsedResponse<ito::uint32>(
+        0x6083, 0x00, acceleration, sizeof(acceleration), newAcceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2018,10 +2020,11 @@ ito::RetVal FaulhaberMCS::getDeceleration(ito::uint32& deceleration)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setDeceleration(const int& deceleration, int& newDeceleration)
+ito::RetVal FaulhaberMCS::setDeceleration(
+    const ito::uint32& deceleration, ito::uint32& newDeceleration)
 {
-    ito::uint32 d = static_cast<uint32_t>(deceleration);
-    return setRegisterWithAnswerInteger(0x6084, 0x00, d, sizeof(d), newDeceleration);
+    return setRegisterWithParsedResponse<ito::uint32>(
+        0x6084, 0x00, deceleration, sizeof(deceleration), newDeceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2031,10 +2034,11 @@ ito::RetVal FaulhaberMCS::getQuickStopDeceleration(ito::uint32& deceleration)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration, int& newDeceleration)
+ito::RetVal FaulhaberMCS::setQuickStopDeceleration(
+    const ito::uint32& deceleration, ito::uint32& newDeceleration)
 {
-    ito::uint32 d = static_cast<uint32_t>(deceleration);
-    return setRegisterWithAnswerInteger(0x6085, 0x00, d, sizeof(d), newDeceleration);
+    return setRegisterWithParsedResponse<ito::uint32>(
+        0x6085, 0x00, deceleration, sizeof(deceleration), newDeceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2044,10 +2048,28 @@ ito::RetVal FaulhaberMCS::getProfileVelocity(ito::uint32& speed)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setProfileVelocity(const int& speed, int& newSpeed)
+ito::RetVal FaulhaberMCS::setProfileVelocity(const ito::uint32& speed, ito::uint32& newSpeed)
 {
-    ito::uint32 s = static_cast<ito::uint32>(speed);
-    return setRegisterWithAnswerInteger(0x6081, 0x00, s, sizeof(s), newSpeed);
+    ito::RetVal retVal = ito::retOk;
+    ito::uint32 maxSpeed = static_cast<ito::uint32>(m_params["maxMotorSpeed"].getVal<int>());
+    if (speed > maxSpeed)
+    {
+        retVal += setRegisterWithParsedResponse<ito::uint32>(
+            0x6081, 0x00, maxSpeed, sizeof(maxSpeed), newSpeed);
+        retVal += ito::RetVal(
+            ito::retWarning,
+            0,
+            tr("Speed is higher than maxMotorSpeed. Speed is set to maxMotorSpeed of value '%1'.")
+                .arg(maxSpeed)
+                .toLatin1()
+                .data());
+    }
+    else
+    {
+        retVal += setRegisterWithParsedResponse<ito::uint32>(
+            0x6081, 0x00, speed, sizeof(speed), newSpeed);
+    }
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2057,37 +2079,9 @@ ito::RetVal FaulhaberMCS::getOperationMode(ito::int8& mode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setOperationMode(const int& mode, ito::int8& newMode)
+ito::RetVal FaulhaberMCS::setOperationMode(const ito::int8& mode, ito::int8& newMode)
 {
-    ito::RetVal retVal = ito::retOk;
-
-    setRegister(0x6060, 0x00, static_cast<uint8_t>(mode), 1);
-    retVal += getOperationMode(newMode);
-
-    QElapsedTimer timer;
-    timer.start();
-
-    while (newMode != mode)
-    {
-        retVal += updateStatusMCS();
-        isAlive();
-        retVal += getOperationMode(newMode);
-
-        if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
-        {
-            retVal += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Timeout occurred during setting operation mode to %1. Current mode is %2")
-                    .arg(mode)
-                    .arg(newMode)
-                    .toLatin1()
-                    .data());
-            break;
-        }
-    }
-
-    return retVal;
+    return setRegisterWithParsedResponse<ito::int8>(0x6060, 0x00, mode, sizeof(mode), newMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2101,22 +2095,20 @@ ito::RetVal FaulhaberMCS::getTorqueLimits(ito::uint16 limits[])
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
+ito::RetVal FaulhaberMCS::setTorqueLimits(const ito::uint32 limits[], ito::uint32 newLimits[])
 {
     ito::RetVal retVal = ito::retOk;
-    ito::uint16 negative = static_cast<uint16_t>(limits[0]);
-    ito::uint16 positive = static_cast<uint16_t>(limits[1]);
-
-    retVal += setRegisterWithAnswerInteger(0x60E0, 0x00, negative, sizeof(negative), newLimits[0]);
-    retVal += setRegisterWithAnswerInteger(0x60E1, 0x00, positive, sizeof(positive), newLimits[1]);
+    retVal += setRegisterWithParsedResponse<ito::uint32>(
+        0x60E0, 0x00, limits[0], sizeof(limits[0]), newLimits[0]);
+    retVal += setRegisterWithParsedResponse<ito::uint32>(
+        0x60E1, 0x00, limits[1], sizeof(limits[1]), newLimits[1]);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
-    ito::RetVal retVal =
-        readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
+    ito::RetVal retVal = readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
 
     if (!retVal.containsError())
     {
@@ -2133,8 +2125,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
             waitMutex.unlock();
             setAlive();
 
-            retVal +=
-                readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
+            retVal += readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
 
             if (retVal.containsError())
             {
@@ -2451,7 +2442,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
 inline ito::RetVal FaulhaberMCS::readRegisterWithParsedResponse(
-    const uint16_t& address, const uint8_t& subindex, T& answer)
+    const ito::uint16& address, const ito::uint8& subindex, T& answer)
 {
     QByteArray response;
     ito::RetVal retValue = readRegister(address, subindex, response);
@@ -2462,22 +2453,22 @@ inline ito::RetVal FaulhaberMCS::readRegisterWithParsedResponse(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-ito::RetVal FaulhaberMCS::parseResponse(
-    QByteArray& response, T& parsedResponse)
+ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
     QByteArray data = "";
     qsizetype size = response.size();
     ito::uint8 checkCRC;
 
-    uint8_t CharS = static_cast<uint8_t>(response[0]);
-    uint8_t length = static_cast<uint8_t>(response[1]);
-    uint8_t nodeNumber = static_cast<uint8_t>(response[2]);
-    uint8_t command = static_cast<uint8_t>(response[3]);
-    uint16_t index = static_cast<uint8_t>(response[4]) | (static_cast<uint8_t>(response[5]) << 8);
-    uint8_t subIndex = static_cast<uint8_t>(response[6]);
-    uint8_t recievedCRC;
-    uint8_t CharE = static_cast<uint8_t>(response[response.size() - 1]);
+    ito::uint8 CharS = static_cast<ito::uint8>(response[0]);
+    ito::uint8 length = static_cast<ito::uint8>(response[1]);
+    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
+    ito::uint8 command = static_cast<ito::uint8>(response[3]);
+    ito::uint16 index =
+        static_cast<ito::uint8>(response[4]) | (static_cast<ito::uint8>(response[5]) << 8);
+    ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
+    ito::uint8 recievedCRC;
+    ito::uint8 CharE = static_cast<ito::uint8>(response[response.size() - 1]);
 
     if (!retValue.containsError())
     {
@@ -2485,12 +2476,12 @@ ito::RetVal FaulhaberMCS::parseResponse(
         {
             if (length == 7) // SDO read parameter request
             {
-                recievedCRC = static_cast<uint8_t>(response[7]);
+                recievedCRC = static_cast<ito::uint8>(response[7]);
                 checkCRC = calculateChecksum(response.mid(1, size + 1));
             }
             else // SDO read parameter response
             {
-                recievedCRC = static_cast<uint8_t>(response[size - 2]);
+                recievedCRC = static_cast<ito::uint8>(response[size - 2]);
                 checkCRC = calculateChecksum(response.mid(1, size - 3));
                 data = response.mid(7, response.indexOf(CharE) - 7);
             }
@@ -2535,7 +2526,7 @@ ito::RetVal FaulhaberMCS::parseResponse(
         }
         else if (command == 0x02)
         {
-            recievedCRC = static_cast<uint8_t>(response[7]);
+            recievedCRC = static_cast<ito::uint8>(response[7]);
             checkCRC = calculateChecksum(response.mid(1, response.indexOf(CharE) - 2));
             if (recievedCRC != checkCRC)
             {
@@ -2572,7 +2563,7 @@ ito::RetVal FaulhaberMCS::parseResponse(
                 ito::retError,
                 0,
                 tr("Unknown command received: %1")
-                    .arg(static_cast<uint8_t>(command))
+                    .arg(static_cast<ito::uint8>(command))
                     .toLatin1()
                     .data());
         }
@@ -2583,16 +2574,65 @@ ito::RetVal FaulhaberMCS::parseResponse(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-uint8_t FaulhaberMCS::calculateChecksum(const QByteArray& message)
+template <typename T>
+ito::RetVal FaulhaberMCS::setRegisterWithParsedResponse(
+    const ito::uint16& address,
+    const ito::uint8& subindex,
+    const ito::uint32& value,
+    const ito::uint8& length,
+    T& answer)
 {
-    uint8_t calcCRC = 0xFF;
+    ito::RetVal retVal = ito::retOk;
+
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+
+    setRegister(address, subindex, value, length);
+    retVal += readRegisterWithParsedResponse<T>(address, subindex, answer);
+
+    QElapsedTimer timer;
+    timer.start();
+
+    while (answer != value)
+    {
+        retVal += updateStatusMCS();
+
+        // short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+        waitMutex.unlock();
+        setAlive();
+
+        retVal += readRegisterWithParsedResponse<T>(address, subindex, answer);
+
+        if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Timeout occurred during setting register %1 to %2")
+                    .arg(address)
+                    .arg(value)
+                    .toLatin1()
+                    .data());
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::uint8 FaulhaberMCS::calculateChecksum(const QByteArray& message)
+{
+    ito::uint8 calcCRC = 0xFF;
     int len = message.size(); // Get the length of the QByteArray
 
     for (int i = 0; i < len; i++)
     {
         calcCRC = calcCRC ^
-            static_cast<uint8_t>(message[i]); // Access QByteArray data and cast to uint8_t
-        for (uint8_t j = 0; j < 8; j++)
+            static_cast<ito::uint8>(message[i]); // Access QByteArray data and cast to uint8_t
+        for (ito::uint8 j = 0; j < 8; j++)
         {
             if (calcCRC & 0x01)
                 calcCRC = (calcCRC >> 1) ^ 0xd5;
