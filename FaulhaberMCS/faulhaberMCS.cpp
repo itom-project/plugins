@@ -43,6 +43,8 @@
 
 #include "dockWidgetFaulhaberMCS.h"
 
+QList<ito::uint8> FaulhaberMCS::openedNodes = QList<ito::uint8>();
+
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCSInterface::FaulhaberMCSInterface()
 {
@@ -105,7 +107,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 FaulhaberMCS::FaulhaberMCS() :
     AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
-    m_waitForMCSTimeout(3000)
+    m_waitForMCSTimeout(3000), m_nodeAppended(false)
 {
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
@@ -541,8 +543,60 @@ ito::RetVal FaulhaberMCS::init(
     {
         // Us given SerialIO instance
         m_pSerialIO = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
+
+        QSharedPointer<ito::Param> val(new ito::Param("port"));
+        retValue += m_pSerialIO->getParam(val, NULL);
+
+        if (!retValue.containsError())
+        {
+            m_port = val->getVal<int>();
+        }
         m_node = (uint8_t)paramsMand->at(1).getVal<int>();
-        // TODO m_node for several motor as static container
+        if (openedNodes.contains(m_node))
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("An instance of noder number '%1' is already open.")
+                    .arg(m_node)
+                    .toLatin1()
+                    .data());
+        }
+        else
+        {
+            ito::uint8 node;
+            retValue += getNodeID(node);
+            if (!retValue.containsError())
+            {
+                if (node != m_node)
+                {
+                    retValue = ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("The node number of the device is '%1' and not '%2'.")
+                            .arg(node)
+                            .arg(m_node)
+                            .toLatin1()
+                            .data());
+                }
+                else
+                {
+                    openedNodes.append(m_node);
+                    m_nodeAppended = true;
+                }
+            }
+            else
+            {
+                retValue = ito::RetVal(
+                    ito::retError,
+                    999,
+                    tr("No device found for serialIO port '%1' and node '%2'.")
+                        .arg(m_port)
+                        .arg(m_node)
+                        .toLatin1()
+                        .data());
+            }
+        }
     }
     else
     {
@@ -753,9 +807,16 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    shutDown();
-    disableOperation();
-    stop();
+    if (m_nodeAppended)
+    {
+        openedNodes.removeOne(m_node);
+        if (openedNodes.isEmpty())
+        {
+            shutDown();
+            disableOperation();
+            stop();
+        }
+    }
 
     if (waitCond)
     {
@@ -782,8 +843,8 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
 
     if (retValue == ito::retOk)
     {
-        // gets the parameter key from m_params map (read-only is allowed, since we only want to get
-        // the value).
+        // gets the parameter key from m_params map (read-only is allowed, since we only want to
+        // get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
@@ -915,7 +976,8 @@ ito::RetVal FaulhaberMCS::setParam(
 
     if (!retValue.containsError())
     {
-        // here the new parameter is checked whether its type corresponds or can be cast into the
+        // here the new parameter is checked whether its type corresponds or can be cast into
+        // the
         //  value in m_params and whether the new type fits to the requirements of any possible
         //  meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
@@ -1385,9 +1447,9 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setOrigin
 /*!
-    the given axis should be set to origin. That means (if possible) its current position should be
-    considered to be the new origin (zero-position). If this operation is not possible, return a
-    warning.
+    the given axis should be set to origin. That means (if possible) its current position should
+   be considered to be the new origin (zero-position). If this operation is not possible, return
+   a warning.
 */
 ito::RetVal FaulhaberMCS::setOrigin(const int axis, ItomSharedSemaphore* waitCond)
 {
@@ -1397,9 +1459,9 @@ ito::RetVal FaulhaberMCS::setOrigin(const int axis, ItomSharedSemaphore* waitCon
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setOrigin
 /*!
-    the given axes should be set to origin. That means (if possible) their current position should
-   be considered to be the new origin (zero-position). If this operation is not possible, return a
-    warning.
+    the given axes should be set to origin. That means (if possible) their current position
+   should be considered to be the new origin (zero-position). If this operation is not possible,
+   return a warning.
 */
 ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
@@ -1444,9 +1506,9 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getStatus
 /*!
-    re-checks the status (current position, available, end switch reached, moving, at target...) of
-   all axes and returns the status of each axis as vector. Each status is an or-combination of the
-   enumeration ito::tActuatorStatus.
+    re-checks the status (current position, available, end switch reached, moving, at target...)
+   of all axes and returns the status of each axis as vector. Each status is an or-combination
+   of the enumeration ito::tActuatorStatus.
 */
 ito::RetVal FaulhaberMCS::getStatus(
     QSharedPointer<QVector<int>> status, ItomSharedSemaphore* waitCond)
@@ -1537,8 +1599,8 @@ ito::RetVal FaulhaberMCS::getPos(
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if the axis reached the given target position (async = 0)
 
-    In some cases only relative movements are possible, then get the current position, determine the
-    relative movement and call the method relatively move the axis.
+    In some cases only relative movements are possible, then get the current position, determine
+   the relative movement and call the method relatively move the axis.
 */
 ito::RetVal FaulhaberMCS::setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
@@ -1553,8 +1615,8 @@ ito::RetVal FaulhaberMCS::setPosAbs(const int axis, const double pos, ItomShared
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if all axes reached their given target positions (async = 0)
 
-    In some cases only relative movements are possible, then get the current position, determine the
-    relative movement and call the method relatively move the axis.
+    In some cases only relative movements are possible, then get the current position, determine
+   the relative movement and call the method relatively move the axis.
 */
 ito::RetVal FaulhaberMCS::setPosAbs(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
@@ -1638,8 +1700,8 @@ ito::RetVal FaulhaberMCS::setPosAbs(
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if the axis reached the given target position (async = 0)
 
-    In some cases only absolute movements are possible, then get the current position, determine the
-    new absolute target position and call setPosAbs with this absolute target position.
+    In some cases only absolute movements are possible, then get the current position, determine
+   the new absolute target position and call setPosAbs with this absolute target position.
 */
 ito::RetVal FaulhaberMCS::setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
@@ -1654,8 +1716,9 @@ ito::RetVal FaulhaberMCS::setPosRel(const int axis, const double pos, ItomShared
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if all axes reached the given target positions (async = 0)
 
-    In some cases only absolute movements are possible, then get the current positions, determine
-   the new absolute target positions and call setPosAbs with these absolute target positions.
+    In some cases only absolute movements are possible, then get the current positions,
+   determine the new absolute target positions and call setPosAbs with these absolute target
+   positions.
 */
 ito::RetVal FaulhaberMCS::setPosRel(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
@@ -1773,9 +1836,6 @@ ito::RetVal FaulhaberMCS::execFunc(
 
         retValue += setRegisterWithAnswerInteger(0x607c, 0x00, offset, sizeof(offset), answerInt);
 
-        int velocity;
-        retValue += readRegisterWithAnswerInteger(0x6099, 0x01, velocity);
-
         retValue += setRegisterWithAnswerInteger(
             0x6099, 0x01, switchSeekVelocity, sizeof(switchSeekVelocity), answerInt);
         retValue +=
@@ -1885,6 +1945,11 @@ ito::RetVal FaulhaberMCS::getFirmware(QString& version)
 ito::RetVal FaulhaberMCS::getAmbientTemperature(ito::uint8& temp)
 {
     return new_readRegisterWithAnswerIntegerTemplate<ito::uint8>(0x232A, 0x08, temp);
+}
+
+ito::RetVal FaulhaberMCS::getNodeID(ito::uint8& id)
+{
+    return new_readRegisterWithAnswerIntegerTemplate<ito::uint8>(0x2400, 0x03, id);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2285,7 +2350,7 @@ ito::RetVal FaulhaberMCS::updateStatus()
     // connected slots about the current status and position
     sendStatusUpdate();
 
-    return ito::retOk;
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2436,44 +2501,13 @@ ito::RetVal FaulhaberMCS::new_readResponse(QByteArray& result)
 
         if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
         {
-            return ito::RetVal(
+            retValue += ito::RetVal(
                 ito::retError,
                 m_delayAfterSendCommandMS,
                 tr("timeout during read string.").toLatin1().data());
+            return retValue;
         }
     }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readRegisterWithAnswerString(
-    const uint16_t& address, const uint8_t& subindex, QString& answer)
-{
-    ito::RetVal retValue = ito::retOk;
-    std::vector<int> registerValue;
-
-    retValue += readRegister(address, subindex, registerValue);
-
-    if (!retValue.containsError())
-    {
-        QByteArray byteArray(
-            reinterpret_cast<const char*>(registerValue.data()), registerValue.size());
-        answer = QString::fromUtf8(byteArray);
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
-    const uint16_t& address, const uint8_t& subindex, int& answer)
-{
-    ito::RetVal retValue = ito::retOk;
-    std::vector<int> registerValue;
-
-    retValue += readRegister(address, subindex, registerValue);
-
-    answer = responseVectorToInteger(registerValue);
-
     return retValue;
 }
 
@@ -2495,6 +2529,9 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
     QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
+    QByteArray data = "";
+    qsizetype size = response.size();
+    ito::uint8 checkCRC;
 
     uint8_t CharS = static_cast<uint8_t>(response[0]);
     uint8_t length = static_cast<uint8_t>(response[1]);
@@ -2504,7 +2541,6 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
     uint8_t subIndex = static_cast<uint8_t>(response[6]);
     uint8_t recievedCRC;
     uint8_t CharE = static_cast<uint8_t>(response[response.size() - 1]);
-    QByteArray data = "";
 
     if (!retValue.containsError())
     {
@@ -2513,20 +2549,21 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
             if (length == 7) // SDO read parameter request
             {
                 recievedCRC = static_cast<uint8_t>(response[7]);
+                checkCRC = new_CalcCRC(response.mid(1, size + 1));
             }
             else // SDO read parameter response
             {
-                qsizetype size = response.size();
                 recievedCRC = static_cast<uint8_t>(response[size - 2]);
+                checkCRC = new_CalcCRC(response.mid(1, size - 3));
                 data = response.mid(7, response.indexOf(CharE) - 7);
             }
 
-            if (recievedCRC != new_CalcCRC(response.mid(1, response.size() - 3)))
+            if (recievedCRC != checkCRC)
             {
                 retValue +=
                     ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toLatin1().data());
             }
-            else if (length == 7)
+            else if (length == 7) // TODO delete later
             {
                 std::cout << "Length == 7 \n" << std::endl;
             }
@@ -2559,9 +2596,15 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
                 }
             }
         }
-        else if (command == 0x02) // SDO write request
+        else if (command == 0x02)
         {
-            std::cout << "SDO write request \n" << std::endl;
+            recievedCRC = static_cast<uint8_t>(response[7]);
+            checkCRC = new_CalcCRC(response.mid(1, response.indexOf(CharE) - 2));
+            if (recievedCRC != checkCRC)
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toLatin1().data());
+            }
         }
         else if (command == 0x03) // SDO abort request of error response
         {
@@ -2616,7 +2659,8 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
     QWaitCondition waitCondition;
 
     setRegister(address, subindex, value, length);
-    retVal += readRegisterWithAnswerInteger(address, subindex, answer);
+    // retVal += readRegisterWithAnswerInteger(address, subindex, answer);
+    // TODO
 
     QElapsedTimer timer;
     timer.start();
@@ -2650,6 +2694,20 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
     return retVal;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
+    const uint16_t& address, const uint8_t& subindex, int& answer)
+{
+    ito::RetVal retValue = ito::retOk;
+    std::vector<int> registerValue;
+
+    retValue += readRegister(address, subindex, registerValue);
+
+    answer = responseVectorToInteger(registerValue);
+
+    return retValue;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)

@@ -73,6 +73,7 @@ public:
 
 private:
     ito::AddInDataIO* m_pSerialIO;
+    static QList<ito::uint8> openedNodes;
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
@@ -80,9 +81,11 @@ private:
     int m_numOfAxes;
     int m_waitForDoneTimeout;
     int m_waitForMCSTimeout;
+    int m_port;
     ito::uint16 m_statusWord;
 
     ito::uint8 m_node;
+    bool m_nodeAppended;
 
     ito::uint8 m_S = 0x53;
     ito::uint8 m_E = 0x45;
@@ -115,14 +118,10 @@ private:
     // READ REGISTER
     ito::RetVal readRegister(
         const uint16_t& address, const uint8_t& subindex, std::vector<int>& response);
-
-    ito::RetVal new_readRegister(
-        const uint16_t& address, const uint8_t& subindex, QByteArray& response);
-
-    ito::RetVal readRegisterWithAnswerString(
-        const uint16_t& address, const uint8_t& subindex, QString& answer);
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
+    ito::RetVal new_readRegister(
+        const uint16_t& address, const uint8_t& subindex, QByteArray& response);
 
     template <typename T>
     ito::RetVal new_readRegisterWithAnswerIntegerTemplate(
@@ -174,6 +173,7 @@ private:
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getFirmware(QString& version);
     ito::RetVal getAmbientTemperature(ito::uint8& temp);
+    ito::RetVal getNodeID(ito::uint8& id);
 
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);
