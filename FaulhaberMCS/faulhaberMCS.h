@@ -103,31 +103,21 @@ private:
     // SeralIO functions
     ito::RetVal sendCommand(const QByteArray& command);
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
-    ito::RetVal new_sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
 
     ito::RetVal readResponse(QByteArray& result);
-    ito::RetVal new_readResponse(QByteArray& result);
     ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
 
-
-    uint8_t checksum(const std::vector<uint8_t>& message);
-
-    uint8_t new_CalcCRC(const QByteArray& message);
-    bool verifyCRC(QByteArray& message, ito::uint8& receivedCRC);
+    uint8_t calculateChecksum(const QByteArray& message);
+    bool verifyChecksum(QByteArray& message, ito::uint8& receivedCRC);
 
     // READ REGISTER
     ito::RetVal readRegister(
-        const uint16_t& address, const uint8_t& subindex, std::vector<int>& response);
-    ito::RetVal readRegisterWithAnswerInteger(
-        const uint16_t& address, const uint8_t& subindex, int& answer);
-    ito::RetVal new_readRegister(
         const uint16_t& address, const uint8_t& subindex, QByteArray& response);
 
     template <typename T>
-    ito::RetVal new_readRegisterWithAnswerIntegerTemplate(
+    ito::RetVal readRegisterWithParsedResponse(
         const uint16_t& address, const uint8_t& subindex, T& answer);
-    template <typename T>
-    ito::RetVal new_parseResponseToIntegerTemplate(QByteArray& response, T& parsedResponse);
+    template <typename T> ito::RetVal parseResponse(QByteArray& response, T& parsedResponse);
 
     // SET REGISTER
     void setRegister(

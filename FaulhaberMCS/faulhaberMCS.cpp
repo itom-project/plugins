@@ -621,6 +621,7 @@ ito::RetVal FaulhaberMCS::init(
     {
         shutDown();
         resetCommunication();
+        Sleep(100);
         startAll();
         retValue += updateStatusMCS();
 
@@ -1162,42 +1163,10 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegister(
-    const uint16_t& address, const uint8_t& subindex, std::vector<int>& response)
-{
-    ito::RetVal retValue = ito::retOk;
-
-    // Combine command
-    std::vector<uint8_t> command = {
-        m_node,
-        m_GET,
-        static_cast<uint8_t>(address & 0xFF),
-        static_cast<uint8_t>(address >> 8),
-        subindex};
-    std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
-    fullCommand.insert(fullCommand.end(), command.begin(), command.end());
-    fullCommand.push_back(checksum(fullCommand));
-    fullCommand.insert(fullCommand.begin(), m_S);
-    fullCommand.push_back(m_E);
-
-    QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
-    QByteArray answer;
-    retValue += sendCommandAndGetResponse(data, answer);
-
-    if (!retValue.containsError())
-    {
-        retValue += parseResponse(answer, response);
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::new_readRegister(
     const uint16_t& address, const uint8_t& subindex, QByteArray& response)
 {
     ito::RetVal retValue = ito::retOk;
 
-    // Combine command
     std::vector<uint8_t> command = {
         m_node,
         m_GET,
@@ -1206,13 +1175,16 @@ ito::RetVal FaulhaberMCS::new_readRegister(
         subindex};
     std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
     fullCommand.insert(fullCommand.end(), command.begin(), command.end());
-    fullCommand.push_back(checksum(fullCommand));
+
+    QByteArray CRC(reinterpret_cast<const char*>(fullCommand.data()), fullCommand.size());
+
+    fullCommand.push_back(calculateChecksum(CRC));
     fullCommand.insert(fullCommand.begin(), m_S);
     fullCommand.push_back(m_E);
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
 
-    return new_sendCommandAndGetResponse(data, response);
+    return sendCommandAndGetResponse(data, response);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1233,12 +1205,62 @@ void FaulhaberMCS::setRegister(
 
     std::vector<uint8_t> fullCommand = {static_cast<uint8_t>(command.size() + 2)};
     fullCommand.insert(fullCommand.end(), command.begin(), command.end());
-    fullCommand.push_back(checksum(fullCommand));
+    QByteArray CRC(reinterpret_cast<const char*>(fullCommand.data()), fullCommand.size());
+    fullCommand.push_back(calculateChecksum(CRC));
     fullCommand.insert(fullCommand.begin(), m_S);
     fullCommand.push_back(m_E);
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
     sendCommand(data);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
+    const uint16_t& address,
+    const uint8_t& subindex,
+    const int& value,
+    const int& length,
+    int& answer)
+{
+    ito::RetVal retVal = ito::retOk;
+
+    QMutex waitMutex;
+    QWaitCondition waitCondition;
+
+    setRegister(address, subindex, value, length);
+    // retVal += readRegisterWithAnswerInteger(address, subindex, answer);
+    // TODO
+
+    QElapsedTimer timer;
+    timer.start();
+
+    while (answer != value)
+    {
+        retVal += updateStatusMCS();
+
+        // short delay
+        waitMutex.lock();
+        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+        waitMutex.unlock();
+        setAlive();
+
+        // retVal += readRegisterWithAnswerInteger(address, subindex, answer);
+
+        if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Timeout occurred during setting register %1 to %2")
+                    .arg(address)
+                    .arg(value)
+                    .toLatin1()
+                    .data());
+            break;
+        }
+    }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1897,7 +1919,7 @@ ito::RetVal FaulhaberMCS::execFunc(
 ito::RetVal FaulhaberMCS::getSerialNumber(QString& serialNum)
 {
     ito::uint32 c;
-    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x04, c);
+    ito::RetVal retVal = readRegisterWithParsedResponse<ito::uint32>(0x1018, 0x04, c);
     serialNum = QString::number(c);
     return retVal;
 }
@@ -1905,14 +1927,14 @@ ito::RetVal FaulhaberMCS::getSerialNumber(QString& serialNum)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeviceName(QString& name)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<QString>(0x1008, 0x00, name);
+    return readRegisterWithParsedResponse<QString>(0x1008, 0x00, name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getVendorID(QString& id)
 {
     ito::uint32 c;
-    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x01, c);
+    ito::RetVal retVal = readRegisterWithParsedResponse<ito::uint32>(0x1018, 0x01, c);
     id = QString::number(c);
     return retVal;
 }
@@ -1921,7 +1943,7 @@ ito::RetVal FaulhaberMCS::getVendorID(QString& id)
 ito::RetVal FaulhaberMCS::getProductCode(QString& code)
 {
     ito::uint32 c;
-    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x02, c);
+    ito::RetVal retVal = readRegisterWithParsedResponse<ito::uint32>(0x1018, 0x02, c);
     code = QString::number(c);
     return retVal;
 }
@@ -1930,7 +1952,7 @@ ito::RetVal FaulhaberMCS::getProductCode(QString& code)
 ito::RetVal FaulhaberMCS::getRevisionNumber(QString& num)
 {
     ito::uint32 c;
-    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x03, c);
+    ito::RetVal retVal = readRegisterWithParsedResponse<ito::uint32>(0x1018, 0x03, c);
     num = QString::number(c);
     return retVal;
 }
@@ -1938,36 +1960,36 @@ ito::RetVal FaulhaberMCS::getRevisionNumber(QString& num)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getFirmware(QString& version)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<QString>(0x100A, 0x00, version);
+    return readRegisterWithParsedResponse<QString>(0x100A, 0x00, version);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getAmbientTemperature(ito::uint8& temp)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint8>(0x232A, 0x08, temp);
+    return readRegisterWithParsedResponse<ito::uint8>(0x232A, 0x08, temp);
 }
 
 ito::RetVal FaulhaberMCS::getNodeID(ito::uint8& id)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint8>(0x2400, 0x03, id);
+    return readRegisterWithParsedResponse<ito::uint8>(0x2400, 0x03, id);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::int32>(0x6064, 0x00, pos);
+    return readRegisterWithParsedResponse<ito::int32>(0x6064, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTargetPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::int32>(0x6062, 0x00, pos);
+    return readRegisterWithParsedResponse<ito::int32>(0x6062, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getMaxMotorSpeed(ito::uint32& speed)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x6080, 0x00, speed);
+    return readRegisterWithParsedResponse<ito::uint32>(0x6080, 0x00, speed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1980,7 +2002,7 @@ ito::RetVal FaulhaberMCS::setMaxMotorSpeed(const int& speed, int& newSpeed)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getAcceleration(ito::uint32& acceleration)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x6083, 0x00, acceleration);
+    return readRegisterWithParsedResponse<ito::uint32>(0x6083, 0x00, acceleration);
 }
 
 ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration, int& newAcceleration)
@@ -1992,7 +2014,7 @@ ito::RetVal FaulhaberMCS::setAcceleration(const int& acceleration, int& newAccel
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeceleration(ito::uint32& deceleration)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x6084, 0x00, deceleration);
+    return readRegisterWithParsedResponse<ito::uint32>(0x6084, 0x00, deceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2005,7 +2027,7 @@ ito::RetVal FaulhaberMCS::setDeceleration(const int& deceleration, int& newDecel
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getQuickStopDeceleration(ito::uint32& deceleration)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x6085, 0x00, deceleration);
+    return readRegisterWithParsedResponse<ito::uint32>(0x6085, 0x00, deceleration);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2018,7 +2040,7 @@ ito::RetVal FaulhaberMCS::setQuickStopDeceleration(const int& deceleration, int&
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getProfileVelocity(ito::uint32& speed)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x6081, 0x00, speed);
+    return readRegisterWithParsedResponse<ito::uint32>(0x6081, 0x00, speed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2031,7 +2053,7 @@ ito::RetVal FaulhaberMCS::setProfileVelocity(const int& speed, int& newSpeed)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getOperationMode(ito::int8& mode)
 {
-    return new_readRegisterWithAnswerIntegerTemplate<ito::int8>(0x6060, 0x00, mode);
+    return readRegisterWithParsedResponse<ito::int8>(0x6060, 0x00, mode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2073,8 +2095,8 @@ ito::RetVal FaulhaberMCS::getTorqueLimits(ito::uint16 limits[])
 {
     ito::RetVal retVal = ito::retOk;
 
-    retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x60E0, 0x00, limits[0]);
-    retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x60E1, 0x00, limits[1]);
+    retVal = readRegisterWithParsedResponse<ito::uint16>(0x60E0, 0x00, limits[0]);
+    retVal = readRegisterWithParsedResponse<ito::uint16>(0x60E1, 0x00, limits[1]);
     return retVal;
 }
 
@@ -2094,7 +2116,7 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
     ito::RetVal retVal =
-        new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x6041, 0x00, m_statusWord);
+        readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
 
     if (!retVal.containsError())
     {
@@ -2112,7 +2134,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
             setAlive();
 
             retVal +=
-                new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x6041, 0x00, m_statusWord);
+                readRegisterWithParsedResponse<ito::uint16>(0x6041, 0x00, m_statusWord);
 
             if (retVal.containsError())
             {
@@ -2380,92 +2402,7 @@ ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::new_sendCommandAndGetResponse(
-    const QByteArray& command, QByteArray& response)
-{
-    ito::RetVal retVal = ito::retOk;
-    retVal += sendCommand(command);
-
-    if (!retVal.containsError())
-    {
-        retVal += new_readResponse(response);
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
-{
-    ito::RetVal retValue = ito::retOk;
-    QElapsedTimer timer;
-
-    bool done = false;
-    bool timeout = false;
-
-    int buflen = 100;
-    QSharedPointer<int> curBufLen(new int);
-    QSharedPointer<char> curBuf(new char[buflen]);
-    result = "";
-
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-
-    timer.start();
-    while (!done && !retValue.containsError() && !timeout)
-    {
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-        waitMutex.unlock();
-        setAlive();
-
-        *curBufLen = buflen;
-        retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
-
-        if (!retValue.containsError())
-        {
-            result += QByteArray(curBuf.data(), *curBufLen);
-            done = true;
-        }
-
-        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                m_delayAfterSendCommandMS,
-                tr("timeout during read string.").toLatin1().data());
-            timeout = true;
-        }
-        else
-        {
-            setAlive();
-        }
-    }
-    result.truncate(2 + result[1]);
-
-    std::vector<uint8_t> ansVector(result.begin(), result.end());
-
-    if (!retValue.containsError() && (ansVector.size() >= 7))
-    {
-        if (checksum(std::vector<uint8_t>(ansVector.begin() + 1, ansVector.end() - 2)) !=
-            ansVector[ansVector.size() - 2])
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Checksum mismatch for %1").arg(QString::fromUtf8(result)).toLatin1().data());
-        }
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("No response received").toLatin1().data());
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::new_readResponse(QByteArray& result)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
@@ -2513,19 +2450,19 @@ ito::RetVal FaulhaberMCS::new_readResponse(QByteArray& result)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-inline ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerIntegerTemplate(
+inline ito::RetVal FaulhaberMCS::readRegisterWithParsedResponse(
     const uint16_t& address, const uint8_t& subindex, T& answer)
 {
     QByteArray response;
-    ito::RetVal retValue = new_readRegister(address, subindex, response);
+    ito::RetVal retValue = readRegister(address, subindex, response);
     if (!retValue.containsError())
-        retValue += new_parseResponseToIntegerTemplate<T>(response, answer);
+        retValue += parseResponse<T>(response, answer);
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
+ito::RetVal FaulhaberMCS::parseResponse(
     QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
@@ -2549,12 +2486,12 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
             if (length == 7) // SDO read parameter request
             {
                 recievedCRC = static_cast<uint8_t>(response[7]);
-                checkCRC = new_CalcCRC(response.mid(1, size + 1));
+                checkCRC = calculateChecksum(response.mid(1, size + 1));
             }
             else // SDO read parameter response
             {
                 recievedCRC = static_cast<uint8_t>(response[size - 2]);
-                checkCRC = new_CalcCRC(response.mid(1, size - 3));
+                checkCRC = calculateChecksum(response.mid(1, size - 3));
                 data = response.mid(7, response.indexOf(CharE) - 7);
             }
 
@@ -2599,7 +2536,7 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
         else if (command == 0x02)
         {
             recievedCRC = static_cast<uint8_t>(response[7]);
-            checkCRC = new_CalcCRC(response.mid(1, response.indexOf(CharE) - 2));
+            checkCRC = calculateChecksum(response.mid(1, response.indexOf(CharE) - 2));
             if (recievedCRC != checkCRC)
             {
                 retValue +=
@@ -2646,92 +2583,7 @@ ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
-    const uint16_t& address,
-    const uint8_t& subindex,
-    const int& value,
-    const int& length,
-    int& answer)
-{
-    ito::RetVal retVal = ito::retOk;
-
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-
-    setRegister(address, subindex, value, length);
-    // retVal += readRegisterWithAnswerInteger(address, subindex, answer);
-    // TODO
-
-    QElapsedTimer timer;
-    timer.start();
-
-    while (answer != value)
-    {
-        retVal += updateStatusMCS();
-
-        // short delay
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-        waitMutex.unlock();
-        setAlive();
-
-        retVal += readRegisterWithAnswerInteger(address, subindex, answer);
-
-        if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
-        {
-            retVal += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Timeout occurred during setting register %1 to %2")
-                    .arg(address)
-                    .arg(value)
-                    .toLatin1()
-                    .data());
-            break;
-        }
-    }
-
-    return retVal;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
-    const uint16_t& address, const uint8_t& subindex, int& answer)
-{
-    ito::RetVal retValue = ito::retOk;
-    std::vector<int> registerValue;
-
-    retValue += readRegister(address, subindex, registerValue);
-
-    answer = responseVectorToInteger(registerValue);
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)
-{
-    uint8_t poly = 0xD5;
-    uint8_t crc = 0xFF;
-
-    for (auto byte : msg)
-    {
-        crc ^= byte;
-        for (int i = 0; i < 8; i++)
-        {
-            if (crc & 0x01)
-                crc = (crc >> 1) ^ poly;
-            else
-                crc >>= 1;
-        }
-    }
-
-    return crc;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-uint8_t FaulhaberMCS::new_CalcCRC(const QByteArray& message)
+uint8_t FaulhaberMCS::calculateChecksum(const QByteArray& message)
 {
     uint8_t calcCRC = 0xFF;
     int len = message.size(); // Get the length of the QByteArray
@@ -2753,10 +2605,10 @@ uint8_t FaulhaberMCS::new_CalcCRC(const QByteArray& message)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool FaulhaberMCS::verifyCRC(QByteArray& message, ito::uint8& receivedCRC)
+bool FaulhaberMCS::verifyChecksum(QByteArray& message, ito::uint8& receivedCRC)
 {
     // Calculate the CRC of the message excluding SOF, CRC, and EOF
-    uint8_t calculatedCRC = new_CalcCRC(message.mid(1, message.size() - 3));
+    uint8_t calculatedCRC = calculateChecksum(message.mid(1, message.size() - 3));
 
     // Compare the calculated CRC with the received CRC
     if (calculatedCRC != receivedCRC)
