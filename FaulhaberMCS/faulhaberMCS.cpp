@@ -554,6 +554,7 @@ ito::RetVal FaulhaberMCS::init(
         // Us given SerialIO instance
         m_pSerialIO = (ito::AddInDataIO*)(*paramsMand)[0].getVal<void*>();
         m_node = (uint8_t)paramsMand->at(1).getVal<int>();
+        // TODO m_node for several motor as static container
     }
     else
     {
@@ -574,9 +575,9 @@ ito::RetVal FaulhaberMCS::init(
 
 
     // ENABLE
-    retValue += updateStatusMCS();
     if (!retValue.containsError())
     {
+        shutDown();
         resetCommunication();
         startAll();
         retValue += updateStatusMCS();
@@ -727,10 +728,10 @@ ito::RetVal FaulhaberMCS::init(
         }
     }
 
-    retValue += updateStatusMCS();
-
     if (!retValue.containsError())
     {
+        retValue += updateStatusMCS();
+
         ito::int32 pos;
         retValue += getPosMCS(pos);
 
@@ -1148,9 +1149,8 @@ ito::RetVal FaulhaberMCS::new_readRegister(
     fullCommand.push_back(m_E);
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
-    retValue += new_sendCommandAndGetResponse(data, response);
 
-    return retValue;
+    return new_sendCommandAndGetResponse(data, response);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1899,13 +1899,13 @@ ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerInteger32(0x6064, 0x00, pos);
+    return new_readRegisterWithAnswerInteger32<ito::int32>(0x6064, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTargetPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerInteger32(0x6062, 0x00, pos);
+    return new_readRegisterWithAnswerInteger32<ito::int32>(0x6062, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2043,74 +2043,76 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
-    ito::RetVal retVal(ito::retOk);
-    retVal = readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
-
-    qint64 startTime = QDateTime::currentMSecsSinceEpoch();
-    qint64 elapsedTime = 0;
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-    while ((m_statusWord == 0) && (elapsedTime < m_waitForMCSTimeout))
-    {
-        // short delay
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-        waitMutex.unlock();
-        setAlive();
-
-        ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x0, m_statusWord);
-
-        if (retVal.containsError())
-        {
-            retVal += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error occurred during reading statusword with value %1")
-                    .arg(m_statusWord)
-                    .toLatin1()
-                    .data());
-            break;
-        }
-        elapsedTime = QDateTime::currentMSecsSinceEpoch() - startTime;
-    }
+    ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x00, m_statusWord);
 
     if (!retVal.containsError())
     {
-        m_params["statusWord"].setVal<int>(m_statusWord);
-        std::bitset<16> statusBit = static_cast<std::bitset<16>>(m_statusWord);
+        QMutex waitMutex;
+        QWaitCondition waitCondition;
+        qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+        qint64 elapsedTime = 0;
+        while ((m_statusWord == 0) && (elapsedTime < m_waitForMCSTimeout))
+        {
+            // short delay
+            waitMutex.lock();
+            waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+            waitMutex.unlock();
+            setAlive();
 
-        // Interpretation of bits
-        bool readyToSwitchOn = statusBit[0];
-        bool switchedOn = statusBit[1];
-        bool operationEnabled = statusBit[2];
-        bool fault = statusBit[3];
-        bool voltageEnabled = statusBit[4];
-        bool quickStop = statusBit[5];
-        bool switchOnDisabled = statusBit[6];
-        bool warning = statusBit[7];
+            ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x00, m_statusWord);
 
-        bool targetReached = statusBit[10];
-        bool internalLimitActive = statusBit[11];
-        bool setPointAcknowledged = statusBit[12];
-        bool followingError = statusBit[13];
+            if (retVal.containsError())
+            {
+                retVal += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Error occurred during reading statusword with value %1")
+                        .arg(m_statusWord)
+                        .toLatin1()
+                        .data());
+                break;
+            }
+            elapsedTime = QDateTime::currentMSecsSinceEpoch() - startTime;
+        }
 
-        m_params["readyToSwitchOn"].setVal<int>((readyToSwitchOn ? true : false));
-        m_params["switchedOn"].setVal<int>((switchedOn ? true : false));
-        m_params["operationEnabled"].setVal<int>((operationEnabled ? true : false));
-        m_params["fault"].setVal<int>((fault ? true : false));
-        m_params["voltageEnabled"].setVal<int>((voltageEnabled ? true : false));
-        m_params["quickStop"].setVal<int>((quickStop ? true : false));
-        m_params["switchOnDisabled"].setVal<int>((switchOnDisabled ? true : false));
-        m_params["warning"].setVal<int>((warning ? true : false));
-        m_params["targetReached"].setVal<int>((targetReached ? true : false));
-        m_params["internalLimitActive"].setVal<int>((internalLimitActive ? true : false));
-        m_params["setPointAcknowledged"].setVal<int>((setPointAcknowledged ? true : false));
-        m_params["followingError"].setVal<int>((followingError ? true : false));
+        if (!retVal.containsError())
+        {
+            m_params["statusWord"].setVal<int>(m_statusWord);
+            std::bitset<16> statusBit = static_cast<std::bitset<16>>(m_statusWord);
 
-        emit parametersChanged(m_params);
+            // Interpretation of bits
+            bool readyToSwitchOn = statusBit[0];
+            bool switchedOn = statusBit[1];
+            bool operationEnabled = statusBit[2];
+            bool fault = statusBit[3];
+            bool voltageEnabled = statusBit[4];
+            bool quickStop = statusBit[5];
+            bool switchOnDisabled = statusBit[6];
+            bool warning = statusBit[7];
+
+            bool targetReached = statusBit[10];
+            bool internalLimitActive = statusBit[11];
+            bool setPointAcknowledged = statusBit[12];
+            bool followingError = statusBit[13];
+
+            m_params["readyToSwitchOn"].setVal<int>((readyToSwitchOn ? true : false));
+            m_params["switchedOn"].setVal<int>((switchedOn ? true : false));
+            m_params["operationEnabled"].setVal<int>((operationEnabled ? true : false));
+            m_params["fault"].setVal<int>((fault ? true : false));
+            m_params["voltageEnabled"].setVal<int>((voltageEnabled ? true : false));
+            m_params["quickStop"].setVal<int>((quickStop ? true : false));
+            m_params["switchOnDisabled"].setVal<int>((switchOnDisabled ? true : false));
+            m_params["warning"].setVal<int>((warning ? true : false));
+            m_params["targetReached"].setVal<int>((targetReached ? true : false));
+            m_params["internalLimitActive"].setVal<int>((internalLimitActive ? true : false));
+            m_params["setPointAcknowledged"].setVal<int>((setPointAcknowledged ? true : false));
+            m_params["followingError"].setVal<int>((followingError ? true : false));
+
+            emit parametersChanged(m_params);
+        }
+        sendStatusUpdate();
     }
 
-    sendStatusUpdate();
     return retVal;
 }
 
@@ -2300,8 +2302,11 @@ ito::RetVal FaulhaberMCS::updateStatus()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
 {
-    ito::RetVal retVal;
-    retVal += m_pSerialIO->setVal(command.data(), command.length(), nullptr);
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+    m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+    m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
+
+    ito::RetVal retVal = m_pSerialIO->setVal(command.data(), command.length(), nullptr);
     setAlive();
     return retVal;
 }
@@ -2484,12 +2489,97 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerInteger32(
-    const uint16_t& address, const uint8_t& subindex, ito::int32& answer)
+template <typename T>
+inline ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerInteger32(
+    const uint16_t& address, const uint8_t& subindex, T& answer)
 {
     QByteArray response;
     ito::RetVal retValue = new_readRegister(address, subindex, response);
-    retValue += new_parseResponseToInteger32(response, answer);
+    if (!retValue.containsError())
+        retValue += new_parseResponseToInteger32<T>(response, answer);
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template <typename T>
+ito::RetVal FaulhaberMCS::new_parseResponseToInteger32(QByteArray& response, T& parsedResponse)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    uint8_t SOF = static_cast<uint8_t>(response[0]);
+    uint8_t length = static_cast<uint8_t>(response[1]);
+    uint8_t nodeNumber = static_cast<uint8_t>(response[2]);
+    uint8_t command = static_cast<uint8_t>(response[3]);
+    uint16_t index = static_cast<uint8_t>(response[4]) | (static_cast<uint8_t>(response[5]) << 8);
+    uint8_t subIndex = static_cast<uint8_t>(response[6]);
+    uint8_t recievedCRC;
+    QByteArray data = "";
+
+    /*if (!verifyCRC(response))
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("CRC mismatch").toLatin1().data());
+    }*/
+
+    if (!retValue.containsError())
+    {
+        if (command == 0x01) // SDO read request
+        {
+            if (length == 7) // SDO read parameter request
+            {
+                recievedCRC = static_cast<uint8_t>(response[7]);
+            }
+            else // SDO read parameter response
+            {
+                recievedCRC = static_cast<uint8_t>(length + 1);
+                data = response.mid(7, sizeof(T));
+            }
+
+            // TODO check CRC
+            std::memcpy(
+                &parsedResponse,
+                data.constData(),
+                sizeof(T)); // copy 4 bytes to parsedResponse
+        }
+        else if (command == 0x02) // SDO write request
+        {
+            std::cout << "SDO write request \n" << std::endl;
+        }
+        else if (command == 0x03) // SDO abort request of error response
+        {
+            std::memcpy(
+                &parsedResponse,
+                data.constData(),
+                sizeof(T)); // copy 4 bytes to parsedResponse
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error during parse response with value: %1")
+                    .arg(parsedResponse)
+                    .toLatin1()
+                    .data());
+        }
+        else if (command == 0x05) // status word notification
+        {
+            retValue +=
+                ito::RetVal(ito::retError, 0, tr("status word notification").toLatin1().data());
+        }
+        else if (command == 0x07) // EMCY notification
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("EMCY notification").toLatin1().data());
+        }
+        else
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Unknown command received: %1")
+                    .arg(static_cast<uint8_t>(command))
+                    .toLatin1()
+                    .data());
+        }
+    }
+
+
     return retValue;
 }
 
@@ -2518,7 +2608,7 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
 
         // short delay
         waitMutex.lock();
-        waitCondition.wait(&waitMutex, 10);
+        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
         waitMutex.unlock();
         setAlive();
 
@@ -2541,68 +2631,6 @@ ito::RetVal FaulhaberMCS::setRegisterWithAnswerInteger(
     return retVal;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::new_parseResponseToInteger32(
-    QByteArray& response, ito::int32& parsedResponse)
-{
-    ito::RetVal retValue = ito::retOk;
-
-    uint8_t SOF = static_cast<uint8_t>(response[0]);
-    uint8_t length = static_cast<uint8_t>(response[1]);
-    uint8_t nodeNumber = static_cast<uint8_t>(response[2]);
-    uint8_t command = static_cast<uint8_t>(response[3]);
-    uint16_t index = static_cast<uint8_t>(response[4]) | (static_cast<uint8_t>(response[5]) << 8);
-    uint8_t subIndex = static_cast<uint8_t>(response[6]);
-    QByteArray data = response.mid(7, 4); // 4 bytes data
-
-    if (!verifyCRC(response))
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("CRC mismatch").toLatin1().data());
-    }
-
-    if (!retValue.containsError())
-    {
-        if ((command == 0x01) || (command == 0x02)) // SDO read, SDO write
-        {
-            std::memcpy(
-                &parsedResponse,
-                data.constData(),
-                sizeof(ito::int32)); // copy 4 bytes to parsedResponse
-        }
-        else if (command == 0x03) // error
-        {
-            std::memcpy(
-                &parsedResponse,
-                data.constData(),
-                sizeof(ito::int32)); // copy 4 bytes to parsedResponse
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error during parse response with value: %1")
-                    .arg(parsedResponse)
-                    .toLatin1()
-                    .data());
-        }
-        else if (command == 0x05) // status word notification
-        {
-            retValue +=
-                ito::RetVal(ito::retError, 0, tr("status word notification").toLatin1().data());
-        }
-        else
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Unknown command received: %1")
-                    .arg(static_cast<uint8_t>(command))
-                    .toLatin1()
-                    .data());
-        }
-    }
-
-
-    return retValue;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)
@@ -2625,33 +2653,33 @@ uint8_t FaulhaberMCS::checksum(const std::vector<uint8_t>& msg)
     return crc;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 uint8_t FaulhaberMCS::new_CalcCRC(const QByteArray& message)
 {
-    uint8_t poly = 0xD5;
-    uint8_t crc = 0xFF;
+    uint8_t calcCRC = 0xFF;
+    int len = message.size(); // Get the length of the QByteArray
 
-    for (auto byte : message)
+    for (int i = 0; i < len; i++)
     {
-        crc ^= static_cast<uint8_t>(byte);
-        for (int i = 0; i < 8; i++)
+        calcCRC = calcCRC ^
+            static_cast<uint8_t>(message[i]); // Access QByteArray data and cast to uint8_t
+        for (uint8_t j = 0; j < 8; j++)
         {
-            if (crc & 0x01)
-                crc = (crc >> 1) ^ poly;
+            if (calcCRC & 0x01)
+                calcCRC = (calcCRC >> 1) ^ 0xd5;
             else
-                crc >>= 1;
+                calcCRC = (calcCRC >> 1);
         }
     }
 
-    return crc;
+    return calcCRC;
 }
 
-bool FaulhaberMCS::verifyCRC(QByteArray& message)
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FaulhaberMCS::verifyCRC(QByteArray& message, ito::uint8& receivedCRC)
 {
     // Calculate the CRC of the message excluding SOF, CRC, and EOF
     uint8_t calculatedCRC = new_CalcCRC(message.mid(1, message.size() - 3));
-
-    // Extract the CRC from the message
-    uint8_t receivedCRC = static_cast<uint8_t>(message[message.size() - 2]);
 
     // Compare the calculated CRC with the received CRC
     if (calculatedCRC != receivedCRC)

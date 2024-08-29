@@ -82,12 +82,12 @@ private:
     int m_waitForMCSTimeout;
     int m_statusWord;
 
-    uint8_t m_node;
+    ito::uint8 m_node;
 
-    uint8_t m_S = 0x53;
-    uint8_t m_E = 0x45;
-    uint8_t m_GET = 0x01;
-    uint8_t m_SET = 0x02;
+    ito::uint8 m_S = 0x53;
+    ito::uint8 m_E = 0x45;
+    ito::uint8 m_GET = 0x01;
+    ito::uint8 m_SET = 0x02;
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
@@ -106,11 +106,11 @@ private:
     ito::RetVal new_readResponse(QByteArray& result);
     ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
 
-    ito::RetVal new_parseResponseToInteger32(QByteArray& response, ito::int32& parsedResponse);
+
     uint8_t checksum(const std::vector<uint8_t>& message);
 
     uint8_t new_CalcCRC(const QByteArray& message);
-    bool verifyCRC(QByteArray& message);
+    bool verifyCRC(QByteArray& message, ito::uint8& receivedCRC);
 
     // READ REGISTER
     ito::RetVal readRegister(
@@ -124,8 +124,11 @@ private:
     ito::RetVal readRegisterWithAnswerInteger(
         const uint16_t& address, const uint8_t& subindex, int& answer);
 
+    template <typename T>
     ito::RetVal new_readRegisterWithAnswerInteger32(
-        const uint16_t& address, const uint8_t& subindex, ito::int32& answer);
+        const uint16_t& address, const uint8_t& subindex, T& answer);
+    template <typename T>
+    ito::RetVal new_parseResponseToInteger32(QByteArray& response, T& parsedResponse);
 
     // SET REGISTER
     void setRegister(
