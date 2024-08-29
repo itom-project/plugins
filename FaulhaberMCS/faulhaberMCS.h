@@ -80,7 +80,7 @@ private:
     int m_numOfAxes;
     int m_waitForDoneTimeout;
     int m_waitForMCSTimeout;
-    int m_statusWord;
+    ito::uint16 m_statusWord;
 
     ito::uint8 m_node;
 
@@ -125,10 +125,10 @@ private:
         const uint16_t& address, const uint8_t& subindex, int& answer);
 
     template <typename T>
-    ito::RetVal new_readRegisterWithAnswerInteger32(
+    ito::RetVal new_readRegisterWithAnswerIntegerTemplate(
         const uint16_t& address, const uint8_t& subindex, T& answer);
     template <typename T>
-    ito::RetVal new_parseResponseToInteger32(QByteArray& response, T& parsedResponse);
+    ito::RetVal new_parseResponseToIntegerTemplate(QByteArray& response, T& parsedResponse);
 
     // SET REGISTER
     void setRegister(
@@ -173,8 +173,7 @@ private:
     ito::RetVal getProductCode(QString& code);
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getFirmware(QString& version);
-    ito::RetVal getSoftwareVersion(QString& version);
-    ito::RetVal getAmbientTemperature(int& temp);
+    ito::RetVal getAmbientTemperature(ito::uint8& temp);
 
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);

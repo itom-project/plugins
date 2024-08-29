@@ -162,14 +162,6 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
-        "softwareVersion",
-        ito::ParamBase::String | ito::ParamBase::Readonly,
-        "",
-        tr("Manufacturer software version.").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
         "ambientTemperature",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
@@ -587,17 +579,8 @@ ito::RetVal FaulhaberMCS::init(
             shutDown();
             switchOn();
             enableOperation();
-        }
-    }
 
-    retValue += updateStatusMCS();
-
-    if (!retValue.containsError())
-    {
-        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), answerInteger);
-        if (!retValue.containsError())
-        {
-            m_params["operationMode"].setVal<int>(answerInteger);
+            retValue += updateStatusMCS();
         }
     }
 
@@ -605,6 +588,7 @@ ito::RetVal FaulhaberMCS::init(
     {
         retValue += getSerialNumber(answerString);
         if (!retValue.containsError())
+#
         {
             m_params["serialNumber"].setVal<char*>(answerString.toUtf8().data());
         }
@@ -648,15 +632,6 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        retValue += getSoftwareVersion(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["softwareVersion"].setVal<char*>(answerString.toUtf8().data());
-        }
-    }
-
-    if (!retValue.containsError())
-    {
         retValue += getFirmware(answerString);
         if (!retValue.containsError())
         {
@@ -666,10 +641,20 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        retValue += getAmbientTemperature(answerInteger);
+        ito::uint8 temp;
+        retValue += getAmbientTemperature(temp);
         if (!retValue.containsError())
         {
-            m_params["ambientTemperature"].setVal<int>(answerInteger);
+            m_params["ambientTemperature"].setVal<int>(temp);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += setOperationMode(m_params["operationMode"].getVal<int>(), answerInteger);
+        if (!retValue.containsError())
+        {
+            m_params["operationMode"].setVal<int>(answerInteger);
         }
     }
 
@@ -807,10 +792,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "ambientTemperature")
         {
-            retValue += getAmbientTemperature(answerInteger);
+            ito::uint8 temp;
+            retValue += getAmbientTemperature(temp);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(answerInteger);
+                retValue += it->setVal<int>(temp);
             }
         }
         else if (key == "maxMotorSpeed")
@@ -1836,76 +1822,67 @@ ito::RetVal FaulhaberMCS::execFunc(
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getSerialNumber(QString& serialNum)
 {
-    int serial;
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x1018, 0x04, serial);
-    serialNum = QString::number(serial);
+    ito::uint32 c;
+    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x04, c);
+    serialNum = QString::number(c);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeviceName(QString& name)
 {
-    return readRegisterWithAnswerString(0x1008, 0x00, name);
+    return new_readRegisterWithAnswerIntegerTemplate<QString>(0x1008, 0x00, name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getVendorID(QString& id)
 {
-    int vedor;
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x1018, 0x01, vedor);
-    id = QString::number(vedor);
+    ito::uint32 c;
+    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x01, c);
+    id = QString::number(c);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getProductCode(QString& code)
 {
-    int product;
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x1018, 0x02, product);
-    code = QString::number(product);
+    ito::uint32 c;
+    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x02, c);
+    code = QString::number(c);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getRevisionNumber(QString& num)
 {
-    int revision;
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x1018, 0x03, revision);
-    num = QString::number(revision);
+    ito::uint32 c;
+    ito::RetVal retVal = new_readRegisterWithAnswerIntegerTemplate<ito::uint32>(0x1018, 0x03, c);
+    num = QString::number(c);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getFirmware(QString& version)
 {
-    return readRegisterWithAnswerString(0x100A, 0x00, version);
+    return new_readRegisterWithAnswerIntegerTemplate<QString>(0x100A, 0x00, version);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getSoftwareVersion(QString& version)
+ito::RetVal FaulhaberMCS::getAmbientTemperature(ito::uint8& temp)
 {
-    int software;
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x100A, 0x00, software);
-    version = QString::number(software);
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getAmbientTemperature(int& temp)
-{
-    return readRegisterWithAnswerInteger(0x232A, 0x08, temp);
+    return new_readRegisterWithAnswerIntegerTemplate<ito::uint8>(0x100A, 0x00, temp);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerInteger32<ito::int32>(0x6064, 0x00, pos);
+    return new_readRegisterWithAnswerIntegerTemplate<ito::int32>(0x6064, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTargetPosMCS(ito::int32& pos)
 {
-    return new_readRegisterWithAnswerInteger32<ito::int32>(0x6062, 0x00, pos);
+    return new_readRegisterWithAnswerIntegerTemplate<ito::int32>(0x6062, 0x00, pos);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2043,7 +2020,9 @@ ito::RetVal FaulhaberMCS::setTorqueLimits(const int limits[], int newLimits[])
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::updateStatusMCS()
 {
-    ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x00, m_statusWord);
+    // ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x00, m_statusWord);
+    ito::RetVal retVal =
+        new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x6041, 0x00, m_statusWord);
 
     if (!retVal.containsError())
     {
@@ -2053,13 +2032,15 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
         qint64 elapsedTime = 0;
         while ((m_statusWord == 0) && (elapsedTime < m_waitForMCSTimeout))
         {
-            // short delay
+            // TODO delete statudWord == 0
+            //  short delay
             waitMutex.lock();
             waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
             waitMutex.unlock();
             setAlive();
 
-            ito::RetVal retVal = readRegisterWithAnswerInteger(0x6041, 0x00, m_statusWord);
+            retVal +=
+                new_readRegisterWithAnswerIntegerTemplate<ito::uint16>(0x6041, 0x00, m_statusWord);
 
             if (retVal.containsError())
             {
@@ -2490,35 +2471,32 @@ ito::RetVal FaulhaberMCS::readRegisterWithAnswerInteger(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-inline ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerInteger32(
+inline ito::RetVal FaulhaberMCS::new_readRegisterWithAnswerIntegerTemplate(
     const uint16_t& address, const uint8_t& subindex, T& answer)
 {
     QByteArray response;
     ito::RetVal retValue = new_readRegister(address, subindex, response);
     if (!retValue.containsError())
-        retValue += new_parseResponseToInteger32<T>(response, answer);
+        retValue += new_parseResponseToIntegerTemplate<T>(response, answer);
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-ito::RetVal FaulhaberMCS::new_parseResponseToInteger32(QByteArray& response, T& parsedResponse)
+ito::RetVal FaulhaberMCS::new_parseResponseToIntegerTemplate(
+    QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
 
-    uint8_t SOF = static_cast<uint8_t>(response[0]);
+    uint8_t CharS = static_cast<uint8_t>(response[0]);
     uint8_t length = static_cast<uint8_t>(response[1]);
     uint8_t nodeNumber = static_cast<uint8_t>(response[2]);
     uint8_t command = static_cast<uint8_t>(response[3]);
     uint16_t index = static_cast<uint8_t>(response[4]) | (static_cast<uint8_t>(response[5]) << 8);
     uint8_t subIndex = static_cast<uint8_t>(response[6]);
     uint8_t recievedCRC;
+    uint8_t CharE = static_cast<uint8_t>(response[response.size() - 1]);
     QByteArray data = "";
-
-    /*if (!verifyCRC(response))
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("CRC mismatch").toLatin1().data());
-    }*/
 
     if (!retValue.containsError())
     {
@@ -2530,15 +2508,48 @@ ito::RetVal FaulhaberMCS::new_parseResponseToInteger32(QByteArray& response, T& 
             }
             else // SDO read parameter response
             {
-                recievedCRC = static_cast<uint8_t>(length + 1);
-                data = response.mid(7, sizeof(T));
+                qsizetype size = response.size();
+                recievedCRC = static_cast<uint8_t>(response[size - 2]);
+                data = response.mid(7, response.indexOf(CharE) - 7);
             }
 
-            // TODO check CRC
-            std::memcpy(
-                &parsedResponse,
-                data.constData(),
-                sizeof(T)); // copy 4 bytes to parsedResponse
+            if (recievedCRC != new_CalcCRC(response.mid(1, response.size() - 3)))
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toLatin1().data());
+            }
+            else if (length == 7)
+            {
+                std::cout << "Length == 7 \n" << std::endl;
+            }
+            else
+            {
+                // Copy data based on type T
+                if constexpr (std::is_same<T, QString>::value)
+                {
+                    parsedResponse = QString::fromUtf8(data.mid(0, data.size() - 1));
+                }
+                else if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value)
+                {
+                    if (data.size() >= sizeof(T))
+                    {
+                        std::memcpy(
+                            &parsedResponse,
+                            data.constData(),
+                            sizeof(T)); // for integral and floating-point types
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError, 0, tr("Data size mismatch").toLatin1().data());
+                    }
+                }
+                else
+                {
+                    retValue +=
+                        ito::RetVal(ito::retError, 0, tr("Unsupported type").toLatin1().data());
+                }
+            }
         }
         else if (command == 0x02) // SDO write request
         {
