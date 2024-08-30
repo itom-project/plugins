@@ -1,0 +1,24 @@
+/* ********************************************************************
+    Template for an actuator plugin for the software itom
+
+    You can use this template, use it in your plugins, modify it,
+    copy it and distribute it without any license restrictions.
+*********************************************************************** */
+
+#ifndef PLUGINVERSION_H
+#define PLUGINVERSION_H
+
+#include "itom_sdk.h"
+
+#define PLUGIN_VERSION              CREATE_VERSION(1, 0, 0)
+#define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(4, 1, 0)
+#define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_plugins_VERSION_MAJOR},${itom_plugins_VERSION_MINOR},${itom_plugins_VERSION_PATCH})
+#define PLUGIN_LICENCE              "Licensed under LGPL."
+#define PLUGIN_COMPANY              "TRUMPF Laser- und Systemtechnik GmbH"
+#define PLUGIN_AUTHOR               "C.Lederbogen, TRUMPF Laser- und Systemtechnik GmbH"
+#define PLUGIN_COPYRIGHT            "Copyright (C) 2024, TRUMPF Laser- und Systemtechnik GmbH"
+#define PLUGIN_NAME                 "ThorlabsDMH"
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+#endif // PLUGINVERSION_H
