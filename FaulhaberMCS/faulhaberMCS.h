@@ -211,7 +211,7 @@ private:
     ito::RetVal setPosRelMCS(const double& pos);
 
     // HOMING
-    ito::RetVal setHomingMode(const int& mode);
+    ito::RetVal setHomingMode(const ito::int8& mode);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);

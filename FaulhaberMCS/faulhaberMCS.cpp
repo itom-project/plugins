@@ -623,6 +623,8 @@ ito::RetVal FaulhaberMCS::init(
         resetCommunication();
         Sleep(100);
         startAll();
+        isAlive();
+        Sleep(500);
         retValue += updateStatusMCS();
 
         if (m_params["switchOnDisabled"].getVal<int>())
@@ -1409,7 +1411,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 
     if (!retValue.containsError())
     {
-        retValue += setHomingMode(37);
+        retValue += setHomingMode(static_cast<ito::int8>(37));
 
         // Start homing
         setControlWord(0x000F);
@@ -2193,7 +2195,7 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
 }
 
 ////----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setHomingMode(const int& mode)
+ito::RetVal FaulhaberMCS::setHomingMode(const ito::int8& mode)
 {
     return new_setRegister<ito::int8>(0x6098, 0x00, mode, sizeof(mode));
 }
@@ -2439,9 +2441,10 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
     QByteArray data = "";
-    qsizetype size = response.size();
+    qsizetype size;
     ito::uint8 checkCRC;
 
+    // todo
     ito::uint8 CharS = static_cast<ito::uint8>(response[0]);
     ito::uint8 length = static_cast<ito::uint8>(response[1]);
     ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
@@ -2450,10 +2453,31 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
         static_cast<ito::uint8>(response[4]) | (static_cast<ito::uint8>(response[5]) << 8);
     ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
     ito::uint8 recievedCRC;
-    ito::uint8 CharE = static_cast<ito::uint8>(response[response.size() - 1]);
+
+    qsizetype endIndex = response.indexOf(m_E);
+
+    if (endIndex == -1)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The character 'E' was not detected in the received bytearray.").toLatin1().data());
+    }
+    else
+    {
+        if (endIndex > length)
+        {
+            response.truncate(endIndex + 1);
+        }
+    }
+
 
     if (!retValue.containsError())
     {
+        size = response.size();
+
+        ito::uint8 CharE = static_cast<ito::uint8>(response[endIndex]);
+
         if (command == 0x01) // SDO read request
         {
             if (length == 7) // SDO read parameter request
@@ -2470,12 +2494,19 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 
             if (recievedCRC != checkCRC)
             {
-                retValue +=
-                    ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toLatin1().data());
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                        .arg(recievedCRC)
+                        .arg(checkCRC)
+                        .toLatin1()
+                        .data());
             }
-            else if (length == 7) // TODO delete later
+            else if (length <= 7) // TODO delete later
             {
-                std::cout << "Length == 7 \n" << std::endl;
+                retValue +=
+                    ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toLatin1().data());
             }
             else
             {
