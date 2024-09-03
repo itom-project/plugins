@@ -2414,7 +2414,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             {
                 recievedCRC = static_cast<ito::uint8>(response[size - 2]);
                 checkCRC = calculateChecksum(response.mid(1, size - 3));
-                data = response.mid(7, response.indexOf(CharE) - 7);
+                data = response.mid(7, size - 2);
             }
 
             if (recievedCRC != checkCRC)
