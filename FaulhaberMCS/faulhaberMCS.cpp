@@ -408,7 +408,7 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(1, 32750, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    int limits[] = {1000, 6000};
+    int limits[] = {6000, 6000};
     paramVal = ito::Param(
         "torqueLimits",
         ito::ParamBase::IntArray,
@@ -777,9 +777,17 @@ ito::RetVal FaulhaberMCS::init(
     {
         ito::uint16 limits[] = {0, 0};
         retValue += getTorqueLimits(limits);
+
+        int intLimits[sizeof(limits) / sizeof(limits[0])];
+
+        for (int i = 0; i < sizeof(limits) / sizeof(limits[0]); ++i)
+        {
+            intLimits[i] = (int)limits[i];
+        }
+
         if (!retValue.containsError())
         {
-            m_params["torqueLimits"].setVal<ito::uint16*>(limits, 2);
+            m_params["torqueLimits"].setVal<int*>(intLimits, 2);
         }
     }
 
@@ -934,9 +942,18 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         {
             ito::uint16 limits[] = {0, 0};
             retValue += getTorqueLimits(limits);
+
+            int int_limits[sizeof(limits) / sizeof(limits[0])];
+
+            // Convert from uint16_t to int
+            for (int i = 0; i < sizeof(limits) / sizeof(limits[0]); ++i)
+            {
+                int_limits[i] = (int)limits[i];
+            }
+
             if (!retValue.containsError())
             {
-                retValue += it->setVal<ito::uint16*>(limits, 2);
+                retValue += it->setVal<int*>(int_limits, 2);
             }
         }
 
@@ -1107,8 +1124,13 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "torqueLimits")
         {
-            ito::uint32 uint32Val = static_cast<ito::uint32>(*val->getVal<int*>());
-            retValue += setTorqueLimits(&uint32Val);
+            int posLimits = val->getVal<int*>()[0];
+            int negLimits = val->getVal<int*>()[1];
+
+            ito::uint16 limits[] = {
+                static_cast<ito::uint16>(posLimits), static_cast<ito::uint16>(negLimits)};
+
+            retValue += setTorqueLimits(limits);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -2077,17 +2099,17 @@ ito::RetVal FaulhaberMCS::getTorqueLimits(ito::uint16 limits[])
 {
     ito::RetVal retVal = ito::retOk;
 
-    retVal = readRegisterWithParsedResponse<ito::uint16>(0x60E0, 0x00, limits[0]);
-    retVal = readRegisterWithParsedResponse<ito::uint16>(0x60E1, 0x00, limits[1]);
+    retVal += readRegisterWithParsedResponse<ito::uint16>(0x60E0, 0x00, limits[0]);
+    retVal += readRegisterWithParsedResponse<ito::uint16>(0x60E1, 0x00, limits[1]);
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTorqueLimits(const ito::uint32 limits[])
+ito::RetVal FaulhaberMCS::setTorqueLimits(const ito::uint16 limits[])
 {
     ito::RetVal retVal = ito::retOk;
-    retVal += new_setRegister<ito::uint32>(0x60E0, 0x00, limits[0], sizeof(limits[0]));
-    retVal += new_setRegister<ito::uint32>(0x60E1, 0x00, limits[1], sizeof(limits[1]));
+    retVal += new_setRegister<ito::uint16>(0x60E0, 0x00, limits[0], sizeof(limits[0]));
+    retVal += new_setRegister<ito::uint16>(0x60E1, 0x00, limits[1], sizeof(limits[1]));
     return retVal;
 }
 

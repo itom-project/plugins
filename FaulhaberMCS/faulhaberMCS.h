@@ -202,7 +202,7 @@ private:
     ito::RetVal setOperationMode(const ito::int8& mode);
 
     ito::RetVal getTorqueLimits(ito::uint16 limits[]);
-    ito::RetVal setTorqueLimits(const ito::uint32 limits[]);
+    ito::RetVal setTorqueLimits(const ito::uint16 limits[]);
 
     ito::RetVal updateStatusMCS();
 
