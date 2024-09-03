@@ -1288,58 +1288,6 @@ void FaulhaberMCS::faultReset()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::parseResponse(
-    const QByteArray& response, std::vector<int>& parsedResponse)
-{
-    ito::RetVal retValue = ito::retOk;
-
-    uint8_t length = static_cast<uint8_t>(response[1]);
-
-    QByteArray ansVector = response.mid(1, length);
-
-    uint8_t nodeNumber = static_cast<uint8_t>(ansVector[1]);
-    uint8_t command = static_cast<uint8_t>(ansVector[2]);
-    uint16_t index = static_cast<uint8_t>(ansVector[3]) | (static_cast<uint8_t>(ansVector[4]) << 8);
-    uint8_t subIndex = static_cast<uint8_t>(ansVector[5]);
-
-    if ((command == 0x01) || (command == 0x02)) // SDO read, SDO write
-    {
-        parsedResponse = std::vector<int>(ansVector.begin() + 6, ansVector.begin() + length - 1);
-    }
-    else if (command == 0x03) // error
-    {
-        parsedResponse = std::vector<int>(ansVector.begin() + 6, ansVector.begin() + length - 1);
-        // Add all entries of the parsedResponse vector
-        int sum = 0;
-        for (int value : parsedResponse)
-        {
-            sum += value;
-        }
-
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during parse response with value: %1").arg(sum).toLatin1().data());
-    }
-    else if (command == 0x05) // status word notification
-    {
-        parsedResponse = std::vector<int>(ansVector.begin() + 6, ansVector.begin() + length);
-    }
-    else
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("Unknown command received: %1")
-                .arg(static_cast<uint8_t>(command))
-                .toLatin1()
-                .data());
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 {
     ito::RetVal retValue = ito::retOk;
@@ -2594,12 +2542,7 @@ ito::RetVal FaulhaberMCS::setRegister(
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
 
-    retVal += sendCommand(data);
-
-    if (!retVal.containsError())
-    {
-        retVal += readResponse(response);
-    }
+    retVal += sendCommandAndGetResponse(data, response);
 
     if (!retVal.containsError())
     {

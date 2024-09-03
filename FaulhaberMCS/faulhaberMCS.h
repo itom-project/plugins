@@ -105,7 +105,6 @@ private:
     ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
 
     ito::RetVal readResponse(QByteArray& result);
-    ito::RetVal parseResponse(const QByteArray& response, std::vector<int>& parsedResponse);
 
     ito::uint8 calculateChecksum(const QByteArray& message);
     bool verifyChecksum(QByteArray& message, ito::uint8& receivedCRC);
