@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -22,8 +22,6 @@
 
 #include "deviceContainer.h"
 
-
-
 #include "gccommon.h"
 
 #include <qfileinfo.h>
@@ -32,17 +30,18 @@
 #include "common/sharedStructures.h"
 #include <iostream>
 
-/*static*/ GenTLOrganizer *GenTLOrganizer::m_pOrganizer = NULL;
+/*static*/ GenTLOrganizer *GenTLOrganizer::m_pOrganizer = nullptr;
+/*static*/ const QByteArray GenTLInterface::SerialNumberPrefix = "Serial:";
 //----------------------------------------------------------------------------------------------------------------------------------
 
 /*static*/ GenTLOrganizer * GenTLOrganizer::instance(void)
 {
     static GenTLOrganizerSingleton w;
-    if (GenTLOrganizer::m_pOrganizer == NULL)
+    if (GenTLOrganizer::m_pOrganizer == nullptr)
     {
         #pragma omp critical
         {
-            if (GenTLOrganizer::m_pOrganizer == NULL)
+            if (GenTLOrganizer::m_pOrganizer == nullptr)
             {
                 GenTLOrganizer::m_pOrganizer = new GenTLOrganizer();
             }
@@ -88,13 +87,13 @@ QSharedPointer<GenTLSystem> GenTLOrganizer::getSystem(const QString &filename, i
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GenTLSystem::GenTLSystem() :
-    GCInitLib(NULL),
-    GCCloseLib(NULL),
-    GCGetInfo(NULL),
-    GCGetLastError(NULL),
-    TLOpen(NULL),
-    TLClose(NULL),
-    TLUpdateInterfaceList(NULL),
+    GCInitLib(nullptr),
+    GCCloseLib(nullptr),
+    GCGetInfo(nullptr),
+    GCGetLastError(nullptr),
+    TLOpen(nullptr),
+    TLClose(nullptr),
+    TLUpdateInterfaceList(nullptr),
     m_initialized(false),
     m_systemInit(false),
     m_systemOpened(false),
@@ -112,7 +111,7 @@ GenTLSystem::~GenTLSystem()
         if (TLClose && m_systemOpened)
         {
             TLClose(m_handle);
-            m_handle = NULL;
+            m_handle = nullptr;
         }
 
         if (GCCloseLib && m_systemInit)
@@ -537,12 +536,23 @@ int GenTLInterface::getNumDevices() const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 \param deviceID: ID of device to be opened, if empty, the first available device is used.
 */
-QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID, GenTL::DEVICE_ACCESS_FLAGS deviceAccess, ito::RetVal &retval)
+QSharedPointer<GenTLDevice> GenTLInterface::getDevice(
+    const QByteArray &deviceID,
+    GenTL::DEVICE_ACCESS_FLAGS deviceAccess,
+    ito::RetVal &retval)
 {
+    bool fetchSerialNumberNotDeviceID = deviceID.startsWith(SerialNumberPrefix);
+    QByteArray requestedSerialNumber = "";
+
+    if (fetchSerialNumberNotDeviceID)
+    {
+        requestedSerialNumber = deviceID.mid(SerialNumberPrefix.size());
+    }
+
     if (!IFGetDeviceInfo)
     {
         retval += ito::RetVal(ito::retError, 0, "System not initialized");
@@ -556,11 +566,28 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
         {
             if (m_devices[i].isNull() == false)
             {
-                usedDeviceIDs.insert(m_devices[i].toStrongRef().data()->getDeviceID());
+                const auto dev = m_devices[i].toStrongRef();
 
-                if (m_devices[i].toStrongRef().data()->getDeviceID() == deviceID)
+                usedDeviceIDs.insert(dev->getDeviceID());
+
+                if (fetchSerialNumberNotDeviceID)
                 {
-                    retval += ito::RetVal::format(ito::retError,0,"device '%s' already in use", deviceID.constData());
+                    if (requestedSerialNumber != "" && dev->getSerialNumber() == requestedSerialNumber)
+                    {
+                        retval += ito::RetVal::format(
+                            ito::retError,
+                            0,
+                            "device with serial number '%s' already in use",
+                            requestedSerialNumber.constData()
+                        );
+                    }
+                }
+                else
+                {
+                    if (dev->getDeviceID() == deviceID)
+                    {
+                        retval += ito::RetVal::format(ito::retError, 0, "device '%s' already in use", deviceID.constData());
+                    }
                 }
             }
         }
@@ -586,17 +613,19 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
 
             for (uint32_t i = 0; i < piNumDevices; ++i)
             {
+                piSize = 512;
                 localRetVal = checkGCError(IFGetDeviceID(m_handle, i, sDeviceID, &piSize));
 
                 //check access status
                 GenTL::DEVICE_ACCESS_STATUS accessStatus = GenTL::DEVICE_ACCESS_STATUS_UNKNOWN;
+                QByteArray deviceSerialNumber(200, ' ');
 
                 if (!localRetVal.containsError())
                 {
                     GenTL::INFO_DATATYPE piType;
                     char pBuffer[512];
-                    size_t piSize = sizeof(pBuffer);
-                    GenTL::GC_ERROR err = IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ACCESS_STATUS, &piType, &pBuffer, &piSize);
+                    size_t piSize2 = sizeof(pBuffer);
+                    GenTL::GC_ERROR err = IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ACCESS_STATUS, &piType, &pBuffer, &piSize2);
 
                     if (err == GenTL::GC_ERR_SUCCESS && piType == GenTL::INFO_DATATYPE_INT32)
                     {
@@ -623,6 +652,17 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                             "that this camera can be accessed!",
                             sDeviceID);
                     }
+
+
+                    piSize2 = deviceSerialNumber.size();
+                    if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_SERIAL_NUMBER, &piType, deviceSerialNumber.data(), &piSize2) != GenTL::GC_ERR_SUCCESS)
+                    {
+                        deviceSerialNumber = "";
+                    }
+                    else
+                    {
+                        deviceSerialNumber = deviceSerialNumber.left(piSize2 - 1);
+                    }
                 }
 
                 if (!localRetVal.containsError())
@@ -635,7 +675,11 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                     {
                         found = true;
                     }
-                    else if (deviceID == sDeviceID)
+                    else if (fetchSerialNumberNotDeviceID && deviceSerialNumber == requestedSerialNumber)
+                    {
+                        found = true;
+                    }
+                    else if (!fetchSerialNumberNotDeviceID && deviceID == sDeviceID)
                     {
                         found = true;
                     }
@@ -668,8 +712,8 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             {
                 //try to open the interface with the given interfaceID
                 sDeviceID[0] = '\0';
-                memcpy(sDeviceID, deviceID.constData(), sizeof(char) * std::min<int>(deviceID.size(),(int)piSize));
-                sDeviceID[piSize-1] = '\0';
+                memcpy(sDeviceID, deviceID.constData(), sizeof(char) * std::min<int>(deviceID.size(), (int)piSize));
+                sDeviceID[piSize - 1] = '\0';
             }
 
             if (m_verbose >= VERBOSE_INFO)
@@ -710,7 +754,7 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
             if (!retval.containsError())
             {
                 GenTL::INFO_DATATYPE piType;
-                QByteArray id(200, '\0');
+                QByteArray id(200, ' ');
                 piSize = id.size();
                 if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_ID, &piType, id.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
                 {
@@ -718,10 +762,10 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
                 else
                 {
-                    id = id.left(piSize);
+                    id = id.left(piSize - 1);
                 }
 
-                QByteArray vendor(200, '\0');
+                QByteArray vendor(200, ' ');
                 piSize = vendor.size();
                 if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_VENDOR, &piType, vendor.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
                 {
@@ -729,10 +773,10 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
                 else
                 {
-                    vendor = vendor.left(piSize);
+                    vendor = vendor.left(piSize - 1);
                 }
 
-                QByteArray model(200, '\0');
+                QByteArray model(200, ' ');
                 piSize = model.size();
                 if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_MODEL, &piType, model.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
                 {
@@ -740,10 +784,21 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
                 else
                 {
-                    model = model.left(piSize);
+                    model = model.left(piSize - 1);
                 }
 
-                QByteArray identifier(200, '\0');
+                QByteArray serialNumber(200, ' ');
+                piSize = serialNumber.size();
+                if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_SERIAL_NUMBER, &piType, serialNumber.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
+                {
+                    serialNumber = "";
+                }
+                else
+                {
+                    serialNumber = serialNumber.left(piSize - 1);
+                }
+
+                QByteArray identifier(200, ' ');
                 piSize = identifier.size();
                 if (IFGetDeviceInfo(m_handle, sDeviceID, GenTL::DEVICE_INFO_DISPLAYNAME, &piType, identifier.data(), &piSize) != GenTL::GC_ERR_SUCCESS)
                 {
@@ -751,7 +806,8 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 }
                 else
                 {
-                    identifier = identifier.left(piSize);
+                    identifier = identifier.left(piSize - 1);
+
                     if (m_verbose >= VERBOSE_INFO)
                     {
                         std::cout << "OK. Device '" << identifier.constData() << "' opened.\n" << std::endl;
@@ -761,19 +817,21 @@ QSharedPointer<GenTLDevice> GenTLInterface::getDevice(const QByteArray &deviceID
                 if (vendor != "" && model != "")
                 {
                     identifier = (QLatin1String(vendor) + " " + QLatin1String(model)).toLatin1();
+
                     if (id != "")
                     {
                         identifier += " (" + QString::fromLatin1(id).toLatin1() + ")";
                     }
                 }
 
-                qDebug() << id << vendor << model << identifier;
+                qDebug() << id << vendor << model << identifier << serialNumber;
 
 
-                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, identifier, m_verbose, retval);
+                GenTLDevice *gtld = new GenTLDevice(m_lib, devHandle, sDeviceID, model, identifier, serialNumber, m_verbose, retval);
+
                 if (!retval.containsError())
                 {
-                    return QSharedPointer<GenTLDevice>( gtld );
+                    return QSharedPointer<GenTLDevice>(gtld);
                 }
                 else
                 {
