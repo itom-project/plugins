@@ -120,20 +120,8 @@ private:
     template <typename T> ito::RetVal parseResponse(QByteArray& response, T& parsedResponse);
 
     // SET REGISTER
-    void setRegister(
-        const uint16_t& address,
-        const uint8_t& subindex,
-        const int32_t& value,
-        const uint8_t& length);
-    ito::RetVal setRegisterWithAnswerInteger(
-        const uint16_t& address,
-        const uint8_t& subindex,
-        const int& value,
-        const int& length,
-        int& answer);
-
     template <typename T>
-    ito::RetVal new_setRegister(
+    ito::RetVal setRegister(
         const ito::uint16& address,
         const ito::uint8& subindex,
         const ito::uint32& value,
@@ -212,6 +200,12 @@ private:
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);
+    ito::RetVal setHomingOffset(const ito::int32& offset);
+    ito::RetVal setHomingSpeed(const ito::uint32& speed);
+    ito::RetVal setHomingSeekVelocity(const ito::uint32& seek);
+    ito::RetVal setHomingAcceleration(const ito::uint32& acceleration);
+    ito::RetVal setHomingLimitCheckDelayTime(const ito::uint16& time);
+    ito::RetVal setHomingTorqueLimits(const ito::uint16 limits[]);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
