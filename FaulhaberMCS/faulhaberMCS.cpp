@@ -2368,34 +2368,49 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
     QByteArray data = "";
     qsizetype size;
     ito::uint8 checkCRC;
-
-    // todo
-    ito::uint8 CharS = static_cast<ito::uint8>(response[0]);
-    ito::uint8 length = static_cast<ito::uint8>(response[1]);
-    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
-    ito::uint8 command = static_cast<ito::uint8>(response[3]);
-    ito::uint16 index =
-        static_cast<ito::uint8>(response[4]) | (static_cast<ito::uint8>(response[5]) << 8);
-    ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
     ito::uint8 recievedCRC;
+    ito::uint8 command;
+    ito::uint8 length;
+    ito::uint8 nodeNumber;
+    // check if response is between m_S and m_E
+    qsizetype startIndex = response.indexOf(m_S);
+    qsizetype endIndex = response.lastIndexOf(m_E);
 
-    qsizetype endIndex = response.indexOf(m_E);
-
-    if (endIndex == -1)
+    if (startIndex == -1 || endIndex == -1)
     {
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("The character 'E' was not detected in the received bytearray.").toLatin1().data());
+            tr("The character 'S' or 'E' was not detected in the received bytearray.")
+                .toLatin1()
+                .data());
     }
     else
     {
-        if (endIndex > length)
-        {
-            response.truncate(endIndex + 1);
-        }
+        response = response.mid(startIndex, endIndex + 1);
     }
 
+    if (!retValue.containsError())
+    {
+        length = static_cast<ito::uint8>(response[1]);
+        nodeNumber = static_cast<ito::uint8>(response[2]);
+        command = static_cast<ito::uint8>(response[3]);
+        // ito::uint16 index = static_cast<ito::uint8>(response[4]) |
+        // (static_cast<ito::uint8>(response[5]) << 8); ito::uint8 subIndex =
+        // static_cast<ito::uint8>(response[6]);
+
+        if (nodeNumber != m_node)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The node number '%1' does not match the expected node number '%2'.")
+                    .arg(nodeNumber)
+                    .arg(m_node)
+                    .toLatin1()
+                    .data());
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -2403,18 +2418,17 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 
         ito::uint8 CharE = static_cast<ito::uint8>(response[endIndex]);
 
-        if (command == 0x01) // SDO read request
+        if (command == 0x01 || command == 0x05) // SDO read request/response
         {
-            if (length == 7) // SDO read parameter request
-            {
-                recievedCRC = static_cast<ito::uint8>(response[7]);
-                checkCRC = calculateChecksum(response.mid(1, size + 1));
+            recievedCRC = static_cast<ito::uint8>(response[length]);
+            if (length > 7) // SDO write parameter request
+            { // TODO use sliced instead mid for QT6 because is faster
+                checkCRC = calculateChecksum(response.mid(1, length - 1));
+                data = response.mid(7, length - 7 + 1);
             }
-            else // SDO read parameter response
+            else // SDO write parameter response
             {
-                recievedCRC = static_cast<ito::uint8>(response[size - 2]);
-                checkCRC = calculateChecksum(response.mid(1, size - 3));
-                data = response.mid(7, size - 2);
+                checkCRC = calculateChecksum(response.mid(1, length));
             }
 
             if (recievedCRC != checkCRC)
@@ -2462,10 +2476,11 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                 }
             }
         }
-        else if (command == 0x02)
+        else if (command == 0x02) // SDO write request/response
         {
-            recievedCRC = static_cast<ito::uint8>(response[7]);
-            checkCRC = calculateChecksum(response.mid(1, response.indexOf(CharE) - 2));
+            recievedCRC = static_cast<ito::uint8>(response[length]);
+            checkCRC = calculateChecksum(response.mid(1, length - 1));
+
             if (recievedCRC != checkCRC)
             {
                 retValue +=
@@ -2486,11 +2501,6 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                     .toLatin1()
                     .data());
         }
-        else if (command == 0x05) // status word notification
-        {
-            retValue +=
-                ito::RetVal(ito::retError, 0, tr("status word notification").toLatin1().data());
-        }
         else if (command == 0x07) // EMCY notification
         {
             retValue += ito::RetVal(ito::retError, 0, tr("EMCY notification").toLatin1().data());
@@ -2506,7 +2516,6 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                     .data());
         }
     }
-
 
     return retValue;
 }
