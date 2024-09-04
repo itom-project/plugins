@@ -619,21 +619,87 @@ ito::RetVal FaulhaberMCS::init(
     // ENABLE
     if (!retValue.containsError())
     {
-        shutDown();
-        resetCommunication();
-        Sleep(100);
-        startAll();
-        isAlive();
-        Sleep(500);
+        int EnState = 0; // Reset the local step counter
+
+        // Initial check of the status word
         retValue += updateStatusMCS();
+        const ito::uint16 statusOperationEnabled = 0x27;
+        const ito::uint16 statusSwitchOnDisabled = 0x40;
+        const ito::uint16 statusQuickStop = 0x07;
 
-        if (m_params["switchOnDisabled"].getVal<int>())
+        if (retValue.containsError())
         {
-            shutDown();
-            switchOn();
-            enableOperation();
+            return retValue;
+        }
 
+        const ito::uint16 statusMask = 0x6F;
+        ito::uint16 status = m_statusWord & statusMask;
+
+        // Check for being in stopped mode
+        if (status == statusQuickStop)
+        {
+            enableOperation(); // Enable Operation
+            EnState = 1;
+        }
+        else if (status == statusOperationEnabled) // Drive is already
+                                                   // enabled
+        {
+            EnState = 2;
+        }
+        else if (status != statusSwitchOnDisabled) // Otherwise, it's safe to
+                                                   // disable first
+        {
+            // We need to send a shutdown first
+            disableVoltage(); // Controlword = CiACmdDisableVoltage
+        }
+
+        QElapsedTimer timer;
+        bool timeout = false;
+        QMutex waitMutex;
+        QWaitCondition waitCondition;
+
+        // Loop until the drive is enabled
+        timer.start();
+        while (EnState != 2 && !timeout)
+        {
             retValue += updateStatusMCS();
+            if (retValue.containsError())
+            {
+                return retValue;
+            }
+
+            status = m_statusWord & statusMask; // Cyclically check the status word
+
+            if (EnState == 0)
+            {
+                if (status == 0x40)
+                {
+                    // Send the enable signature
+                    shutDown(); // CiACmdShutdown
+                    enableOperation(); // CiACmdEnableOperation
+                    EnState = 1;
+                }
+            }
+            else if (EnState == 1)
+            {
+                // Wait for enabled
+                if (status == statusOperationEnabled)
+                {
+                    EnState = 2;
+                }
+            }
+
+            // short delay
+            waitMutex.lock();
+            waitCondition.wait(&waitMutex, 10);
+            waitMutex.unlock();
+
+            if (timer.hasExpired(5000)) // timeout during movement
+            {
+                timeout = true;
+                retValue +=
+                    ito::RetVal(ito::retError, 9999, "Timeout occurred during initialization.");
+            }
         }
     }
 
@@ -828,9 +894,78 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
         openedNodes.removeOne(m_node);
         if (openedNodes.isEmpty())
         {
-            shutDown();
-            disableOperation();
-            stop();
+            int DiState = 0; // Reset the local step counter
+            const ito::uint16 statusOperationEnabled = 0x27;
+
+            retValue += updateStatusMCS();
+            const ito::uint16 CiAStatusMask = 0x6F;
+            ito::uint16 status = m_statusWord & CiAStatusMask;
+
+            if (status == statusOperationEnabled)
+            {
+                // Send a shutdown command first to stop the motor
+                disable(); // CiACmdDisable
+                DiState = 1;
+            }
+            else
+            {
+                // Otherwise, the disable voltage is the next command
+                // Out of quick-stop or switched on.
+                DiState = 2;
+            }
+
+            QElapsedTimer timer;
+            QMutex waitMutex;
+            QWaitCondition waitCondition;
+            bool timeout = false;
+
+            // Loop until the disable operation is complete
+            timer.start();
+            while (DiState != 4 && !timeout)
+            {
+                retValue += updateStatusMCS();
+                if (retValue.containsError())
+                {
+                    return retValue;
+                }
+
+                status = m_statusWord & CiAStatusMask; // Cyclically check the status
+
+                if (DiState == 1)
+                {
+                    if (status == 0x23)
+                    {
+                        // Only now it's safe to send the disable voltage command
+                        DiState = 2;
+                    }
+                }
+                else if (DiState == 2)
+                {
+                    // Send the disable voltage command
+                    disableVoltage(); // CiACmdDisableVoltage
+                    DiState = 3;
+                }
+                else if (DiState == 3)
+                {
+                    // Wait for final state
+                    if (status == 0x40)
+                    {
+                        DiState = 4;
+                    }
+                }
+
+                // Optional: Include a small delay to prevent busy looping
+                waitMutex.lock();
+                waitCondition.wait(&waitMutex, 10);
+                waitMutex.unlock();
+
+                if (timer.hasExpired(5000)) // timeout during movement
+                {
+                    timeout = true;
+                    retValue +=
+                        ito::RetVal(ito::retError, 9999, "Timeout occurred during closing.");
+                }
+            }
         }
     }
 
@@ -1242,25 +1377,25 @@ void FaulhaberMCS::startAll()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::shutDown()
 {
-    setControlWord(0x10);
+    setControlWord(0x06);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::switchOn()
 {
-    setControlWord(0x11);
+    setControlWord(0x07);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::enableOperation()
 {
-    setControlWord(0x15);
+    setControlWord(0x0F);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FaulhaberMCS::disable()
 {
-    setControlWord(0x12);
+    setControlWord(0x07);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
