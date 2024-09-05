@@ -137,25 +137,21 @@ private:
     // CONTROL WORD
     void setControlWord(const ito::uint16 word);
 
-    void start();
-    void stop();
-    void resetCommunication();
-    void startAll();
-
     void shutDown();
-    void switchOn();
     void disable();
     void quickStop();
-    void disableOperation();
     void enableOperation();
     void disableVoltage();
-    void faultReset();
 
     // HOMING
     ito::RetVal homingCurrentPosToZero(const int& axis);
 
     int doubleToInteger(const double& value);
     int responseVectorToInteger(const std::vector<int>& response);
+
+    // STARTUP
+    ito::RetVal startupSequence();
+    ito::RetVal shutDownSequence();
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
