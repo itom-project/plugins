@@ -146,12 +146,12 @@ private:
     // HOMING
     ito::RetVal homingCurrentPosToZero(const int& axis);
 
-    int doubleToInteger(const double& value);
-    int responseVectorToInteger(const std::vector<int>& response);
+    ito::int32 doubleToInteger(const double& value);
 
-    // STARTUP
+    // STARTUP and STATUS
     ito::RetVal startupSequence();
     ito::RetVal shutDownSequence();
+    ito::RetVal updateStatusMCS();
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
@@ -162,9 +162,6 @@ private:
     ito::RetVal getFirmware(QString& version);
     ito::RetVal getAmbientTemperature(ito::uint8& temp);
     ito::RetVal getNodeID(ito::uint8& id);
-
-    ito::RetVal getPosMCS(ito::int32& pos);
-    ito::RetVal getTargetPosMCS(ito::int32& pos);
 
     ito::RetVal getMaxMotorSpeed(ito::uint32& speed);
     ito::RetVal setMaxMotorSpeed(const ito::uint32& speed);
@@ -187,11 +184,11 @@ private:
     ito::RetVal getTorqueLimits(ito::uint16 limits[]);
     ito::RetVal setTorqueLimits(const ito::uint16 limits[]);
 
-    ito::RetVal updateStatusMCS();
-
     // POSITION
-    ito::RetVal setPosAbsMCS(const double& pos);
-    ito::RetVal setPosRelMCS(const double& pos);
+    ito::RetVal getPosMCS(ito::int32& pos);
+    ito::RetVal getTargetPosMCS(ito::int32& pos);
+    ito::RetVal setPosAbsMCS(const ito::int32& pos);
+    ito::RetVal setPosRelMCS(const ito::int32& pos);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);

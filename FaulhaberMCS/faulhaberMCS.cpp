@@ -58,7 +58,12 @@ FaulhaberMCSInterface::FaulhaberMCSInterface()
 \n\
 It was implemented for RS232 communication and tested with:\n\
 \n\
-* Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/");
+* Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/\n\
+\n\
+Homing options:\n\
+- 'setOrigin' function of the plugin uses the homing method '37' to set the current position to 0.\n\
+- 'homing' execFunction can be used for the other homing methods which needs more input parameters.\n\
+");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
@@ -105,8 +110,8 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
-    m_statusWord(0), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
+    AddInActuator(), m_delayAfterSendCommandMS(10), m_async(0), m_numOfAxes(1), m_node(1),
+    m_statusWord(0x00), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
     m_waitForMCSTimeout(3000), m_nodeAppended(false)
 {
     ito::Param paramVal(
@@ -823,7 +828,7 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
         openedNodes.removeOne(m_node);
         if (openedNodes.isEmpty())
         {
-            retValue = shutDownSequence();
+            retValue += shutDownSequence();
         }
     }
 
@@ -1483,7 +1488,22 @@ ito::RetVal FaulhaberMCS::setPosAbs(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool released = false;
+
+    // check if pos in integer32 value range
+    foreach (const auto i, axis)
+    {
+        if (pos[i] > std::numeric_limits<ito::int32>::max() ||
+            pos[i] < std::numeric_limits<ito::int32>::min())
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Target position %1 is out of range").arg(pos[i]).toLatin1().data());
+            waitCond->returnValue = retValue;
+            waitCond->release();
+            return retValue;
+        }
+    }
 
     if (isMotorMoving())
     {
@@ -1523,8 +1543,9 @@ ito::RetVal FaulhaberMCS::setPosAbs(
 
             foreach (const int i, axis)
             {
-                retValue += setPosAbsMCS(pos[i]);
-                m_targetPos[i] = pos[i];
+                ito::int32 newVal = static_cast<ito::int32>(pos[i]);
+                retValue += setPosAbsMCS(newVal);
+                m_targetPos[i] = static_cast<ito::float64>(newVal);
             }
 
             sendTargetUpdate();
@@ -1585,7 +1606,22 @@ ito::RetVal FaulhaberMCS::setPosRel(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool released = false;
+
+    // check if pos in integer32 value range
+    foreach (const auto i, axis)
+    {
+        if (pos[i] > std::numeric_limits<ito::int32>::max() ||
+            pos[i] < std::numeric_limits<ito::int32>::min())
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Relative position %1 is out of range").arg(pos[i]).toLatin1().data());
+            waitCond->returnValue = retValue;
+            waitCond->release();
+            return retValue;
+        }
+    }
 
     if (isMotorMoving())
     {
@@ -1625,8 +1661,9 @@ ito::RetVal FaulhaberMCS::setPosRel(
 
             foreach (const int i, axis)
             {
-                retValue += setPosRelMCS(pos[i]);
-                m_currentPos[i] = pos[i];
+                ito::int32 newPos = static_cast<ito::int32>(pos[i]);
+                retValue += setPosRelMCS(newPos);
+                m_currentPos[i] = static_cast<ito::float64>(newPos);
             }
 
             sendTargetUpdate();
@@ -2039,26 +2076,20 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setPosAbsMCS(const double& pos)
+ito::RetVal FaulhaberMCS::setPosAbsMCS(const ito::int32& pos)
 {
     ito::RetVal retVal = ito::retOk;
-    int answer;
-    int val = doubleToInteger(pos);
-
-    setRegister<ito::int32>(0x607a, 0x00, val, sizeof(val));
+    setRegister<ito::int32>(0x607a, 0x00, pos, sizeof(pos));
     setControlWord(0x000f);
     setControlWord(0x003F);
     return updateStatusMCS();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setPosRelMCS(const double& pos)
+ito::RetVal FaulhaberMCS::setPosRelMCS(const ito::int32& pos)
 {
     ito::RetVal retVal = ito::retOk;
-    int answer;
-    int val = doubleToInteger(pos);
-
-    setRegister<ito::int32>(0x607a, 0x00, val, sizeof(val));
+    setRegister<ito::int32>(0x607a, 0x00, pos, sizeof(pos));
     setControlWord(0x000f);
     setControlWord(0x007F);
     return updateStatusMCS();
@@ -2071,20 +2102,9 @@ ito::RetVal FaulhaberMCS::setHomingMode(const ito::int8& mode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int FaulhaberMCS::doubleToInteger(const double& value)
+ito::int32 FaulhaberMCS::doubleToInteger(const double& value)
 {
-    return int(std::round(value * 100) / 100);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int FaulhaberMCS::responseVectorToInteger(const std::vector<int>& response)
-{
-    int answer = 0;
-    for (size_t i = 0; i < response.size(); ++i)
-    {
-        answer |= response[i] << (8 * i);
-    }
-    return answer;
+    return ito::int32(std::round(value * 100) / 100);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2167,6 +2187,7 @@ ito::RetVal FaulhaberMCS::startupSequence()
             retValue += ito::RetVal(ito::retError, 9999, "Timeout occurred during initialization.");
         }
     }
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
