@@ -30,16 +30,10 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
-#include <qdatetime.h>
-#include <qmessagebox.h>
 #include <qplugin.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
-
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 
 #include "dockWidgetFaulhaberMCS.h"
 
@@ -76,7 +70,7 @@ Homing options:\n\
         "serialIOInstance",
         ito::ParamBase::HWRef | ito::ParamBase::In,
         nullptr,
-        tr("An opened serial port of 'SerialIO' plugin instance.").toLatin1().data());
+        tr("An opened serial port of 'SerialIO' plugin instance.").toUtf8().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
@@ -85,7 +79,7 @@ Homing options:\n\
         ito::ParamBase::Int | ito::ParamBase::In,
         1,
         new ito::IntMeta(1, std::numeric_limits<int>::max(), 1, "Communication"),
-        tr("Node number of device.").toLatin1().data());
+        tr("Node number of device.").toUtf8().data());
     m_initParamsMand.append(paramVal);
 }
 
@@ -110,7 +104,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCS::FaulhaberMCS() :
-    AddInActuator(), m_delayAfterSendCommandMS(10), m_async(0), m_numOfAxes(1), m_node(1),
+    AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0x00), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
     m_waitForMCSTimeout(3000), m_nodeAppended(false)
 {
@@ -124,7 +118,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "serialNumber",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Serial number of device.").toLatin1().data());
+        tr("Serial number of device.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -132,7 +126,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "deviceName",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Name of device.").toLatin1().data());
+        tr("Name of device.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -140,7 +134,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "vendorID",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Vendor ID of device.").toLatin1().data());
+        tr("Vendor ID of device.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -148,7 +142,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "productCode",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Product code number.").toLatin1().data());
+        tr("Product code number.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -156,7 +150,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "revisionNumber",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Revision number.").toLatin1().data());
+        tr("Revision number.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -164,16 +158,8 @@ FaulhaberMCS::FaulhaberMCS() :
         "firmware",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "",
-        tr("Firmware version.").toLatin1().data());
+        tr("Firmware version.").toUtf8().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "ambientTemperature",
-        ito::ParamBase::Int | ito::ParamBase::Readonly,
-        0,
-        tr("Ambient Temperature.").toLatin1().data());
-    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -184,9 +170,34 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
            "activated, 1: PP (default), 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST.")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(-4, 10, 1, "General"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------- category temperatures ---------------------------//
+    paramVal = ito::Param(
+        "temperatureCPU",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("CPU temperature in [°C].").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Temperature"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "temperaturePowerStage",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Power stage temperature in [°C].").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Temperature"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "temperatureWinding",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Winding temperature in [°C].").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Temperature"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category movement ---------------------------//
@@ -198,7 +209,7 @@ FaulhaberMCS::FaulhaberMCS() :
         m_async,
         tr("Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is "
            "implemented.")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -209,7 +220,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         std::numeric_limits<int>::max(),
         60000,
-        tr("Timeout for movement in ms.").toLatin1().data());
+        tr("Timeout for movement in ms.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -219,7 +230,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         m_async,
-        tr("Enable (1) or Disable (0) operation.").toLatin1().data());
+        tr("Enable (1) or Disable (0) operation.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -229,7 +240,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         m_async,
-        tr("Enable (1) or Disable (0) device power.").toLatin1().data());
+        tr("Enable (1) or Disable (0) device power.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -239,7 +250,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         m_async,
-        tr("homed (1) or not homed (0).").toLatin1().data());
+        tr("homed (1) or not homed (0).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -251,7 +262,7 @@ FaulhaberMCS::FaulhaberMCS() :
         65535,
         0,
         tr("16bit statusWord to CiA 402. It indicates the status of the drive unit.")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 65535, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -262,7 +273,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toLatin1().data());
+        tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -273,7 +284,7 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -284,7 +295,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toLatin1().data());
+        tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -294,7 +305,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Error present, 0: No error present (Bit 3).").toLatin1().data());
+        tr("1: Error present, 0: No error present (Bit 3).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -304,7 +315,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toLatin1().data());
+        tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -314,7 +325,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toLatin1().data());
+        tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -324,7 +335,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toLatin1().data());
+        tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -336,7 +347,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: One of the monitored temperatures has exceeded at least the warning threshold, 0: "
            "No raised temperatures (Bit 7).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -347,7 +358,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Target has reached, 0: is moving (Bit 10).").toLatin1().data());
+        tr("1: Target has reached, 0: is moving (Bit 10).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -359,7 +370,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not "
            "reached (Bit 11).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -372,7 +383,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: New set-point has been loaded, 0: Previous set-point being changed or already "
            "reached (Bit 12).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -385,7 +396,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: Permissible range for the following error exceeded, 0: The actual position follows "
            "the instructions without a following error (Bit 13).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -393,7 +404,7 @@ FaulhaberMCS::FaulhaberMCS() :
 
     //------------------------------- category Motion control ---------------------------//
     paramVal = ito::Param(
-        "maxMotorSpeed", ito::ParamBase::Int, 0, tr("Max motor speed in 1/min.").toLatin1().data());
+        "maxMotorSpeed", ito::ParamBase::Int, 0, tr("Max motor speed in 1/min.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -401,7 +412,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "profileVelocity",
         ito::ParamBase::Int,
         0,
-        tr("Profile velocity in 1/min.").toLatin1().data());
+        tr("Profile velocity in 1/min.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -423,14 +434,9 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(1, 32750, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    int limits[] = {6000, 6000};
     paramVal = ito::Param(
-        "torqueLimits",
-        ito::ParamBase::IntArray,
-        2,
-        limits,
-        tr("Torque limit values (negative, positive).").toLatin1().data());
-    paramVal.setMeta(new ito::IntArrayMeta(0, 6000, 1, "Torque control"), true);
+        "maxTorqueLimit", ito::ParamBase::Int, 0, tr("Maximum torque limit.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- EXEC FUNCTIONS
@@ -447,7 +453,7 @@ FaulhaberMCS::FaulhaberMCS() :
         tr("Homing method. Methods 1…34: A limit switch or an additional reference switch is used "
            "as reference. Method 37: The position is set to 0 without reference run. Methods "
            "–1…–4: A mechanical limit stop is set as reference.")
-            .toLatin1()
+            .toUtf8()
             .data());
     pMand.append(paramVal);
 
@@ -459,7 +465,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Offset of the zero position relative to the position of the reference switch in "
            "userdefined units.")
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -469,7 +475,7 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         32767,
         400,
-        tr("Speed during search for switch.").toLatin1().data());
+        tr("Speed during search for switch.").toUtf8().data());
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
@@ -478,7 +484,7 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         32767,
         50,
-        tr("Speed during search for zero.").toLatin1().data());
+        tr("Speed during search for zero.").toUtf8().data());
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
@@ -487,7 +493,7 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         30000,
         400,
-        tr("Speed during search for zero.").toLatin1().data());
+        tr("Speed during search for zero.").toUtf8().data());
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
@@ -496,7 +502,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         32750,
         10,
-        tr("Delay time until blockage detection [ms].").toLatin1().data());
+        tr("Delay time until blockage detection [ms].").toUtf8().data());
     pOpt.append(paramVal);
 
     int torqueLimits[] = {1000, 1000};
@@ -506,7 +512,7 @@ FaulhaberMCS::FaulhaberMCS() :
         2,
         torqueLimits,
         new ito::IntArrayMeta(0, 300, 1, "Torque control"),
-        tr("Homing torque limit values (negative, positive).").toLatin1().data());
+        tr("Homing torque limit values (negative, positive).").toUtf8().data());
     pOpt.append(paramVal);
 
     registerExecFunc(
@@ -516,7 +522,7 @@ FaulhaberMCS::FaulhaberMCS() :
         pOut,
         tr("In most of the cases before position control is to be used, the drive must perform a "
            "reference run to align the position used by the drive to the mechanic setup.")
-            .toLatin1()
+            .toUtf8()
             .data());
     pMand.clear();
     pOpt.clear();
@@ -527,8 +533,7 @@ FaulhaberMCS::FaulhaberMCS() :
     m_currentStatus.fill(0, m_numOfAxes);
     m_targetPos.fill(0.0, m_numOfAxes);
 
-    // the following lines create and register the plugin's dock widget. Delete these lines if the
-    // plugin does not have a dock widget.
+    //------------------------------------------------- DOCK WIDGET
     DockWidgetFaulhaberMCS* dw = new DockWidgetFaulhaberMCS(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
@@ -574,7 +579,7 @@ ito::RetVal FaulhaberMCS::init(
                 0,
                 tr("An instance of noder number '%1' is already open.")
                     .arg(m_node)
-                    .toLatin1()
+                    .toUtf8()
                     .data());
         }
         else
@@ -591,7 +596,7 @@ ito::RetVal FaulhaberMCS::init(
                         tr("The node number of the device is '%1' and not '%2'.")
                             .arg(node)
                             .arg(m_node)
-                            .toLatin1()
+                            .toUtf8()
                             .data());
                 }
                 else
@@ -608,7 +613,7 @@ ito::RetVal FaulhaberMCS::init(
                     tr("No device found for serialIO port '%1' and node '%2'.")
                         .arg(m_port)
                         .arg(m_node)
-                        .toLatin1()
+                        .toUtf8()
                         .data());
             }
         }
@@ -618,9 +623,7 @@ ito::RetVal FaulhaberMCS::init(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!")
-                .toLatin1()
-                .data());
+            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!").toUtf8().data());
     }
 
     if (!retValue.containsError())
@@ -629,7 +632,6 @@ ito::RetVal FaulhaberMCS::init(
         m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
     }
-
 
     // ENABLE
     if (!retValue.containsError())
@@ -700,11 +702,31 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        ito::uint8 temp;
-        retValue += getAmbientTemperature(temp);
+        ito::int16 temp;
+        retValue += getCPUTemperature(temp);
         if (!retValue.containsError())
         {
-            m_params["ambientTemperature"].setVal<int>(temp);
+            m_params["temperatureCPU"].setVal<int>(temp);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::int16 temp;
+        retValue += getPowerStageTemperature(temp);
+        if (!retValue.containsError())
+        {
+            m_params["temperaturePowerStage"].setVal<int>(temp);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::int16 temp;
+        retValue += getWindingTemperature(temp);
+        if (!retValue.containsError())
+        {
+            m_params["temperatureWinding"].setVal<int>(temp);
         }
     }
 
@@ -775,34 +797,26 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        ito::uint16 limits[] = {0, 0};
-        retValue += getTorqueLimits(limits);
-
-        int intLimits[sizeof(limits) / sizeof(limits[0])];
-
-        for (int i = 0; i < sizeof(limits) / sizeof(limits[0]); ++i)
-        {
-            intLimits[i] = (int)limits[i];
-        }
-
+        ito::uint16 limit;
+        retValue += getMaxTorqueLimit(limit);
         if (!retValue.containsError())
         {
-            m_params["torqueLimits"].setVal<int*>(intLimits, 2);
+            m_params["maxTorqueLimit"].setVal<int>(limit);
         }
     }
 
     if (!retValue.containsError())
     {
-        retValue += updateStatusMCS();
+        retValue += updateStatus();
 
         ito::int32 pos;
         retValue += getPosMCS(pos);
-
         m_currentPos[0] = static_cast<double>(pos);
+
         retValue += getTargetPosMCS(pos);
         m_targetPos[0] = static_cast<double>(pos);
         m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
-        retValue += updateStatusMCS();
+        retValue += updateStatus();
         sendStatusUpdate(false);
         emit parametersChanged(m_params);
     }
@@ -857,8 +871,6 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
 
     if (retValue == ito::retOk)
     {
-        // gets the parameter key from m_params map (read-only is allowed, since we only want to
-        // get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
@@ -874,10 +886,28 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(mode);
             }
         }
-        else if (key == "ambientTemperature")
+        else if (key == "temperatureCPU")
         {
-            ito::uint8 temp;
-            retValue += getAmbientTemperature(temp);
+            ito::int16 temp;
+            retValue += getCPUTemperature(temp);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(temp);
+            }
+        }
+        else if (key == "temperaturePowerStage")
+        {
+            ito::int16 temp;
+            retValue += getPowerStageTemperature(temp);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(temp);
+            }
+        }
+        else if (key == "temperatureWinding")
+        {
+            ito::int16 temp;
+            retValue += getWindingTemperature(temp);
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(temp);
@@ -930,7 +960,7 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "statusWord")
         {
-            retValue += updateStatusMCS();
+            retValue += updateStatus();
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(m_statusWord);
@@ -940,22 +970,13 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         {
             it->setVal<int>(m_waitForDoneTimeout);
         }
-        else if (key == "torqueLimits")
+        else if (key == "maxTorqueLimit")
         {
-            ito::uint16 limits[] = {0, 0};
-            retValue += getTorqueLimits(limits);
-
-            int int_limits[sizeof(limits) / sizeof(limits[0])];
-
-            // Convert from uint16_t to int
-            for (int i = 0; i < sizeof(limits) / sizeof(limits[0]); ++i)
-            {
-                int_limits[i] = (int)limits[i];
-            }
-
+            ito::uint16 limit;
+            retValue += getMaxTorqueLimit(limit);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int*>(int_limits, 2);
+                retValue += it->setVal<int>(limit);
             }
         }
 
@@ -989,24 +1010,16 @@ ito::RetVal FaulhaberMCS::setParam(
     if (isMotorMoving()) // this if-case is for actuators only.
     {
         retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("any axis is moving. Parameters cannot be set.").toLatin1().data());
+            ito::retError, 0, tr("any axis is moving. Parameters cannot be set.").toUtf8().data());
     }
 
     if (!retValue.containsError())
     {
-        // gets the parameter key from m_params map (read-only is not allowed and leads to
-        // ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
     if (!retValue.containsError())
     {
-        // here the new parameter is checked whether its type corresponds or can be cast into
-        // the
-        //  value in m_params and whether the new type fits to the requirements of any possible
-        //  meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
@@ -1038,7 +1051,7 @@ ito::RetVal FaulhaberMCS::setParam(
                     0,
                     tr("Value (%1) of parameter 'operation' must be 0 or 1.")
                         .arg(operation)
-                        .toLatin1()
+                        .toUtf8()
                         .data());
             }
 
@@ -1062,10 +1075,10 @@ ito::RetVal FaulhaberMCS::setParam(
                     0,
                     tr("Value (%1) of parameter 'power' must be 0 or 1.")
                         .arg(power)
-                        .toLatin1()
+                        .toUtf8()
                         .data());
             }
-            updateStatusMCS();
+            retValue += updateStatus();
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "maxMotorSpeed")
@@ -1108,15 +1121,9 @@ ito::RetVal FaulhaberMCS::setParam(
                 retValue += it->copyValueFrom(&(*val));
             }
         }
-        else if (key == "torqueLimits")
+        else if (key == "maxTorqueLimit")
         {
-            int posLimits = val->getVal<int*>()[0];
-            int negLimits = val->getVal<int*>()[1];
-
-            ito::uint16 limits[] = {
-                static_cast<ito::uint16>(posLimits), static_cast<ito::uint16>(negLimits)};
-
-            retValue += setTorqueLimits(limits);
+            retValue += setMaxTorqueLimit(static_cast<ito::uint16>(val->getVal<int>()));
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -1130,16 +1137,13 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else
         {
-            // all parameters that don't need further checks can simply be assigned
-            // to the value in m_params (the rest is already checked above)
             retValue += it->copyValueFrom(&(*val));
         }
     }
 
     if (!retValue.containsError())
     {
-        emit parametersChanged(
-            m_params); // send changed parameters to any connected dialogs or dock-widgets
+        emit parametersChanged(m_params);
     }
 
     if (waitCond)
@@ -1152,26 +1156,24 @@ ito::RetVal FaulhaberMCS::setParam(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-    the given axis should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal FaulhaberMCS::calib(const int axis, ItomSharedSemaphore* waitCond)
 {
     return calib(QVector<int>(1, axis), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-    the given axes should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-
+    retValue +=
+        ito::RetVal(ito::retError, 0, tr("'Calib' function is not implemented.").toUtf8().data());
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
     return retValue;
 }
 
@@ -1250,7 +1252,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     if (retValue.containsError())
     {
         retValue += ito::RetVal(
-            ito::retError, 0, tr("Could not set operation mode to Homing (6).").toLatin1().data());
+            ito::retError, 0, tr("Could not set operation mode to Homing (6).").toUtf8().data());
     }
 
     if (!retValue.containsError())
@@ -1268,7 +1270,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             waitMutex.unlock();
             setAlive();
 
-            retValue += updateStatusMCS();
+            retValue += updateStatus();
 
             if (m_statusWord && m_params["setPointAcknowledged"].getVal<int>()) // homing successful
             {
@@ -1277,17 +1279,15 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             else if (m_statusWord && m_params["followingError"].getVal<int>()) // error during
                                                                                // homing
             {
-                retValue += ito::RetVal(
-                    ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
+                retValue +=
+                    ito::RetVal(ito::retError, 0, tr("Error occurs during homing").toUtf8().data());
             }
 
             // Timeout during movement
             if (timer.hasExpired(m_waitForMCSTimeout))
             {
                 retValue += ito::RetVal(
-                    ito::retError,
-                    9999,
-                    QString("Timeout occurred during homing").toLatin1().data());
+                    ito::retError, 9999, QString("Timeout occurred during homing").toUtf8().data());
                 break;
             }
         }
@@ -1305,29 +1305,17 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     }
 
     retValue += setOperationMode(static_cast<ito::uint8>(1));
-    retValue += updateStatusMCS();
+    retValue += updateStatus();
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setOrigin
-/*!
-    the given axis should be set to origin. That means (if possible) its current position should
-   be considered to be the new origin (zero-position). If this operation is not possible, return
-   a warning.
-*/
 ito::RetVal FaulhaberMCS::setOrigin(const int axis, ItomSharedSemaphore* waitCond)
 {
     return setOrigin(QVector<int>(1, axis), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setOrigin
-/*!
-    the given axes should be set to origin. That means (if possible) their current position
-   should be considered to be the new origin (zero-position). If this operation is not possible,
-   return a warning.
-*/
 ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1336,7 +1324,7 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
     if (isMotorMoving())
     {
         retValue +=
-            ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
+            ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toUtf8().data());
 
         if (waitCond)
         {
@@ -1369,12 +1357,6 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getStatus
-/*!
-    re-checks the status (current position, available, end switch reached, moving, at target...)
-   of all axes and returns the status of each axis as vector. Each status is an or-combination
-   of the enumeration ito::tActuatorStatus.
-*/
 ito::RetVal FaulhaberMCS::getStatus(
     QSharedPointer<QVector<int>> status, ItomSharedSemaphore* waitCond)
 {
@@ -1393,10 +1375,6 @@ ito::RetVal FaulhaberMCS::getStatus(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getPos
-/*!
-    returns the current position (in mm or degree) of the given axis
-*/
 ito::RetVal FaulhaberMCS::getPos(
     const int axis, QSharedPointer<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1416,10 +1394,6 @@ ito::RetVal FaulhaberMCS::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getPos
-/*!
-    returns the current position (in mm or degree) of all given axes
-*/
 ito::RetVal FaulhaberMCS::getPos(
     QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1442,7 +1416,7 @@ ito::RetVal FaulhaberMCS::getPos(
         else
         {
             retValue += ito::RetVal::format(
-                ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
         }
     }
 
@@ -1457,32 +1431,12 @@ ito::RetVal FaulhaberMCS::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-    starts moving the given axis to the desired absolute target position
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if the axis reached the given target position (async = 0)
-
-    In some cases only relative movements are possible, then get the current position, determine
-   the relative movement and call the method relatively move the axis.
-*/
 ito::RetVal FaulhaberMCS::setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
     return setPosAbs(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-    starts moving all given axes to the desired absolute target positions
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if all axes reached their given target positions (async = 0)
-
-    In some cases only relative movements are possible, then get the current position, determine
-   the relative movement and call the method relatively move the axis.
-*/
 ito::RetVal FaulhaberMCS::setPosAbs(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1498,7 +1452,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             retValue += ito::RetVal(
                 ito::retError,
                 0,
-                tr("Target position %1 is out of range").arg(pos[i]).toLatin1().data());
+                tr("Target position %1 is out of range").arg(pos[i]).toUtf8().data());
             waitCond->returnValue = retValue;
             waitCond->release();
             return retValue;
@@ -1510,7 +1464,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
+            tr("motor is running. Additional actions are not possible.").toUtf8().data());
     }
     else
     {
@@ -1520,7 +1474,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             if (i < 0 || i >= m_numOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
             }
             else
             {
@@ -1616,7 +1570,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
             retValue += ito::RetVal(
                 ito::retError,
                 0,
-                tr("Relative position %1 is out of range").arg(pos[i]).toLatin1().data());
+                tr("Relative position %1 is out of range").arg(pos[i]).toUtf8().data());
             waitCond->returnValue = retValue;
             waitCond->release();
             return retValue;
@@ -1628,7 +1582,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("motor is running. Additional actions are not possible.").toLatin1().data());
+            tr("motor is running. Additional actions are not possible.").toUtf8().data());
     }
     else
     {
@@ -1638,7 +1592,7 @@ ito::RetVal FaulhaberMCS::setPosRel(
             if (i < 0 || i >= m_numOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
             }
             else
             {
@@ -1702,14 +1656,14 @@ ito::RetVal FaulhaberMCS::execFunc(
 
     if (funcName == "homing")
     {
-        retValue += updateStatusMCS();
+        retValue += updateStatus();
 
         if (!m_params["operationEnabled"].getVal<int>())
         {
             retValue += ito::RetVal(
                 ito::retError,
                 0,
-                tr("Operation is not enabled. Please enable operation first.").toLatin1().data());
+                tr("Operation is not enabled. Please enable operation first.").toUtf8().data());
             return retValue;
         }
 
@@ -1741,7 +1695,7 @@ ito::RetVal FaulhaberMCS::execFunc(
         {
             setControlWord(0x10);
             setControlWord(0x001F);
-            retValue += updateStatusMCS();
+            retValue += updateStatus();
 
             int setPoint = m_params["setPointAcknowledged"].getVal<int>();
             int target = m_params["targetReached"].getVal<int>();
@@ -1755,7 +1709,7 @@ ito::RetVal FaulhaberMCS::execFunc(
             else if (m_params["followingError"].getVal<int>() != 0)
             {
                 retValue += ito::RetVal(
-                    ito::retError, 0, tr("Error occurred during homing").toLatin1().data());
+                    ito::retError, 0, tr("Error occurred during homing").toUtf8().data());
             }
             else
             {
@@ -1763,7 +1717,7 @@ ito::RetVal FaulhaberMCS::execFunc(
                     ito::retError,
                     0,
                     tr("Homing could not be started. Please check the parameters.")
-                        .toLatin1()
+                        .toUtf8()
                         .data());
             }
         }
@@ -1830,11 +1784,24 @@ ito::RetVal FaulhaberMCS::getFirmware(QString& version)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getAmbientTemperature(ito::uint8& temp)
+ito::RetVal FaulhaberMCS::getCPUTemperature(ito::int16& temp)
 {
-    return readRegisterWithParsedResponse<ito::uint8>(0x232A, 0x08, temp);
+    return readRegisterWithParsedResponse<ito::int16>(0x2326, 0x01, temp);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPowerStageTemperature(ito::int16& temp)
+{
+    return readRegisterWithParsedResponse<ito::int16>(0x2326, 0x02, temp);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getWindingTemperature(ito::int16& temp)
+{
+    return readRegisterWithParsedResponse<ito::int16>(0x2326, 0x03, temp);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getNodeID(ito::uint8& id)
 {
     return readRegisterWithParsedResponse<ito::uint8>(0x2400, 0x03, id);
@@ -1918,7 +1885,7 @@ ito::RetVal FaulhaberMCS::setProfileVelocity(const ito::uint32& speed)
             0,
             tr("Speed is higher than maxMotorSpeed. Speed is set to maxMotorSpeed of value '%1'.")
                 .arg(maxSpeed)
-                .toLatin1()
+                .toUtf8()
                 .data());
     }
     else
@@ -1941,22 +1908,15 @@ ito::RetVal FaulhaberMCS::setOperationMode(const ito::int8& mode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getTorqueLimits(ito::uint16 limits[])
+ito::RetVal FaulhaberMCS::getMaxTorqueLimit(ito::uint16& limit)
 {
-    ito::RetVal retVal = ito::retOk;
-
-    retVal += readRegisterWithParsedResponse<ito::uint16>(0x60E0, 0x00, limits[0]);
-    retVal += readRegisterWithParsedResponse<ito::uint16>(0x60E1, 0x00, limits[1]);
-    return retVal;
+    return readRegisterWithParsedResponse<ito::uint16>(0x6072, 0x00, limit);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTorqueLimits(const ito::uint16 limits[])
+ito::RetVal FaulhaberMCS::setMaxTorqueLimit(const ito::uint16 limit)
 {
-    ito::RetVal retVal = ito::retOk;
-    retVal += setRegister<ito::uint16>(0x60E0, 0x00, limits[0], sizeof(limits[0]));
-    retVal += setRegister<ito::uint16>(0x60E1, 0x00, limits[1], sizeof(limits[1]));
-    return retVal;
+    return setRegister<ito::uint16>(0x6072, 0x00, limit, sizeof(limit));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2027,7 +1987,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
                     0,
                     tr("Error occurred during reading statusword with value %1")
                         .arg(m_statusWord)
-                        .toLatin1()
+                        .toUtf8()
                         .data());
                 break;
             }
@@ -2036,37 +1996,7 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 
         if (!retVal.containsError())
         {
-            m_params["statusWord"].setVal<int>(m_statusWord);
-            std::bitset<16> statusBit = static_cast<std::bitset<16>>(m_statusWord);
-
-            // Interpretation of bits
-            bool readyToSwitchOn = statusBit[0];
-            bool switchedOn = statusBit[1];
-            bool operationEnabled = statusBit[2];
-            bool fault = statusBit[3];
-            bool voltageEnabled = statusBit[4];
-            bool quickStop = statusBit[5];
-            bool switchOnDisabled = statusBit[6];
-            bool warning = statusBit[7];
-
-            bool targetReached = statusBit[10];
-            bool internalLimitActive = statusBit[11];
-            bool setPointAcknowledged = statusBit[12];
-            bool followingError = statusBit[13];
-
-            m_params["readyToSwitchOn"].setVal<int>((readyToSwitchOn ? true : false));
-            m_params["switchedOn"].setVal<int>((switchedOn ? true : false));
-            m_params["operationEnabled"].setVal<int>((operationEnabled ? true : false));
-            m_params["fault"].setVal<int>((fault ? true : false));
-            m_params["voltageEnabled"].setVal<int>((voltageEnabled ? true : false));
-            m_params["quickStop"].setVal<int>((quickStop ? true : false));
-            m_params["switchOnDisabled"].setVal<int>((switchOnDisabled ? true : false));
-            m_params["warning"].setVal<int>((warning ? true : false));
-            m_params["targetReached"].setVal<int>((targetReached ? true : false));
-            m_params["internalLimitActive"].setVal<int>((internalLimitActive ? true : false));
-            m_params["setPointAcknowledged"].setVal<int>((setPointAcknowledged ? true : false));
-            m_params["followingError"].setVal<int>((followingError ? true : false));
-
+            updateStatusBits(m_statusWord);
             emit parametersChanged(m_params);
         }
         sendStatusUpdate();
@@ -2076,13 +2006,49 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void FaulhaberMCS::updateStatusBits(const ito::uint16& statusWord)
+{
+    m_statusWord = statusWord;
+    m_params["statusWord"].setVal<int>(statusWord);
+    std::bitset<16> statusBit = static_cast<std::bitset<16>>(m_statusWord);
+
+    // Interpretation of bits
+    bool readyToSwitchOn = statusBit[0];
+    bool switchedOn = statusBit[1];
+    bool operationEnabled = statusBit[2];
+    bool fault = statusBit[3];
+    bool voltageEnabled = statusBit[4];
+    bool quickStop = statusBit[5];
+    bool switchOnDisabled = statusBit[6];
+    bool warning = statusBit[7];
+
+    bool targetReached = statusBit[10];
+    bool internalLimitActive = statusBit[11];
+    bool setPointAcknowledged = statusBit[12];
+    bool followingError = statusBit[13];
+
+    m_params["readyToSwitchOn"].setVal<int>((readyToSwitchOn ? true : false));
+    m_params["switchedOn"].setVal<int>((switchedOn ? true : false));
+    m_params["operationEnabled"].setVal<int>((operationEnabled ? true : false));
+    m_params["fault"].setVal<int>((fault ? true : false));
+    m_params["voltageEnabled"].setVal<int>((voltageEnabled ? true : false));
+    m_params["quickStop"].setVal<int>((quickStop ? true : false));
+    m_params["switchOnDisabled"].setVal<int>((switchOnDisabled ? true : false));
+    m_params["warning"].setVal<int>((warning ? true : false));
+    m_params["targetReached"].setVal<int>((targetReached ? true : false));
+    m_params["internalLimitActive"].setVal<int>((internalLimitActive ? true : false));
+    m_params["setPointAcknowledged"].setVal<int>((setPointAcknowledged ? true : false));
+    m_params["followingError"].setVal<int>((followingError ? true : false));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setPosAbsMCS(const ito::int32& pos)
 {
     ito::RetVal retVal = ito::retOk;
     setRegister<ito::int32>(0x607a, 0x00, pos, sizeof(pos));
     setControlWord(0x000f);
     setControlWord(0x003F);
-    return updateStatusMCS();
+    return updateStatus();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2092,26 +2058,20 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const ito::int32& pos)
     setRegister<ito::int32>(0x607a, 0x00, pos, sizeof(pos));
     setControlWord(0x000f);
     setControlWord(0x007F);
-    return updateStatusMCS();
+    return updateStatus();
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingMode(const ito::int8& mode)
 {
     return setRegister<ito::int8>(0x6098, 0x00, mode, sizeof(mode));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::int32 FaulhaberMCS::doubleToInteger(const double& value)
-{
-    return ito::int32(std::round(value * 100) / 100);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::startupSequence()
 {
     // Initial check of the status word
-    ito::RetVal retValue = updateStatusMCS();
+    ito::RetVal retValue = updateStatus();
     int enableStatus = 0; // Reset the local step counter
 
     if (retValue.containsError())
@@ -2149,7 +2109,7 @@ ito::RetVal FaulhaberMCS::startupSequence()
     timer.start();
     while (enableStatus != 2 && !timeout)
     {
-        retValue += updateStatusMCS();
+        retValue += updateStatus();
         if (retValue.containsError())
         {
             return retValue;
@@ -2193,7 +2153,7 @@ ito::RetVal FaulhaberMCS::startupSequence()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::shutDownSequence()
 {
-    ito::RetVal retValue = updateStatusMCS();
+    ito::RetVal retValue = updateStatus();
 
     int disableState = 0; // Reset the local step counter
 
@@ -2222,7 +2182,7 @@ ito::RetVal FaulhaberMCS::shutDownSequence()
     timer.start();
     while (disableState != 4 && !timeout)
     {
-        retValue += updateStatusMCS();
+        retValue += updateStatus();
         if (retValue.containsError())
         {
             return retValue;
@@ -2299,7 +2259,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += startupSequence();
             done = true;
             sendStatusUpdate();
-            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toUtf8().data());
             return retVal;
         }
 
@@ -2320,7 +2280,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += getTargetPosMCS(targetPos);
             m_targetPos[i] = static_cast<double>(targetPos);
 
-            retVal += updateStatusMCS();
+            retVal += updateStatus();
             if ((m_statusWord && m_params["targetReached"].getVal<int>()))
             {
                 setStatus(
@@ -2363,11 +2323,6 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method obtains the current position, status of all axes
-/*!
-    This is a helper function, it is not necessary to implement a function like this, but it
-   might help.
-*/
 ito::RetVal FaulhaberMCS::updateStatus()
 {
     ito::RetVal retVal = updateStatusMCS();
@@ -2382,21 +2337,17 @@ ito::RetVal FaulhaberMCS::updateStatus()
         m_currentPos[i] = static_cast<double>(intPos);
 
         if (m_params["targetReached"].getVal<int>())
-        { // if you know that the axis i is at its target position, change from moving to
-            // target if moving has been set, therefore:
+        {
             replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
         }
         else
-        { // if you know that the axis i is still moving, set this bit (all other moving-related
-            // bits are unchecked, but the status bits and switches bits kept unchanged
+        {
             setStatus(
                 m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
         }
     }
 
     emit actuatorStatusChanged(m_currentStatus, m_currentPos);
-    // emit actuatorStatusChanged with m_currentStatus and m_currentPos in order to inform
-    // connected slots about the current status and position
     sendStatusUpdate();
 
     return retVal;
@@ -2460,18 +2411,32 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
         if (!retValue.containsError())
         {
             result += QByteArray(curBuf.data(), *curBufLen);
-            startIndex = result.indexOf(m_S);
-            endIndex = result.lastIndexOf(m_E);
 
-            if (startIndex != -1 && endIndex != -1)
+            if (!(result.contains(m_S) && result.contains(m_E)))
             {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                result = result.sliced(startIndex, endIndex + 1 - startIndex);
-#else
-                result = result.mid(startIndex, endIndex + 1);
-#endif
-                done = true;
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("The character 'S' or 'E' was not detected in the received bytearray.")
+                        .toUtf8()
+                        .data());
             }
+
+            if (result.count(m_S) > 1) // reduce the bytearray
+            {
+                result = result.right(result.size() - result.indexOf(m_S));
+            }
+
+            if (result.count(m_E) > 1)
+            {
+                result = result.left(result.lastIndexOf(m_E) + 1);
+            }
+            if (static_cast<ito::uint8>(result[1]) < 6) // length is less than 7
+            {
+                retValue +=
+                    ito::RetVal(ito::retError, 0, tr("The length is <= 6.").toUtf8().data());
+            }
+            done = true;
         }
 
         if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
@@ -2479,7 +2444,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
             retValue += ito::RetVal(
                 ito::retError,
                 m_delayAfterSendCommandMS,
-                tr("timeout during read string.").toLatin1().data());
+                tr("timeout during read string.").toUtf8().data());
             return retValue;
         }
     }
@@ -2513,7 +2478,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             ito::retError,
             0,
             tr("The character 'S' or 'E' was not detected in the received bytearray.")
-                .toLatin1()
+                .toUtf8()
                 .data());
     }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -2536,7 +2501,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             tr("The node number '%1' does not match the expected node number '%2'.")
                 .arg(nodeNumber)
                 .arg(m_node)
-                .toLatin1()
+                .toUtf8()
                 .data());
     }
 
@@ -2548,7 +2513,6 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
     switch (command)
     {
     case 0x01: // SDO read request/response
-    case 0x05: // SDO write parameter request
         if (length > 7)
         {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -2576,13 +2540,13 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                 tr("Checksum mismatch (received: '%1', calculated: '%2').")
                     .arg(receivedCRC)
                     .arg(checkCRC)
-                    .toLatin1()
+                    .toUtf8()
                     .data());
         }
 
         if (length <= 7)
         {
-            return ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toUtf8().data());
         }
 
         if constexpr (std::is_same<T, QString>::value)
@@ -2601,12 +2565,12 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, tr("Data size mismatch").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, tr("Data size mismatch").toUtf8().data());
             }
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Unsupported type").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("Unsupported type").toUtf8().data());
         }
         break;
 
@@ -2618,7 +2582,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 #endif
         if (receivedCRC != checkCRC)
         {
-            return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toUtf8().data());
         }
         break;
 
@@ -2627,10 +2591,28 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
         return ito::RetVal(
             ito::retError,
             0,
-            tr("Error during parse response with value: %1").arg(parsedResponse).toLatin1().data());
+            tr("Error during parse response with value: %1").arg(parsedResponse).toUtf8().data());
+    case 0x05: // SDO write parameter request
+        checkCRC = calculateChecksum(response.sliced(1, length - 1));
+        if (receivedCRC != checkCRC)
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                    .arg(receivedCRC)
+                    .arg(checkCRC)
+                    .toUtf8()
+                    .data());
+        }
+        m_statusWord = (response[4] << 8) | response[5];
+        updateStatusBits(m_statusWord);
+        emit parametersChanged(m_params);
+        sendStatusUpdate();
+        break;
 
     case 0x07: // EMCY notification
-        return ito::RetVal(ito::retError, 0, tr("EMCY notification").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("EMCY notification").toUtf8().data());
 
     default:
         return ito::RetVal(
@@ -2638,7 +2620,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             0,
             tr("Unknown command received: %1")
                 .arg(static_cast<ito::uint8>(command))
-                .toLatin1()
+                .toUtf8()
                 .data());
     }
 
@@ -2710,8 +2692,6 @@ ito::RetVal FaulhaberMCS::setRegisterWithParsedResponse(
 
     while (answer != value)
     {
-        // retVal += updateStatusMCS();
-
         // short delay
         waitMutex.lock();
         waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
@@ -2728,7 +2708,7 @@ ito::RetVal FaulhaberMCS::setRegisterWithParsedResponse(
                 tr("Timeout occurred during setting register %1 to %2")
                     .arg(address)
                     .arg(value)
-                    .toLatin1()
+                    .toUtf8()
                     .data());
             break;
         }

@@ -27,7 +27,6 @@
 #include "dialogFaulhaberMCS.h"
 #include "dockWidgetFaulhaberMCS.h"
 #include <qsharedpointer.h>
-#include <windows.h>
 
 #include <bitset>
 
@@ -143,15 +142,11 @@ private:
     void enableOperation();
     void disableVoltage();
 
-    // HOMING
-    ito::RetVal homingCurrentPosToZero(const int& axis);
-
-    ito::int32 doubleToInteger(const double& value);
-
     // STARTUP and STATUS
     ito::RetVal startupSequence();
     ito::RetVal shutDownSequence();
     ito::RetVal updateStatusMCS();
+    void updateStatusBits(const ito::uint16& statusWord);
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
@@ -160,7 +155,6 @@ private:
     ito::RetVal getProductCode(QString& code);
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getFirmware(QString& version);
-    ito::RetVal getAmbientTemperature(ito::uint8& temp);
     ito::RetVal getNodeID(ito::uint8& id);
 
     ito::RetVal getMaxMotorSpeed(ito::uint32& speed);
@@ -181,8 +175,13 @@ private:
     ito::RetVal getOperationMode(ito::int8& mode);
     ito::RetVal setOperationMode(const ito::int8& mode);
 
-    ito::RetVal getTorqueLimits(ito::uint16 limits[]);
-    ito::RetVal setTorqueLimits(const ito::uint16 limits[]);
+    ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
+    ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
+
+    // TEMPERATURES
+    ito::RetVal getCPUTemperature(ito::int16& temp);
+    ito::RetVal getPowerStageTemperature(ito::int16& temp);
+    ito::RetVal getWindingTemperature(ito::int16& temp);
 
     // POSITION
     ito::RetVal getPosMCS(ito::int32& pos);
@@ -198,6 +197,8 @@ private:
     ito::RetVal setHomingAcceleration(const ito::uint32& acceleration);
     ito::RetVal setHomingLimitCheckDelayTime(const ito::uint16& time);
     ito::RetVal setHomingTorqueLimits(const ito::uint16 limits[]);
+
+    ito::RetVal homingCurrentPosToZero(const int& axis);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
