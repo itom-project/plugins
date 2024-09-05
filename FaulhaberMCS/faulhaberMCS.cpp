@@ -1179,7 +1179,7 @@ ito::RetVal FaulhaberMCS::calib(const QVector<int> axis, ItomSharedSemaphore* wa
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::readRegister(
-    const ito::uint16& address, const ito::uint8& subindex, QByteArray& response)
+    const ito::uint16& address, const ito::uint8& subindex, QList<QByteArray>& responseList)
 {
     ito::RetVal retValue = ito::retOk;
 
@@ -1200,7 +1200,7 @@ ito::RetVal FaulhaberMCS::readRegister(
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
 
-    return sendCommandAndGetResponse(data, response);
+    return sendCommandAndGetResponse(data, responseList);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2366,21 +2366,22 @@ ito::RetVal FaulhaberMCS::sendCommand(const QByteArray& command)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(const QByteArray& command, QByteArray& response)
+ito::RetVal FaulhaberMCS::sendCommandAndGetResponse(
+    const QByteArray& command, QList<QByteArray>& responseList)
 {
     ito::RetVal retVal = ito::retOk;
     retVal += sendCommand(command);
 
     if (!retVal.containsError())
     {
-        retVal += readResponse(response);
+        retVal += readResponse(responseList);
     }
 
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
+ito::RetVal FaulhaberMCS::readResponse(QList<QByteArray>& responseList)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
@@ -2389,13 +2390,15 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
     const int bufferSize = 100;
     QSharedPointer<int> curBufLen(new int(bufferSize));
     QSharedPointer<char> curBuf(new char[bufferSize]);
-    result.clear();
+    QByteArray result;
+    QByteArray extractedPart;
 
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
     qsizetype startIndex;
     qsizetype endIndex;
+    int start = 0;
 
     timer.start();
     while (!done && !retValue.containsError())
@@ -2422,20 +2425,54 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& result)
                         .data());
             }
 
-            if (result.count(m_S) > 1) // reduce the bytearray
+            while (true)
             {
-                result = result.right(result.size() - result.indexOf(m_S));
+                startIndex = result.indexOf(m_S, start);
+                if (startIndex == -1) // No more occurrences of m_S
+                {
+                    break;
+                }
+
+                // Find the next occurrence of 0x45 after the current 0x53
+                endIndex = result.indexOf(m_E, startIndex + 1);
+
+                if (!(endIndex + 1 == result.size()))
+                {
+                    // Ensure 0x53 and 0x45 are non-adjacent
+                    while (endIndex != -1 && !(result[endIndex + 1] == m_S))
+                    {
+                        // If they are adjacent, find the next 0x45
+                        endIndex = result.indexOf(m_E, endIndex + 1);
+                        if (endIndex == -1)
+                        {
+                            break;
+                        }
+                        if (endIndex + 1 == result.size())
+                        {
+                            break;
+                        }
+                    }
+                }
+
+
+                if (endIndex == -1)
+                {
+                    // No more valid 0x45 found after 0x53
+                    break;
+                }
+
+                // Extract the part between m_S and m_E (inclusive)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                extractedPart = result.sliced(startIndex, endIndex - startIndex + 1);
+#else
+                extractedPart = result.mid(startIndex, endIndex - startIndex + 1);
+#endif
+                responseList.append(extractedPart);
+
+                // Move the start position forward to continue searching for the next pair
+                start = endIndex + 1;
             }
 
-            if (result.count(m_E) > 1)
-            {
-                result = result.left(result.lastIndexOf(m_E) + 1);
-            }
-            if (static_cast<ito::uint8>(result[1]) < 6) // length is less than 7
-            {
-                retValue +=
-                    ito::RetVal(ito::retError, 0, tr("The length is <= 6.").toUtf8().data());
-            }
             done = true;
         }
 
@@ -2456,172 +2493,181 @@ template <typename T>
 inline ito::RetVal FaulhaberMCS::readRegisterWithParsedResponse(
     const ito::uint16& address, const ito::uint8& subindex, T& answer)
 {
-    QByteArray response;
-    ito::RetVal retValue = readRegister(address, subindex, response);
+    QList<QByteArray> responseList;
+    ito::RetVal retValue = readRegister(address, subindex, responseList);
     if (!retValue.containsError())
-        retValue += parseResponse<T>(response, answer);
+        retValue += parseResponse<T>(responseList, answer);
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
-ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
+ito::RetVal FaulhaberMCS::parseResponse(QList<QByteArray>& responseList, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
-
-    // Identify and extract the relevant portion of the response
-    qsizetype startIndex = response.indexOf(m_S);
-    qsizetype endIndex = response.lastIndexOf(m_E);
-    if (startIndex == -1 || endIndex == -1)
+    QByteArray response;
+    for (QList<QByteArray>::iterator it = responseList.begin(); it != responseList.end(); ++it)
     {
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("The character 'S' or 'E' was not detected in the received bytearray.")
-                .toUtf8()
-                .data());
-    }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    response = response.sliced(startIndex, endIndex + 1);
-#else
-    response = response.mid(startIndex, endIndex + 1);
-#endif
+        response = *it;
 
-    // Extract basic components from the response
-    ito::uint8 length = static_cast<ito::uint8>(response[1]);
-    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
-    ito::uint8 command = static_cast<ito::uint8>(response[3]);
-
-    // Verify node number
-    if (nodeNumber != m_node)
-    {
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("The node number '%1' does not match the expected node number '%2'.")
-                .arg(nodeNumber)
-                .arg(m_node)
-                .toUtf8()
-                .data());
-    }
-
-    ito::uint8 receivedCRC = static_cast<ito::uint8>(response[length]);
-    ito::uint8 checkCRC = 0x00;
-    QByteArray data = "";
-
-    // Process the response based on command type
-    switch (command)
-    {
-    case 0x01: // SDO read request/response
-        if (length > 7)
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, length - 1));
-            data = response.sliced(7, length - 7 + 1);
-#else
-            checkCRC = calculateChecksum(response.mid(1, length - 1));
-            data = response.mid(7, length - 7 + 1);
-#endif
-        }
-        else
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, length));
-#else
-            checkCRC = calculateChecksum(response.mid(1, length));
-#endif
-        }
-
-        if (receivedCRC != checkCRC)
+        // Identify and extract the relevant portion of the response
+        qsizetype startIndex = response.indexOf(m_S);
+        qsizetype endIndex = response.lastIndexOf(m_E);
+        if (startIndex == -1 || endIndex == -1)
         {
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch (received: '%1', calculated: '%2').")
-                    .arg(receivedCRC)
-                    .arg(checkCRC)
+                tr("The character 'S' or 'E' was not detected in the received bytearray.")
+                    .toUtf8()
+                    .data());
+        }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        response = response.sliced(startIndex, endIndex + 1);
+#else
+        response = response.mid(startIndex, endIndex + 1);
+#endif
+
+        // Extract basic components from the response
+        ito::uint8 length = static_cast<ito::uint8>(response[1]);
+        ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
+        ito::uint8 command = static_cast<ito::uint8>(response[3]);
+
+        // Verify node number
+        if (nodeNumber != m_node)
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("The node number '%1' does not match the expected node number '%2'.")
+                    .arg(nodeNumber)
+                    .arg(m_node)
                     .toUtf8()
                     .data());
         }
 
-        if (length <= 7)
-        {
-            return ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toUtf8().data());
-        }
+        ito::uint8 receivedCRC = static_cast<ito::uint8>(response[length]);
+        ito::uint8 checkCRC = 0x00;
+        QByteArray data = "";
 
-        if constexpr (std::is_same<T, QString>::value)
+        // Process the response based on command type
+        switch (command)
         {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            parsedResponse = QString::fromUtf8(data.sliced(0, data.size() - 1));
-#else
-            parsedResponse = QString::fromUtf8(data.mid(0, data.size() - 1));
-#endif
-        }
-        else if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value)
-        {
-            if (data.size() >= sizeof(T))
+        case 0x01: // SDO read request/response
+            if (length > 7)
             {
-                std::memcpy(&parsedResponse, data.constData(), sizeof(T));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                checkCRC = calculateChecksum(response.sliced(1, length - 1));
+                data = response.sliced(7, length - 7 + 1);
+#else
+                checkCRC = calculateChecksum(response.mid(1, length - 1));
+                data = response.mid(7, length - 7 + 1);
+#endif
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, tr("Data size mismatch").toUtf8().data());
-            }
-        }
-        else
-        {
-            return ito::RetVal(ito::retError, 0, tr("Unsupported type").toUtf8().data());
-        }
-        break;
-
-    case 0x02: // SDO write request/response
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        checkCRC = calculateChecksum(response.sliced(1, length - 1));
+                checkCRC = calculateChecksum(response.sliced(1, length));
 #else
-        checkCRC = calculateChecksum(response.mid(1, length - 1));
+                checkCRC = calculateChecksum(response.mid(1, length));
 #endif
-        if (receivedCRC != checkCRC)
-        {
-            return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toUtf8().data());
-        }
-        break;
+            }
 
-    case 0x03: // SDO abort request of error response
-        std::memcpy(&parsedResponse, response.constData() + 4, sizeof(T)); // Adjusted data offset
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during parse response with value: %1").arg(parsedResponse).toUtf8().data());
-    case 0x05: // SDO write parameter request
-        checkCRC = calculateChecksum(response.sliced(1, length - 1));
-        if (receivedCRC != checkCRC)
-        {
+            if (receivedCRC != checkCRC)
+            {
+                return ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                        .arg(receivedCRC)
+                        .arg(checkCRC)
+                        .toUtf8()
+                        .data());
+            }
+
+            if (length <= 7)
+            {
+                return ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toUtf8().data());
+            }
+
+            if constexpr (std::is_same<T, QString>::value)
+            {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                parsedResponse = QString::fromUtf8(data.sliced(0, data.size() - 1));
+#else
+                parsedResponse = QString::fromUtf8(data.mid(0, data.size() - 1));
+#endif
+            }
+            else if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value)
+            {
+                if (data.size() >= sizeof(T))
+                {
+                    std::memcpy(&parsedResponse, data.constData(), sizeof(T));
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Data size mismatch").toUtf8().data());
+                }
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, tr("Unsupported type").toUtf8().data());
+            }
+            break;
+
+        case 0x02: // SDO write request/response
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            checkCRC = calculateChecksum(response.sliced(1, length - 1));
+#else
+            checkCRC = calculateChecksum(response.mid(1, length - 1));
+#endif
+            if (receivedCRC != checkCRC)
+            {
+                return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toUtf8().data());
+            }
+            break;
+
+        case 0x03: // SDO abort request of error response
+            std::memcpy(
+                &parsedResponse, response.constData() + 4, sizeof(T)); // Adjusted data offset
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch (received: '%1', calculated: '%2').")
-                    .arg(receivedCRC)
-                    .arg(checkCRC)
+                tr("Error during parse response with value: %1")
+                    .arg(parsedResponse)
+                    .toUtf8()
+                    .data());
+        case 0x05: // SDO write parameter request
+            checkCRC = calculateChecksum(response.sliced(1, length - 1));
+            if (receivedCRC != checkCRC)
+            {
+                return ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                        .arg(receivedCRC)
+                        .arg(checkCRC)
+                        .toUtf8()
+                        .data());
+            }
+            m_statusWord = (response[4] << 8) | response[5];
+            updateStatusBits(m_statusWord);
+            emit parametersChanged(m_params);
+            sendStatusUpdate();
+            break;
+
+        case 0x07: // EMCY notification
+            return ito::RetVal(ito::retError, 0, tr("EMCY notification").toUtf8().data());
+
+        default:
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("Unknown command received: %1")
+                    .arg(static_cast<ito::uint8>(command))
                     .toUtf8()
                     .data());
         }
-        m_statusWord = (response[4] << 8) | response[5];
-        updateStatusBits(m_statusWord);
-        emit parametersChanged(m_params);
-        sendStatusUpdate();
-        break;
-
-    case 0x07: // EMCY notification
-        return ito::RetVal(ito::retError, 0, tr("EMCY notification").toUtf8().data());
-
-    default:
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("Unknown command received: %1")
-                .arg(static_cast<ito::uint8>(command))
-                .toUtf8()
-                .data());
     }
 
     return retValue;
@@ -2637,7 +2683,7 @@ ito::RetVal FaulhaberMCS::setRegister(
     const ito::uint8& length)
 {
     ito::RetVal retVal = ito::retOk;
-    QByteArray response;
+    QList<QByteArray> responseList;
     std::vector<uint8_t> command = {
         m_node,
         m_SET,
@@ -2659,12 +2705,12 @@ ito::RetVal FaulhaberMCS::setRegister(
 
     QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
 
-    retVal += sendCommandAndGetResponse(data, response);
+    retVal += sendCommandAndGetResponse(data, responseList);
 
     if (!retVal.containsError())
     {
         T parsedResponse;
-        retVal += parseResponse<T>(response, parsedResponse);
+        retVal += parseResponse<T>(responseList, parsedResponse);
     }
 
     return retVal;

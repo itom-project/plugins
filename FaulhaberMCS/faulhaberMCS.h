@@ -101,21 +101,22 @@ private:
 
     // SeralIO functions
     ito::RetVal sendCommand(const QByteArray& command);
-    ito::RetVal sendCommandAndGetResponse(const QByteArray& command, QByteArray& response);
+    ito::RetVal sendCommandAndGetResponse(
+        const QByteArray& command, QList<QByteArray>& responseList);
 
-    ito::RetVal readResponse(QByteArray& result);
+    ito::RetVal readResponse(QList<QByteArray>& result);
 
     ito::uint8 calculateChecksum(const QByteArray& message);
     bool verifyChecksum(QByteArray& message, ito::uint8& receivedCRC);
 
     // READ REGISTER
     ito::RetVal readRegister(
-        const ito::uint16& address, const ito::uint8& subindex, QByteArray& response);
+        const ito::uint16& address, const ito::uint8& subindex, QList<QByteArray>& responseList);
 
     template <typename T>
     ito::RetVal readRegisterWithParsedResponse(
         const ito::uint16& address, const ito::uint8& subindex, T& answer);
-    template <typename T> ito::RetVal parseResponse(QByteArray& response, T& parsedResponse);
+    template <typename T> ito::RetVal parseResponse(QList<QByteArray>& response, T& parsedResponse);
 
     // SET REGISTER
     template <typename T>
