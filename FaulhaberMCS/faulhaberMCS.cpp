@@ -2463,21 +2463,22 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
             length = static_cast<ito::uint8>(response[1]);
             recievedCommand = static_cast<ito::uint8>(response[3]);
 
-            if (recievedCommand == command)
+            if (recievedCommand == command) // SDO
             {
                 found = true;
                 break;
             }
-            else if (recievedCommand == 0x03)
+            else if (recievedCommand == 0x03) // error
             {
+                QByteArray parsedResponse;
                 QByteArray data = result.sliced(4, length - 4);
-
+                std::memcpy(&parsedResponse, data.constData(), sizeof(data));
                 retValue += ito::RetVal(
                     ito::retError,
                     0,
                     tr("The command '%1' was not found in the response with error '%2'.")
                         .arg(command)
-                        .arg(QString::fromUtf8(data.sliced(0, data.size() - 1)))
+                        .arg(parsedResponse)
                         .toUtf8()
                         .data());
                 break;
@@ -2579,11 +2580,6 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                     .data());
         }
 
-        if (length <= 7)
-        {
-            return ito::RetVal(ito::retError, 0, tr("The length is <= 7.").toUtf8().data());
-        }
-
         if constexpr (std::is_same<T, QString>::value)
         {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -2620,14 +2616,6 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toUtf8().data());
         }
         break;
-
-    case 0x03: // SDO abort request of error response
-        std::memcpy(&parsedResponse, response.constData() + 4, sizeof(T)); // Adjusted data offset
-
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("Error during parse response with value: %1").arg(parsedResponse).toUtf8().data());
     case 0x05: // SDO write parameter request
         checkCRC = calculateChecksum(response.sliced(1, length - 1));
         if (receivedCRC != checkCRC)
