@@ -2384,24 +2384,22 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
-    bool done = false;
 
     const int bufferSize = 100;
     QSharedPointer<int> curBufLen(new int(bufferSize));
     QSharedPointer<char> curBuf(new char[bufferSize]);
     QByteArray result;
-    QByteArray extractedPart;
-    int offset = 0;
     QList<QByteArray> responseList;
 
     ito::uint8 length;
     ito::uint8 recievedCommand;
 
+    bool done = false;
+    int offset = 0;
+    int start = 0;
+
     QMutex waitMutex;
     QWaitCondition waitCondition;
-
-    qsizetype startIndex;
-    int start = 0;
 
     timer.start();
     while (!done && !retValue.containsError())
@@ -2414,61 +2412,74 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
         *curBufLen = bufferSize;
         retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
 
-        if (!retValue.containsError())
+        if (retValue.containsError())
         {
-            result += QByteArray(curBuf.data(), *curBufLen);
-
-            // check if the response contains the start and end characters
-            if (!(result.contains(m_S) && result.contains(m_E)))
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    tr("The character 'S' or 'E' was not detected in the received bytearray.")
-                        .toUtf8()
-                        .data());
-            }
-
-            while (true && !retValue.containsError())
-            {
-                startIndex = result.indexOf(m_S, start);
-                if (startIndex == -1) // No more occurrences of m_S
-                {
-                    break;
-                }
-                length = result[1 + start];
-
-                if (startIndex + length + 2 > result.size())
-                {
-                    offset = 1;
-                }
-                else
-                {
-                    offset = 2;
-                }
-                // Extract the part between m_S and m_E (inclusive)
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                extractedPart = result.sliced(startIndex, length + offset);
-#else
-                extractedPart = result.mid(startIndex, length + offset);
-#endif
-                responseList.append(extractedPart);
-
-                // Move the start position forward to continue searching for the next pair
-                start += length + 2;
-            }
-
-            done = true;
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error occurred during reading the response from the serial port.")
+                    .toUtf8()
+                    .data());
+            break;
         }
 
-        bool found = false;
-        for (QList<QByteArray>::iterator it = responseList.begin(); it != responseList.end(); ++it)
+
+        result += QByteArray(curBuf.data(), *curBufLen);
+
+        // check if the response contains the start and end characters
+        if (!(result.contains(m_S) && result.contains(m_E)))
         {
-            response = *it;
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The character 'S' or 'E' was not detected in the received bytearray.")
+                    .toUtf8()
+                    .data());
+        }
+
+        // Extract all responses between 'S' and 'E'
+        while ((start = result.indexOf(m_S, start)) != -1 && !retValue.containsError())
+        {
+            length = static_cast<ito::uint8>(result[1 + start]);
+
+            // Ensure the entire response fits within the buffer
+            offset = (start + length + 2 > result.size()) ? 1 : 2;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QByteArray extractedPart = result.sliced(start, length + offset);
+#else
+            QByteArray extractedPart = result.mid(start, length + offset);
+#endif
+            responseList.append(extractedPart);
+            start += length + 2; // Move start forward to search for the next response
+        }
+
+        done = true;
+
+        bool found = false;
+        for (const QByteArray& resp : responseList)
+        {
+            response = resp;
+            length = static_cast<ito::uint8>(response[1]);
             recievedCommand = static_cast<ito::uint8>(response[3]);
+
             if (recievedCommand == command)
             {
                 found = true;
+                break;
+            }
+            else if (recievedCommand == 0x03)
+            {
+                QByteArray data = result.sliced(4, length - 4);
+
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("The command '%1' was not found in the response with error '%2'.")
+                        .arg(command)
+                        .arg(QString::fromUtf8(data.sliced(0, data.size() - 1)))
+                        .toUtf8()
+                        .data());
                 break;
             }
         }
