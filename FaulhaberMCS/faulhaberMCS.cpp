@@ -436,7 +436,7 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "maxTorqueLimit", ito::ParamBase::Int, 0, tr("Maximum torque limit.").toUtf8().data());
-    paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
+    paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control")); // TODO as readonly
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- EXEC FUNCTIONS
@@ -1682,7 +1682,6 @@ ito::RetVal FaulhaberMCS::execFunc(
         retValue += getOperationMode(currentOperation);
 
         retValue += setOperationMode(static_cast<ito::uint8>(6));
-        retValue += setHomingMode(method);
 
         retValue += setHomingOffset(offset);
         retValue += setHomingSpeed(homingSpeed);
@@ -1691,17 +1690,18 @@ ito::RetVal FaulhaberMCS::execFunc(
         retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
         retValue += setHomingTorqueLimits(torqueLimits);
 
+        // retValue += setHomingMode(method);
         if (!retValue.containsError())
         {
-            setControlWord(0x10);
-            setControlWord(0x001F);
+            setControlWord(0x10); // homing operation start
+
+            // setControlWord(0x001F);
             retValue += updateStatus();
 
             int setPoint = m_params["setPointAcknowledged"].getVal<int>();
             int target = m_params["targetReached"].getVal<int>();
 
-            if ((m_params["setPointAcknowledged"].getVal<int>() == 0) &&
-                (m_params["targetReached"].getVal<int>() == 0))
+            if ((setPoint == 0) && (target == 0))
             {
                 // homing started
                 int a = 1;
@@ -1719,6 +1719,12 @@ ito::RetVal FaulhaberMCS::execFunc(
                     tr("Homing could not be started. Please check the parameters.")
                         .toUtf8()
                         .data());
+            }
+
+            while (m_params["targetReached"].getVal<int>() != 1 &&
+                   m_params["targetReached"].getVal<int>() != 1)
+            {
+                retValue += updateStatus();
             }
         }
 
@@ -2397,6 +2403,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
     bool done = false;
     int offset = 0;
     int start = 0;
+    int endIndex = 0;
 
     QMutex waitMutex;
     QWaitCondition waitCondition;
@@ -2445,6 +2452,12 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
             // Ensure the entire response fits within the buffer
             offset = (start + length + 2 > result.size()) ? 1 : 2;
 
+            // Check if result contains the end character
+            endIndex = result.indexOf(m_E, start);
+            if (endIndex == -1)
+            {
+                break;
+            }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QByteArray extractedPart = result.sliced(start, length + offset);
 #else
@@ -2470,19 +2483,20 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
             }
             else if (recievedCommand == 0x03) // error
             {
-                QByteArray parsedResponse;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                QByteArray data = result.sliced(4, length - 4);
-#else
-                QByteArray data = result.mid(4, length - 4);
-#endif
-                std::memcpy(&parsedResponse, data.constData(), sizeof(data));
+                ito::uint16 index = static_cast<ito::uint8>(response[4]) |
+                    (static_cast<ito::uint8>(response[5]) << 8);
+                ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
+                QByteArray data = response.sliced(7, length - 7 + 1);
+                ito::uint8 errorCode;
+                std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
                 retValue += ito::RetVal(
                     ito::retError,
                     0,
-                    tr("The command '%1' was not found in the response with error '%2'.")
-                        .arg(command)
-                        .arg(parsedResponse.constData())
+                    tr("Error occurred during set parameter with index/subindex: '0x%1' / '0x%2' "
+                       "with errorCode '%3'.")
+                        .arg(index, 2, 16, QChar('0'))
+                        .arg(subIndex, 2, 16, QChar('0'))
+                        .arg(QString::number(errorCode))
                         .toUtf8()
                         .data());
                 break;
