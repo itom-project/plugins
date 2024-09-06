@@ -2471,14 +2471,18 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
             else if (recievedCommand == 0x03) // error
             {
                 QByteArray parsedResponse;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 QByteArray data = result.sliced(4, length - 4);
+#else
+                QByteArray data = result.mid(4, length - 4);
+#endif
                 std::memcpy(&parsedResponse, data.constData(), sizeof(data));
                 retValue += ito::RetVal(
                     ito::retError,
                     0,
                     tr("The command '%1' was not found in the response with error '%2'.")
                         .arg(command)
-                        .arg(parsedResponse)
+                        .arg(parsedResponse.constData())
                         .toUtf8()
                         .data());
                 break;
@@ -2617,7 +2621,11 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
         }
         break;
     case 0x05: // SDO write parameter request
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         checkCRC = calculateChecksum(response.sliced(1, length - 1));
+#else
+        checkCRC = calculateChecksum(response.mid(1, length - 1));
+#endif
         if (receivedCRC != checkCRC)
         {
             return ito::RetVal(
