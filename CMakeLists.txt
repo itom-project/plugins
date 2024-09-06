@@ -277,6 +277,12 @@ if(PLUGIN_NerianSceneScanPro)
     add_subdirectory(NerianSceneScanPro)
 endif(PLUGIN_NerianSceneScanPro)
 
+# Mycobot280Pi
+itom_plugin_option(PLUGIN_Mycobot280Pi)
+if(PLUGIN_Mycobot280Pi)
+    add_subdirectory(PLUGIN_Mycobot280Pi)
+endif(PLUGIN_Mycobot280Pi)
+
 # NanotecStepMotor
 itom_plugin_option(PLUGIN_NanotecStepMotor)
 if(PLUGIN_NanotecStepMotor)
