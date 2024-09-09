@@ -106,8 +106,16 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 FaulhaberMCS::FaulhaberMCS() :
     AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0x00), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
-    m_waitForMCSTimeout(3000), m_nodeAppended(false)
+    m_waitForMCSTimeout(3000), m_nodeAppended(false), m_serialBufferSize(100)
 {
+    m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
+        delete[] ptr; // Custom deleter to release the array properly
+    });
+    m_serialBufferLength = QSharedPointer<int>(new int(m_serialBufferSize));
+    *m_serialBufferLength = m_serialBufferSize;
+    // Clear the buffer initially
+    std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
+
     ito::Param paramVal(
         "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
     m_params.insert(paramVal.getName(), paramVal);
@@ -631,6 +639,11 @@ ito::RetVal FaulhaberMCS::init(
         QSharedPointer<QVector<ito::ParamBase>> _dummy;
         m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
         m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
+        m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize]);
+        m_serialBufferLength = QSharedPointer<int>(new int(m_serialBufferSize));
+
+        *m_serialBufferLength = m_serialBufferSize;
+        std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
     }
 
     // ENABLE
@@ -843,6 +856,8 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
         if (openedNodes.isEmpty())
         {
             retValue += shutDownSequence();
+            m_serialBuffer.clear();
+            m_serialBufferLength.clear();
         }
     }
 
@@ -2391,11 +2406,11 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
 
-    const int bufferSize = 100;
-    QSharedPointer<int> curBufLen(new int(bufferSize));
-    QSharedPointer<char> curBuf(new char[bufferSize]);
     QByteArray result;
     QList<QByteArray> responseList;
+
+    *m_serialBufferLength = m_serialBufferSize;
+    std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
 
     ito::uint8 length;
     ito::uint8 recievedCommand;
@@ -2416,8 +2431,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
         waitMutex.unlock();
         setAlive();
 
-        *curBufLen = bufferSize;
-        retValue += m_pSerialIO->getVal(curBuf, curBufLen, nullptr);
+        retValue += m_pSerialIO->getVal(m_serialBuffer, m_serialBufferLength, nullptr);
 
         if (retValue.containsError())
         {
@@ -2431,7 +2445,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
         }
 
 
-        result += QByteArray(curBuf.data(), *curBufLen);
+        result += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
 
         // check if the response contains the start and end characters
         if (!(result.contains(m_S) && result.contains(m_E)))
@@ -2447,6 +2461,10 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
         // Extract all responses between 'S' and 'E'
         while ((start = result.indexOf(m_S, start)) != -1 && !retValue.containsError())
         {
+            if (!(start + 1 < result.size()))
+            {
+                break;
+            }
             length = static_cast<ito::uint8>(result[1 + start]);
 
             // Ensure the entire response fits within the buffer

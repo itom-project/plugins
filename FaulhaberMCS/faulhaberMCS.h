@@ -86,6 +86,11 @@ private:
     ito::uint8 m_node;
     bool m_nodeAppended;
 
+
+    const int m_serialBufferSize;
+    QSharedPointer<int> m_serialBufferLength;
+    QSharedPointer<char> m_serialBuffer;
+
     ito::uint8 m_S = 0x53;
     ito::uint8 m_E = 0x45;
     ito::uint8 m_GET = 0x01;
