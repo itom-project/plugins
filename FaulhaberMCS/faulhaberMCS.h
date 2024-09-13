@@ -153,6 +153,8 @@ private:
     ito::RetVal updateStatusMCS();
     void updateStatusBits(const ito::uint16& statusWord);
 
+    ito::RetVal setCommunicationSettings(const ito::uint32& settings);
+
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
     ito::RetVal getDeviceName(QString& name);

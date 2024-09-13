@@ -644,6 +644,8 @@ ito::RetVal FaulhaberMCS::init(
 
         *m_serialBufferLength = m_serialBufferSize;
         std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
+
+        retValue += setCommunicationSettings(0x00010000); // Transmit EMCYs via RS232
     }
 
     // ENABLE
@@ -2063,6 +2065,12 @@ void FaulhaberMCS::updateStatusBits(const ito::uint16& statusWord)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setCommunicationSettings(const ito::uint32& settings)
+{
+    return setRegister<ito::int8>(0x2400, 0x04, settings, sizeof(settings));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setPosAbsMCS(const ito::int32& pos)
 {
     ito::RetVal retVal = ito::retOk;
@@ -2406,9 +2414,6 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
 
-    QByteArray result;
-    QList<QByteArray> responseList;
-
     *m_serialBufferLength = m_serialBufferSize;
     std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
 
@@ -2424,6 +2429,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
     QWaitCondition waitCondition;
 
     timer.start();
+
     while (!done && !retValue.containsError())
     {
         waitMutex.lock();
@@ -2432,7 +2438,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
         setAlive();
 
         retValue += m_pSerialIO->getVal(m_serialBuffer, m_serialBufferLength, nullptr);
-
+        response += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
         if (retValue.containsError())
         {
             retValue += ito::RetVal(
@@ -2443,90 +2449,13 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
                     .data());
             break;
         }
-
-
-        result += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
-
-        // check if the response contains the start and end characters
-        if (!(result.contains(m_S) && result.contains(m_E)))
+        else
         {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("The character 'S' or 'E' was not detected in the received bytearray.")
-                    .toUtf8()
-                    .data());
-        }
-
-        // Extract all responses between 'S' and 'E'
-        while ((start = result.indexOf(m_S, start)) != -1 && !retValue.containsError())
-        {
-            if (!(start + 1 < result.size()))
+            // FOUND
+            if ((response.contains(m_S) && response.contains(m_E)))
             {
-                break;
+                done = true;
             }
-            length = static_cast<ito::uint8>(result[1 + start]);
-
-            // Ensure the entire response fits within the buffer
-            offset = (start + length + 2 > result.size()) ? 1 : 2;
-
-            // Check if result contains the end character
-            endIndex = result.indexOf(m_E, start);
-            if (endIndex == -1)
-            {
-                break;
-            }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            QByteArray extractedPart = result.sliced(start, length + offset);
-#else
-            QByteArray extractedPart = result.mid(start, length + offset);
-#endif
-            responseList.append(extractedPart);
-            start += length + 2; // Move start forward to search for the next response
-        }
-
-        done = true;
-
-        bool found = false;
-        for (const QByteArray& resp : responseList)
-        {
-            response = resp;
-            length = static_cast<ito::uint8>(response[1]);
-            recievedCommand = static_cast<ito::uint8>(response[3]);
-
-            if (recievedCommand == command) // SDO
-            {
-                found = true;
-                break;
-            }
-            else if (recievedCommand == 0x03) // error
-            {
-                ito::uint16 index = static_cast<ito::uint8>(response[4]) |
-                    (static_cast<ito::uint8>(response[5]) << 8);
-                ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
-                QByteArray data = response.sliced(7, length - 7 + 1);
-                ito::uint8 errorCode;
-                std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    tr("Error occurred during set parameter with index/subindex: '0x%1' / '0x%2' "
-                       "with errorCode '%3'.")
-                        .arg(index, 2, 16, QChar('0'))
-                        .arg(subIndex, 2, 16, QChar('0'))
-                        .arg(QString::number(errorCode))
-                        .toUtf8()
-                        .data());
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("The command '%1' was not found in the response.").arg(command).toUtf8().data());
         }
 
         if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
@@ -2534,11 +2463,189 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
             retValue += ito::RetVal(
                 ito::retError,
                 m_delayAfterSendCommandMS,
-                tr("timeout during read string.").toUtf8().data());
+                tr("timeout during read command.").toUtf8().data());
             return retValue;
         }
     }
+    if (!(response.contains(m_S) && response.contains(m_E)))
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("The character 'S' or 'E' was not detected in the received bytearray.")
+                .toUtf8()
+                .data());
+    }
+
+    // Check for error
+    if (!retValue.containsError())
+    {
+        int start = response.indexOf(m_S);
+        response = response.right(start + response.size() + 1);
+        length = static_cast<ito::uint8>(response[1]);
+        recievedCommand = static_cast<ito::uint8>(response[3]);
+
+        if (recievedCommand == 0x03) // error
+        {
+            ito::uint16 index =
+                static_cast<ito::uint8>(response[4]) | (static_cast<ito::uint8>(response[5]) << 8);
+            ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
+            QByteArray data = response.sliced(7, length - 7 + 1);
+            ito::uint8 errorCode;
+            std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Error occurred during set parameter with index/subindex: '0x%1' / '0x%2' "
+                   "with errorCode '%3'.")
+                    .arg(index, 2, 16, QChar('0'))
+                    .arg(subIndex, 2, 16, QChar('0'))
+                    .arg(QString::number(errorCode))
+                    .toUtf8()
+                    .data());
+        }
+    }
+
     return retValue;
+
+    //    ito::RetVal retValue = ito::retOk;
+    //    QElapsedTimer timer;
+    //
+    //    QByteArray result;
+    //    QVector<QByteArray> responseList;
+    //
+    //    *m_serialBufferLength = m_serialBufferSize;
+    //    std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
+    //
+    //    ito::uint8 length;
+    //    ito::uint8 recievedCommand;
+    //
+    //    bool done = false;
+    //    int offset = 0;
+    //    int start = 0;
+    //    int endIndex = 0;
+    //
+    //    QMutex waitMutex;
+    //    QWaitCondition waitCondition;
+    //
+    //    timer.start();
+    //    while (!done && !retValue.containsError())
+    //    {
+    //        waitMutex.lock();
+    //        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+    //        waitMutex.unlock();
+    //        setAlive();
+    //
+    //        retValue += m_pSerialIO->getVal(m_serialBuffer, m_serialBufferLength, nullptr);
+    //
+    //        if (retValue.containsError())
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError,
+    //                0,
+    //                tr("Error occurred during reading the response from the serial port.")
+    //                    .toUtf8()
+    //                    .data());
+    //            break;
+    //        }
+    //
+    //
+    //        result += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
+    //
+    //        // check if the response contains the start and end characters
+    //        if (!(result.contains(m_S) && result.contains(m_E)))
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError,
+    //                0,
+    //                tr("The character 'S' or 'E' was not detected in the received bytearray.")
+    //                    .toUtf8()
+    //                    .data());
+    //        }
+    //
+    //        // Extract all responses between 'S' and 'E'
+    //        while ((start = result.indexOf(m_S, start)) != -1 && !retValue.containsError())
+    //        {
+    //            if (!(start + 1 < result.size()))
+    //            {
+    //                break;
+    //            }
+    //            length = static_cast<ito::uint8>(result[1 + start]);
+    //
+    //            // Ensure the entire response fits within the buffer
+    //            offset = (start + length + 2 > result.size()) ? 1 : 2;
+    //
+    //            // Check if result contains the end character
+    //            endIndex = result.indexOf(m_E, start);
+    //            if (endIndex == -1)
+    //            {
+    //                break;
+    //            }
+    // #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    //            QByteArray extractedPart = result.sliced(start, length + offset);
+    // #else
+    //            QByteArray extractedPart = result.mid(start, length + offset);
+    // #endif
+    //            responseList.append(extractedPart);
+    //            start += length + 2; // Move start forward to search for the next response
+    //        }
+    //
+    //        done = true;
+    //
+    //        bool found = false;
+    //        for (const QByteArray& resp : responseList)
+    //        {
+    //            response = resp;
+    //            length = static_cast<ito::uint8>(response[1]);
+    //            recievedCommand = static_cast<ito::uint8>(response[3]);
+    //
+    //            if (recievedCommand == command) // SDO
+    //            {
+    //                found = true;
+    //                break;
+    //            }
+    //            else if (recievedCommand == 0x03) // error
+    //            {
+    //                ito::uint16 index = static_cast<ito::uint8>(response[4]) |
+    //                    (static_cast<ito::uint8>(response[5]) << 8);
+    //                ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
+    //                QByteArray data = response.sliced(7, length - 7 + 1);
+    //                ito::uint8 errorCode;
+    //                std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
+    //                retValue += ito::RetVal(
+    //                    ito::retError,
+    //                    0,
+    //                    tr("Error occurred during set parameter with index/subindex: '0x%1' /
+    //                    '0x%2' "
+    //                       "with errorCode '%3'.")
+    //                        .arg(index, 2, 16, QChar('0'))
+    //                        .arg(subIndex, 2, 16, QChar('0'))
+    //                        .arg(QString::number(errorCode))
+    //                        .toUtf8()
+    //                        .data());
+    //                break;
+    //            }
+    //        }
+    //
+    //        if (!found)
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError,
+    //                0,
+    //                tr("The command '%1' was not found in the
+    //                response.").arg(command).toUtf8().data());
+    //        }
+    //
+    //        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+    //        {
+    //            retValue += ito::RetVal(
+    //                ito::retError,
+    //                m_delayAfterSendCommandMS,
+    //                tr("timeout during read string.").toUtf8().data());
+    //            return retValue;
+    //        }
+    //    }
+    //    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
