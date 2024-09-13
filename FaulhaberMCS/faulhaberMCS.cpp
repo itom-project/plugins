@@ -262,6 +262,16 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "torque",
+        ito::ParamBase::Int,
+        0,
+        1,
+        m_async,
+        tr("Actual value of the torque in relative scaling.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
         "statusWord",
@@ -519,7 +529,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::IntArray | ito::ParamBase::In,
         2,
         torqueLimits,
-        new ito::IntArrayMeta(0, 300, 1, "Torque control"),
+        new ito::IntArrayMeta(0, 1000, 1, "Torque control"),
         tr("Homing torque limit values (negative, positive).").toUtf8().data());
     pOpt.append(paramVal);
 
@@ -825,12 +835,18 @@ ito::RetVal FaulhaberMCS::init(
         retValue += updateStatus();
 
         ito::int32 pos;
-        retValue += getPosMCS(pos);
-        m_currentPos[0] = static_cast<double>(pos);
 
-        retValue += getTargetPosMCS(pos);
-        m_targetPos[0] = static_cast<double>(pos);
-        m_currentStatus[0] = ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        for (int i = 0; i < m_numOfAxes; i++)
+        {
+            retValue += getPosMCS(pos);
+            m_currentPos[i] = static_cast<double>(pos);
+
+            retValue += getTargetPosMCS(pos);
+            m_targetPos[i] = static_cast<double>(pos);
+            m_currentStatus[i] =
+                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+
         retValue += updateStatus();
         sendStatusUpdate(false);
         emit parametersChanged(m_params);
@@ -995,6 +1011,9 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             {
                 retValue += it->setVal<int>(limit);
             }
+        }
+        else if (key == "torque")
+        {
         }
 
         *val = it.value();
@@ -1327,6 +1346,123 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::performHoming(
+    const ito::int8& method,
+    const ito::int32& offset,
+    const ito::uint32& switchSeekVelocity,
+    const ito::uint32& homingSpeed,
+    const ito::uint32& acceleration,
+    ito::uint16& limitCheckDelayTime,
+    ito::uint16& negativeLimit,
+    ito::uint16& positiveLimit)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    ito::uint16 torqueLimits[] = {negativeLimit, positiveLimit};
+
+    if (isMotorMoving())
+    {
+        retValue +=
+            ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
+    }
+    else
+    {
+        bool homingComplete = false;
+        int setPoint;
+        int target;
+        bool timeout = false;
+        QElapsedTimer timer;
+        QMutex waitMutex;
+        QWaitCondition waitCondition;
+
+        ito::int8 currentOperation;
+        retValue += getOperationMode(currentOperation);
+
+        retValue += setOperationMode(static_cast<ito::uint8>(6)); // change to homing mode
+
+        // set parameters
+        retValue += setHomingOffset(offset);
+        retValue += setHomingMode(method);
+        retValue += setHomingSeekVelocity(switchSeekVelocity);
+        retValue += setHomingSpeed(homingSpeed);
+        retValue += setHomingAcceleration(acceleration);
+        retValue += setHomingTorqueLimits(torqueLimits);
+        retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
+
+        setControlWord(0x000F); // homing operation start
+        setControlWord(0x001F);
+
+        for (int i = 0; i < m_numOfAxes; i++)
+        {
+            setStatus(
+                m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        }
+        sendStatusUpdate();
+
+        timer.start();
+        while (!homingComplete && !timeout)
+        {
+            if (isInterrupted())
+            {
+                quickStop();
+                for (int i = 0; i < m_numOfAxes; i++)
+                {
+                    replaceStatus(
+                        m_currentStatus[i], ito::actuatorMoving, ito::actuatorInterrupted);
+                }
+                retValue += startupSequence();
+                sendStatusUpdate();
+                retValue += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toUtf8().data());
+                return retValue;
+            }
+
+            retValue += updateStatus();
+            setPoint = m_params["setPointAcknowledged"].getVal<int>();
+            target = m_params["targetReached"].getVal<int>();
+            if (setPoint && target)
+            {
+                homingComplete = true;
+                break;
+            }
+            // short delay of 10ms
+            waitMutex.lock();
+            waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+            waitMutex.unlock();
+            setAlive();
+
+            if (timer.hasExpired(m_waitForDoneTimeout)) // timeout during movement
+            {
+                timeout = true;
+                retValue += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
+                for (int i = 0; i < m_numOfAxes; i++)
+                {
+                    replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorTimeout);
+                }
+                sendStatusUpdate(true);
+            }
+        }
+
+        if (!retValue.containsError())
+        {
+            ito::int32 pos;
+            for (int i = 0; i < m_numOfAxes; i++)
+            {
+                retValue += getPosMCS(pos);
+                m_currentPos[i] = static_cast<double>(pos);
+
+                replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
+            }
+        }
+
+        retValue += setOperationMode(currentOperation);
+    }
+
+    sendStatusUpdate();
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setOrigin(const int axis, ItomSharedSemaphore* waitCond)
 {
     return setOrigin(QVector<int>(1, axis), waitCond);
@@ -1545,33 +1681,12 @@ ito::RetVal FaulhaberMCS::setPosAbs(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-    starts moving the given axis by the given relative distance
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if the axis reached the given target position (async = 0)
-
-    In some cases only absolute movements are possible, then get the current position, determine
-   the new absolute target position and call setPosAbs with this absolute target position.
-*/
 ito::RetVal FaulhaberMCS::setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
     return setPosRel(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-    starts moving the given axes by the given relative distances
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if all axes reached the given target positions (async = 0)
-
-    In some cases only absolute movements are possible, then get the current positions,
-   determine the new absolute target positions and call setPosAbs with these absolute target
-   positions.
-*/
 ito::RetVal FaulhaberMCS::setPosRel(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1681,71 +1796,32 @@ ito::RetVal FaulhaberMCS::execFunc(
                 ito::retError,
                 0,
                 tr("Operation is not enabled. Please enable operation first.").toUtf8().data());
-            return retValue;
         }
 
-        ito::int8 method = static_cast<ito::int8>((*paramsMand)[0].getVal<int>());
-        ito::int32 offset = static_cast<ito::int32>((*paramsOpt)[0].getVal<int>());
-        ito::uint32 switchSeekVelocity = static_cast<ito::uint32>((*paramsOpt)[1].getVal<int>());
-        ito::uint32 homingSpeed = static_cast<ito::uint32>((*paramsOpt)[2].getVal<int>());
-        ito::uint32 acceleration = static_cast<ito::uint32>((*paramsOpt)[3].getVal<int>());
-        ito::uint16 limitCheckDelayTime = static_cast<ito::uint16>((*paramsOpt)[4].getVal<int>());
-
-        ito::uint16 negativeLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[0]);
-        ito::uint16 positiveLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[1]);
-        ito::uint16 torqueLimits[] = {negativeLimit, positiveLimit};
-
-        ito::int8 currentOperation;
-        retValue += getOperationMode(currentOperation);
-
-        retValue += setOperationMode(static_cast<ito::uint8>(6));
-
-        retValue += setHomingOffset(offset);
-        retValue += setHomingSpeed(homingSpeed);
-        retValue += setHomingSeekVelocity(switchSeekVelocity);
-        retValue += setHomingAcceleration(acceleration);
-        retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
-        retValue += setHomingTorqueLimits(torqueLimits);
-
-        // retValue += setHomingMode(method);
         if (!retValue.containsError())
         {
-            setControlWord(0x10); // homing operation start
+            ito::int8 method = static_cast<ito::int8>((*paramsMand)[0].getVal<int>());
+            ito::int32 offset = static_cast<ito::int32>((*paramsOpt)[0].getVal<int>());
+            ito::uint32 switchSeekVelocity =
+                static_cast<ito::uint32>((*paramsOpt)[1].getVal<int>());
+            ito::uint32 homingSpeed = static_cast<ito::uint32>((*paramsOpt)[2].getVal<int>());
+            ito::uint32 acceleration = static_cast<ito::uint32>((*paramsOpt)[3].getVal<int>());
+            ito::uint16 limitCheckDelayTime =
+                static_cast<ito::uint16>((*paramsOpt)[4].getVal<int>());
 
-            // setControlWord(0x001F);
-            retValue += updateStatus();
+            ito::uint16 negativeLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[0]);
+            ito::uint16 positiveLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[1]);
 
-            int setPoint = m_params["setPointAcknowledged"].getVal<int>();
-            int target = m_params["targetReached"].getVal<int>();
-
-            if ((setPoint == 0) && (target == 0))
-            {
-                // homing started
-                int a = 1;
-            }
-            else if (m_params["followingError"].getVal<int>() != 0)
-            {
-                retValue += ito::RetVal(
-                    ito::retError, 0, tr("Error occurred during homing").toUtf8().data());
-            }
-            else
-            {
-                retValue += ito::RetVal(
-                    ito::retError,
-                    0,
-                    tr("Homing could not be started. Please check the parameters.")
-                        .toUtf8()
-                        .data());
-            }
-
-            while (m_params["targetReached"].getVal<int>() != 1 &&
-                   m_params["targetReached"].getVal<int>() != 1)
-            {
-                retValue += updateStatus();
-            }
+            retValue += performHoming(
+                method,
+                offset,
+                switchSeekVelocity,
+                homingSpeed,
+                acceleration,
+                limitCheckDelayTime,
+                negativeLimit,
+                positiveLimit);
         }
-
-        retValue += setOperationMode(currentOperation);
     }
 
     if (waitCond)
@@ -1943,6 +2019,12 @@ ito::RetVal FaulhaberMCS::setMaxTorqueLimit(const ito::uint16 limit)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTorque(ito::int16& torque)
+{
+    return readRegisterWithParsedResponse<ito::int16>(0x6077, 0x00, torque);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingOffset(const ito::int32& offset)
 {
     return setRegister<ito::int32>(0x607c, 0x00, offset, sizeof(offset));
@@ -2068,6 +2150,15 @@ void FaulhaberMCS::updateStatusBits(const ito::uint16& statusWord)
 ito::RetVal FaulhaberMCS::setCommunicationSettings(const ito::uint32& settings)
 {
     return setRegister<ito::int8>(0x2400, 0x04, settings, sizeof(settings));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getError()
+{
+    ito::RetVal retVal = ito::retOk;
+    ito::uint16 error;
+    retVal += readRegisterWithParsedResponse<ito::uint16>(0x2320, 0x00, error);
+    return interpretEMCYError(error);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2254,6 +2345,105 @@ ito::RetVal FaulhaberMCS::shutDownSequence()
         }
     }
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::interpretEMCYError(uint16_t errorCode)
+{
+    ito::RetVal retVal;
+
+    // Use QMap instead of std::unordered_map for error details
+    QMap<uint16_t, ErrorInfo> errorMap = {
+        {0x0001,
+         {"Speed Deviation Error",
+          "Diagnostics detected a speed deviation. Monitoring is configured in object 0x2344.",
+          0x84F0}},
+        {0x0002,
+         {"Following Error",
+          "Diagnostics detected a following error (deviationbetween position set-point and "
+          "position actual value). The following error monitoring is configured via objects 0x6065 "
+          "and 0x6066.",
+          0x8611}},
+        {0x0004,
+         {"Over Voltage Error",
+          "Overvoltage for one of the supplies. The drive is switched off by this error.",
+          0x3210}},
+        {0x0008,
+         {"Under Voltage Error",
+          "At least one of the voltage supplies is reported as too low.",
+          0x3220}},
+        {0x0010,
+         {"Temperature Warning",
+          "The current set-points are limited to the set continuous current by the thermal model.",
+          0x2310}},
+        {0x0020,
+         {"Temperature Error",
+          "At least one of the temperature switch-off limits was reached.The drive is switched off "
+          "by this error.",
+          0x4310}},
+        {0x0040,
+         {"Encoder Error",
+          "- Analog Hall: The amplitudes of the two or three Hall signals are not sufficiently "
+          "equal for a period of time. This results in uneven running. - Digital Hall: Invalid "
+          "combination of Hall signals detected. - AES encoder: CRC returns an error.",
+          0x7300}},
+        {0x0080,
+         {"Internal Hardware Error",
+          "At least one digital output does not have the expected level and was passively switched "
+          "back.",
+          0x5410}},
+        {0x0200,
+         {"Current Measurement Error",
+          "Current measurement indicates an error. The current sum of the three channels is not "
+          "equal to 0. Possible causes : - Fault current via a winding - housing short circuit - "
+          "Motor and controller may not be compatible with respect to current measurement range "
+          "and the rated current of the motor.",
+          0x7200}},
+        {0x0800, {"Communication Error", "CAN reports", 0x8110}}, // Multiple possible codes
+        {0x1000, {"Calculation Error", "Error in the execution of a BASIC script.", 0xFF20}},
+        {0x2000,
+         {"Dynamic Limit Error",
+          "The speed was in excess of the warning threshold configured in object 0x2344.",
+          0x84FF}},
+        {0x4000,
+         {"Safety Monitor Error", "Shutdown of the output stage by the STO function.", 0x5480}},
+        {0x0000, {"No Error", "No error present", 0x0000}}};
+
+    QMap<uint16_t, QString> communicationErrorMap = {
+        {0x8110, "CANOverrun: CAN reports an overflow of the receive buffer."},
+        {0x8130, "CANGuardingFailed: CAN node guarding or CAN heartbeat failed."},
+        {0x8140, "CANRecoveredFromBusOff: The CAN controller recovered after bus-off."},
+        {0x8141, "CANBusOff: The CAN controller left the bus after too many error frames."},
+        {0x8210, "CANPDOLength: A PDO with an incompatible length was received."},
+        {0x8310, "RS232Overrun: The RS232 stack was unable to save a message."},
+        {0x8101, "CANInitError: CAN stack could not be initialized."}};
+
+    if (errorMap.contains(0x0000))
+    {
+        retVal += ito::retOk;
+    }
+    else if (errorMap.contains(0x0800))
+    {
+        QString result;
+        for (auto it = communicationErrorMap.constBegin(); it != communicationErrorMap.constEnd();
+             ++it)
+        {
+            result += "0x" + QString::number(it.key(), 16).toUpper() + ": " + it.value() + "\n";
+        }
+        retVal += ito::RetVal(ito::retError, errorCode, result.toUtf8().data());
+    }
+    else if (errorMap.contains(errorCode))
+    {
+        retVal += ito::RetVal(
+            ito::retError, errorCode, errorMap[errorCode].shortDescription.toUtf8().data());
+    }
+    else
+    {
+        retVal += ito::RetVal(
+            ito::retError, errorCode, tr("Unknown error code %1").arg(errorCode).toUtf8().data());
+    }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2477,7 +2667,6 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
                 .data());
     }
 
-    // Check for error
     if (!retValue.containsError())
     {
         int start = response.indexOf(m_S);
@@ -2487,165 +2676,17 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
 
         if (recievedCommand == 0x03) // error
         {
-            ito::uint16 index =
-                static_cast<ito::uint8>(response[4]) | (static_cast<ito::uint8>(response[5]) << 8);
-            ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
-            QByteArray data = response.sliced(7, length - 7 + 1);
-            ito::uint8 errorCode;
-            std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
             retValue += ito::RetVal(
                 ito::retError,
                 0,
-                tr("Error occurred during set parameter with index/subindex: '0x%1' / '0x%2' "
-                   "with errorCode '%3'.")
-                    .arg(index, 2, 16, QChar('0'))
-                    .arg(subIndex, 2, 16, QChar('0'))
-                    .arg(QString::number(errorCode))
+                tr("Error response received from the drive. Command: '%1'")
+                    .arg(command)
                     .toUtf8()
                     .data());
         }
     }
 
     return retValue;
-
-    //    ito::RetVal retValue = ito::retOk;
-    //    QElapsedTimer timer;
-    //
-    //    QByteArray result;
-    //    QVector<QByteArray> responseList;
-    //
-    //    *m_serialBufferLength = m_serialBufferSize;
-    //    std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
-    //
-    //    ito::uint8 length;
-    //    ito::uint8 recievedCommand;
-    //
-    //    bool done = false;
-    //    int offset = 0;
-    //    int start = 0;
-    //    int endIndex = 0;
-    //
-    //    QMutex waitMutex;
-    //    QWaitCondition waitCondition;
-    //
-    //    timer.start();
-    //    while (!done && !retValue.containsError())
-    //    {
-    //        waitMutex.lock();
-    //        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-    //        waitMutex.unlock();
-    //        setAlive();
-    //
-    //        retValue += m_pSerialIO->getVal(m_serialBuffer, m_serialBufferLength, nullptr);
-    //
-    //        if (retValue.containsError())
-    //        {
-    //            retValue += ito::RetVal(
-    //                ito::retError,
-    //                0,
-    //                tr("Error occurred during reading the response from the serial port.")
-    //                    .toUtf8()
-    //                    .data());
-    //            break;
-    //        }
-    //
-    //
-    //        result += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
-    //
-    //        // check if the response contains the start and end characters
-    //        if (!(result.contains(m_S) && result.contains(m_E)))
-    //        {
-    //            retValue += ito::RetVal(
-    //                ito::retError,
-    //                0,
-    //                tr("The character 'S' or 'E' was not detected in the received bytearray.")
-    //                    .toUtf8()
-    //                    .data());
-    //        }
-    //
-    //        // Extract all responses between 'S' and 'E'
-    //        while ((start = result.indexOf(m_S, start)) != -1 && !retValue.containsError())
-    //        {
-    //            if (!(start + 1 < result.size()))
-    //            {
-    //                break;
-    //            }
-    //            length = static_cast<ito::uint8>(result[1 + start]);
-    //
-    //            // Ensure the entire response fits within the buffer
-    //            offset = (start + length + 2 > result.size()) ? 1 : 2;
-    //
-    //            // Check if result contains the end character
-    //            endIndex = result.indexOf(m_E, start);
-    //            if (endIndex == -1)
-    //            {
-    //                break;
-    //            }
-    // #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    //            QByteArray extractedPart = result.sliced(start, length + offset);
-    // #else
-    //            QByteArray extractedPart = result.mid(start, length + offset);
-    // #endif
-    //            responseList.append(extractedPart);
-    //            start += length + 2; // Move start forward to search for the next response
-    //        }
-    //
-    //        done = true;
-    //
-    //        bool found = false;
-    //        for (const QByteArray& resp : responseList)
-    //        {
-    //            response = resp;
-    //            length = static_cast<ito::uint8>(response[1]);
-    //            recievedCommand = static_cast<ito::uint8>(response[3]);
-    //
-    //            if (recievedCommand == command) // SDO
-    //            {
-    //                found = true;
-    //                break;
-    //            }
-    //            else if (recievedCommand == 0x03) // error
-    //            {
-    //                ito::uint16 index = static_cast<ito::uint8>(response[4]) |
-    //                    (static_cast<ito::uint8>(response[5]) << 8);
-    //                ito::uint8 subIndex = static_cast<ito::uint8>(response[6]);
-    //                QByteArray data = response.sliced(7, length - 7 + 1);
-    //                ito::uint8 errorCode;
-    //                std::memcpy(&errorCode, data.constData(), sizeof(ito::uint8));
-    //                retValue += ito::RetVal(
-    //                    ito::retError,
-    //                    0,
-    //                    tr("Error occurred during set parameter with index/subindex: '0x%1' /
-    //                    '0x%2' "
-    //                       "with errorCode '%3'.")
-    //                        .arg(index, 2, 16, QChar('0'))
-    //                        .arg(subIndex, 2, 16, QChar('0'))
-    //                        .arg(QString::number(errorCode))
-    //                        .toUtf8()
-    //                        .data());
-    //                break;
-    //            }
-    //        }
-    //
-    //        if (!found)
-    //        {
-    //            retValue += ito::RetVal(
-    //                ito::retError,
-    //                0,
-    //                tr("The command '%1' was not found in the
-    //                response.").arg(command).toUtf8().data());
-    //        }
-    //
-    //        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
-    //        {
-    //            retValue += ito::RetVal(
-    //                ito::retError,
-    //                m_delayAfterSendCommandMS,
-    //                tr("timeout during read string.").toUtf8().data());
-    //            return retValue;
-    //        }
-    //    }
-    //    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2666,10 +2707,12 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 {
     ito::RetVal retValue = ito::retOk;
 
+    qsizetype startIndex = response.indexOf(m_S);
+
     // Extract basic components from the response
-    ito::uint8 length = static_cast<ito::uint8>(response[1]);
-    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[2]);
-    ito::uint8 command = static_cast<ito::uint8>(response[3]);
+    ito::uint8 length = static_cast<ito::uint8>(response[startIndex + 1]);
+    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[startIndex + 2]);
+    ito::uint8 command = static_cast<ito::uint8>(response[startIndex + 3]);
 
     // Verify node number
     if (nodeNumber != m_node)
@@ -2684,7 +2727,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                 .data());
     }
 
-    ito::uint8 receivedCRC = static_cast<ito::uint8>(response[length]);
+    ito::uint8 receivedCRC = static_cast<ito::uint8>(response[startIndex + length]);
     ito::uint8 checkCRC = 0x00;
     QByteArray data = "";
 
@@ -2695,19 +2738,19 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
         if (length > 7)
         {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, length - 1));
-            data = response.sliced(7, length - 7 + 1);
+            checkCRC = calculateChecksum(response.sliced(1, startIndex + length - 1));
+            data = response.sliced(7, startIndex + length - 7 + 1);
 #else
-            checkCRC = calculateChecksum(response.mid(1, length - 1));
-            data = response.mid(7, length - 7 + 1);
+            checkCRC = calculateChecksum(response.mid(1, startIndex + length - 1));
+            data = response.mid(7, startIndex + length - 7 + 1);
 #endif
         }
         else
         {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, length));
+            checkCRC = calculateChecksum(response.sliced(1, startIndex + length));
 #else
-            checkCRC = calculateChecksum(response.mid(1, length));
+            checkCRC = calculateChecksum(response.mid(1, startIndex + length));
 #endif
         }
 
@@ -2783,7 +2826,8 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
         break;
 
     case 0x07: // EMCY notification
-        return ito::RetVal(ito::retError, 0, tr("EMCY notification").toUtf8().data());
+        retValue += getError();
+        break;
 
     default:
         return ito::RetVal(

@@ -96,6 +96,13 @@ private:
     ito::uint8 m_GET = 0x01;
     ito::uint8 m_SET = 0x02;
 
+    struct ErrorInfo
+    {
+        QString shortDescription;
+        QString longDescription;
+        uint16_t cia402ErrorCode;
+    };
+
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
@@ -154,6 +161,8 @@ private:
     void updateStatusBits(const ito::uint16& statusWord);
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
+    ito::RetVal getError();
+    ito::RetVal interpretEMCYError(uint16_t errorCode);
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
@@ -185,6 +194,8 @@ private:
     ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
     ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
 
+    ito::RetVal getTorque(ito::int16& torque);
+
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
@@ -206,6 +217,15 @@ private:
     ito::RetVal setHomingTorqueLimits(const ito::uint16 limits[]);
 
     ito::RetVal homingCurrentPosToZero(const int& axis);
+    ito::RetVal performHoming(
+        const ito::int8& method,
+        const ito::int32& offset,
+        const ito::uint32& switchSeekVelocity,
+        const ito::uint32& homingSpeed,
+        const ito::uint32& acceleration,
+        ito::uint16& limitCheckDelayTime,
+        ito::uint16& negativeLimit,
+        ito::uint16& positiveLimit);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
