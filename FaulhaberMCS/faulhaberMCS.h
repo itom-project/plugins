@@ -108,6 +108,35 @@ private:
         IGNORE_CRC = 0x00800000
     };
 
+    struct Register
+    {
+        ito::uint16 index;
+        ito::uint8 subindex;
+    };
+
+    const Register serialNumber_register = {0x1018, 0x04};
+    const Register deviceName_register = {0x1008, 0x00};
+    const Register vendorID_register = {0x1018, 0x01};
+    const Register productCode_register = {0x1018, 0x02};
+    const Register revisionNumber_register = {0x1018, 0x03};
+    const Register firmwareVersion_register = {0x100A, 0x00};
+    const Register operationMode_register = {0x6060, 0x00};
+    const Register netMode_register = {0x2400, 0x05};
+    const Register nodeID_register = {0x2400, 0x03};
+    const Register deviceID_register = {0x2400, 0x08};
+    const Register CPUTemperature_register = {0x2326, 0x01};
+    const Register powerStageTemperature_register = {0x2326, 0x02};
+    const Register windingTemperature_register = {0x2326, 0x03};
+    const Register positionActualValue_register = {0x6064, 0x00};
+    const Register positionTargetValue_register = {0x6062, 0x00};
+    const Register torqueActualValue_register = {0x6077, 0x00};
+    const Register currentActualValue_register = {0x6078, 0x00};
+    const Register targetTorque_register = {0x6071, 0x00};
+    const Register statusWord_register = {0x6041, 0x00};
+
+
+    QString convertHexToString(const Register& reg);
+
     struct ErrorInfo
     {
         QString shortDescription;
@@ -174,7 +203,7 @@ private:
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
     ito::RetVal getError();
-    ito::RetVal interpretEMCYError(uint16_t errorCode);
+    ito::RetVal interpretEMCYError(const ito::uint16& errorCode);
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
@@ -183,8 +212,12 @@ private:
     ito::RetVal getProductCode(QString& code);
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getFirmware(QString& version);
+
     ito::RetVal getNodeID(ito::uint8& id);
     ito::RetVal setNodeID(const ito::uint8& id);
+
+    ito::RetVal getExplicitDeviceID(ito::uint16& id);
+    ito::RetVal setExplicitDeviceID(const ito::uint16& id);
 
     ito::RetVal getMaxMotorSpeed(ito::uint32& speed);
     ito::RetVal setMaxMotorSpeed(const ito::uint32& speed);
@@ -207,12 +240,14 @@ private:
     ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
     ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
 
+    ito::RetVal getTargetTorque(ito::int16& torque);
+    ito::RetVal setTargetTorque(const ito::int16 torque);
+
     ito::RetVal getNetMode(ito::uint8& mode);
     ito::RetVal setNetMode(const ito::uint8& mode);
 
-
-
     ito::RetVal getTorque(ito::int16& torque);
+    ito::RetVal getCurrent(ito::int16& current);
 
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
