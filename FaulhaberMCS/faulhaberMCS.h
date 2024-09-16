@@ -96,6 +96,18 @@ private:
     ito::uint8 m_GET = 0x01;
     ito::uint8 m_SET = 0x02;
 
+    enum CommunicationSettings : uint32_t
+    {
+        CAN_NMT_MANDATORY = 0x00000001,
+        TRANSMIT_ASYNC_PDO_EMCY_VIA_CAN = 0x00000002,
+        TRANSMIT_EMCY_VIA_USB = 0x00000100,
+        TRANSMIT_ASYNC_MESSAGES_VIA_USB = 0x00000200,
+        SUPPRESS_BOOT_MESSAGE_VIA_USB = 0x00008000,
+        TRANSMIT_EMCY_VIA_RS232 = 0x00010000,
+        TRANSMIT_ASYNC_MESSAGES_VIA_RS232 = 0x00020000,
+        IGNORE_CRC = 0x00800000
+    };
+
     struct ErrorInfo
     {
         QString shortDescription;
@@ -172,6 +184,7 @@ private:
     ito::RetVal getRevisionNumber(QString& num);
     ito::RetVal getFirmware(QString& version);
     ito::RetVal getNodeID(ito::uint8& id);
+    ito::RetVal setNodeID(const ito::uint8& id);
 
     ito::RetVal getMaxMotorSpeed(ito::uint32& speed);
     ito::RetVal setMaxMotorSpeed(const ito::uint32& speed);
@@ -193,6 +206,11 @@ private:
 
     ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
     ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
+
+    ito::RetVal getNetMode(ito::uint8& mode);
+    ito::RetVal setNetMode(const ito::uint8& mode);
+
+
 
     ito::RetVal getTorque(ito::int16& torque);
 
