@@ -81,7 +81,8 @@ private:
     int m_waitForDoneTimeout;
     int m_waitForMCSTimeout;
     int m_port;
-    ito::uint16 m_statusWord;
+    ito::uint16 m_statusWordValue;
+    std::bitset<16> m_statusWord;
 
     ito::uint8 m_node;
     bool m_nodeAppended;
@@ -129,11 +130,36 @@ private:
     const Register windingTemperature_register = {0x2326, 0x03};
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
+    const Register positionAbsolutValue_register = {0x607a, 0x00};
+    const Register positionRelativeValue_register = {0x607a, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
     const Register currentActualValue_register = {0x6078, 0x00};
     const Register targetTorque_register = {0x6071, 0x00};
     const Register statusWord_register = {0x6041, 0x00};
+    const Register controlWord_register = {0x6040, 0x00};
+    const Register maxMotorSpeed_register = {0x6080, 0x00};
+    const Register acceleration_register = {0x6083, 0x00};
+    const Register deceleration_register = {0x6084, 0x00};
+    const Register profileVelocity_register = {0x6081, 0x00};
+    const Register quickStopDeceleration_register = {0x6085, 0x00};
+    const Register maxTorqueLimit_register = {0x6072, 0x00};
+    const Register communicationSettings_register = {0x2400, 0x04};
+    const Register error_register = {0x2320, 0x00};
 
+    const Register homingMode_register = {0x6098, 0x00};
+    const Register homingOffset_register = {0x607c, 0x00};
+    const Register homingSpeed_register = {0x6099, 0x02};
+    const Register homingSeekVelocity_register = {0x6099, 0x01};
+    const Register homingAcceleration_register = {0x609A, 0x00};
+    const Register homingLimitCheckDelayTime_register = {0x2324, 0x02};
+    const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
+    const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
+
+    const ito::uint8 shutDown_register = 0x06;
+    const ito::uint8 enableOperation_register = 0x0F;
+    const ito::uint8 disable_register = 0x07;
+    const ito::uint8 disableVoltage_register = 0x00;
+    const ito::uint8 quickStop_register = 0x13;
 
     QString convertHexToString(const Register& reg);
 
@@ -199,7 +225,7 @@ private:
     ito::RetVal startupSequence();
     ito::RetVal shutDownSequence();
     ito::RetVal updateStatusMCS();
-    void updateStatusBits(const ito::uint16& statusWord);
+    void updateStatusBits();
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
     ito::RetVal getError();
