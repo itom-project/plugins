@@ -593,6 +593,26 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    int softwareLimits[] = {
+        std::numeric_limits<ito::int32>::min(), std::numeric_limits<ito::int32>::max()};
+    paramVal = ito::Param(
+        "positionLimits",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        2,
+        torqueLimits,
+        new ito::IntArrayMeta(
+            std::numeric_limits<ito::int32>::min(),
+            std::numeric_limits<ito::int32>::max(),
+            1,
+            "Motion control"),
+        tr("Lower/ upper limit of the position range in userdefined uints. "
+           "Register lower limit '%1', upper limit '%2'.")
+            .arg(convertHexToString(positionLowerLimit_register))
+            .arg(convertHexToString(positionUpperLimit_register))
+            .toUtf8()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC FUNCTIONS
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -1022,6 +1042,19 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::int32 nlimit, pLimit;
+        retValue += getPositionLowerLimit(nlimit);
+        retValue += getPositionUpperLimit(pLimit);
+
+        int limits[2] = {static_cast<int>(nlimit), static_cast<int>(pLimit)};
+        if (!retValue.containsError())
+        {
+            m_params["positionLimits"].setVal<int*>(limits, 2);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int16 torque;
         retValue += getTargetTorque(torque);
         if (!retValue.containsError())
@@ -1280,6 +1313,18 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int*>(limits, 2);
             }
         }
+        else if (key == "positionLimits")
+        {
+            ito::int32 nlimit, pLimit;
+            retValue += getPositionLowerLimit(nlimit);
+            retValue += getPositionUpperLimit(pLimit);
+
+            int limits[2] = {static_cast<int>(nlimit), static_cast<int>(pLimit)};
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int*>(limits, 2);
+            }
+        }
         *val = it.value();
     }
 
@@ -1479,6 +1524,18 @@ ito::RetVal FaulhaberMCS::setParam(
             ito::uint16 pLimit = static_cast<ito::uint16>(limits[1]);
             retValue += setNegativeTorqueLimit(nLimit);
             retValue += setPositiveTorqueLimit(pLimit);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
+        }
+        else if (key == "positionLimits")
+        {
+            int* limits = val->getVal<int*>();
+            ito::int32 nLimit = static_cast<ito::int32>(limits[0]);
+            ito::int32 pLimit = static_cast<ito::int32>(limits[1]);
+            retValue += setPositionLowerLimit(nLimit);
+            retValue += setPositionUpperLimit(pLimit);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -2470,6 +2527,40 @@ ito::RetVal FaulhaberMCS::setPositiveTorqueLimit(const ito::uint16 limit)
     return setRegister<ito::uint16>(
         positiveTorqueLimit_register.index,
         positiveTorqueLimit_register.subindex,
+        limit,
+        sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositionLowerLimit(ito::int32& limit)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        positionLowerLimit_register.index, positionLowerLimit_register.subindex, limit);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositionLowerLimit(const ito::int32 limit)
+{
+    return setRegister<ito::int32>(
+        positionLowerLimit_register.index,
+        positionLowerLimit_register.subindex,
+        limit,
+        sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositionUpperLimit(ito::int32& limit)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        positionUpperLimit_register.index, positionUpperLimit_register.subindex, limit);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositionUpperLimit(const ito::int32 limit)
+{
+    return setRegister<ito::int32>(
+        positionUpperLimit_register.index,
+        positionUpperLimit_register.subindex,
         limit,
         sizeof(limit));
 }

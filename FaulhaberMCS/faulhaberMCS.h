@@ -147,6 +147,8 @@ private:
     const Register error_register = {0x2320, 0x00};
     const Register positiveTorqueLimit_register = {0x60E0, 0x00};
     const Register negativeTorqueLimit_register = {0x60E1, 0x00};
+    const Register positionLowerLimit_register = {0x607D, 0x01};
+    const Register positionUpperLimit_register = {0x607D, 0x02};
 
     const Register homingMode_register = {0x6098, 0x00};
     const Register homingOffset_register = {0x607c, 0x00};
@@ -282,6 +284,12 @@ private:
 
     ito::RetVal getPositveTorqueLimit(ito::uint16& limit);
     ito::RetVal setPositiveTorqueLimit(const ito::uint16 limit);
+
+    ito::RetVal getPositionLowerLimit(ito::int32& limit);
+    ito::RetVal setPositionLowerLimit(const ito::int32 limit);
+
+    ito::RetVal getPositionUpperLimit(ito::int32& limit);
+    ito::RetVal setPositionUpperLimit(const ito::int32 limit);
 
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
