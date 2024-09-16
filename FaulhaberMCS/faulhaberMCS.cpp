@@ -578,6 +578,21 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control")); // TODO as readonly
     m_params.insert(paramVal.getName(), paramVal);
 
+    int torqueLimits[] = {1000, 1000};
+    paramVal = ito::Param(
+        "torqueLimits",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        2,
+        torqueLimits,
+        new ito::IntArrayMeta(0, 6000, 1, "Motion control"),
+        tr("Negative/ positive torque limit values in relative scaling. 1000 = motor rated torque. "
+           "Register negative limit '%1', positive limit '%2'.")
+            .arg(convertHexToString(negativeTorqueLimit_register))
+            .arg(convertHexToString(positiveTorqueLimit_register))
+            .toUtf8()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC FUNCTIONS
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -658,12 +673,12 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     pOpt.append(paramVal);
 
-    int torqueLimits[] = {1000, 1000};
+    int homingTorqueLimits[] = {1000, 1000};
     paramVal = ito::Param(
         "torqueLimits",
         ito::ParamBase::IntArray | ito::ParamBase::In,
         2,
-        torqueLimits,
+        homingTorqueLimits,
         new ito::IntArrayMeta(0, 1000, 1, "Torque control"),
         tr("Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. "
            "Register negative limit '%1', positive limit '%2'.")
@@ -994,6 +1009,19 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::uint16 nlimit, pLimit;
+        retValue += getNegativeTorqueLimit(nlimit);
+        retValue += getPositveTorqueLimit(pLimit);
+
+        int limits[2] = {static_cast<int>(nlimit), static_cast<int>(pLimit)};
+        if (!retValue.containsError())
+        {
+            m_params["torqueLimits"].setVal<int*>(limits, 2);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int16 torque;
         retValue += getTargetTorque(torque);
         if (!retValue.containsError())
@@ -1240,6 +1268,18 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(torque));
             }
         }
+        else if (key == "torqueLimits")
+        {
+            ito::uint16 nlimit, pLimit;
+            retValue += getNegativeTorqueLimit(nlimit);
+            retValue += getPositveTorqueLimit(pLimit);
+
+            int limits[2] = {static_cast<int>(nlimit), static_cast<int>(pLimit)};
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int*>(limits, 2);
+            }
+        }
         *val = it.value();
     }
 
@@ -1427,6 +1467,18 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             ito::int16 torque = static_cast<ito::int16>(val->getVal<int>());
             retValue += setTargetTorque(torque);
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
+        }
+        else if (key == "torqueLimits")
+        {
+            int* limits = val->getVal<int*>();
+            ito::uint16 nLimit = static_cast<ito::uint16>(limits[0]);
+            ito::uint16 pLimit = static_cast<ito::uint16>(limits[1]);
+            retValue += setNegativeTorqueLimit(nLimit);
+            retValue += setPositiveTorqueLimit(pLimit);
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -2389,6 +2441,40 @@ ito::RetVal FaulhaberMCS::getCurrent(ito::int16& current)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getNegativeTorqueLimit(ito::uint16& limit)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        negativeTorqueLimit_register.index, negativeTorqueLimit_register.subindex, limit);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setNegativeTorqueLimit(const ito::uint16 limit)
+{
+    return setRegister<ito::uint16>(
+        negativeTorqueLimit_register.index,
+        negativeTorqueLimit_register.subindex,
+        limit,
+        sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositveTorqueLimit(ito::uint16& limit)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        positiveTorqueLimit_register.index, positiveTorqueLimit_register.subindex, limit);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositiveTorqueLimit(const ito::uint16 limit)
+{
+    return setRegister<ito::uint16>(
+        positiveTorqueLimit_register.index,
+        positiveTorqueLimit_register.subindex,
+        limit,
+        sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingOffset(const ito::int32& offset)
 {
     return setRegister<ito::int32>(
@@ -2899,7 +2985,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             m_targetPos[i] = static_cast<double>(targetPos);
 
             retVal += updateStatus();
-            if ((m_statusWord[10]))
+            if ((m_statusWord[10])) // target reached bit
             {
                 setStatus(
                     m_currentStatus[i],
