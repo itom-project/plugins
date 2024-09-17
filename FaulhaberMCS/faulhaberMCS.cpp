@@ -569,13 +569,13 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "maxTorqueLimit",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        tr("Maximum torque limit. Register '%1'.")
+        tr("Maximum torque limit in relative scaling. 1000 = motor rated torque. Register '%1'.")
             .arg(convertHexToString(maxTorqueLimit_register))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control")); // TODO as readonly
+    paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     int torqueLimits[] = {1000, 1000};
@@ -1461,14 +1461,6 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "quickStopDeceleration")
         {
             retValue += setQuickStopDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
-        }
-        else if (key == "maxTorqueLimit")
-        {
-            retValue += setMaxTorqueLimit(static_cast<ito::uint16>(val->getVal<int>()));
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom(&(*val));
@@ -2641,7 +2633,6 @@ ito::RetVal FaulhaberMCS::updateStatusMCS()
         qint64 elapsedTime = 0;
         while ((m_statusWord == 0) && (elapsedTime < m_waitForMCSTimeout))
         {
-            // TODO delete statudWord == 0
             //  short delay
             waitMutex.lock();
             waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
@@ -3016,6 +3007,77 @@ ito::RetVal FaulhaberMCS::interpretEMCYError(const ito::uint16& errorCode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::interpretCIA402Error(const QByteArray& errorBytes)
+{
+    ito::RetVal retVal = ito::retOk;
+    ito::uint8 length = static_cast<ito::uint8>(errorBytes[1]);
+    ito::uint8 node = static_cast<ito::uint8>(errorBytes[2]);
+    ito::uint16 index =
+        static_cast<ito::uint8>(errorBytes[4]) | (static_cast<ito::uint8>(errorBytes[5]) << 8);
+    ito::uint8 subindex = static_cast<ito::uint8>(errorBytes[6]);
+    ito::uint8 addCodeLB = static_cast<ito::uint8>(errorBytes[7]);
+    ito::uint8 addCodeHB = static_cast<ito::uint8>(errorBytes[8]);
+    ito::uint8 errorCode = static_cast<ito::uint8>(errorBytes[9]);
+    ito::uint8 errorClass = static_cast<ito::uint8>(errorBytes[10]);
+    ito::uint8 additionalCode = addCodeLB | (addCodeHB << 8);
+
+    QMap<uint8_t, QMap<uint8_t, QMap<uint16_t, QString>>> errorMap;
+    QString errorMessage;
+    // Populate the error map with the data from Tab. 24 (translated to English)
+    errorMap[0x05][0x04][0x0001] = "SDO command invalid or unknown";
+    errorMap[0x06][0x01][0x0000] = "Access to this object is not supported";
+    errorMap[0x06][0x01][0x0001] = "Attempt to read a write-only parameter";
+    errorMap[0x06][0x01][0x0002] = "Attempt to write to a read-only parameter";
+    errorMap[0x06][0x02][0x0000] = "Object not found in object dictionary";
+    errorMap[0x06][0x04][0x0043] = "General parameter incompatibility";
+    errorMap[0x06][0x04][0x0047] = "General internal incompatibility error in device";
+    errorMap[0x06][0x07][0x0010] = "Data type or parameter length does not match or is unknown";
+    errorMap[0x06][0x07][0x0012] = "Data types do not match, parameter length too large";
+    errorMap[0x06][0x07][0x0013] = "Data types do not match, parameter length too small";
+    errorMap[0x06][0x09][0x0011] = "Subindex not available";
+    errorMap[0x06][0x09][0x0030] = "General range error";
+    errorMap[0x06][0x09][0x0031] = "Range error: Parameter value too large";
+    errorMap[0x06][0x09][0x0032] = "Range error: Parameter value too small";
+    errorMap[0x06][0x09][0x0036] = "Range error: Maximum value smaller than minimum value";
+    errorMap[0x08][0x00][0x0000] = "General SDO error";
+    errorMap[0x08][0x00][0x0020] = "Access not possible";
+    errorMap[0x08][0x00][0x0022] = "Access not possible under current device status";
+
+
+    if (errorMap.contains(errorClass))
+    {
+        if (errorMap[errorClass].contains(errorCode))
+        {
+            if (errorMap[errorClass][errorCode].contains(additionalCode))
+            {
+                errorMessage = errorMap[errorClass][errorCode][additionalCode];
+            }
+            else
+            {
+                errorMessage = tr("Unknown additional code %1").arg(additionalCode);
+            }
+        }
+    }
+    else
+    {
+        errorMessage = tr("Unknown error class %1").arg(errorClass);
+    }
+
+    retVal += ito::RetVal(
+        ito::retError,
+        errorCode,
+        tr("Error occurred during access of '0x%1.%2' of node '%3' with error message: %4")
+            .arg(QString::number(index, 16))
+            .arg(QString::number(subindex))
+            .arg(QString::number(node))
+            .arg(errorMessage.toUtf8().data())
+            .toUtf8()
+            .data());
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 QString FaulhaberMCS::convertHexToString(const Register& reg)
 {
     return QString("0x") + QString::number(reg.index, 16).rightJustified(4, '0').toUpper() +
@@ -3252,15 +3314,7 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
 
         if (recievedCommand == 0x03) // error
         {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Error response received from the drive. Command: '%1'")
-                    .arg(command)
-                    .toUtf8()
-                    .data());
-            QByteArray data = response.sliced(7, response.indexOf(m_S) + length - 7 + 1);
-            std::cout << "Response data: " << data.toHex().toStdString() << "\n" << std::endl;
+            retValue += interpretCIA402Error(response.sliced(start, length + 1));
         }
     }
 
@@ -3344,7 +3398,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                     .data());
         }
 
-        if constexpr (std::is_same<T, QString>::value)
+        if constexpr (std::is_same<T, QString>::value) // convert to QString
         {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             parsedResponse = QString::fromUtf8(data.sliced(0, data.size() - 1));
@@ -3352,7 +3406,8 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             parsedResponse = QString::fromUtf8(data.mid(0, data.size() - 1));
 #endif
         }
-        else if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value)
+        else if constexpr (
+            std::is_integral<T>::value || std::is_floating_point<T>::value) // convert to integer
         {
             if (data.size() >= sizeof(T))
             {
@@ -3459,52 +3514,6 @@ ito::RetVal FaulhaberMCS::setRegister(
     {
         T parsedResponse;
         retVal += parseResponse<T>(response, parsedResponse);
-    }
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-template <typename T>
-ito::RetVal FaulhaberMCS::setRegisterWithParsedResponse(
-    const ito::uint16& index,
-    const ito::uint8& subindex,
-    const ito::uint32& value,
-    const ito::uint8& length,
-    T& answer)
-{
-    ito::RetVal retVal = ito::retOk;
-
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-
-    retVal += setRegister<T>(index, subindex, value, sizeof(value));
-
-    QElapsedTimer timer;
-    timer.start();
-
-    while (answer != value)
-    {
-        // short delay
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-        waitMutex.unlock();
-        setAlive();
-
-        retVal += readRegisterWithParsedResponse<T>(index, subindex, answer);
-
-        if (retVal.containsError() || timer.hasExpired(m_waitForMCSTimeout))
-        {
-            retVal += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Timeout occurred during setting register %1 to %2")
-                    .arg(index)
-                    .arg(value)
-                    .toUtf8()
-                    .data());
-            break;
-        }
     }
 
     return retVal;

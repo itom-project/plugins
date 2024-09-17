@@ -208,14 +208,6 @@ private:
         const ito::uint32& value,
         const ito::uint8& length);
 
-    template <typename T>
-    ito::RetVal setRegisterWithParsedResponse(
-        const ito::uint16& address,
-        const ito::uint8& subindex,
-        const ito::uint32& value,
-        const ito::uint8& length,
-        T& answer);
-
     // CONTROL WORD
     void setControlWord(const ito::uint16 word);
 
@@ -234,6 +226,7 @@ private:
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
     ito::RetVal getError();
     ito::RetVal interpretEMCYError(const ito::uint16& errorCode);
+    ito::RetVal interpretCIA402Error(const QByteArray& errorBytes);
 
     // PARAMETER FUNCTIONS
     ito::RetVal getSerialNumber(QString& serialNum);
