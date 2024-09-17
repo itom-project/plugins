@@ -42,7 +42,7 @@
 class GenTLDataStream
 {
 public:
-    GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, int verbose, ito::RetVal &retval);
+    GenTLDataStream(QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, const QByteArray &modelName, int verbose, ito::RetVal &retval);
     ~GenTLDataStream();
 
     ito::RetVal allocateAndAnnounceBuffers(int nrOfBuffers, size_t bytesPerBuffer = 0); //bytesPerBuffer = 0 means that the payload for each buffer should be automatically detected
@@ -71,11 +71,12 @@ public:
     }
 
 protected:
-    ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-    ito::RetVal copyRGB8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
-    ito::RetVal copyBGR8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
-    ito::RetVal copyYCbCr422ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
-    ito::RetVal copyBayerRG8ToDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
+    ito::RetVal copyMono8ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj, bool considerModelWorkarounds = true);
+    ito::RetVal copyRGB8ToColorDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
+    ito::RetVal copyBGR8ToColorDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj);
+    ito::RetVal copyYCbCr422ToColorDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
+    ito::RetVal copyBayerRG8ToColorDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj, bool considerModelWorkarounds = true);
+    ito::RetVal copyBayerRG10G40IDSToColorDataObject(const char* ptr, const size_t& width, const size_t& height, bool littleEndian, ito::DataObject& dobj, bool considerModelWorkarounds = true);
     ito::RetVal copyMono10to16ToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12pToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
     ito::RetVal copyMono12PackedToDataObject(const char* ptr, const size_t &width, const size_t &height, bool littleEndian, ito::DataObject &dobj);
@@ -85,6 +86,13 @@ protected:
     bool checkForErrorEvent(ito::RetVal &retval, const QString &errorPrefix); //return true, if error event is available and has been reported, else false
 
     void printBufferInfo(const char *prefix, GenTL::BUFFER_HANDLE buffer);
+
+    enum SpecialModelType
+    {
+        NoSpecialType,
+        IDS_U3_38Jx,
+        IDS_U3_33Fx
+    };
 
     GenTL::DS_HANDLE m_handle;
     GenTL::EVENT_HANDLE m_newBufferEvent;
@@ -99,6 +107,7 @@ protected:
     GenTL::PDSQueueBuffer DSQueueBuffer;
     GenTL::PDSFlushQueue DSFlushQueue;
     GenTL::PDSGetBufferInfo DSGetBufferInfo;
+    GenTL::PDSGetBufferChunkData DSGetBufferChunkData;
     GenTL::PDSClose DSClose;
     GenTL::PDSStartAcquisition DSStartAcquisition;
     GenTL::PDSStopAcquisition DSStopAcquisition;
@@ -114,6 +123,10 @@ protected:
     bool m_endianessChanged;
     int m_verbose;
     bool m_flushAllBuffersToInput; //see init parameter with the same name
+    QByteArray m_modelName;
+    SpecialModelType m_specialModelType; // some models require some special data treatment. This member is for a fast lookup of this.
+
+    std::vector<char> m_charBuffer_cache;
 
 };
 
