@@ -68,7 +68,7 @@ An instance of this plugin has the following internal parameters:
 Usage
 =====
 
-For Windows use open the command line interface with administrator priveleges.
+For Windows use open the command line interface with administrator privileges.
 Use **setx** to permanently change the System **PATH** Variable (eg. "setx / M PATH "%PATH;C:\Program Files\STEMMER IMAGING\Common Vision Blox").
 
 Until now, only monochrome cameras with pixel format Mono8, Mono10, .. Mono16 are supported. Only the parameter integration_time

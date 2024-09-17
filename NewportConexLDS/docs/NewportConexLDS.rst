@@ -146,7 +146,7 @@ COM port must be adapted.
     try:
         conex
     except NameError:
-        serial = dataIO("SerialIO", comPort, 921600, "\r\n", enableDebug=True)
+        serial = dataIO("SerialIO", comPort, 921600, "\r\n")
         conex = dataIO("NewportConexLDS", serial)
 
     conex.getParamListInfo()

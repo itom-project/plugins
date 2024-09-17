@@ -37,20 +37,20 @@ char getHexChar(int i)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetSerialIO::DockWidgetSerialIO(ito::AddInDataIO *dataIO) :
-    AbstractAddInDockWidget(dataIO),
-    m_inEditing(false)
+DockWidgetSerialIO::DockWidgetSerialIO(ito::AddInDataIO* dataIO) :
+    AbstractAddInDockWidget(dataIO), m_inEditing(false)
 {
     ui.setupUi(this);
 
-/*    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
-//    ui.lblName->setText(temp);
-    ui.lblID->setText(QString::number(uniqueID));
-    valuesChanged(params);*/
+    /*    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete
+    it
+    //    ui.lblName->setText(temp);
+        ui.lblID->setText(QString::number(uniqueID));
+        valuesChanged(params);*/
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetSerialIO::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetSerialIO::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (!m_inEditing)
     {
@@ -96,7 +96,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
 
         data = data + endline;
 
-        text1.resize((displayLength+1) * data.length());
+        text1.resize((displayLength + 1) * data.length());
         text2.resize((3 * data.length()));
 
         for (n = 0; n < data.length(); n++)
@@ -104,66 +104,62 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
             uc = (int)(unsigned char)(data[n]);
             switch (displayType)
             {
-                case 1: //If Hexagonal
-                    {
-                        text1[r1++] = getHexChar(int(uc / 16));
-                        text1[r1++] = getHexChar(int(uc % 16));
-                        text1[r1++] = ' ';
-                        break;
-                    }
-                case 2: //If Binary
-                    {
-                        for (i = 7; i >= 0; i--)
-                        {
-                            text1[r1++] = ((uc >> i) & 1) + 48;
-                        }
-                        text1[r1++] = ' ';
-                        break;
-                    }
-                case 3: //If Dez
-                    {
-                        text1[r1++] = int(uc / 100) + 48;
-                        text1[r1++] = int((uc % 100) / 10) + 48;
-                        text1[r1++] = int(uc % 10) + 48;
-                        text1[r1++] = ' ';
-                    }
-                default: // If Ascii
-                    break;
+            case 1: // If Hexagonal
+            {
+                text1[r1++] = getHexChar(int(uc / 16));
+                text1[r1++] = getHexChar(int(uc % 16));
+                text1[r1++] = ' ';
+                break;
+            }
+            case 2: // If Binary
+            {
+                for (i = 7; i >= 0; i--)
+                {
+                    text1[r1++] = ((uc >> i) & 1) + 48;
+                }
+                text1[r1++] = ' ';
+                break;
+            }
+            case 3: // If Dez
+            {
+                text1[r1++] = int(uc / 100) + 48;
+                text1[r1++] = int((uc % 100) / 10) + 48;
+                text1[r1++] = int(uc % 10) + 48;
+                text1[r1++] = ' ';
+            }
+            default: // If Ascii
+                break;
             }
 
             if (uc < 32)
             {
                 switch (uc)
                 {
-                    case 13:
-                        {
-                            text2[r2++] = '\\';
-                            text2[r2++] = 'r';
-                            break;
-                        }
-                    case 10:
-                        {
-                            text2[r2++] = '\\';
-                            text2[r2++] = 'n';
-                            break;
-                        }
-                    case 11:
-                        {
-                            text2[r2++] = '\\';
-                            text2[r2++] = 't';
-                            break;
-                        }
-                    default:
-                        {
-                            text2[r2++] = '$';
-                            text2[r2++] = '(';
-                            if (int(data[n]) > 9)
-                            {
-                                text2[r2++] = char(int(uc / 10) + 48);
-                            }
-                            text2[r2++] = char(int(uc % 10) + 48);
-                            text2[r2++] = ')';
-                        }
+                case 13: {
+                    text2[r2++] = '\\';
+                    text2[r2++] = 'r';
+                    break;
+                }
+                case 10: {
+                    text2[r2++] = '\\';
+                    text2[r2++] = 'n';
+                    break;
+                }
+                case 11: {
+                    text2[r2++] = '\\';
+                    text2[r2++] = 't';
+                    break;
+                }
+                default: {
+                    text2[r2++] = '$';
+                    text2[r2++] = '(';
+                    if (int(data[n]) > 9)
+                    {
+                        text2[r2++] = char(int(uc / 10) + 48);
+                    }
+                    text2[r2++] = char(int(uc % 10) + 48);
+                    text2[r2++] = ')';
+                }
                 }
             }
             else
@@ -212,13 +208,13 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
 
         if (!(ui.checkIgnoreEmpty->isChecked() && data.isEmpty() && endline.isEmpty()))
         {
-            ui.textTransfer->append((QString)InOutChar + " " + text1 + text2 + text3);
+            ui.textTransfer->append(InOutChar + " " + text1 + text2 + text3);
         }
     }
- }
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSerialIO::identifierChanged(const QString &identifier)
+void DockWidgetSerialIO::identifierChanged(const QString& identifier)
 {
     ui.lblIdentifier->setText(identifier);
 }
@@ -229,7 +225,8 @@ void DockWidgetSerialIO::on_checkIgnoreEmpty_clicked()
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("debugIgnoreEmpty", ito::ParamBase::Int, (int)ui.checkIgnoreEmpty->isChecked()));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase(
+            "debugIgnoreEmpty", ito::ParamBase::Int, (int)ui.checkIgnoreEmpty->isChecked()));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
