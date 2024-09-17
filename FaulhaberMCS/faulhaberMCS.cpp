@@ -28,7 +28,6 @@
 #include "faulhaberMCS.h"
 #include "common/helperCommon.h"
 #include "gitVersion.h"
-#include "iostream"
 #include "pluginVersion.h"
 
 #include <qplugin.h>
@@ -118,7 +117,10 @@ FaulhaberMCS::FaulhaberMCS() :
     std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
 
     ito::Param paramVal(
-        "name", ito::ParamBase::String | ito::ParamBase::Readonly, "FaulhaberMCS", nullptr);
+        "name",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        tr("FaulhaberMCS").toUtf8().data(),
+        nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category general device parameter
@@ -305,7 +307,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         1,
-        m_async,
+        0,
         tr("Enable (1) or Disable (0) operation.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -315,17 +317,17 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         1,
-        m_async,
+        0,
         tr("Enable (1) or Disable (0) device power.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "homed",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
-        m_async,
+        0,
         tr("homed (1) or not homed (0).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -410,7 +412,7 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "fault",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
         0,
@@ -430,7 +432,7 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "quickStop",
-        ito::ParamBase::Int,
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         1,
         0,
@@ -1785,6 +1787,7 @@ ito::RetVal FaulhaberMCS::performHoming(
             if (setPoint && target)
             {
                 homingComplete = true;
+                m_params["homed"].setVal<int>(1);
                 break;
             }
             // short delay of 10ms
@@ -1857,6 +1860,7 @@ ito::RetVal FaulhaberMCS::setOrigin(QVector<int> axis, ItomSharedSemaphore* wait
                 m_currentStatus[i],
                 ito::actuatorAtTarget,
                 ito::actSwitchesMask | ito::actStatusMask);
+            m_params["homed"].setVal<int>(1);
         }
 
         if (waitCond)
@@ -1984,7 +1988,6 @@ ito::RetVal FaulhaberMCS::setPosAbs(
     }
     else
     {
-        // check if axis is available TODO for MCS
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_numOfAxes)
@@ -2081,7 +2084,6 @@ ito::RetVal FaulhaberMCS::setPosRel(
     }
     else
     {
-        // check if axis is available TODO for MCS
         foreach (const int i, axis)
         {
             if (i < 0 || i >= m_numOfAxes)
