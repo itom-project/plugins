@@ -377,6 +377,134 @@ FaulhaberMCS::FaulhaberMCS() :
         "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------- category control ---------------------------//
+    paramVal = ito::Param(
+        "torqueGainControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Torque control gain parameter [mOm]. Register '%1'.")
+            .arg(convertHexToString(torqueGainControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint32>::min(),
+        std::numeric_limits<ito::uint32>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "torqueIntegralTimeControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Torque control integral time control parameter [µs]. Register '%1'.")
+            .arg(convertHexToString(torqueGainControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "fluxGainControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Flux control gain parameter [mOm]. Register '%1'.")
+            .arg(convertHexToString(torqueGainControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint32>::min(),
+        std::numeric_limits<ito::uint32>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "fluxIntegralTimeControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Flux control integral time control parameter [µs]. Register '%1'.")
+            .arg(convertHexToString(torqueGainControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityGainControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity gain control parameter [As 1e-6]. Register '%1'.")
+            .arg(convertHexToString(torqueGainControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint32>::min(),
+        std::numeric_limits<ito::uint32>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityIntegralTimeControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity integral time control parameter [µs]. Register '%1'.")
+            .arg(convertHexToString(velocityIntegralTimeControl_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint16>::min(),
+        std::numeric_limits<ito::uint16>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityDeviationThresholdControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity deviation threshold control parameter. Register '%1'.")
+            .arg(convertHexToString(velocityDeviationThreshold_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint16>::min(),
+        std::numeric_limits<ito::uint16>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityDeviationTimeControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity deviation time control parameter. Register '%1'.")
+            .arg(convertHexToString(velocityDeviationTime_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint16>::min(),
+        std::numeric_limits<ito::uint16>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "velocityWarningThresholdControl",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity warning threshold control parameter. Register '%1'.")
+            .arg(convertHexToString(velocityWarningThreshold_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint16>::min(),
+        std::numeric_limits<ito::uint16>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
         "readyToSwitchOn",
@@ -1067,6 +1195,96 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::uint32 torque;
+        retValue += getTorqueGainControl(torque);
+        if (!retValue.containsError())
+        {
+            m_params["torqueGainControl"].setVal<int>(torque);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 torque;
+        retValue += getTorqueIntegralTimeControl(torque);
+        if (!retValue.containsError())
+        {
+            m_params["torqueIntegralTimeControl"].setVal<int>(torque);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint32 flux;
+        retValue += getFluxGainControl(flux);
+        if (!retValue.containsError())
+        {
+            m_params["fluxGainControl"].setVal<int>(flux);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 flux;
+        retValue += getTorqueIntegralTimeControl(flux);
+        if (!retValue.containsError())
+        {
+            m_params["fluxIntegralTimeControl"].setVal<int>(flux);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint32 gain;
+        retValue += getFluxGainControl(gain);
+        if (!retValue.containsError())
+        {
+            m_params["velocityGainControl"].setVal<int>(gain);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 time;
+        retValue += getVelocityIntegralTimeControl(time);
+        if (!retValue.containsError())
+        {
+            m_params["velocityIntegralTimeControl"].setVal<int>(time);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 threshold;
+        retValue += getVelocityDeviationThreshold(threshold);
+        if (!retValue.containsError())
+        {
+            m_params["velocityDeviationThresholdControl"].setVal<int>(threshold);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 velocitytime;
+        retValue += getVelocityDeviationTime(velocitytime);
+        if (!retValue.containsError())
+        {
+            m_params["velocityDeviationTimeControl"].setVal<int>(velocitytime);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 warning;
+        retValue += getVelocityWarningThreshold(warning);
+        if (!retValue.containsError())
+        {
+            m_params["velocityWarningThresholdControl"].setVal<int>(warning);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int16 current;
         retValue += getCurrent(current);
         if (!retValue.containsError())
@@ -1327,6 +1545,69 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int*>(limits, 2);
             }
         }
+        else if (key == "torqueGainControl")
+        {
+            ito::uint32 torque;
+            retValue += getTorqueGainControl(torque);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(torque));
+            }
+        }
+        else if (key == "torqueIntegralTimeControl")
+        {
+            ito::uint16 torque;
+            retValue += getTorqueIntegralTimeControl(torque);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(torque));
+            }
+        }
+        else if (key == "fluxGainControl")
+        {
+            ito::uint32 gain;
+            retValue += getFluxGainControl(gain);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(gain));
+            }
+        }
+        else if (key == "fluxIntegralTimeControl")
+        {
+            ito::uint16 flux;
+            retValue += getFluxIntegralTimeControl(flux);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(flux));
+            }
+        }
+        else if (key == "velocityGainControl")
+        {
+            ito::uint32 gain;
+            retValue += getVelocityGainControl(gain);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(gain));
+            }
+        }
+        else if (key == "velocityIntegralTimeControl")
+        {
+            ito::uint16 time;
+            retValue += getVelocityIntegralTimeControl(time);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(time));
+            }
+        }
+        else if (key == "velocityDeviationThresholdControl")
+        {
+            ito::uint16 thres;
+            retValue += getVelocityDeviationThreshold(thres);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(thres));
+            }
+        }
         *val = it.value();
     }
 
@@ -1375,10 +1656,6 @@ ito::RetVal FaulhaberMCS::setParam(
         if (key == "operationMode")
         {
             retValue += setOperationMode(val->getVal<int>());
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "operation")
         {
@@ -1401,8 +1678,6 @@ ito::RetVal FaulhaberMCS::setParam(
                         .toUtf8()
                         .data());
             }
-
-            retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "power")
         {
@@ -1426,47 +1701,26 @@ ito::RetVal FaulhaberMCS::setParam(
                         .data());
             }
             retValue += updateStatus();
-            retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "maxMotorSpeed")
         {
             retValue += setMaxMotorSpeed(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "profileVelocity")
         {
             retValue += setProfileVelocity(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "acceleration")
         {
             retValue += setAcceleration(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "deceleration")
         {
             retValue += setDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "quickStopDeceleration")
         {
             retValue += setQuickStopDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "moveTimeout")
         {
@@ -1476,10 +1730,6 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "netMode")
         {
             retValue += setNetMode(static_cast<ito::uint8>(val->getVal<int>()));
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "nodeID")
         {
@@ -1487,7 +1737,6 @@ ito::RetVal FaulhaberMCS::setParam(
             retValue += setNodeID(node);
             if (!retValue.containsError())
             {
-                retValue += it->copyValueFrom(&(*val));
                 openedNodes.replace(openedNodes.indexOf(m_node), node);
                 m_node = node;
             }
@@ -1496,19 +1745,11 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             ito::uint16 id = static_cast<ito::uint16>(val->getVal<int>());
             retValue += setExplicitDeviceID(id);
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "targetTorque")
         {
             ito::int16 torque = static_cast<ito::int16>(val->getVal<int>());
             retValue += setTargetTorque(torque);
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "torqueLimits")
         {
@@ -1517,10 +1758,6 @@ ito::RetVal FaulhaberMCS::setParam(
             ito::uint16 pLimit = static_cast<ito::uint16>(limits[1]);
             retValue += setNegativeTorqueLimit(nLimit);
             retValue += setPositiveTorqueLimit(pLimit);
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
         else if (key == "positionLimits")
         {
@@ -1529,12 +1766,53 @@ ito::RetVal FaulhaberMCS::setParam(
             ito::int32 pLimit = static_cast<ito::int32>(limits[1]);
             retValue += setPositionLowerLimit(nLimit);
             retValue += setPositionUpperLimit(pLimit);
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom(&(*val));
-            }
         }
-        else
+        else if (key == "torqueGainControl")
+        {
+            ito::uint32 torque = static_cast<ito::uint32>(val->getVal<int>());
+            retValue += setTorqueGainControl(torque);
+        }
+        else if (key == "torqueIntegralTimeControl")
+        {
+            ito::uint16 torque = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setTorqueIntegralTimeControl(torque);
+        }
+        else if (key == "fluxGainControl")
+        {
+            ito::uint32 gain = static_cast<ito::uint32>(val->getVal<int>());
+            retValue += setFluxGainControl(gain);
+        }
+        else if (key == "fluxIntegralTimeControl")
+        {
+            ito::uint16 torque = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setFluxIntegralTimeControl(torque);
+        }
+        else if (key == "velocityGainControl")
+        {
+            ito::uint32 gain = static_cast<ito::uint32>(val->getVal<int>());
+            retValue += setVelocityGainControl(gain);
+        }
+        else if (key == "velocityIntegralTimeControl")
+        {
+            ito::uint16 time = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setVelocityIntegralTimeControl(time);
+        }
+        else if (key == "velocityDeviationThresholdControl")
+        {
+            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setVelocityDeviationThreshold(thres);
+        }
+        else if (key == "velocityDeviationTimeControl")
+        {
+            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setVelocityDeviationTime(thres);
+        }
+        else if (key == "velocityWarningThresholdControl")
+        {
+            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
+            retValue += setVelocityWarningThreshold(thres);
+        }
+        if (!retValue.containsError())
         {
             retValue += it->copyValueFrom(&(*val));
         }
@@ -2569,6 +2847,159 @@ ito::RetVal FaulhaberMCS::setPositionUpperLimit(const ito::int32 limit)
         positionUpperLimit_register.subindex,
         limit,
         sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTorqueGainControl(ito::uint32& gain)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        torqueGainControl_register.index, torqueGainControl_register.subindex, gain);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setTorqueGainControl(const ito::uint32 gain)
+{
+    return setRegister<ito::uint32>(
+        torqueGainControl_register.index, torqueGainControl_register.subindex, gain, sizeof(gain));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTorqueIntegralTimeControl(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        torqueIntegralTimeControl_register.index,
+        torqueIntegralTimeControl_register.subindex,
+        time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setTorqueIntegralTimeControl(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        torqueIntegralTimeControl_register.index,
+        torqueIntegralTimeControl_register.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getFluxGainControl(ito::uint32& gain)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        fluxGainControl_register.index, fluxGainControl_register.subindex, gain);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setFluxGainControl(const ito::uint32 gain)
+{
+    return setRegister<ito::uint32>(
+        fluxGainControl_register.index, fluxGainControl_register.subindex, gain, sizeof(gain));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getFluxIntegralTimeControl(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        fluxIntegralTimeControl_register.index, fluxIntegralTimeControl_register.subindex, time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setFluxIntegralTimeControl(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        fluxIntegralTimeControl_register.index,
+        fluxIntegralTimeControl_register.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityGainControl(ito::uint32& gain)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        velocityGainControl_register.index, velocityGainControl_register.subindex, gain);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityGainControl(const ito::uint32 gain)
+{
+    return setRegister<ito::uint32>(
+        velocityGainControl_register.index,
+        velocityGainControl_register.subindex,
+        gain,
+        sizeof(gain));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityIntegralTimeControl(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        velocityIntegralTimeControl_register.index,
+        velocityIntegralTimeControl_register.subindex,
+        time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityIntegralTimeControl(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        velocityIntegralTimeControl_register.index,
+        velocityIntegralTimeControl_register.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityDeviationThreshold(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        velocityDeviationThreshold_register.index,
+        velocityDeviationThreshold_register.subindex,
+        time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityDeviationThreshold(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        velocityDeviationThreshold_register.index,
+        velocityDeviationThreshold_register.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityDeviationTime(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        velocityDeviationTime_register.index, velocityDeviationTime_register.subindex, time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityDeviationTime(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        velocityDeviationTime_register.index,
+        velocityDeviationTime_register.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityWarningThreshold(ito::uint16& thres)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        velocityWarningThreshold_register.index, velocityWarningThreshold_register.subindex, thres);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityWarningThreshold(const ito::uint16 thres)
+{
+    return setRegister<ito::uint16>(
+        velocityWarningThreshold_register.index,
+        velocityWarningThreshold_register.subindex,
+        thres,
+        sizeof(thres));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -150,6 +150,18 @@ private:
     const Register positionLowerLimit_register = {0x607D, 0x01};
     const Register positionUpperLimit_register = {0x607D, 0x02};
 
+    const Register torqueGainControl_register = {0x2342, 0x01};
+    const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
+    const Register fluxGainControl_register = {0x2343, 0x01};
+    const Register fluxIntegralTimeControl_register = {0x2343, 0x02};
+    const Register velocityGainControl_register = {0x2344, 0x01};
+    const Register velocityIntegralTimeControl_register = {0x2344, 0x02};
+    const Register velocityDeviationThreshold_register = {0x2344, 0x03};
+    const Register velocityDeviationTime_register = {0x2344, 0x04};
+    const Register velocityWarningThreshold_register = {0x2344, 0x05};
+    // todo INTEGRAL PART OPTION
+    // TODO UPDATE DOCS
+
     const Register homingMode_register = {0x6098, 0x00};
     const Register homingOffset_register = {0x607c, 0x00};
     const Register homingSpeed_register = {0x6099, 0x02};
@@ -283,6 +295,34 @@ private:
 
     ito::RetVal getPositionUpperLimit(ito::int32& limit);
     ito::RetVal setPositionUpperLimit(const ito::int32 limit);
+
+    // CONTROL
+    ito::RetVal getTorqueGainControl(ito::uint32& gain);
+    ito::RetVal setTorqueGainControl(const ito::uint32 gain);
+
+    ito::RetVal getTorqueIntegralTimeControl(ito::uint16& time);
+    ito::RetVal setTorqueIntegralTimeControl(const ito::uint16 time);
+
+    ito::RetVal getFluxGainControl(ito::uint32& gain);
+    ito::RetVal setFluxGainControl(const ito::uint32 gain);
+
+    ito::RetVal getFluxIntegralTimeControl(ito::uint16& time);
+    ito::RetVal setFluxIntegralTimeControl(const ito::uint16 time);
+
+    ito::RetVal getVelocityGainControl(ito::uint32& gain);
+    ito::RetVal setVelocityGainControl(const ito::uint32 gain);
+
+    ito::RetVal getVelocityIntegralTimeControl(ito::uint16& time);
+    ito::RetVal setVelocityIntegralTimeControl(const ito::uint16 time);
+
+    ito::RetVal getVelocityDeviationThreshold(ito::uint16& thres);
+    ito::RetVal setVelocityDeviationThreshold(const ito::uint16 thres);
+
+    ito::RetVal getVelocityDeviationTime(ito::uint16& time);
+    ito::RetVal setVelocityDeviationTime(const ito::uint16 time);
+
+    ito::RetVal getVelocityWarningThreshold(ito::uint16& thres);
+    ito::RetVal setVelocityWarningThreshold(const ito::uint16 thres);
 
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
