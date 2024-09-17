@@ -287,6 +287,23 @@ Parameters can be set by using the ``setParam`` method of the plugin:
 
     mot.setParam("profileVelocity", 2000)
 
+Motor can be turned off setting parameter ``operation``:
+
+.. code-block:: python
+
+    mot.setParam("operation", 0) # turn off motor
+    mot.setParam("operation", 1) # turn on motor
+
+The motor voltage is turned off setting parameter ``power``:
+
+.. code-block:: python
+
+    mot.setParam("power", 0) # turn off motor voltage
+
+    # To turn it on again, first it must be shut down
+    mot.setParam("operation", 0)
+    mot.setParam("operation", 1) # turn on motor
+
 Changelog
 ==========
 

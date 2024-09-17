@@ -169,9 +169,9 @@ private:
 
     struct ErrorInfo
     {
-        QString shortDescription;
-        QString longDescription;
-        uint16_t cia402ErrorCode;
+        QString shortDescription = "";
+        QString longDescription = "";
+        ito::uint16 cia402ErrorCode = 0;
     };
 
     ito::RetVal waitForDone(

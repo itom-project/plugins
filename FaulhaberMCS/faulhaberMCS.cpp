@@ -2822,6 +2822,9 @@ ito::RetVal FaulhaberMCS::startupSequence()
             retValue += ito::RetVal(ito::retError, 9999, "Timeout occurred during initialization.");
         }
     }
+    m_params["operation"].setVal<int>(1);
+    m_params["power"].setVal<int>(1);
+
     return retValue;
 }
 
