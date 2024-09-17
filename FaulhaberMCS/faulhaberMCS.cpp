@@ -505,6 +505,19 @@ FaulhaberMCS::FaulhaberMCS() :
         "Control"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "velocityIntegralPartOption",
+        ito::ParamBase::Int,
+        0,
+        tr("Velocity integral part option. Configuration of the speed control loop. '0': integral "
+           "component active, '1': stopped integral component in the position windoed (in PP "
+           "mode), '2': integral component deactivated. Register '%1'.")
+            .arg(convertHexToString(velocityIntegralPartOption))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 2, 1, "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category Statusword ---------------------------//
     paramVal = ito::Param(
         "readyToSwitchOn",
@@ -1285,6 +1298,16 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::uint8 option;
+        retValue += getVelocityIntegralPartOption(option);
+        if (!retValue.containsError())
+        {
+            m_params["velocityIntegralPartOption"].setVal<int>(option);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int16 current;
         retValue += getCurrent(current);
         if (!retValue.containsError())
@@ -1608,6 +1631,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(thres));
             }
         }
+        else if (key == "velocityIntegralPartOption")
+        {
+            ito::uint8 option;
+            retValue += getVelocityIntegralPartOption(option);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(option));
+            }
+        }
         *val = it.value();
     }
 
@@ -1743,74 +1775,64 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "deviceID")
         {
-            ito::uint16 id = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setExplicitDeviceID(id);
+            retValue += setExplicitDeviceID(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "targetTorque")
         {
-            ito::int16 torque = static_cast<ito::int16>(val->getVal<int>());
-            retValue += setTargetTorque(torque);
+            retValue += setTargetTorque(static_cast<ito::int16>(val->getVal<int>()));
         }
         else if (key == "torqueLimits")
         {
             int* limits = val->getVal<int*>();
-            ito::uint16 nLimit = static_cast<ito::uint16>(limits[0]);
-            ito::uint16 pLimit = static_cast<ito::uint16>(limits[1]);
-            retValue += setNegativeTorqueLimit(nLimit);
-            retValue += setPositiveTorqueLimit(pLimit);
+            retValue += setNegativeTorqueLimit(static_cast<ito::uint16>(limits[0]));
+            retValue += setPositiveTorqueLimit(static_cast<ito::uint16>(limits[1]));
         }
         else if (key == "positionLimits")
         {
             int* limits = val->getVal<int*>();
-            ito::int32 nLimit = static_cast<ito::int32>(limits[0]);
-            ito::int32 pLimit = static_cast<ito::int32>(limits[1]);
-            retValue += setPositionLowerLimit(nLimit);
-            retValue += setPositionUpperLimit(pLimit);
+            retValue += setPositionLowerLimit(static_cast<ito::int32>(limits[0]));
+            retValue += setPositionUpperLimit(static_cast<ito::int32>(limits[1]));
         }
         else if (key == "torqueGainControl")
         {
-            ito::uint32 torque = static_cast<ito::uint32>(val->getVal<int>());
-            retValue += setTorqueGainControl(torque);
+            retValue += setTorqueGainControl(static_cast<ito::uint32>(val->getVal<int>()));
         }
         else if (key == "torqueIntegralTimeControl")
         {
-            ito::uint16 torque = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setTorqueIntegralTimeControl(torque);
+            retValue += setTorqueIntegralTimeControl(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "fluxGainControl")
         {
-            ito::uint32 gain = static_cast<ito::uint32>(val->getVal<int>());
-            retValue += setFluxGainControl(gain);
+            retValue += setFluxGainControl(static_cast<ito::uint32>(val->getVal<int>()));
         }
         else if (key == "fluxIntegralTimeControl")
         {
-            ito::uint16 torque = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setFluxIntegralTimeControl(torque);
+            retValue += setFluxIntegralTimeControl(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "velocityGainControl")
         {
-            ito::uint32 gain = static_cast<ito::uint32>(val->getVal<int>());
-            retValue += setVelocityGainControl(gain);
+            retValue += setVelocityGainControl(static_cast<ito::uint32>(val->getVal<int>()));
         }
         else if (key == "velocityIntegralTimeControl")
         {
-            ito::uint16 time = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setVelocityIntegralTimeControl(time);
+            retValue +=
+                setVelocityIntegralTimeControl(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "velocityDeviationThresholdControl")
         {
-            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setVelocityDeviationThreshold(thres);
+            retValue += setVelocityDeviationThreshold(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "velocityDeviationTimeControl")
         {
-            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setVelocityDeviationTime(thres);
+            retValue += setVelocityDeviationTime(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "velocityWarningThresholdControl")
         {
-            ito::uint16 thres = static_cast<ito::uint16>(val->getVal<int>());
-            retValue += setVelocityWarningThreshold(thres);
+            retValue += setVelocityWarningThreshold(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "velocityIntegralPartOption")
+        {
+            retValue += setVelocityIntegralPartOption(static_cast<ito::uint8>(val->getVal<int>()));
         }
         if (!retValue.containsError())
         {
@@ -3003,6 +3025,23 @@ ito::RetVal FaulhaberMCS::setVelocityWarningThreshold(const ito::uint16 thres)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityIntegralPartOption(ito::uint8& option)
+{
+    return readRegisterWithParsedResponse<ito::uint8>(
+        velocityIntegralPartOption.index, velocityIntegralPartOption.subindex, option);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(const ito::uint8 option)
+{
+    return setRegister<ito::uint8>(
+        velocityIntegralPartOption.index,
+        velocityIntegralPartOption.subindex,
+        option,
+        sizeof(option));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingOffset(const ito::int32& offset)
 {
     return setRegister<ito::int32>(
@@ -3865,7 +3904,8 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch for SDO read request/response (received: '%1', calculated: "
+                tr("Checksum mismatch for SDO read request/response (received: '%1', "
+                   "calculated: "
                    "'%2').")
                     .arg(receivedCRC)
                     .arg(checkCRC)
@@ -3910,7 +3950,8 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch for SDO write request/response (received: '%1', calculated: "
+                tr("Checksum mismatch for SDO write request/response (received: '%1', "
+                   "calculated: "
                    "'%2').")
                     .arg(receivedCRC)
                     .arg(checkCRC)
@@ -3928,7 +3969,8 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch for SDO write parameter request/response (received: '%1', "
+                tr("Checksum mismatch for SDO write parameter request/response (received: "
+                   "'%1', "
                    "calculated: "
                    "'%2').")
                     .arg(receivedCRC)

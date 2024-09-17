@@ -46,7 +46,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: -37*
+    *Value range: [-32768, 32767], Default: 10*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
@@ -67,6 +67,14 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Firmware version. Register '0x100A.00'
 
     *Match: "", Default: "0111.02N"*
+**fluxGainControl**: int
+    Flux control gain parameter [mOm]. Register '0x2342.01'.
+
+    *Value range: [-1, 0], Default: 1835*
+**fluxIntegralTimeControl**: int
+    Flux control integral time control parameter [µs]. Register '0x2342.01'.
+
+    *Value range: [150, 2600], Default: 150*
 **followingError**: int, read-only
     1: Permissible range for the following error exceeded, 0: The actual position follows
     the instructions without a following error (Bit 13).
@@ -89,14 +97,13 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Maximum torque limit in relative scaling. 1000 = motor rated torque. Register
     '0x6072.00'.
 
-    *Value range: [1, 30000], Default: 5999*
+    *Value range: [1, 30000], Default: 2000*
 **moveTimeout**: int
     Timeout for movement in ms.
 
     *Value range: [0, inf], Default: 60000*
 **name**: str, read-only
     FaulhaberMCS
-
 **netMode**: int
     RS232 net mode. Register '0x2400.05'.
 
@@ -108,7 +115,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **operation**: int
     Enable (1) or Disable (0) operation.
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **operationEnabled**: int, read-only
     1: Operation enabled, 0: Operation disabled (Bit 2).
 
@@ -123,11 +130,12 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Lower/ upper limit of the position range in userdefined uints. Register lower limit
     '0x607D.01', upper limit '0x607D.02'.
 
-    *Allowed number of values: 0 - 18446744073709551615, All values allowed, Default: [-2147483648, 2147483647]*
+    *Allowed number of values: 0 - 18446744073709551615, All values allowed, Default: [-inf,
+    inf]*
 **power**: int
     Enable (1) or Disable (0) device power.
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **productCode**: str, read-only
     Product code number. Register '0x1018.02'.
 
@@ -139,7 +147,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **quickStopDeceleration**: int
     Quickstop deceleration in 1/s². Register '0x6085.00'.
 
@@ -180,25 +188,59 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureCPU**: int, read-only
     CPU temperature in [°C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 47*
+    *Value range: [0, 32767], Default: 44*
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 33*
+    *Value range: [0, 32767], Default: 30*
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 22*
+    *Value range: [0, 32767], Default: 29*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
     *Value range: [-32768, 32767], Default: 0*
+**torqueGainControl**: int
+    Torque control gain parameter [mOm]. Register '0x2342.01'.
+
+    *Value range: [-1, 0], Default: 1835*
+**torqueIntegralTimeControl**: int
+    Torque control integral time control parameter [µs]. Register '0x2342.01'.
+
+    *Value range: [150, 2600], Default: 150*
 **torqueLimits**: Sequence[int]
     Negative/ positive torque limit values in relative scaling. 1000 = motor rated torque.
     Register negative limit '0x60E1.00', positive limit '0x60E0.00'.
 
     *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 6000], Default:
     [6000, 6000]*
+**velocityDeviationThresholdControl**: int
+    Velocity deviation threshold control parameter. Register '0x2344.03'.
+
+    *Value range: [0, 65535], Default: 65535*
+**velocityDeviationTimeControl**: int
+    Velocity deviation time control parameter. Register '0x2344.04'.
+
+    *Value range: [0, 65535], Default: 100*
+**velocityGainControl**: int
+    Velocity gain control parameter [As 1e-6]. Register '0x2342.01'.
+
+    *Value range: [-1, 0], Default: 1835*
+**velocityIntegralPartOption**: int
+    Velocity integral part option. Configuration of the speed control loop. '0': integral
+    component active, '1': stopped integral component in the position windoed (in PP mode),
+    '2': integral component deactivated. Register '0x2344.06'.
+
+    *Value range: [0, 2], Default: 0*
+**velocityIntegralTimeControl**: int
+    Velocity integral time control parameter [µs]. Register '0x2344.02'.
+
+    *Value range: [0, 65535], Default: 23*
+**velocityWarningThresholdControl**: int
+    Velocity warning threshold control parameter. Register '0x2344.05'.
+
+    *Value range: [0, 65535], Default: 30000*
 **vendorID**: str, read-only
     Vendor ID of device. Register '0x1018.01'.
 
@@ -255,7 +297,7 @@ The current position can be set to zero by using the ``setOrigin`` method of the
 
 .. code-block:: python
 
-    mot.exec("setOrigin")
+    mot.setOrigin(0)
 
 The relative position can be set to a specific value by using the ``setPosRel`` method of the plugin:
 
@@ -309,6 +351,31 @@ For long movement operations, the timeout can be set:
 .. code-block:: python
 
     mot.setParam("moveTimeout", 60000) # set timeout to 60s
+
+The torque control parameter are changed by the plugin parameter:
+
+.. code-block:: python
+
+    mot.setParam("torqueGainControl", 1835)
+    mot.setParam("torqueIntegralTimeControl", 150)
+
+The flux control parameter are changed by the plugin parameter:
+
+.. code-block:: python
+
+    mot.setParam("fluxGainControl", 1835)
+    mot.setParam("fluxIntegralTimeControl", 150)
+
+The velocity control parameter are changed by the plugin parameter:
+
+.. code-block:: python
+
+    mot.setParam("velocityGainControl", 1835)
+    mot.setParam("velocityIntegralTimeControl", 23)
+    mot.setParam("velocityDeviationThresholdControl", 65535)
+    mot.setParam("velocityDeviationTimeControl", 100)
+    mot.setParam("velocityWarningThresholdControl", 30000)
+    mot.setParam("velocityIntegralPartOption", 0)
 
 Changelog
 ==========

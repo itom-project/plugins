@@ -159,6 +159,7 @@ private:
     const Register velocityDeviationThreshold_register = {0x2344, 0x03};
     const Register velocityDeviationTime_register = {0x2344, 0x04};
     const Register velocityWarningThreshold_register = {0x2344, 0x05};
+    const Register velocityIntegralPartOption = {0x2344, 0x06};
     // todo INTEGRAL PART OPTION
     // TODO UPDATE DOCS
 
@@ -323,6 +324,9 @@ private:
 
     ito::RetVal getVelocityWarningThreshold(ito::uint16& thres);
     ito::RetVal setVelocityWarningThreshold(const ito::uint16 thres);
+
+    ito::RetVal getVelocityIntegralPartOption(ito::uint8& option);
+    ito::RetVal setVelocityIntegralPartOption(const ito::uint8 option);
 
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
