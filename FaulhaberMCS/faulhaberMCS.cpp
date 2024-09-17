@@ -54,9 +54,9 @@ It was implemented for RS232 communication and tested with:\n\
 \n\
 * Serie MCS 3242: https://www.faulhaber.com/de/produkte/serie/mcs-3242bx4-et/\n\
 \n\
-Homing options:\n\
-- 'setOrigin' function of the plugin uses the homing method '37' to set the current position to 0.\n\
-- 'homing' execFunction can be used for the other homing methods which needs more input parameters.\n\
+Homing options:\n\n\
+- 'setOrigin' function of the plugin uses the homing method '37' to set the current position to 0.\n\n\
+- 'homing' execFunction can be used for the other homing methods which needs more input parameters.\n\n\
 ");
 
     m_author = PLUGIN_AUTHOR;
