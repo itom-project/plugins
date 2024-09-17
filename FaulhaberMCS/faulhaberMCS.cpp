@@ -3434,11 +3434,11 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                tr("Checksum mismatch for SDO read request/response (received: '%1', calculated: "
+                   "'%2').")
                     .arg(receivedCRC)
                     .arg(checkCRC)
-                    .toUtf8()
-                    .data());
+                    .toUtf8());
         }
 
         if constexpr (std::is_same<T, QString>::value) // convert to QString
@@ -3476,7 +3476,14 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 #endif
         if (receivedCRC != checkCRC)
         {
-            return ito::RetVal(ito::retError, 0, tr("Checksum mismatch").toUtf8().data());
+            return ito::RetVal(
+                ito::retError,
+                0,
+                tr("Checksum mismatch for SDO write request/response (received: '%1', calculated: "
+                   "'%2').")
+                    .arg(receivedCRC)
+                    .arg(checkCRC)
+                    .toUtf8());
         }
         break;
     case 0x05: // SDO write parameter request
@@ -3490,11 +3497,12 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
             return ito::RetVal(
                 ito::retError,
                 0,
-                tr("Checksum mismatch (received: '%1', calculated: '%2').")
+                tr("Checksum mismatch for SDO write parameter request/response (received: '%1', "
+                   "calculated: "
+                   "'%2').")
                     .arg(receivedCRC)
                     .arg(checkCRC)
-                    .toUtf8()
-                    .data());
+                    .toUtf8());
         }
         m_statusWord = (response[4] << 8) | response[5];
 
