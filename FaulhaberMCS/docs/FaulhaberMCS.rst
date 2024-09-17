@@ -304,6 +304,12 @@ The motor voltage is turned off setting parameter ``power``:
     mot.setParam("operation", 0)
     mot.setParam("operation", 1) # turn on motor
 
+For long movement operations, the timeout can be set:
+
+.. code-block:: python
+
+    mot.setParam("moveTimeout", 60000) # set timeout to 60s
+
 Changelog
 ==========
 

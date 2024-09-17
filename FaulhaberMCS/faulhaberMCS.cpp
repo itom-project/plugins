@@ -1470,8 +1470,7 @@ ito::RetVal FaulhaberMCS::setParam(
         }
         else if (key == "moveTimeout")
         {
-            int timeout = val->getVal<int>();
-            m_waitForDoneTimeout = timeout;
+            m_waitForDoneTimeout = val->getVal<int>();
             retValue += it->copyValueFrom(&(*val));
         }
         else if (key == "netMode")
@@ -1799,12 +1798,25 @@ ito::RetVal FaulhaberMCS::performHoming(
             if (timer.hasExpired(m_waitForDoneTimeout)) // timeout during movement
             {
                 timeout = true;
-                retValue += ito::RetVal(ito::retError, 9999, "Timeout occurred during homing.");
+                retValue += ito::RetVal(
+                    ito::retError,
+                    9999,
+                    "Timeout occurred during homing. If necessary increase the parameter "
+                    "'moveTimeout'.");
                 for (int i = 0; i < m_numOfAxes; i++)
                 {
                     replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorTimeout);
                 }
                 sendStatusUpdate(true);
+
+                quickStop();
+                for (int i = 0; i < m_numOfAxes; i++)
+                {
+                    replaceStatus(
+                        m_currentStatus[i], ito::actuatorMoving, ito::actuatorInterrupted);
+                }
+                retValue += startupSequence();
+                sendStatusUpdate();
             }
         }
 
@@ -3176,8 +3188,18 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             timeout = true;
             // timeout occurred, set the status of all currently moving axes to timeout
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
-            retVal += ito::RetVal(ito::retError, 9999, "timeout occurred during movement");
+            retVal += ito::RetVal(
+                ito::retError,
+                9999,
+                "timeout occurred during movement. If necessary increase the parameter "
+                "'moveTimeout'.");
             sendStatusUpdate(true);
+
+            quickStop();
+            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
+            retVal += startupSequence();
+            sendStatusUpdate();
+            return retVal;
         }
     }
 
