@@ -3316,7 +3316,11 @@ ito::RetVal FaulhaberMCS::readResponse(QByteArray& response, const ito::uint8& c
 
         if (recievedCommand == 0x03) // error
         {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             retValue += interpretCIA402Error(response.sliced(start, length + 1));
+#else
+            retValue += interpretCIA402Error(response.mid(start, length + 1));
+#endif
         }
     }
 
@@ -3344,9 +3348,16 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
     qsizetype startIndex = response.indexOf(m_S);
 
     // Extract basic components from the response
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     ito::uint8 length = static_cast<ito::uint8>(response[startIndex + 1]);
     ito::uint8 nodeNumber = static_cast<ito::uint8>(response[startIndex + 2]);
     ito::uint8 command = static_cast<ito::uint8>(response[startIndex + 3]);
+
+#else
+    ito::uint8 length = static_cast<ito::uint8>(response.at(startIndex + 1));
+    ito::uint8 nodeNumber = static_cast<ito::uint8>(response.at(startIndex + 2));
+    ito::uint8 command = static_cast<ito::uint8>(response.at(startIndex + 3));
+#endif
 
     // Verify node number
     if (nodeNumber != m_node)
@@ -3361,7 +3372,12 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
                 .data());
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     ito::uint8 receivedCRC = static_cast<ito::uint8>(response[startIndex + length]);
+#else
+    ito::uint8 receivedCRC = static_cast<ito::uint8>(response.at(startIndex + length));
+#endif
+
     ito::uint8 checkCRC = 0x00;
     QByteArray data = "";
 
@@ -3409,6 +3425,7 @@ ito::RetVal FaulhaberMCS::parseResponse(QByteArray& response, T& parsedResponse)
 #endif
         }
         else if constexpr (
+
             std::is_integral<T>::value || std::is_floating_point<T>::value) // convert to integer
         {
             if (data.size() >= sizeof(T))
