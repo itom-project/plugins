@@ -175,6 +175,12 @@ if(PLUGIN_DemoAlgorithms)
     add_subdirectory(DemoAlgorithms)
 endif(PLUGIN_DemoAlgorithms)
 
+# FaulhaberMCS
+itom_plugin_option(PLUGIN_FaulhaberMCS)
+if(PLUGIN_FaulhaberMCS)
+    add_subdirectory(FaulhaberMCS)
+endif(PLUGIN_FaulhaberMCS)
+
 # FFTW-Wrapper
 itom_plugin_option(PLUGIN_FFTWFilters)
 if(PLUGIN_FFTWFilters)
