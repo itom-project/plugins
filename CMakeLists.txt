@@ -86,12 +86,10 @@ if(PLUGIN_AVTVimba)
 endif(PLUGIN_AVTVimba)
 
 # AVTVimbaX
-if(WIN32)
-    option(PLUGIN_AVTVimbaX "Build with this plugin." ON)
-    if(PLUGIN_AVTVimbaX)
-        add_subdirectory(AVTVimbaX)
-    endif(PLUGIN_AVTVimbaX)
-endif()
+itom_plugin_option(PLUGIN_AVTVimbaX)
+if(PLUGIN_AVTVimbaX)
+    add_subdirectory(AVTVimbaX)
+endif(PLUGIN_AVTVimbaX)
 
 # BasicFilters
 itom_plugin_option(PLUGIN_BasicFilters)
