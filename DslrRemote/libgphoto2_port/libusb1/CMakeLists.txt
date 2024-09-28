@@ -85,6 +85,8 @@ set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Co
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
+add_dependencies(${target_name} libltdl)
+
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB})

@@ -47,7 +47,7 @@ if(OPENGL_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGLDisplay.h
         ${CMAKE_CURRENT_SOURCE_DIR}/glDisplay.h
         ${CMAKE_CURRENT_SOURCE_DIR}/glWindow.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -58,6 +58,9 @@ if(OPENGL_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/glWindow.cpp
     )
 
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
     set(PLUGIN_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogGLDisplay.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetGLDisplay.ui
@@ -66,7 +69,7 @@ if(OPENGL_FOUND)
     set(PLUGIN_RCC
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()

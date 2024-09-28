@@ -1,8 +1,8 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     Plugin "SuperlumBS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -87,14 +87,14 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
 
-    m_author = "T.Boettcher, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
@@ -125,7 +125,7 @@ SuperlumBL::SuperlumBL() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandM
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("(0) local or (1) remote mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
+    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabled, (1) optical output is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("(0) LOW Power mode, (1) HIGH Power mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -325,7 +325,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                             if (match.hasMatch() && !retValue.containsError() &&
                                 (m_deviceType ==
                                  S_840_B_I_20)) // raises error, if 1st an 2nd try fail, but may not
-                                                // be neccessary for disabling.
+                                                // be necessary for disabling.
                             {
                                 if (((match.captured(1).toInt()) & 2) == 2)
                                 {
@@ -563,7 +563,7 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
     retValue += SendQuestionWithAnswerString(request, answer, 500);  //ask, if optical output is enabled
     QRegularExpression regExp("^A2(\\d{2,2})");
     QRegularExpressionMatch match = regExp.match(answer);
-    if (match.hasMatch() >= 0 && !retValue.containsError())
+    if (match.hasMatch() && !retValue.containsError())
     {
         if (((match.captured(1).toInt()) & 2) == 2)
         {
@@ -762,15 +762,15 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
         retval += SendQuestionWithAnswerString(request, answer, 500);
         if (!retval.containsError())
         {
-            //Superlum BroadSweeper and BroadLighter indentification information
-            //A0: reponse code
+            //Superlum BroadSweeper and BroadLighter identification information
+            //A0: response code
             //1-byte integer: type of device 0..9.
             //1-byte integer: number of channels 1..4.
             //1-byte integer: firmware version 0..9.
             //5-byte data: serial number of device
 
-            //ITO Superlum BroadLighter indentification information
-            //A0: reponse code
+            //ITO Superlum BroadLighter identification information
+            //A0: response code
             //1: this integer means that the type of the instrument is 1.
             //1: this integer means that it is a single-channel device.
             //0: this integer means that the firmware version is 0.
@@ -803,7 +803,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
         }
     }
 
-    //__________________________________________________________________________________________________________ check optical output, power mode and SLD error (regulary at startup of device)
+    //__________________________________________________________________________________________________________ check optical output, power mode and SLD error (regularly at startup of device)
     if (!retval.containsError())
     {
         request = QByteArray("S20");
@@ -836,7 +836,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
             else
             {
                 m_params["sld_error"].setVal<int>(0);
-            }	*/
+            }    */
         }
         else
         {

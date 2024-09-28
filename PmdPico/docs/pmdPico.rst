@@ -31,7 +31,7 @@ The following parameters are mandatory or optional for initializing an instance 
 **cam_number**: {int}, read-only
     index of the camera device
 **data_mode**: {int}
-    Indicates whether depth data (0), gray value (1) or confidence map (2) is transfered when using copyVal, getVal or the live image
+    Indicates whether depth data (0), gray value (1) or confidence map (2) is transferred when using copyVal, getVal or the live image
 **framerate**: {int}
     framerate of image acquisition (in fps). This parameter reflects the current framerate.
 **integration_time**: {float}
@@ -80,7 +80,10 @@ For using this plugin, please install the Royale software that is shipped with y
 Or got to the website and request a download link from the vendor:
 https://pmdtec.com/
 
-Make shure that the path to the royale.dll is added to your system path variables.
+Make sure that the path to the royale.dll is added to your system path variables.
+
+For Windows open the command line interface with administrator privileges.
+Use **setx** to permanently change the System **PATH** Variable (eg. "setx / M PATH "%PATH;C:\Program Files\royale\4.24.0.1201\bin").
 
 Set the CMAKE variable **PmdPico_ROYALE_DIR** or the environment variable **PMD_ROYALE_ROOT**
 to the PMD Royale SDK installation folder (e.g. C:\Program Files\royale\4.24.0.1201)

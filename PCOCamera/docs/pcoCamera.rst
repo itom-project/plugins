@@ -50,13 +50,13 @@ parameters can be changed using *setParam*.
 **bpp**: {int}
     bit depth, bits per pixel (usually not adjustable)
 **temperatures**: {double}, read-only
-    list containing the current CCD, camera and power supply temperatures in degree celcius
+    list containing the current CCD, camera and power supply temperatures in degree celsius
 **coolingSetPointTemperature**: {int}
-    set point for the CCD cooling control in degree celcius (only available if supported with this camera)
+    set point for the CCD cooling control in degree celsius (only available if supported with this camera)
 **IRSensitivity**: {bool} [0,1]
     enables (True, 1) or disables (False, 0) the IR sensitivity of the image sensor, parameter is set to read-only if not available for the specific camera
 **pixelrate**: {int}
-    Transer pixelrate for data from the camera in MHz.
+    Transfer pixelrate for data from the camera in MHz.
 **conversionFactor**: {double}
     conversion factor in electrons/count
 **binning**: {int}

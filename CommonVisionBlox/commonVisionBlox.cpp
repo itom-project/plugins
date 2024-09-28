@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -593,7 +593,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("you need to indiciate a suffix for the node you want to set").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("you need to indicate a suffix for the node you want to set").toLatin1().data());
             }
         }
         else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi" || key == "acquisition_mode" || key == "trigger_mode")
@@ -770,12 +770,12 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the IDSuEye, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the IDSuEye, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
 {
@@ -1284,7 +1284,7 @@ ito::RetVal CommonVisionBlox::getParamInt(const char *name, cvbint64_t &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+        retVal += ito::RetVal(ito::retError, 0, "node map not available");
     }
 
     return retVal;
@@ -1310,7 +1310,7 @@ ito::RetVal CommonVisionBlox::getParamFloat(const char *name, double &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1342,7 +1342,7 @@ ito::RetVal CommonVisionBlox::getParamBool(const char *name, bool &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1375,7 +1375,7 @@ ito::RetVal CommonVisionBlox::getParamString(const char *name, QByteArray &value
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1401,7 +1401,7 @@ ito::RetVal CommonVisionBlox::setParamInt(const char *name, const cvbint64_t &va
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1428,7 +1428,7 @@ ito::RetVal CommonVisionBlox::setParamFloat(const char *name, const double &valu
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1454,7 +1454,7 @@ ito::RetVal CommonVisionBlox::setParamBool(const char *name, const bool &value)
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1481,7 +1481,7 @@ ito::RetVal CommonVisionBlox::setParamString(const char *name, const char *value
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1549,7 +1549,7 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1590,7 +1590,7 @@ ito::RetVal CommonVisionBlox::getParamIntInfo(const char *name, ito::IntMeta &me
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;
@@ -1635,7 +1635,7 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("node map not avaible").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("node map not available").toLatin1().data());
     }
 
     return retVal;

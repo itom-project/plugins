@@ -1,4 +1,4 @@
-﻿
+
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut f�r Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -71,18 +71,18 @@ OphirPowermeterInterface::OphirPowermeterInterface()
 
     m_description = QObject::tr("Plugin for Ophir Powermeter.");
     m_detaildescription = QObject::tr(
-        "The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
+"The OphirPowermeter is an itom plugin which is used for Powermeters from Ophir. \n\
 It supports the RS232 and USB connection types. To use the RS232 variante, you must initiate first a serialIO plugin and use it as an initParameter. \n\
 \n\
 Tested devices: 1-channel VEGA (USB, RS232) with a Thermopile head.\
 For the USB type it is necessary to install the COM object which comes with StarLab form Ophir.\
 Download page: https://www.ophiropt.com/laser--measurement/software/com-object");
 
-    m_author = "J. Krauter, TRUMPF SE + Co. KG";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param p(
@@ -551,7 +551,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());
@@ -605,7 +605,7 @@ ito::RetVal OphirPowermeter::init(
                     retval += ito::RetVal(
                         ito::retError,
                         0,
-                        tr("Cound not read instrument serial number.").toLatin1().data());
+                        tr("Could not read instrument serial number.").toLatin1().data());
                 }
 
                 if (!retval.containsError())
@@ -663,7 +663,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());
@@ -717,7 +717,7 @@ ito::RetVal OphirPowermeter::init(
                         retval += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("return answer %1 for rquest $HT not found.")
+                            tr("return answer %1 for request $HT not found.")
                                 .arg(answerStr.data())
                                 .toLatin1()
                                 .data());

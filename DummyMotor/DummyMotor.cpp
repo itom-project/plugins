@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -24,7 +24,7 @@
 * \brief In this file the functions for the classes of the DummyMotor and its Interface are defined
 *
 *    The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI
-*    This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement programm at ITO, university stuttgart.
+*    This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement program at ITO, university stuttgart.
 *
 *\sa DummyMotorInterface, DummyMotor, DummyMotor.h
 *\author ITO
@@ -99,12 +99,13 @@ to simulate or develop your measurement system at another computer. Whenever a p
 this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) \
 expired.");
 
-    m_author = "W. Lyda, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr(GITVERSION);
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
+
 
     ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 1, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -160,7 +161,7 @@ DummyMotor::DummyMotor() :
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>() << ito::Param("AddName", ito::ParamBase::String, "DummyMotor", tr("Add motor name").toLatin1().data());
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("dummyExecFunction", pMand, pOpt, pOut, tr("Print the current positions of the specified axis to the consol"));
+    registerExecFunc("dummyExecFunction", pMand, pOpt, pOut, tr("Print the current positions of the specified axis to the console"));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -220,9 +221,12 @@ DummyMotor::DummyMotor() :
     paramVal.getMetaT<ito::ParamMeta>()->setCategory("Limits");
     m_params.insert(paramVal.getName(), paramVal);
 
-    /*paramVal = ito::Param("array", ito::ParamBase::IntArray, nullptr, tr("test").toLatin1().data());
-    paramVal.setMeta( new ito::IntMeta(0,5),true);
-    m_params.insert(paramVal.getName(), paramVal);*/
+    paramVal = ito::Param(
+        "homed",
+        ito::ParamBase::IntArray | ito::ParamBase::Readonly,
+        NULL,
+        tr("If 0, the axis is not homed. 1: homed.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     m_currentPos = QVector<double>(10, 0.0);
     m_currentStatus = QVector<int>(10, ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
@@ -230,7 +234,7 @@ DummyMotor::DummyMotor() :
 
     if (hasGuiSupport())
     {
-        // This is for the docking widged
+        // This is for the docking widget
         //now create dock widget for this plugin
         DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(getID(), this);    // Create a new non-modal dialog
 
@@ -398,6 +402,14 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     const int *values2 = m_params["useLimits"].getVal<const int*>();
     m_params["useLimits"].setVal<int*>((int*)values2, m_numaxis);
 
+    m_params["homed"].setMeta(new ito::IntArrayMeta(0, 1, 1, 0, m_numaxis, 1), true);
+    int* homed = new int[m_numaxis];
+    for (int i = 0; i < m_numaxis; ++i)
+    {
+        homed[i] = 0;
+    }
+    m_params["homed"].setVal<int*>(homed, m_numaxis);
+    DELETE_AND_SET_NULL_ARRAY(homed);
 
     QString name = paramsOpt->at(1).getVal<char*>();
     if (name != "")
@@ -540,38 +552,62 @@ ito::RetVal DummyMotor::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (isMotorMoving())
+    // check axis index
+    foreach (const int& i, axis)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
-
-        if (waitCond)
+        if (i >= m_numaxis)
         {
-            waitCond->release();
-            waitCond->returnValue = retValue;
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
         }
     }
-    else
+
+    if (!retValue.containsError())
     {
-
-        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        sendStatusUpdate();
-
-        retValue += waitForDone(5000, axis); //should drop into timeout
-        retValue = ito::retOk;
-
-        foreach(const int& i, axis)
+        if (isMotorMoving())
         {
-            m_currentPos[i] = 0.0;
-            setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-        }
+            retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
 
-        if (waitCond)
+            if (waitCond)
+            {
+                waitCond->release();
+                waitCond->returnValue = retValue;
+            }
+        }
+        else
         {
-            waitCond->release();
-            waitCond->returnValue = retValue;
-        }
 
-        sendStatusUpdate();
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
+
+            retValue += waitForDone(5000, axis); //should drop into timeout
+            retValue = ito::retOk;
+
+            foreach(const int& i, axis)
+            {
+                m_currentPos[i] = 0.0;
+                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+            }
+
+            if (!retValue.containsError())
+            {
+                int* homed = new int[m_numaxis];
+                for (int i = 0; i < m_numaxis; ++i)
+                {
+                    homed[i] = 1;
+                }
+                m_params["homed"].setVal<int*>(homed, m_numaxis);
+                DELETE_AND_SET_NULL_ARRAY(homed);
+            }
+
+            if (waitCond)
+            {
+                waitCond->release();
+                waitCond->returnValue = retValue;
+            }
+
+            sendStatusUpdate();
+        }
     }
 
     return retValue;

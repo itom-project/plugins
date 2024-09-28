@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite digital output task for software triggered single value output.
 
 Demo script for writing exactly one digital value

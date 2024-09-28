@@ -59,9 +59,9 @@ if(AVT_VIMBA_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvtVimba.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvtVimba.h
         ${CMAKE_CURRENT_SOURCE_DIR}/avtEnums.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -70,6 +70,9 @@ if(AVT_VIMBA_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/avtVimba.cpp
         #add further source files here
     )
+
+	#Define Version in pluginVersion.h
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -81,7 +84,7 @@ if(AVT_VIMBA_HEADER_FILE)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     if(BUILD_TARGET64)

@@ -110,7 +110,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>current temperature of sensor in �C (inf if not implemented)</source>
+        <source>current temperature of sensor in °C (inf if not implemented)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

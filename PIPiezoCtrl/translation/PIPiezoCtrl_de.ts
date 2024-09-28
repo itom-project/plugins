@@ -205,7 +205,7 @@
     </message>
     <message>
         <location line="+15"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -299,7 +299,7 @@
     </message>
     <message>
         <location line="+16"/>
-        <source>asychronous (1) or synchronous (0) mode</source>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -589,7 +589,7 @@
     <name>PIPiezoCtrlInterface</name>
     <message>
         <location filename="../PIPiezoCtrlInterface.cpp" line="+96"/>
-        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right communication parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

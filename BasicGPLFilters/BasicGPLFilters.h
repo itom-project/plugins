@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "BasicGPLFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -27,7 +27,7 @@
 
 
 /*! \file BasicGPLFilters.h
-   \brief   This is the main header file for BasicGPLFilters libary, which contains the interface declarations.
+   \brief   This is the main header file for BasicGPLFilters library, which contains the interface declarations.
 
    \author trwip
    \date 04.2014
@@ -52,7 +52,7 @@
 
 /*!\struct PixelsList
    \brief Structure containing pointer to the original pixels within each luma bucket
-   \autor  Based on code developed by Michael Sweet for GIMP, adaped to itom /c++ by W. Lyda
+   \autor  Based on code developed by Michael Sweet for GIMP, adapted to itom /c++ by W. Lyda
 */
 typedef struct
 {
@@ -66,7 +66,7 @@ typedef struct
    \brief structure containing the filter kernel wrapped into an histogramm
           The filter uses this structure to create a ring buffered local histogramm within kernel-size.
           The image is median filtered based on this histogramm. The histogramm has 256 bins.
-   \autor  Based on code developed by Michael Sweet for GIMP, adaped to itom /c++ by W. Lyda
+   \autor  Based on code developed by Michael Sweet for GIMP, adapted to itom /c++ by W. Lyda
 */
 typedef struct
 {
@@ -80,17 +80,17 @@ typedef struct
 
 
 /*!\struct DespeckleHistogram
-   \brief structure defining filter functions which have been static variables in orignal code
+   \brief structure defining filter functions which have been static variables in original code
 */
 typedef struct
 {
     ito::int32 histLess; /*! Number of ignored pixel lower than the black limit*/
     ito::int32 histMore; /*! Number of ignored pixel higher than the white limit*/
     ito::int32 histRemain; /*! Number of pixels within the histogramm*/
-    ito::int32 blackLevel; /*! balck (lower) limit as value between 0 and 255*/
+    ito::int32 blackLevel; /*! black (lower) limit as value between 0 and 255*/
     ito::int32 whiteLevel; /*! White (upper) limit as value between 0 and 255*/
     ito::int32 radiusMax;  /*! Maximum kernel size (more a rectangle) */
-    bool adaptRadius;      /*! Toggle wether kernel may be adepted between 1 and radiusMax*/
+    bool adaptRadius;      /*! Toggle whether kernel may be adepted between 1 and radiusMax*/
 } DespeckleSettings;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ class BasicGPLFiltersInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class BasicGPLFilters
-*   @brief Algorithms used to process images and dataobjects with filters develped at ITO
+*   @brief Algorithms used to process images and dataobjects with filters developed at ITO
 *
 *   In this class the algorithms used for the processing of measurement data are implemented.
 *
@@ -193,7 +193,7 @@ class BasicGPLFilters : public ito::AddInAlgo
 
             count = (count + 1) / 2;    // half count of total elements within the histogramm
 
-            i = 0;  // the median possition within the histogramm
+            i = 0;  // the median position within the histogramm
             while ((sum += hist.elems[i]) < count)
             {
                 i++;

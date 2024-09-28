@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -31,7 +31,7 @@
 #include <strmif.h>
 #include <wchar.h>
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
 #include <math.h>
 #include <float.h>
@@ -68,7 +68,7 @@ MSMediaFoundationInterface::MSMediaFoundationInterface()
 "This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras). \n\
 Cameras must provide the UVC 1.1 interface for USB devices. \n\
 \n\
-This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next \n\
+This driver detects an internal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next \n\
 not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped \n\
 to the gray output. \n\
 \n\
@@ -84,11 +84,11 @@ Affiliation \n\
 This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under \n\
 http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)");
 
-    m_author = "M. Gronle, H. Bieger, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 255, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
@@ -307,7 +307,7 @@ MSMediaFoundation::~MSMediaFoundation()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Funktion to set and update data informations
+// Function to set and update data information
 ito::RetVal MSMediaFoundation::checkCameraAbilities()
 {
     bool camRetVal = false;
@@ -364,7 +364,7 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -409,7 +409,7 @@ ito::RetVal MSMediaFoundation::getParam(QSharedPointer<ito::Param> val, ItomShar
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -651,7 +651,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
                 }
                 else
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, tr("No frame could be aquired from device %i").toLatin1().data(), numDevices);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("No frame could be acquired from device %i").toLatin1().data(), numDevices);
                 }
             }
         }

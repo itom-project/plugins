@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -98,7 +98,7 @@ class PIPiezoCtrl : public ito::AddInActuator
         tControllerType m_ctrlType;
         DockWidgetPIPiezoCtrl *m_dockWidget;
 
-        QByteArray m_AbsPosCmd;        /*!< This contains the command for absolut positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
+        QByteArray m_AbsPosCmd;        /*!< This contains the command for absolute positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
         QByteArray m_RelPosCmd;        /*!< This contains the command for relative positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
         QByteArray m_PosQust;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
         QByteArray m_VelCmd;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (C-663) */
@@ -144,13 +144,13 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
         //! Get the position of a all axis -> calls single axis version
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
         ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
         //! Emits status and position if triggered. Used form the dockingwidget

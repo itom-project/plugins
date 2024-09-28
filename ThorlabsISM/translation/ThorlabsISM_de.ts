@@ -159,7 +159,7 @@ This plugin has been tested with the cage rotator K10CR1.</source>
 <context>
     <name>ThorlabsISM</name>
     <message>
-        <source>asychronous (1) or sychronous (0) mode</source>
+        <source>asynchronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -187,11 +187,11 @@ This plugin has been tested with the cage rotator K10CR1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Target speed in �/s (travelMode == %1) or mm/s (travelMode == %2)</source>
+        <source>Target speed in °/s (travelMode == %1) or mm/s (travelMode == %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Target acceleration in �/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)</source>
+        <source>Target acceleration in °/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -211,11 +211,11 @@ This plugin has been tested with the cage rotator K10CR1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Minimum stage position in mm (travelMode == %1) or � (travelMode == %2). For �, given positions will be wrapped by 360�.</source>
+        <source>Minimum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum stage position in mm (travelMode == %1) or � (travelMode == %2). For �, given positions will be wrapped by 360�.</source>
+        <source>Maximum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

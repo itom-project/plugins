@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut fÃ¼r Technische Optik, UniversitÃ¤t Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -58,10 +58,10 @@ XenethInterface::XenethInterface(QObject *parent)
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("Licensed under LGPL");
-    m_aboutThis = tr( "GITVERSION" );
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param( "device", ito::ParamBase::String | ito::ParamBase::In, "soft://0", tr("camera device name to be loaded.").toLatin1().data());
     m_initParamsOpt.append(param);

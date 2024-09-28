@@ -31,9 +31,9 @@ extern int NTHREADS;
 //----------------------------------------------------------------------------------------------------------------------------------
 // calculate "area weighted" intensity interpolation, i.e. sum up all intensities of the input's image pixels that fall into the new
 // output's image pixel.
-// We diference between two cases:
+// We difference between two cases:
 //      - 6 parameters given - we are dealing with a linear deformation, that means points' coordinates
-//        can only vary along their carthesian coordinate axes, one at a time
+//        can only vary along their cartesian coordinate axes, one at a time
 //      - 10 parameters given - general deformation, 'bounding points' defining the bounding quadrangle can vary in
 //        x and y axes together, resulting in skewed pixels
 ito::RetVal doAreaAveragedInterpol(ito::DataObject *imgIn, ito::DataObject *imgOut, ito::DataObject *pts)

@@ -43,7 +43,7 @@ class DialogThorlabsKCubePA : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-		DialogThorlabsKCubePA(ito::AddInBase *grabber);
+        DialogThorlabsKCubePA(ito::AddInBase *grabber);
         ~DialogThorlabsKCubePA() {};
 
         ito::RetVal applyParameters();
@@ -53,7 +53,7 @@ class DialogThorlabsKCubePA : public ito::AbstractAddInConfigDialog
         bool m_firstRun;
 
         Ui::DialogThorlabsKCubePA ui;
-		QPointer<ito::AddInBase> m_pluginPointer;
+        QPointer<ito::AddInBase> m_pluginPointer;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

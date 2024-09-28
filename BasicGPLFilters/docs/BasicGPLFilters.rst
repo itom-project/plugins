@@ -29,3 +29,8 @@ Detailed overview about all defined filters:
 
 .. pluginfilterlist::
     :plugin: BasicGPLFilters
+
+Changelog
+==========
+
+* itom setup 1.4.0: Release

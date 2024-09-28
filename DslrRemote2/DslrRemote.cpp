@@ -24,7 +24,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "DslrRemote.h"
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #ifndef WIN32
@@ -87,7 +87,7 @@ ito::RetVal DslrRemoteInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: DslrRemote) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
@@ -108,22 +108,21 @@ DslrRemoteInterface::DslrRemoteInterface()
 !!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\";*/
 
-	m_description = QObject::tr("A virtual white noise grabber");
+    m_description = QObject::tr("A virtual white noise grabber");
 //    m_detaildescription = QObject::tr(docstring);
-	m_detaildescription = QObject::tr(
+    m_detaildescription = QObject::tr(
 "Library to remote control some DSLR cameras. \n\
 \n\
 !!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\
 ");
 
-    m_author = "Universidade Federal de Alagoas (UFAL)";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = CREATEVERSION(1,4,0);
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LPGL.");
-    m_aboutThis = tr("!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
-Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
 
@@ -189,7 +188,7 @@ void DslrRemote::message_func(GPContext *context, const char *format, va_list ar
 const ito::RetVal DslrRemote::showConfDialog(void)
 {
 //    return apiShowConfigurationDialog(this, new DialogDslrRemote(this));
-	return ito::RetVal(ito::retWarning, 0, tr("not yet implemented").toLatin1().data());
+    return ito::RetVal(ito::retWarning, 0, tr("not yet implemented").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -423,8 +422,8 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
     if (retValue == ito::retOk)
     {
-		//gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
-		retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
     if (!retValue.containsError())
@@ -480,8 +479,8 @@ ito::RetVal DslrRemote::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 
     if (waitCond)
     {
-		waitCond->returnValue = retValue;
-		waitCond->release();
+        waitCond->returnValue = retValue;
+        waitCond->release();
     }
 
     return retValue;
@@ -650,12 +649,12 @@ ito::RetVal DslrRemote::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the DslrRemote, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the DslrRemote, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal DslrRemote::startDevice(ItomSharedSemaphore *waitCond)
 {

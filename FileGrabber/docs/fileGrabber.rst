@@ -62,3 +62,8 @@ An instance of this plugin has the following internal parameters:
     Pixelsize in y (rows)
 **y1**: {int}, read-only
     Pixelsize in y (rows)
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

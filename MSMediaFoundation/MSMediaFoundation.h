@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -50,7 +50,7 @@ class MSMediaFoundation : public ito::AddInGrabber
         ~MSMediaFoundation();
         //! Constructor
         MSMediaFoundation();
- //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if objekt has to be reallocated */
+ //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if object has to be reallocated */
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
 
@@ -70,7 +70,7 @@ class MSMediaFoundation : public ito::AddInGrabber
 
         InitState m_initState;
 
-        QSharedPointer<VideoInput> m_videoInput;    /*!< Handle to the VideoInput-Class Eqaul to VideoInputInstance */
+        QSharedPointer<VideoInput> m_videoInput;    /*!< Handle to the VideoInput-Class Equal to VideoInputInstance */
         CamParameters m_camParams;
         QHash<QString, Parameter*> m_camParamsHash;
 
@@ -87,11 +87,11 @@ class MSMediaFoundation : public ito::AddInGrabber
 
         int m_colorMode;
 
-        cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
+        cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve data, this image is already filled after acquire command */
 
         cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
-        ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
+        ito::RetVal checkCameraAbilities(); /*!< Function to check and set available data types */
 
         enum tColorMode
         {

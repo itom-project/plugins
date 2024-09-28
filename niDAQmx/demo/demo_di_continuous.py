@@ -1,5 +1,3 @@
-# coding=utf8
-
 import time
 import numpy as np
 
@@ -12,7 +10,7 @@ For understanding this demo, one is referred to the documentations
 in the scripts demo_di_finite.py and demo_ai_continuous.py. Together, they are
 very similar to this script.
 
-Data from a continuous task can be obtained by regularily
+Data from a continuous task can be obtained by regularly
 calling getVal / copyVal or by enabling the TDMS file logging
 technique.
 
@@ -61,7 +59,7 @@ plot1(np.hstack(alldata))
 #    during a running task will be written into the TDMS file. It is
 #    also possible to get the values to python during logging (depending
 #    on the configuration). However, it is not necessary to continuously
-#    getVal/copyVal values in order to not raise a timeout / unsufficient
+#    getVal/copyVal values in order to not raise a timeout / insufficient
 #    buffer size error.
 #
 #    The logging is enabled via the parameters 'loggingMode',

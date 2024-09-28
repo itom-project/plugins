@@ -49,7 +49,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogcmu1394.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetcmu1394.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -63,6 +63,9 @@ set(PLUGIN_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogcmu1394.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetcmu1394.ui
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 set(PLUGIN_RCC
 )

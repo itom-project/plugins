@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -60,11 +60,12 @@ VRMagicInterface::VRMagicInterface()
     m_detaildescription = QObject::tr("Plugin for cameras / framgrabbers from VRMagic that run with the VRMagic API. \n\
 Currently, only monochrome cameras with 8, 10 or 16 bit depth are supported. \n\
 This plugin has been tested using the VRmAVC-2 grabber  under Windows.");
-    m_author = "M. Gronle, C. Lingel, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
@@ -84,10 +85,7 @@ VRMagicInterface::~VRMagicInterface()
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal VRMagic::showConfDialog(void)
 {
@@ -161,7 +159,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ito::RetVal retValue(ito::retOk);
 
     VRmDWORD device_num = paramsOpt->at(0).getVal<int>(); // first parameter is device number
-    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second paramtert is port number of device
+    VRmDWORD port_num = paramsOpt->at(1).getVal<int>(); // second parameter is port number of device
 
     if (!retValue.containsError())
     {
@@ -366,7 +364,7 @@ ito::RetVal VRMagic::checkError(const VRmRetVal &error, const char* command /*= 
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -408,7 +406,7 @@ ito::RetVal VRMagic::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore

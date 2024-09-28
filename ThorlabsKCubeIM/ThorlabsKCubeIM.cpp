@@ -78,11 +78,11 @@ Please install the Kinesis driver package in advance with the same bit-version (
 \n\
 This plugin has been tested with the cage rotator KIM101.");
 
-    m_author = "J. Krauter, TRUMPF SE + Co. KG, Ditzingen";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
@@ -111,7 +111,7 @@ ThorlabsKCubeIM::ThorlabsKCubeIM() :
     ito::int32 accel[4] = { 1000, 1000, 1000, 1000 };
     m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::IntArray, 4, accel, new ito::IntArrayMeta(1, 100000, 1, 4, 4), tr("acceleration Steps/s\0x5E2").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asychronous (1) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asynchronous (1) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0").toLatin1().data()));
@@ -435,12 +435,12 @@ ito::RetVal ThorlabsKCubeIM::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -477,14 +477,14 @@ ito::RetVal ThorlabsKCubeIM::getParam(QSharedPointer<ito::Param> val, ItomShared
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsISM::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -1202,7 +1202,7 @@ ito::RetVal ThorlabsKCubeIM::waitForDone(const int timeoutMS, const QVector<int>
 
     if (timeout)
     {
-        //timeout occured, set the status of all currently moving axes to timeout
+        //timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);
@@ -1256,7 +1256,7 @@ ito::RetVal ThorlabsKCubeIM::checkError(short value, const char* message)
         case 1: return ito::RetVal::format(ito::retError, 1, "%s: The FTDI functions have not been initialized.", message);
         case 2: return ito::RetVal::format(ito::retError, 1, "%s: The Device could not be found. This can be generated if the function TLI_BuildDeviceList() has not been called.", message);
         case 3: return ito::RetVal::format(ito::retError, 1, "%s: The Device must be opened before it can be accessed. See the appropriate Open function for your device.", message);
-        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occured in the FTDI chip.", message);
+        case 4: return ito::RetVal::format(ito::retError, 1, "%s: An I/O Error has occurred in the FTDI chip.", message);
         case 5: return ito::RetVal::format(ito::retError, 1, "%s: There are Insufficient resources to run this application.", message);
         case 6: return ito::RetVal::format(ito::retError, 1, "%s: An invalid parameter has been supplied to the device.", message);
         case 7: return ito::RetVal::format(ito::retError, 1, "%s: The Device is no longer present. The device may have been disconnected since the last TLI_BuildDeviceList() call.", message);
@@ -1265,8 +1265,8 @@ ito::RetVal ThorlabsKCubeIM::checkError(short value, const char* message)
         case 17: return ito::RetVal::format(ito::retError, 1, "%s: No functions available for this device.", message);
         case 18: return ito::RetVal::format(ito::retError, 1, "%s: The function is not available for this device.", message);
         case 19: return ito::RetVal::format(ito::retError, 1, "%s: Bad function pointer detected.", message);
-        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
-        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete succesfully.", message);
+        case 20: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
+        case 21: return ito::RetVal::format(ito::retError, 1, "%s: The function failed to complete successfully.", message);
         case 32: return ito::RetVal::format(ito::retError, 1, "%s: Attempt to open a device that was already open.", message);
         case 33: return ito::RetVal::format(ito::retError, 1, "%s: The device has stopped responding.", message);
         case 34: return ito::RetVal::format(ito::retError, 1, "%s: This function has not been implemented.", message);

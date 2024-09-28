@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -54,7 +54,7 @@ void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
     else
     {
         m_scale = 1000.0f;
-        m_unit = u8" �m";
+        m_unit = u8" µm";
         ui.spinBoxTargetPos->setSuffix(m_unit);
         ui.spinBoxActPos->setSuffix(m_unit);
         ui.spinBoxStepSize->setSuffix(m_unit);

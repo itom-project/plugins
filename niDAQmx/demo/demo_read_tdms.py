@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Demo to load and read a TDMS file
 
 Here, we read the TMDS files, that have been created

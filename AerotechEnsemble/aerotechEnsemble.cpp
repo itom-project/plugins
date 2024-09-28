@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechEnsemble" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -86,11 +86,11 @@ license information of Aerotech see their documentation. \n\
 \n\
 For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).");
 
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart, Juergen Ortmann, Ortmann Digitaltechnik";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadNever;
@@ -131,7 +131,7 @@ AerotechEnsemble::AerotechEnsemble() :
     m_pHandle(NULL),
     m_pHandles(NULL)
 {
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the program to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
 
@@ -158,7 +158,7 @@ AerotechEnsemble::AerotechEnsemble() :
 
     // memset(m_pos, 0, 10 * sizeof(double));
 
-    // // This is for the docking widged
+    // // This is for the docking widget
     // //now create dock widget for this plugin
     if (hasGuiSupport())
     {
@@ -719,7 +719,7 @@ ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
 
-            //starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the alive thread such that itom do not run into
+            //starts a small worker thread with a timer that regularly calls doAliveTimer to trigger the alive thread such that itom do not run into
             //a timeout if the homing needs lots of time
             QThread *awakeThread = new QThread(this);
             QTimer* timer = new QTimer(NULL); // _not_ this!

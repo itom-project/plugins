@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **acceleration**: {seq. of int}
     acceleration Steps/s
 **async**: {int}
-    sychronous (0, default) or asychronous (1) mode
+    synchronous (0, default) or asynchronous (1) mode
 **enableAxes**: {int}
     disable (0, default) or enable axis (1)
 **deviceName**: {str}, read-only
@@ -67,7 +67,7 @@ parameters can be changed using *setParam*.
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
 

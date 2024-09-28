@@ -196,7 +196,7 @@ Achtung: Die aktuelle Version läuft nur mit Vistek-Treibern bis einschließlich
     </message>
     <message>
         <location line="+8"/>
-        <source>IP adress of the camera</source>
+        <source>IP address of the camera</source>
         <translation>IP-Adresse der Kamera</translation>
     </message>
     <message>

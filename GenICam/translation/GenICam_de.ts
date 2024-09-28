@@ -206,7 +206,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, informations, 4: debug, 5: all (gives even information about parameter changes or buffer states)).</source>
+        <source>verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, information, 4: debug, 5: all (gives even information about parameter changes or buffer states)).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

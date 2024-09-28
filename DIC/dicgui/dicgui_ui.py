@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 '''
 By twipOS 2016.
 '''
@@ -167,7 +166,7 @@ class dicGuiUi(ItomUi):
 
     def show(self, modalLevel):
         '''
-        Displayes the User Interface.
+        Displays the User Interface.
         '''
         ret = self.gui.show(modalLevel)
 
@@ -525,13 +524,13 @@ Translation Vectors:\n".format(camMat[0,0], \
             distCoeff[0, 2], distCoeff[0, 3], distCoeff[0, 4])
             for n in range(0, 3):
                 for tv in range(0, tVecs.size(1)):
-                    calibText = calibText + "{:>9.2f} ".format(tVecs[n, tv])
+                    calibText = calibText + f"{tVecs[n, tv]:>9.2f} "
                 if n < 2:
                     calibText = calibText + "\n"
             calibText = calibText + "\n\nRotation Vectors:\n"
             for n in range(0, 3):
                 for tv in range(0, tVecs.size(1)):
-                    calibText = calibText + "{:>9.2f} ".format(rVecs[n, tv])
+                    calibText = calibText + f"{rVecs[n, tv]:>9.2f} "
                 if n < 2:
                     calibText = calibText + "\n"
             self.gui.teCalibData["plainText"] = str(calibText)
@@ -542,7 +541,7 @@ Translation Vectors:\n".format(camMat[0,0], \
                 self.gui.cbCoordSysNum.call("addItem", tv)
             self.gui.cbCoordSysNum["currentIndex"] = 0
         except:
-            ui.msgCritical("Error", "Could not load calibration data, verfiy file format!")
+            ui.msgCritical("Error", "Could not load calibration data, verify file format!")
             self.sys().loadedCalib = None
             self.gui.teCalibData["plainText"] = "N/A"
             self.gui.cbCoordSysNum.call("clear")
@@ -1225,7 +1224,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             return
 
         if self.gui.lwDisplFiles["count"] < 2 and (self.sys().data["imageOrig"] is None or self.sys().data["imageDef"] is None):
-            ui.msgWarning("Warning", "Original / deformed image not set. Etiher load files or generate images")
+            ui.msgWarning("Warning", "Original / deformed image not set. Either load files or generate images")
             return
 
         runCount = 1
@@ -1278,7 +1277,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
 
                 if (self.sys().data["imageOrig"].size(0) != self.sys().data["imageDef"].size(0) or \
                     self.sys().data["imageOrig"].size(1) != self.sys().data["imageDef"].size(1)):
-                    ui.msgCritical("Error", "Image size of original {0} and deformed [1] image different, aborting!".format(\
+                    ui.msgCritical("Error", "Image size of original {} and deformed [1] image different, aborting!".format(\
                         self.gui.lwDisplFiles.call("item", lwfiles[0]), self.gui.lwDisplFiles.call("item", lwfiles[nimg + 1])))
                     return
             else:
@@ -1613,22 +1612,22 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
                 self.gui.plotSpiderGraph["yAxisInterval"] = self.axisScaleLive
                 #self.gui.leAverage["text"] = "{0:.5g}".format(np.sum(self.sys().liveData) / self.sys().liveData.size(1))
                 if self.sys().liveData.size(0) >= 1:
-                    self.gui.leLastValue4["text"] = "{0:.5g}".format(np.sum(self.sys().liveData[0,:]) \
+                    self.gui.leLastValue4["text"] = "{:.5g}".format(np.sum(self.sys().liveData[0,:]) \
                     / self.sys().liveData.size(1) * self.sys().cfg["scales"][self.sys().cfg["channels"][0] - 4])
                 else:
                     self.gui.leLastValue4["text"] =  ""
                 if self.sys().liveData.size(0) >= 2:
-                    self.gui.leLastValue5["text"] = "{0:.5g}".format(np.sum(self.sys().liveData[1,:]) \
+                    self.gui.leLastValue5["text"] = "{:.5g}".format(np.sum(self.sys().liveData[1,:]) \
                     / self.sys().liveData.size(1) * self.sys().cfg["scales"][self.sys().cfg["channels"][1] - 4])
                 else:
                     self.gui.leLastValue5["text"] =  ""
                 if self.sys().liveData.size(0) >= 3:
-                    self.gui.leLastValue6["text"] = "{0:.5g}".format(np.sum(self.sys().liveData[2,:]) \
+                    self.gui.leLastValue6["text"] = "{:.5g}".format(np.sum(self.sys().liveData[2,:]) \
                     / self.sys().liveData.size(1) * self.sys().cfg["scales"][self.sys().cfg["channels"][2] - 4])
                 else:
                     self.gui.leLastValue6["text"] = ""
                 if self.sys().liveData.size(0) >= 4:
-                    self.gui.leLastValue7["text"] = "{0:.5g}".format(np.sum(self.sys().liveData[3,:]) \
+                    self.gui.leLastValue7["text"] = "{:.5g}".format(np.sum(self.sys().liveData[3,:]) \
                     / self.sys().liveData.size(1) * self.sys().cfg["scales"][self.sys().cfg["channels"][3] - 4])
                 else:
                     self.gui.leLastValue7["text"] =  ""
@@ -1740,7 +1739,7 @@ Depth of Field (1 pixel defocus): {:7.2f}".format(camMat[0,0], \
             if self.sys().hbm != None:
                 self.sys().hbm.setParam("numSamples", self.sys().cfg["samples"])
                 #self.gui.leStatus["text"] = self.sys().hbm.getParam("status")
-            self.gui.leMeasTime["text"] = "{0:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
+            self.gui.leMeasTime["text"] = "{:.3f}".format(float(self.gui.leSamples["text"]) / float(self.gui.cbFrequency["currentText"]))
 
     @ItomUi.autoslot("")
     def on_pbReInit_pressed(self):

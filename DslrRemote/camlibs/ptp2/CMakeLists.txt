@@ -95,6 +95,9 @@ set(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_p
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
+add_dependencies(${target_name} libltdl)
+add_dependencies(${target_name} libgphoto2)
+
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}
     ${REGEXLIB}

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Standa NanotecStepMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -249,7 +249,7 @@ void DialogNanotecStepMotor::createUiListEntry(const int i)
     accelSpin->setSuffix(tr(" units/sec"));
 
     QSpinBox *decelSpin = new QSpinBox(frame);
-    decelSpin->setToolTip(tr("Decceleration"));
+    decelSpin->setToolTip(tr("Deceleration"));
     decelSpin->setMaximum(65535);
     decelSpin->setMinimum(0);
     decelSpin->setSuffix(tr(" units/sec"));
@@ -262,7 +262,7 @@ void DialogNanotecStepMotor::createUiListEntry(const int i)
     resetButton->setMaximumWidth(22);
     resetButton->setContentsMargins(0, 0, 0, 0);
 
-    // inser elements in Layout
+    // insert elements in Layout
     layout->insertWidget(0, nrLabel);
     layout->insertWidget(1, microStepsSpin);
     layout->insertWidget(2, speedSpin);
@@ -280,7 +280,7 @@ void DialogNanotecStepMotor::createUiListEntry(const int i)
     connect(decelSpin, SIGNAL(valueChanged(int)), this, SLOT(spinboxChanged(int)));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
-    // store Pointer to each spin box in a qvector for later occuring use
+    // store Pointer to each spin box in a qvector for later occurring use
     m_pListElements.append(frame);
     m_pMicroStepsSpin.append(microStepsSpin);
     m_pSpeedSpin.append(speedSpin);

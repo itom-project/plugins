@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "Roughness" for itom software
 URL : http ://www.uni-stuttgart.de/ito
-Copyright(C) 2016, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany;
+Copyright(C) 2016, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany;
 IPROM, TU Braunschweig, Germany
 
 This file is part of a plugin for the measurement software itom.
@@ -41,8 +41,8 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
     \todo add necessary information about your plugin here.
 */
 
-static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized Cameras (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized Cameras */
+static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successful initialized Cameras (max = 5) */
+static char Initnum = 0;    /*!< Number of successful initialized Cameras */
 
 AvtVimbaInterface::AvtVimbaInterface()
 {
@@ -63,11 +63,11 @@ The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0. \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");
 
-    m_author = "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
@@ -172,7 +172,7 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in �C").toLatin1().data());
+    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("trigger mode (0: Off, 1: On)").toLatin1().data());
@@ -636,7 +636,7 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
 
     //todo:
     // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+    // - this function is considered to be the "inverse" of init.
 
     int nr = m_params["camera_number"].getVal<int>();
 
@@ -1451,7 +1451,7 @@ void AvtVimba::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -1662,11 +1662,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
                 }
             }
         }
-		else
-		{
-			m_params["gain_auto"].setFlags(ito::ParamBase::Readonly);
-			ret_ = ito::retOk;
-		}
+        else
+        {
+            m_params["gain_auto"].setFlags(ito::ParamBase::Readonly);
+            ret_ = ito::retOk;
+        }
         retval += ret_;
 
         double gain, gainMax, gainMin;
@@ -1677,11 +1677,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(m_params["gain"].getMeta()))->setMax(gainMax);
             m_params["gain"].setVal<double>(gain);
         }
-		else
-		{
-			m_params["gain"].setFlags(ito::ParamBase::Readonly);
-			ret_ = ito::retOk;
-		}
+        else
+        {
+            m_params["gain"].setFlags(ito::ParamBase::Readonly);
+            ret_ = ito::retOk;
+        }
         retval += ret_;
     }
 
@@ -1696,11 +1696,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
             it->setVal<double>(offset);
         }
-		else
-		{
-			m_params["offset"].setFlags(ito::ParamBase::Readonly);
-			ret_ = ito::retOk;
-		}
+        else
+        {
+            m_params["offset"].setFlags(ito::ParamBase::Readonly);
+            ret_ = ito::retOk;
+        }
         retval += ret_;
     }
 
@@ -1715,11 +1715,11 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
             it->setVal<double>(offset);
         }
-		else
-		{
-			m_params["gamma"].setFlags(ito::ParamBase::Readonly);
-			ret_ = ito::retOk;
-		}
+        else
+        {
+            m_params["gamma"].setFlags(ito::ParamBase::Readonly);
+            ret_ = ito::retOk;
+        }
         retval += ret_;
     }
 

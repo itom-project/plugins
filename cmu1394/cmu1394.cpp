@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "cmu1394" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -22,7 +22,7 @@
 
 /*! \file cmu1394.cpp
    \brief   file for a generic firewire support based on the CMU-driver
-   \detailed This is the file for the generic firewire suppoert based on the free CMU-driver.
+   \detailed This is the file for the generic firewire support based on the free CMU-driver.
    This driver can be downloaded from http://www.cs.cmu.edu/~iwan/1394/. Current version is 6.4.6.
 
    \author ITO
@@ -87,23 +87,24 @@ This library is currently developed and tested under Windows only. Tested with P
 \n\
 In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. \
 Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin \
-at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
+at compile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
 of this plugin.";
     m_detaildescription = QObject::tr(docstring);*/
-    m_detaildescription = QObject::tr("This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
+    m_detaildescription = QObject::tr(
+"This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
 This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.\n\
 \n\
 In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. \
 Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin \
-at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
+at compile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
 of this plugin.");
 
-    m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_license           = QObject::tr("itom-plugin under LGPL / CMU1394 driver under LGPL");
-    m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer        = MINVERSION;
-    m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr(GITVERSION);
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
    ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
@@ -362,7 +363,7 @@ CMU1394::~CMU1394()
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -422,7 +423,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -449,7 +450,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     QString key = val->getName();
 
-    if (key == "")    // Check if the key is valied
+    if (key == "")    // Check if the key is valid
     {
         retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
@@ -847,11 +848,11 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             }
 
             case 7: //basler Mode 7 geht nur mit der a602f die anderen mit a602 und 601
-                //achtung! a602 nur fuer Mahr, und die benutzen einen modifizierten s->FireWire-Controllertreiber
+                //achtung! a602 nur für Mahr, und die benutzen einen modifizierten s->FireWire-Controllertreiber
                 //und einen modifizierten Kameratreiber
-                //der Standard-Treiber vom Windows fuer den Controller und der spezialtreiber vom M machen nur Mode 0 und 1
+                //der Standard-Treiber vom Windows für den Controller und der spezialtreiber vom M machen nur Mode 0 und 1
                 //ansonsten ist der Cam-Mode benutzerdefiniert!
-                //die Kamera hat Defaultwerte fuer Mode 7, unterstuetzt aber auch andere Groessen wenn
+                //die Kamera hat Defaultwerte für Mode 7, unterstuetzt aber auch andere Groessen wenn
                 //in der entsprechenden TReiberdll ein SetROI-Befehl exportiert wird.
                 {
     /*
@@ -1206,7 +1207,6 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
     ito::RetVal retValue(ito::retOk);
 
     unsigned long imglength = 0;
-    long lcopysize = 0;
     long lsrcstrpos = 0;
     int y  = 0;
     int maxxsize = (int)m_params["sizex"].getMax();
@@ -1239,7 +1239,7 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
         //or the timeout runs out
 
         if (retValue != ito::retError)
-        {// Now we shoud have a picture in the camera buffer
+        {// Now we should have a picture in the camera buffer
 
             switch (m_params["bpp"].getVal<int>())
             {

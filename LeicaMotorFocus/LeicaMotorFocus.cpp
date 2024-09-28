@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "LeicaMotorFocus" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -137,11 +137,11 @@ For the initialization of this plugin you already need an opened serial IO port 
 the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator \
 is closed again.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
@@ -179,8 +179,8 @@ const ito::RetVal LeicaMotorFocus::showConfDialog(void)
 // read buffer without delay
 const ito::RetVal LeicaMotorFocus::LMFDummyRead()
 {
-	m_pSer->execFunc("clearInputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
-	m_pSer->execFunc("clearOutputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
+    m_pSer->execFunc("clearInputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
+    m_pSer->execFunc("clearOutputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
     return ito::retOk;
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -189,11 +189,11 @@ const ito::RetVal LeicaMotorFocus::LMFReadString(char *buf, const int bufsize, i
     ito::RetVal retval = ito::retOk;
     QSharedPointer<int> len(new int);
 
-	*len = bufsize;
+    *len = bufsize;
     QSharedPointer<char> tempBuf(buf, LeicaMotorFocus::doNotDelSharedPtr); //trick to access part of buf using a shared pointer. the shared pointer is not allowed to delete the char-array, therefore the Deleter-method.
     retval += m_pSer->getVal(tempBuf, len);
-	*readsigns = *len;
-	return retval;
+    *readsigns = *len;
+    return retval;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     {
         if (answer[0] == 17)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Unexspected #(17) at first sign in buffer. Sign deleted").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("Unexpected #(17) at first sign in buffer. Sign deleted").toLatin1().data());
             copy = _strdup(&answer[1]);
         }
         else
@@ -487,7 +487,7 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LeicaMotorFocus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_scale = 1e3; // Leica is Programmes in mu m, this evil Programm sent in mm
+    m_scale = 1e3; // Leica is Programmes in mu m, this evil Program sent in mm
 
     paramVal = ito::Param("speed", ito::ParamBase::Double, FULLSPEED/1000, FULLSPEED, FULLSPEED, tr("Speed in m/s (Default=Maximum: 23,33 mm/s)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -527,7 +527,7 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
 /*!
     \details This method copies the complete Param of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::Param containing name, value and further informations
+    \param [in,out] val  is a input of type::Param containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -568,7 +568,7 @@ ito::RetVal LeicaMotorFocus::getParam(QSharedPointer<ito::Param> val, ItomShared
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::ParamBase containing name, value and further informations
+    \param [in] val  is a input of type::ParamBase containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -678,8 +678,8 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,1)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\r\n")),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endlineRead",ito::ParamBase::String,"\r\n")),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline",ito::ParamBase::Int,1)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endlineRead",ito::ParamBase::String,"\r\n")),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline",ito::ParamBase::Int,1)),NULL);
         retval += this->LMFDummyRead();
     }
     else
@@ -762,7 +762,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
         QSharedPointer<double> oldPos(new double);
         QSharedPointer<double> endSwitchPos(new double);
 
-        /* Referenz goes up (!) */
+        /* Reference goes up (!) */
         /* temporarily set speed to maximum */
         retval += LMFQueryL(70, GET_VELOCITY, &oldspeed);
         if (retval != ito::retError)

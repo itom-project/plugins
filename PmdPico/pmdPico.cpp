@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "PmdPico" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -37,8 +37,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "dialogPmdPico.h"
 
 
-static char InitList[5] = { 0, 0, 0, 0, 0 };  /*!<A map with successfull initialized boards (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized cameras */
+static char InitList[5] = { 0, 0, 0, 0, 0 };  /*!<A map with successful initialized boards (max = 5) */
+static char Initnum = 0;    /*!< Number of successful initialized cameras */
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
@@ -58,15 +58,15 @@ If you start the plugin without further parameters (camera Number= 0), the first
 This Plugin gives you only control to the level 1 functions of the SDK. \n\
 For compiling this plugin, you need to install the royale software, shipped with the camera. \n\
 Then set the CMake variable PmdPico_ROYALE_DIR to the folder including the bin folder (e.g. C:/Program Files/royale/3.8.0.35).\n\
-After that make shure that the bin folder of the royale software is added to your path variables.";
+After that make sure that the bin folder of the royale software is added to your path variables.";
 
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses royale software and driver (not covered by LPGL)");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
@@ -123,8 +123,8 @@ DataListener::DataListener(PmdPico* inst) : m_singleShot(false), m_host(inst), m
 //----------------------------------------------------------------------------------------------------------------------------------
 //! listener for new data
 /*!
-if new datas are available this function is called. This function will stop the acquisition if m_singleShot is true.
-The incomming data are copied to m_data.
+if new data are available this function is called. This function will stop the acquisition if m_singleShot is true.
+The incoming data are copied to m_data.
 
 \param data points to DepthData
 \sa captureSingleImage
@@ -258,7 +258,7 @@ PmdPico::PmdPico() : AddInGrabber(), m_isgrabbing(false), m_exposureListener(), 
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("acquisition_mode", ito::ParamBase::Int, 0, 3, 3, tr("indicates which data should be recorded. 0: depth data, 1: gray value, 2: confidence of depth, 3: all").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("data_mode", ito::ParamBase::Int, 0, 2, 0, tr("indicates whether depth data (0), gray value (1) or confidence map (2) is transfered when using copyVal, getVal or the live image").toLatin1().data());
+    paramVal = ito::Param("data_mode", ito::ParamBase::Int, 0, 2, 0, tr("indicates whether depth data (0), gray value (1) or confidence map (2) is transferred when using copyVal, getVal or the live image").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     DockWidgetPmdPico *dw = new DockWidgetPmdPico(this);
@@ -466,7 +466,7 @@ ito::RetVal PmdPico::execFunc(const QString funcName, QSharedPointer<QVector<ito
         ito::DataObject* y(paramsMand->at(0).getVal<ito::DataObject*>());
         if (!(x && y))
         {
-            ito::RetVal(ito::retError, 0, tr("the incomming dataObject is not available").toLatin1().data());
+            ito::RetVal(ito::retError, 0, tr("the incoming dataObject is not available").toLatin1().data());
         }
         if (!retval.containsError())
         {
@@ -625,7 +625,7 @@ ito::RetVal PmdPico::getErrStr(const royale::CameraStatus& status)
         royale::String msg(royale::getErrorString(status));
         if (msg.empty())
         {
-            return ito::RetVal(ito::retError, 0, tr("PmdPico royale error: an unknown error occured").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("PmdPico royale error: an unknown error occurred").toLatin1().data());
         }
         else
         {
@@ -771,7 +771,7 @@ ito::RetVal PmdPico::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 }
                 retValue += getErrStr(m_cameraDevice->setExposureTime(time));
 
-                m_exposureListener.onNewExposure(time,0); //set this value to the listener since a manuel set does not call the onNewExposure
+                m_exposureListener.onNewExposure(time,0); //set this value to the listener since a manual set does not call the onNewExposure
 
                 synchronizeCameraSettings(sExposure);
 
@@ -1088,7 +1088,7 @@ ito::RetVal PmdPico::checkData(ito::DataObject *externalDataObject)
                 }
 
          }
-        // the coordiantes are always buffered
+        // the coordinates are always buffered
         if (m_dataXCoordinate.getDims() < 2 || m_dataXCoordinate.getSize(0) != (unsigned int)futureHeight || m_dataXCoordinate.getSize(1) != (unsigned int)futureWidth || m_dataXCoordinate.getType() != ito::tFloat32)
         {
             m_dataXCoordinate = ito::DataObject(futureHeight, futureWidth, ito::tFloat32);
@@ -1278,7 +1278,7 @@ void PmdPico::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.

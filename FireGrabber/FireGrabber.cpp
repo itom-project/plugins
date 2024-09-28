@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FireGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -88,21 +88,14 @@ firewire. \n\
 \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.");
-#ifndef WIN32
-    m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
-#else
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
-#endif
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
 
-#ifndef WIN32
-    m_license = QObject::tr("LGPL; you need an installed fireForLinux driver, which requires further licenses if you are not using any AVT camera (see fireForLinux documentation).");
-#else
-    m_license = QObject::tr("LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).");
-#endif
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
+
 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
@@ -133,7 +126,7 @@ FireGrabberInterface::~FireGrabberInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal FireGrabber::showConfDialog(void)
 {
-	return apiShowConfigurationDialog(this, new DialogFireGrabber(this));
+    return apiShowConfigurationDialog(this, new DialogFireGrabber(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -228,7 +221,7 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
         const char* text;
     }
 
-#ifdef WIN32 // for windos firepackage
+#ifdef WIN32 // for windows firepackage
     static const errors[] =
     {    /* All Errormassages are taken from the Fire Grab-Manual. */
         { FCE_NOERROR          /*   0  */,   "No Error"},
@@ -353,12 +346,12 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Funktion to set and update data imformations
+// Function to set and update data imformations
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -404,7 +397,7 @@ ito::RetVal FireGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -444,7 +437,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (!retValue.containsError())
     {
-        if ((!key.compare("x1") || !key.compare("y1") || !key.compare("x0") || !key.compare("y0"))) //adjust region of intrest
+        if ((!key.compare("x1") || !key.compare("y1") || !key.compare("x0") || !key.compare("y0"))) //adjust region of interest
         {
             if (m_isgrabbing == true)
             {
@@ -459,42 +452,42 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
             }
         }
-		else if (key == "roi")
-		{
-			int x0temp = m_params["x0"].getVal<int>();
-			int x1temp = m_params["x1"].getVal<int>();
-			int y0temp = m_params["y0"].getVal<int>();
-			int y1temp = m_params["y1"].getVal<int>();
+        else if (key == "roi")
+        {
+            int x0temp = m_params["x0"].getVal<int>();
+            int x1temp = m_params["x1"].getVal<int>();
+            int y0temp = m_params["y0"].getVal<int>();
+            int y1temp = m_params["y1"].getVal<int>();
 
-			if (!hasIndex)
-			{
-				const int* roi = val->getVal<const int*>();
-				x0temp = roi[0];
-				y0temp = roi[1];
-				x1temp = roi[0] + roi[2] - 1;
-				y1temp = roi[1] + roi[3] - 1;
-			}
-			else
-			{
-				switch (index)
-				{
-				case 0:
-					x0temp = val->getVal<int>();
-					break;
-				case 1:
-					y0temp = val->getVal<int>();
-					break;
-				case 2:
-					x1temp = x0temp + val->getVal<int>() - 1;
-					break;
-				case 3:
-					y1temp = y0temp + val->getVal<int>() - 1;
-					break;
-				}
-			}
+            if (!hasIndex)
+            {
+                const int* roi = val->getVal<const int*>();
+                x0temp = roi[0];
+                y0temp = roi[1];
+                x1temp = roi[0] + roi[2] - 1;
+                y1temp = roi[1] + roi[3] - 1;
+            }
+            else
+            {
+                switch (index)
+                {
+                case 0:
+                    x0temp = val->getVal<int>();
+                    break;
+                case 1:
+                    y0temp = val->getVal<int>();
+                    break;
+                case 2:
+                    x1temp = x0temp + val->getVal<int>() - 1;
+                    break;
+                case 3:
+                    y1temp = y0temp + val->getVal<int>() - 1;
+                    break;
+                }
+            }
 
-			retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
-		}
+            retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
+        }
         else if (!key.compare("integration_time")) // set integration time
         {
 #ifdef WIN32
@@ -622,7 +615,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             retValue += it->copyValueFrom( &(*val) );
         }
 #ifndef WIN32
-        usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will chrash
+        usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will crash
 #endif
 }
 
@@ -704,7 +697,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 //retval += AlliedChkError(dc1394_format7_set_image_size(camera,video_mode,sizex,sizey));
 
                 retval += AlliedChkError(dc1394_format7_set_roi(camera, video_mode, coding, packet_size, (uint32_t)x0, (uint32_t)y0, sizex, sizey));
-                usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will chrash
+                usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will crash
 
                 retval += AlliedChkError(dc1394_format7_get_image_size(camera,video_mode,&xSizeIs,&ySizeIs));
                 retval += AlliedChkError(dc1394_format7_get_image_position(camera,video_mode,&xPosIs,&yPosIs));
@@ -716,11 +709,11 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["y0"].setVal<int>( yPosIs );
                 m_params["x1"].setVal<int>( xPosIs + xSizeIs - 1 );
                 m_params["y1"].setVal<int>( yPosIs + ySizeIs - 1 );
-				int* roi = m_params["roi"].getVal<int*>();
-				roi[0] = xPosIs;
-				roi[1] = yPosIs;
-				roi[2] = xSizeIs;
-				roi[3] = ySizeIs;
+                int* roi = m_params["roi"].getVal<int*>();
+                roi[0] = xPosIs;
+                roi[1] = yPosIs;
+                roi[2] = xSizeIs;
+                roi[3] = ySizeIs;
                 m_params["sizex"].setVal<int>(xSizeIs);
                 m_params["sizey"].setVal<int>(ySizeIs);
 
@@ -793,30 +786,30 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
             {
                 resizeResult = Camera.SetParameter(FGP_RESIZE, 1); //may return 4 (HALER_MODE) (not allowed in this mode, since this is only necessary if camera is running)
 
-				retval += AlliedChkError(Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo));
-				retval += AlliedChkError(Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo));
+                retval += AlliedChkError(Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo));
+                retval += AlliedChkError(Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo));
 
-				if (xPosInfo.IsValue >= x0)
-				{
-					retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
-					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
-				}
-				else
-				{
-					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
-					retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
-				}
+                if (xPosInfo.IsValue >= x0)
+                {
+                    retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+                    retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+                }
+                else
+                {
+                    retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+                    retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+                }
 
-				if (yPosInfo.IsValue >= y0)
-				{
-					retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
-					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
-				}
-				else
-				{
-					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
-					retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
-				}
+                if (yPosInfo.IsValue >= y0)
+                {
+                    retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
+                    retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+                }
+                else
+                {
+                    retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+                    retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
+                }
 
                 if (resizeResult != HALER_MODE)
                 {
@@ -835,11 +828,11 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["y0"].setVal<int>( yPosInfo.IsValue );
                 m_params["x1"].setVal<int>( xPosInfo.IsValue + xSizeInfo.IsValue - 1 );
                 m_params["y1"].setVal<int>( yPosInfo.IsValue + ySizeInfo.IsValue - 1 );
-				int* roi = m_params["roi"].getVal<int*>();
-				roi[0] = xPosInfo.IsValue;
-				roi[1] = yPosInfo.IsValue;
-				roi[2] = xSizeInfo.IsValue;
-				roi[3] = ySizeInfo.IsValue;
+                int* roi = m_params["roi"].getVal<int*>();
+                roi[0] = xPosInfo.IsValue;
+                roi[1] = yPosInfo.IsValue;
+                roi[2] = xSizeInfo.IsValue;
+                roi[3] = ySizeInfo.IsValue;
                 m_params["sizex"].setVal<int>(xSizeInfo.IsValue);
                 m_params["sizey"].setVal<int>(ySizeInfo.IsValue);
 
@@ -1175,30 +1168,30 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["sizey"].setVal<double>(m_ySize);
         m_params["x1"].setVal<double>(m_xSize - 1);
         m_params["y1"].setVal<double>(m_ySize - 1);
-		int roi[] = { 0, 0, m_xSize, m_ySize };
-		m_params["roi"].setVal<int*>(roi, 4);
+        int roi[] = { 0, 0, m_xSize, m_ySize };
+        m_params["roi"].setVal<int*>(roi, 4);
 
         // Obtain data geometry
-		uint32_t  xSizeMax, ySizeMax, xPosMax, yPosMax, hUnitImage, vUnitImage, hUnitPos, vUnitPos;
+        uint32_t  xSizeMax, ySizeMax, xPosMax, yPosMax, hUnitImage, vUnitImage, hUnitPos, vUnitPos;
 
-		//get information
-		Result = dc1394_format7_get_max_image_size(camera,video_mode,&xSizeMax,&ySizeMax);
-		Result = dc1394_format7_get_unit_size(camera,video_mode,&hUnitImage,&vUnitImage);
-		Result = dc1394_format7_get_unit_position(camera,video_mode,&hUnitPos,&vUnitPos);
-		xPosMax=xSizeMax;
-		yPosMax=ySizeMax;
+        //get information
+        Result = dc1394_format7_get_max_image_size(camera,video_mode,&xSizeMax,&ySizeMax);
+        Result = dc1394_format7_get_unit_size(camera,video_mode,&hUnitImage,&vUnitImage);
+        Result = dc1394_format7_get_unit_position(camera,video_mode,&hUnitPos,&vUnitPos);
+        xPosMax=xSizeMax;
+        yPosMax=ySizeMax;
 
-		m_params["x0"].setMeta(new ito::IntMeta(0, xPosMax, hUnitPos), true);
-		m_params["y0"].setMeta(new ito::IntMeta(0, yPosMax, vUnitPos), true);
-		m_params["x1"].setMeta(new ito::IntMeta(0, xSizeMax - 1, hUnitPos), true);
-		m_params["y1"].setMeta(new ito::IntMeta(0, ySizeMax - 1, vUnitPos), true);
-		m_params["sizex"].setMeta(new ito::IntMeta(0, xSizeMax, hUnitImage), true);
-		m_params["sizey"].setMeta(new ito::IntMeta(0, ySizeMax, vUnitImage), true);
+        m_params["x0"].setMeta(new ito::IntMeta(0, xPosMax, hUnitPos), true);
+        m_params["y0"].setMeta(new ito::IntMeta(0, yPosMax, vUnitPos), true);
+        m_params["x1"].setMeta(new ito::IntMeta(0, xSizeMax - 1, hUnitPos), true);
+        m_params["y1"].setMeta(new ito::IntMeta(0, ySizeMax - 1, vUnitPos), true);
+        m_params["sizex"].setMeta(new ito::IntMeta(0, xSizeMax, hUnitImage), true);
+        m_params["sizey"].setMeta(new ito::IntMeta(0, ySizeMax, vUnitImage), true);
 
-		ito::RectMeta roiMeta(\
-			ito::RangeMeta(0, xSizeMax - 1, hUnitPos, 0, xSizeMax, hUnitImage), \
-			ito::RangeMeta(0, ySizeMax - 1, vUnitPos, 0, ySizeMax, vUnitImage));
-		m_params["roi"].setMeta(&roiMeta, false);
+        ito::RectMeta roiMeta(\
+            ito::RangeMeta(0, xSizeMax - 1, hUnitPos, 0, xSizeMax, hUnitImage), \
+            ito::RangeMeta(0, ySizeMax - 1, vUnitPos, 0, ySizeMax, vUnitImage));
+        m_params["roi"].setMeta(&roiMeta, false);
 
         Result = dc1394_feature_is_present(camera, DC1394_FEATURE_FRAME_RATE, &present);
         retValue += AlliedChkError(Result);
@@ -1484,8 +1477,8 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
         Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
-		Result = Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo);
-		Result = Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo);
+        Result = Camera.GetParameterInfo(FGP_XPOSITION, &xPosInfo);
+        Result = Camera.GetParameterInfo(FGP_YPOSITION, &yPosInfo);
 
         Result = Camera.SetParameter(FGP_XPOSITION, 0);
         Result = Camera.SetParameter(FGP_YPOSITION, 0);
@@ -1496,23 +1489,23 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["sizey"].setVal<double>(yInfo.MaxValue);
         m_params["x1"].setVal<double>(xInfo.MaxValue - 1);
         m_params["y1"].setVal<double>(yInfo.MaxValue - 1);
-		int roi[] = { 0, 0, xInfo.MaxValue, yInfo.MaxValue };
-		m_params["roi"].setVal<int*>(roi, 4);
+        int roi[] = { 0, 0, xInfo.MaxValue, yInfo.MaxValue };
+        m_params["roi"].setVal<int*>(roi, 4);
 
         Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
         Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
 
-		m_params["x0"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xPosInfo.MaxValue, xPosInfo.Unit), true);
-		m_params["y0"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yPosInfo.MaxValue, yPosInfo.Unit), true);
-		m_params["x1"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit), true);
-		m_params["y1"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit), true);
-		m_params["sizex"].setMeta(new ito::IntMeta(xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), true);
-		m_params["sizey"].setMeta(new ito::IntMeta(yInfo.MinValue, yInfo.MaxValue, yInfo.Unit), true);
+        m_params["x0"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xPosInfo.MaxValue, xPosInfo.Unit), true);
+        m_params["y0"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yPosInfo.MaxValue, yPosInfo.Unit), true);
+        m_params["x1"].setMeta(new ito::IntMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit), true);
+        m_params["y1"].setMeta(new ito::IntMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit), true);
+        m_params["sizex"].setMeta(new ito::IntMeta(xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), true);
+        m_params["sizey"].setMeta(new ito::IntMeta(yInfo.MinValue, yInfo.MaxValue, yInfo.Unit), true);
 
-		ito::RectMeta roiMeta(\
-			ito::RangeMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit, xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), \
-			ito::RangeMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit, yInfo.MinValue, yInfo.MaxValue, yInfo.Unit));
-		m_params["roi"].setMeta(&roiMeta, false);
+        ito::RectMeta roiMeta(\
+            ito::RangeMeta(xPosInfo.MinValue, xInfo.MaxValue - 1, xPosInfo.Unit, xInfo.MinValue, xInfo.MaxValue, xInfo.Unit), \
+            ito::RangeMeta(yPosInfo.MinValue, yInfo.MaxValue - 1, yPosInfo.Unit, yInfo.MinValue, yInfo.MaxValue, yInfo.Unit));
+        m_params["roi"].setMeta(&roiMeta, false);
 
         FGPINFO packsize;
         retValue += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
@@ -2023,7 +2016,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 1001, tr("No frame to catch. Frame needs to be aquired before retrieving.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 1001, tr("No frame to catch. Frame needs to be acquired before retrieving.").toLatin1().data());
     }
     //returns the frame back to standby queue of camera. PutFrame(NULL) in acquire then puts it to DMA queue, where camera can put new images in.
 

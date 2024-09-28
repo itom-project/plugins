@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GWInstekPSP" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -92,11 +92,11 @@ instance when initializing this plugin.";
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.");
 
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
@@ -117,7 +117,7 @@ GWInstekPSPInterface::~GWInstekPSPInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -285,17 +285,17 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 
     paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toLatin1().data());
+    paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Output voltage; the unit: V").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("current", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 99.0, 0.0, tr("Ouput current; the unit: A").toLatin1().data());
+    paramVal = ito::Param("current", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 99.0, 0.0, tr("Output current; the unit: A").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("load", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 250.0, 0.0, tr("Ouput load; the unit: W").toLatin1().data());
+    paramVal = ito::Param("load", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 250.0, 0.0, tr("Output load; the unit: W").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("voltage_limit", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage limit; the unit: V").toLatin1().data());
+    paramVal = ito::Param("voltage_limit", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Output voltage limit; the unit: V").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("current_limit", ito::ParamBase::Double, 0.0, 5.0, 0.0, tr("Ouput current limit; the unit: A").toLatin1().data());
+    paramVal = ito::Param("current_limit", ito::ParamBase::Double, 0.0, 5.0, 0.0, tr("Output current limit; the unit: A").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("load_limit", ito::ParamBase::Double, 0.0, 200.0, 0.0, tr("Ouput load limit; the unit: W").toLatin1().data());
+    paramVal = ito::Param("load_limit", ito::ParamBase::Double, 0.0, 200.0, 0.0, tr("Output load limit; the unit: W").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM on exit").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

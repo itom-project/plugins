@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PI_GCS2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -65,7 +65,7 @@ PI_GCS2Interface::PI_GCS2Interface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
 /*    char docstring[] = "PI actuators following the GCS2 command set (e.g. E753) \n\
-This plugin is developped for single axis controllers following the GCS2 commandset. \n\
+This plugin is developed for single axis controllers following the GCS2 commandset. \n\
 \n\
 Tested with E753, don't work with E-662 and E-665! \n\
 \n\
@@ -80,7 +80,7 @@ Please note that you only need to indicate a baudrate for RS232 connections, in 
 the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.";
     m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr("PI actuators following the GCS2 command set (e.g. E753) \n\
-This plugin is developped for single axis controllers following the GCS2 commandset. \n\
+This plugin is developed for single axis controllers following the GCS2 commandset. \n\
 \n\
 Tested with E753 and C663, don't work with E-662 and E-665! \n\
 \n\
@@ -94,11 +94,11 @@ in the following way: \n\
 Please note that you only need to indicate a baudrate for RS232 connections, in the other cases, \n\
 the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param p("connection", ito::ParamBase::String, "RS232", "type of the connection ('RS232', 'USB', 'TCPIP')");

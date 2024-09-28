@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FirgelliLAC" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -45,26 +45,26 @@
 
 typedef enum
 {
-	SET_ACCURACY                = 0x01,
-	SET_RETRACT_LIMIT           = 0x02,
-	SET_EXTEND_LIMT             = 0x03,
-	SET_MOVEMENT_THRESHOLD      = 0x04,
-	SET_STALL_TIME              = 0x05,
-	SET_PWM_THRESHOLD           = 0x06,
-	SET_DERIVATIVE_THRESHOLD    = 0x07,
-	SET_DERIVATIVE_MAXIMUM      = 0x08,
-	SET_DERIVATIVE_MINIMUM      = 0x09,
-	SET_PWM_MAXIMUM             = 0x0A,
-	SET_PWM_MINIMUM             = 0x0B,
-	SET_PROPORTIONAL_GAIN       = 0x0C,
-	SET_DERIVATIVE_GAIN         = 0x0D,
-	SET_AVERAGE_RC              = 0x0E,
-	SET_AVERAGE_ADC             = 0x0F,
-	GET_FEEDBACK                = 0x10,
-	SET_POSITION                = 0x20,
-	SET_SPEED                   = 0x21,
-	DISABLE_MANUAL              = 0x30,
-	RESET                       = 0xFF,
+    SET_ACCURACY                = 0x01,
+    SET_RETRACT_LIMIT           = 0x02,
+    SET_EXTEND_LIMT             = 0x03,
+    SET_MOVEMENT_THRESHOLD      = 0x04,
+    SET_STALL_TIME              = 0x05,
+    SET_PWM_THRESHOLD           = 0x06,
+    SET_DERIVATIVE_THRESHOLD    = 0x07,
+    SET_DERIVATIVE_MAXIMUM      = 0x08,
+    SET_DERIVATIVE_MINIMUM      = 0x09,
+    SET_PWM_MAXIMUM             = 0x0A,
+    SET_PWM_MINIMUM             = 0x0B,
+    SET_PROPORTIONAL_GAIN       = 0x0C,
+    SET_DERIVATIVE_GAIN         = 0x0D,
+    SET_AVERAGE_RC              = 0x0E,
+    SET_AVERAGE_ADC             = 0x0F,
+    GET_FEEDBACK                = 0x10,
+    SET_POSITION                = 0x20,
+    SET_SPEED                   = 0x21,
+    DISABLE_MANUAL              = 0x30,
+    RESET                       = 0xFF,
 }TYPE_CMD;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -128,11 +128,11 @@ plugin might deliver wrong values. At startup, the motor is always moved to its 
 in order to be able to subsequently provide right position values. This behaviour is mandatory\n\
 and cannot be changed (due to the driver of the controller board).");
 
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.append(ito::Param("spoolMax", ito::ParamBase::Double, 20.0, new ito::DoubleMeta(0.0,100000.0), tr("Maximum length of spool (mm) [default 20.0 mm]").toLatin1().data()));
@@ -200,7 +200,7 @@ ito::RetVal FirgelliLACInterface::unloadDLL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class FirgelliLACInterface with the name FirgelliLACInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class FirgelliLACInterface with the name FirgelliLACInterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -219,12 +219,12 @@ ito::RetVal FirgelliLACInterface::unloadDLL()
 ito::RetVal FirgelliLAC::LACWrite(const BYTE command, const int value, const bool checkAnswer /*= false*/)
 {
     ito::RetVal retValue = ito::retOk;
-	BYTE bufData[3];
-	bufData[0] = command;
-	bufData[1] = value & 0xff; //(BYTE)value;
-	bufData[2] = (value >> 8) & 0xff; //(BYTE)(value >> 8);
-	DWORD bufLen = sizeof(bufData);
-	DWORD bufProcessed;
+    BYTE bufData[3];
+    bufData[0] = command;
+    bufData[1] = value & 0xff; //(BYTE)value;
+    bufData[2] = (value >> 8) & 0xff; //(BYTE)(value >> 8);
+    DWORD bufLen = sizeof(bufData);
+    DWORD bufProcessed;
 
     if (!MPUSBWrite(LACOutpipe, bufData, bufLen, &bufProcessed, 1000))
     {
@@ -255,9 +255,9 @@ ito::RetVal FirgelliLAC::LACWrite(const BYTE command, const int value, const boo
 ito::RetVal FirgelliLAC::LACRead(BYTE &retCommand, int &retAnswer)
 {
     ito::RetVal retValue = ito::retOk;
-	BYTE bufData[3];
-	DWORD bufLen = sizeof(bufData);
-	DWORD bufProcessed;
+    BYTE bufData[3];
+    DWORD bufLen = sizeof(bufData);
+    DWORD bufProcessed;
 
     if (!MPUSBRead(LACInpipe, bufData, bufLen, &bufProcessed, 1000))
     {
@@ -274,7 +274,7 @@ ito::RetVal FirgelliLAC::LACRead(BYTE &retCommand, int &retAnswer)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widget window is created at this position.
 */
 ito::RetVal FirgelliLAC::LACCheckError(ito::RetVal retval)
 {
@@ -283,7 +283,7 @@ ito::RetVal FirgelliLAC::LACCheckError(ito::RetVal retval)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the FirgelliLAC::init. The widget window is created at this position.
 */
 FirgelliLAC::FirgelliLAC() :
     AddInActuator(),
@@ -302,7 +302,7 @@ FirgelliLAC::FirgelliLAC() :
     m_params.insert("deviceNum", ito::Param("device_num", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
 
     // Read/Write - Parameters
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, 100.0, 0.0, tr("Target speed in %; range: 0.0..100.0 %").toLatin1().data()));
     m_params.insert("accuracy", ito::Param("accuracy", ito::ParamBase::Double, 0.0, 100.0, 0.0, tr("Accuracy in %; range: 0.0..100.0 %").toLatin1().data()));
 
@@ -338,7 +338,7 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
     bool deviceOpen = false;
-	PCHAR pipename = const_cast<char*>("\\MCHP_EP1");
+    PCHAR pipename = const_cast<char*>("\\MCHP_EP1");
     PCHAR VidPid = const_cast<char*>("vid_04d8&pid_fc5f");
 
     double spoolMax = paramsMand->value(0).getVal<double>(); // 0: mand parameter "spoolMax"
@@ -368,7 +368,7 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
         else
         {
-        	LACOutpipe = MPUSBOpen(deviceNum, VidPid, pipename, MP_WRITE, 0);
+            LACOutpipe = MPUSBOpen(deviceNum, VidPid, pipename, MP_WRITE, 0);
         }
 
         if (LACOutpipe == INVALID_HANDLE_VALUE)
@@ -378,7 +378,7 @@ ito::RetVal FirgelliLAC::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         else
         {
             retval += m_params["deviceNum"].setVal<int>(deviceNum);
-	        LACInpipe = MPUSBOpen(deviceNum, VidPid, pipename, MP_READ, 0);
+            LACInpipe = MPUSBOpen(deviceNum, VidPid, pipename, MP_READ, 0);
 
             if (LACInpipe == INVALID_HANDLE_VALUE)
             {
@@ -454,12 +454,12 @@ ito::RetVal FirgelliLAC::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -496,14 +496,14 @@ ito::RetVal FirgelliLAC::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, FirgelliLAC::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -579,7 +579,7 @@ ito::RetVal FirgelliLAC::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -592,7 +592,7 @@ ito::RetVal FirgelliLAC::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -635,7 +635,7 @@ ito::RetVal FirgelliLAC::getStatus(QSharedPointer<QVector<int> > status, ItomSha
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -658,7 +658,7 @@ ito::RetVal FirgelliLAC::getPos(const int axis, QSharedPointer<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -693,7 +693,7 @@ ito::RetVal FirgelliLAC::getPos(const QVector<int> axis, QSharedPointer<QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -708,7 +708,7 @@ ito::RetVal FirgelliLAC::setPosAbs(const int axis, const double pos, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -731,7 +731,7 @@ ito::RetVal FirgelliLAC::setPosAbs(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -746,7 +746,7 @@ ito::RetVal FirgelliLAC::setPosRel(const int axis, const double pos, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls FirgelliLAC::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -769,8 +769,8 @@ ito::RetVal FirgelliLAC::setPosRel(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa SMCSetPos
     \return retOk
@@ -840,7 +840,7 @@ ito::RetVal FirgelliLAC::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number

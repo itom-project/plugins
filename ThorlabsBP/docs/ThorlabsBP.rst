@@ -35,7 +35,7 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*.
 
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **channel**: {seq. of int}, read-only
     Channel number of each axis.
 **controlMode**: {seq. of int}
