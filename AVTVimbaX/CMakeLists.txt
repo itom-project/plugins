@@ -61,7 +61,7 @@ if(AVT_VIMBAX_HEADER_FILE)
         ${CMAKE_CURRENT_SOURCE_DIR}/avtVimbaXEnums.h
         ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -84,7 +84,7 @@ if(AVT_VIMBAX_HEADER_FILE)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     set(AVT_LIBDIR_HINT "${AVTVIMBAX_API_DIR}/lib")
@@ -106,7 +106,7 @@ if(AVT_VIMBAX_HEADER_FILE)
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
-    itom_configure_plugin_documentation(${target_name} AVTVimbaX)
+    itom_configure_plugin_documentation(${target_name} avtVimbaX)
 
     set(COPY_SOURCES "")
     set(COPY_DESTINATIONS "")

@@ -41,8 +41,8 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
     \todo add necessary information about your plugin here.
 */
 
-static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized Cameras (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized Cameras */
+static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successful initialized Cameras (max = 5) */
+static char Initnum = 0;    /*!< Number of successful initialized Cameras */
 
 AVTVimbaXInterface::AVTVimbaXInterface()
 {
@@ -627,7 +627,7 @@ ito::RetVal AVTVimbaX::close(ItomSharedSemaphore *waitCond)
 
     //todo:
     // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+    // - this function is considered to be the "inverse" of init.
 
     int nr = m_params["camera_number"].getVal<int>();
 
@@ -1443,7 +1443,7 @@ void AVTVimbaX::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
