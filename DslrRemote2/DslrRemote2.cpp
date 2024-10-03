@@ -22,7 +22,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "DslrRemote.h"
+#include "DslrRemote2.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
@@ -42,7 +42,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qdockwidget.h>
 #include <qpushbutton.h>
 #include <qmetaobject.h>
-//#include "dockWidgetDslrRemote.h"
 
 #include "pluginVersion.h"
 #include "gitVersion.h"
@@ -105,7 +104,7 @@ DslrRemoteInterface::DslrRemoteInterface()
 /*    char docstring[] = \
 "The DslrRemote is a library to remote control some DSLR cameras. \n\
 \n\
-!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
+**Important** \nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\";*/
 
     m_description = QObject::tr("A virtual white noise grabber");
@@ -113,7 +112,7 @@ Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for i
     m_detaildescription = QObject::tr(
 "Library to remote control some DSLR cameras. \n\
 \n\
-!!! Important !!!\nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
+**Important** \nTo use this plugin under windows OS you probably will need to install libusb devcice driver.\
 Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.\n\
 ");
 

@@ -34,12 +34,6 @@ Detailed overview about all defined algorithms:
     :plugin: FringeProj
 
 
-Description
-==============
-
-Algorithms used for phase calculation from fringe projection images: Algorithm for 4 phase steps, n-phase steps, algorithm
-for Gray Code code index calculation, phase unwrapping of cosine fringe phase using gray code code indices.
-
 Changelog
 ==========
 

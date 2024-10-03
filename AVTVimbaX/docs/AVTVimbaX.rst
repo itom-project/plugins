@@ -79,7 +79,7 @@ the 64bit versions for 64bit itom and vice versa).
 If you want to build this plugin from the sources, you need to make sure that you installed the C++ component of the VimbaX SDK (select this component during the install process).
 In CMake enable the checkbox of the variable **PLUGIN_AVTVimbaX** and re-configure CMake. Then set the variable **AVTVimbaX_INCLUDE_DIR** or the Environment Variable **AVTVimbaX_ROOT**
 to anything similar like **C:\Program Files\Allied Vision\Vimba X\api\include** (subfolder of the VimbaX installation path) and generate your CMake project again.
-The variables **AVTVimbaX_API_DIR**, AVTVimbaX_LIBRARY**... should now be found automatically if you indicated a right VimbaX installation directory in the step before.
+The variables **AVTVimbaX_API_DIR**, **AVTVimbaX_LIBRARY**... should now be found automatically if you indicated a right VimbaX installation directory in the step before.
 
 Known issues
 ==============
