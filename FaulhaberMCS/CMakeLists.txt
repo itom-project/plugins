@@ -43,7 +43,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/faulhaberMCS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogFaulhaberMCS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetFaulhaberMCS.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
     #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
