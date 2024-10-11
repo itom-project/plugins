@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12...3.29)
-set(target_name Mycobot280Pi)
+set(target_name MyCobot280Pi)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
@@ -22,11 +22,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 # Find necessary packages and libraries
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(Qt5 COMPONENTS Core Widgets Network Gui LinguistTools REQUIRED)
+#find_package(Qt6 COMPONENTS Core Widgets Network Gui LinguistTools REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
 itom_init_plugin_library(${target_name}) # Start the project, init compiler settings and set default configurations for plugins
+itom_find_package_qt(ON Core Widgets Network LinguistTools)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -35,19 +36,22 @@ include_directories(
 )
 
 set(PLUGIN_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMycobot280Pi.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Mycobot280Pi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyCobot280Pi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyCobot280Pi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/MyCobot280Pi.h
     ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
 set(PLUGIN_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMycobot280Pi.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyCobot280Pi.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyCobot280Pi.ui
 )
 
 set(PLUGIN_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMycobot280Pi.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Mycobot280Pi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogMyCobot280Pi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyCobot280Pi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/MyCobot280Pi.cpp
 )
 
 # Define Version in pluginVersion.h
@@ -69,21 +73,15 @@ add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_U
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
 # Link with Qt and other necessary libraries
-target_link_libraries(${target_name} 
-    ${ITOM_SDK_LIBRARIES}
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Network
-    Qt5::Gui
-    ${OpenCV_LIBS}
-)
+target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} ${OpenCV_LIBS})
+# ${QT5_LIBRARIES}
 
 # Translation support
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
 # Documentation support
-itom_configure_plugin_documentation(${target_name} Mycobot280Pi)
+itom_configure_plugin_documentation(${target_name} MyCobot280Pi)
 
 # COPY SECTION
 set(COPY_SOURCES "")

@@ -91,7 +91,7 @@ void DockWidgetDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
                 switch (i)
                 {
                 case 0:
-                    ui.axisController->setAxisName(i, "x");
+                    ui.axisController->setAxisName(i, "x_Test");
                     ui.axisController->setAxisType(i, MotorAxisController::TypeLinear);
                     break;
                 case 1:

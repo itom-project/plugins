@@ -1,5 +1,5 @@
-#ifndef DOCKWIDGETMYCOBOTCONTROL_H
-#define DOCKWIDGETMYCOBOTCONTROL_H
+#ifndef DockWidgetMyCobot280Pi_H
+#define DockWidgetMyCobot280Pi_H
 
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInInterface.h"
@@ -9,23 +9,23 @@
 #include <qpushbutton.h>
 #include <qslider.h>
 
-#include "ui_dockWidgetMycobotControl.h"
+#include "ui_dockWidgetMyCobot280pi.h"
 
 namespace ito {
     class AddInActuator; //forward declaration
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class DockWidgetMycobotControl : public ito::AbstractAddInDockWidget
+class DockWidgetMyCobot280Pi : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetMycobotControl(int uniqueID, ito::AddInActuator *myPlugin);    //!< Constructor called by MycobotControl::Constructor
-        ~DockWidgetMycobotControl() {};
+        DockWidgetMyCobot280Pi(int uniqueID, ito::AddInActuator *myPlugin);    //!< Constructor called by MyCobot280Pi::Constructor
+        ~DockWidgetMyCobot280Pi() {};
 
     private:
-        Ui::DockWidgetMycobotControl ui;    //! Handle to the dialog
+        Ui::DockWidgetMyCobot280Pi ui;    //! Handle to the dialog
         int m_numaxis;  
         bool m_isVisible;
         bool m_inEditing;
@@ -35,7 +35,11 @@ class DockWidgetMycobotControl : public ito::AbstractAddInDockWidget
 
         void enableWidget(bool enabled);
         void sendJointData();  // Method to send joint data
-        void sendStartCommand(); // Method to send start command
+        void sendStartRobot();
+        void sendStartArmcontrolCommand();
+        void sendConnectArmcontrolCommand();
+        void getCurrentJointStates();
+        void connectSocketServer(); // Method to send start command
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -45,7 +49,11 @@ class DockWidgetMycobotControl : public ito::AbstractAddInDockWidget
 
     private slots:
         void onStartCommandClicked();  // Slot for "Send Command" button click
-        void onStartRobotClicked();    // Slot for "Start Robot" button click
+        void onStartRobotClicked(); 
+        void onStartArmControlClicked();
+        void onGetJointStatesClicked();
+        void onConnectSocketServer(); 
+        void onConnectArmControlClicked();  // Slot for "Start Robot" button click
 };
 
-#endif // DOCKWIDGETMYCOBOTCONTROL_H
+#endif // DockWidgetMyCobot280Pi_H
