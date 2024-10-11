@@ -1,7 +1,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "MycobotControl.h"
+#include "MyCobot280Pi.h"
 #include <math.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -21,54 +21,63 @@
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControlInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal MyCobot280PiInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(MycobotControl)
+    NEW_PLUGININSTANCE(MyCobot280Pi)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControlInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal MyCobot280PiInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    REMOVE_PLUGININSTANCE(MycobotControl)
+    REMOVE_PLUGININSTANCE(MyCobot280Pi)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MycobotControlInterface::MycobotControlInterface(QObject * /*parent*/)
+MyCobot280PiInterface::MyCobot280PiInterface(QObject * /*parent*/)
 {
     m_autoLoadPolicy = ito::autoLoadKeywordDefined;
     m_autoSavePolicy = ito::autoSaveAlways;
 
     m_type = ito::typeActuator;
-    setObjectName("MycobotControl");
+    setObjectName("MyCobot280Pi");
 
     m_description = QObject::tr("A plugin to control MyCobot robots via TCP.");
     m_detaildescription = QObject::tr(
-        "The MycobotControl plugin allows for controlling MyCobot robots over a TCP connection.\n"
+        "The MyCobot280Pi plugin allows for controlling MyCobot robots over a TCP connection.\n"
         "It supports up to 6 axes and provides methods for absolute and relative positioning.\n");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
-    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;       
+
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(1, 6), tr("Number of axes for this motor").toLatin1().data());
+    // Corrected the "numAxis" parameter initialization
+    ito::Param paramVal("numAxis", ito::ParamBase::Int);  // 只使用两个参数
+    paramVal.setVal<int>(6);  // 设置默认值为 6
+    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // 设置元数据，范围为 [1, 6]
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("host", ito::ParamBase::String, "127.0.0.1", tr("Hostname or IP address of the robot server").toLatin1().data());
+    // "host" 参数初始化
+    paramVal = ito::Param("host", ito::ParamBase::String);  // 只使用两个参数
+    paramVal.setVal<const char*>("127.0.0.1");  // 设置默认值为 "127.0.0.1"
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("port", ito::ParamBase::Int, 9999, new ito::IntMeta(1, 65535), tr("Port number of the robot server").toLatin1().data());
+    // "port" 参数初始化
+    paramVal = ito::Param("port", ito::ParamBase::Int);  // 只使用两个参数
+    paramVal.setVal<int>(9999);  // 设置默认值为 9999
+    paramVal.setMeta(new ito::IntMeta(1, 65535), true);  // 设置端口范围 [1, 65535]
     m_initParamsOpt.append(paramVal);
 
     return;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
-MycobotControlInterface::~MycobotControlInterface()
+MyCobot280PiInterface::~MyCobot280PiInterface()
 {
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
@@ -79,51 +88,63 @@ MycobotControlInterface::~MycobotControlInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal MycobotControl::showConfDialog(void)
-{
-    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
-        return apiShowConfigurationDialog(this, new DialogMycobotControl(this));
-    else
-        return ito::retOk;
-}
+// const ito::RetVal MyCobot280Pi::showConfDialog(void)
+// {
+//     if (qobject_cast<QApplication*>(QCoreApplication::instance()))
+//         return apiShowConfigurationDialog(this, new DialogMyCobot280Pi(this));
+//     else
+//         return ito::retOk;
+// }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MycobotControl::MycobotControl() :
+MyCobot280Pi::MyCobot280Pi() :
     AddInActuator(),
     m_socket(nullptr),
     m_host("129.69.65.242"),
-    m_port(9999)
+    m_port(9999),
+    m_async(false),      
+    m_nrOfAxes(6)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MycobotControl", "Name of the plugin");
+    // 插入 name 参数
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyCobot280Pi", "Name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 6, 6, tr("Number of axes attached to this stage").toLatin1().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly);  // 初始化参数
+    paramVal.setVal<int>(6);  // 设置默认值
+    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // 设置元数据范围 [1, 6]
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("host", ito::ParamBase::String, m_host.toLatin1().data(), tr("Hostname or IP address of the robot server").toLatin1().data());
+    // 插入 host 参数，将 QString 转换为 const char*
+    paramVal = ito::Param("host", ito::ParamBase::String);  // 初始化参数
+    paramVal.setVal<const char*>(m_host.toLatin1().data());  // 设置值
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("port", ito::ParamBase::Int, m_port, tr("Port number of the robot server").toLatin1().data());
+    // 插入 port 参数，保持整数类型
+    paramVal = ito::Param("port", ito::ParamBase::Int);  // 初始化参数
+    paramVal.setVal<int>(m_port);  // 设置默认值
     m_params.insert(paramVal.getName(), paramVal);
 
 
+
+
+    // 初始化目标位置数组
     m_targetPos = QVector<double>(6, 0.0);
- 
 
+    // 创建 GUI 支持的 Dock Widget
     if (hasGuiSupport())
     {
-        // Create dock widget for this plugin
-        DockWidgetMycobotControl *mycobotWid = new DockWidgetMycobotControl(getID(), this);
+        DockWidgetMyCobot280Pi *MyCobotWid = new DockWidgetMyCobot280Pi(getID(), this);
 
         Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, mycobotWid);
+        createDockWidget(QString(m_params["name"].getVal<const char *>()), features, areas, MyCobotWid);
     }
 
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
-MycobotControl::~MycobotControl()
+MyCobot280Pi::~MyCobot280Pi()
 {
     if (m_socket)
     {
@@ -135,7 +156,7 @@ MycobotControl::~MycobotControl()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
@@ -172,7 +193,7 @@ ito::RetVal MycobotControl::getParam(QSharedPointer<ito::Param> val, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -242,7 +263,7 @@ ito::RetVal MycobotControl::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -275,7 +296,7 @@ ito::RetVal MycobotControl::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::close(ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -294,7 +315,7 @@ ito::RetVal MycobotControl::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::connectToSocket()
+ito::RetVal MyCobot280Pi::connectToSocket()
 {
     // Check if the socket object has been created
     if (!m_socket)
@@ -316,7 +337,7 @@ ito::RetVal MycobotControl::connectToSocket()
     m_socket->connectToHost(m_host, m_port);
 
     // Wait for the connection to complete, with a timeout of 5 seconds
-    if (!m_socket->waitForConnected(5000))
+    if (!m_socket->waitForConnected(3000))
     {
         // If the connection fails, return an error
         return ito::RetVal(ito::retError, 0, tr("Failed to connect to host %1 on port %2: %3")
@@ -327,24 +348,37 @@ ito::RetVal MycobotControl::connectToSocket()
     return ito::RetVal(ito::retOk, 0, tr("Successfully connected to host %1 on port %2").arg(m_host).arg(m_port).toLatin1().data());
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::sendSocketData(const QString &data)
+ito::RetVal MyCobot280Pi::sendSocketData(const QString &data)
 {
     if (m_socket && m_socket->state() == QAbstractSocket::ConnectedState) {
+        // 发送数据
         qint64 bytesWritten = m_socket->write(data.toUtf8());
         
-        // ����Ƿ�ɹ�д������
+        // 检查是否成功写入数据
         if (bytesWritten == -1) {
             return ito::RetVal(ito::retError, 0, QString("Failed to send data: %1").arg(m_socket->errorString()).toLatin1().data());
         }
 
-        // ȷ�����ݱ���ȫ����
+        // 确保数据被完全发送
         if (!m_socket->flush()) {
             return ito::RetVal(ito::retError, 0, "Failed to flush data to the socket");
         }
 
-        return ito::RetVal(ito::retOk);
+        // 等待服务器响应（等待时间可调整，单位为毫秒）
+        if (m_socket->waitForReadyRead(2000)) {  // 5000 毫秒 = 5 秒
+            // 读取所有数据并返回
+            QByteArray responseData = m_socket->readAll();
+            QString response = QString::fromUtf8(responseData);
+
+            // 打印服务器回复 (可根据需求返回给调用函数)
+            qDebug() << "Response from server:\n" << response;
+            
+            return ito::RetVal(ito::retOk, 0, QString("Response: %1").arg(response).toLatin1().data());
+        } else {
+            return ito::RetVal(ito::retError, 0, "No response from server within timeout period");
+        }
+
     } else {
         return ito::RetVal(ito::retError, 0, "Socket not connected");
     }
@@ -352,16 +386,17 @@ ito::RetVal MycobotControl::sendSocketData(const QString &data)
 
 
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosAbs(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -432,7 +467,7 @@ ito::RetVal MycobotControl::setPosAbs(const QVector<int> axis, QVector<double> p
 
 
 
-ito::RetVal MycobotControl::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
 {
     return setOrigin(QVector<int>(1,axis), waitCond);
 }
@@ -444,7 +479,7 @@ ito::RetVal MycobotControl::setOrigin(const int axis, ItomSharedSemaphore *waitC
     considered to be the new origin (zero-position). If this operation is not possible, return a
     warning.
 */
-ito::RetVal MycobotControl::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -479,13 +514,13 @@ ito::RetVal MycobotControl::setOrigin(QVector<int> axis, ItomSharedSemaphore *wa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     return setPosRel(QVector<int>(1,axis), QVector<double>(1,pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -556,19 +591,19 @@ ito::RetVal MycobotControl::setPosRel(const QVector<int> axis, QVector<double> p
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::calib(const int axis, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
-
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
-
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -585,7 +620,7 @@ ito::RetVal MycobotControl::getStatus(QSharedPointer<QVector<int> > status, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     QSharedPointer<QVector<double> > pos2(new QVector<double>(1,0.0));
@@ -602,7 +637,7 @@ ito::RetVal MycobotControl::getPos(const int axis, QSharedPointer<double> pos, I
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
+ito::RetVal MyCobot280Pi::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
@@ -631,13 +666,13 @@ ito::RetVal MycobotControl::getPos(const QVector<int> axis, QSharedPointer<QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// ito::RetVal MycobotControl::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
+// ito::RetVal MyCobot280Pi::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 // {
 
 // }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MycobotControl::dockWidgetVisibilityChanged(bool visible)
+void MyCobot280Pi::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -662,7 +697,7 @@ void MycobotControl::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MycobotControl::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*flags*/)
+ito::RetVal MyCobot280Pi::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*flags*/)
 {
     ito::RetVal retVal(ito::retOk);
     bool done = false;
@@ -750,4 +785,9 @@ ito::RetVal MycobotControl::waitForDone(const int timeoutMS, const QVector<int> 
     return retVal;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MyCobot280Pi::updateStatus() {
+    // 实现状态更新逻辑
+    ito::RetVal retVal(ito::retOk);
+    // 这里实现你的逻辑
+    return retVal;
+}

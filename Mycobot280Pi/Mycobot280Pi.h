@@ -1,22 +1,23 @@
-#ifndef MYCOBOTCONTROL_H
-#define MYCOBOTCONTROL_H
+#ifndef MyCobot280Pi_H
+#define MyCobot280Pi_H
 
 #include "common/addInInterface.h"
- //! ≈‰÷√∂‘ª∞øÚ
-#include "dockWidgetMycobotControl.h"    //! øÿ÷∆∂‘ª∞øÚ
+#include "dockWidgetMyCobot280Pi.h"    // ÊéßÂà∂ÂØπËØùÊ°Ü
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
 #include <QTcpSocket>
 #include <QString>
+#include <QtWidgets/QDockWidget>
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class MycobotControlInterface
-*   @brief MycobotControl functionality
+/** @class MyCobot280PiInterface
+*   @brief MyCobot280Pi functionality
 *
-*   AddIn Interface for the MycobotControl class.
+*   AddIn Interface for the MyCobot280Pi class.
 */
-class MycobotControlInterface : public ito::AddInInterfaceBase
+class MyCobot280PiInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase")
@@ -26,10 +27,11 @@ class MycobotControlInterface : public ito::AddInInterfaceBase
     protected:
 
     public:
-        MycobotControlInterface(QObject *parent = 0);
-        ~MycobotControlInterface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< ¥¥Ω®“ª∏ˆ–¬µƒ MycobotControl  µ¿˝£¨≤¢∏≥”Ë∆‰Œ®“ª±Í ∂∑˚
+        MyCobot280PiInterface(QObject *parent = 0);
+        ~MyCobot280PiInterface();
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< ÂàõÂª∫‰∏Ä‰∏™Êñ∞ÁöÑ MyCobot280Pi ÂÆû‰æãÔºåÂπ∂Ëµã‰∫àÂÖ∂ÂîØ‰∏ÄÊ†áËØÜÁ¨¶
         bool hasDockWidget() { return true; }
+
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
@@ -40,39 +42,35 @@ class MycobotControlInterface : public ito::AddInInterfaceBase
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class MycobotControl
-*   @brief MycobotControl functionality
+/** @class MyCobot280Pi
+*   @brief MyCobot280Pi functionality
 *
-*   The MycobotControl-Class is used to control the MyCobot robot via TCP socket commands.
+*   The MyCobot280Pi-Class is used to control the MyCobot robot via TCP socket commands.
 */
-class MycobotControl : public ito::AddInActuator
+class MyCobot280Pi : public ito::AddInActuator
 {
     Q_OBJECT
 
     public:
-        friend class MycobotControlInterface;
-        const ito::RetVal showConfDialog(void);    //!< ’‚ «µ˜”√ƒ£Ã¨≈‰÷√∂‘ª∞øÚµƒ∑Ω∑®
-        int hasConfDialog(void) { return 1; } //!< ÷∏ æ¥À≤Âº˛ «∑Òæﬂ”–≈‰÷√∂‘ª∞øÚ
+        friend class MyCobot280PiInterface;
+        int hasConfDialog(void) { return 1; } //!< ÊåáÁ§∫Ê≠§Êèí‰ª∂ÊòØÂê¶ÂÖ∑ÊúâÈÖçÁΩÆÂØπËØùÊ°Ü
+        ito::RetVal connectToSocket();
+        ito::RetVal sendSocketData(const QString &data);
+        ito::RetVal updateStatus(); 
 
     protected:
-        ~MycobotControl(); //!< Œˆππ∫Ø ˝
-        MycobotControl();    //!< ππ‘Ï∫Ø ˝
+        ~MyCobot280Pi(); //!< ÊûêÊûÑÂáΩÊï∞
+        MyCobot280Pi();    //!< ÊûÑÈÄ†ÂáΩÊï∞
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
     private:
-
-        
-        QString m_host;  //!< ¥Ê¥¢÷˜ª˙√˚ªÚ IP µÿ÷∑
-        int m_port;      //!< ¥Ê¥¢∂Àø⁄∫≈
-        QTcpSocket *m_socket;  //!< Qt µƒ socket ∂‘œÛ
-        
-        QVector<double> m_targetPos;  //!< ¥Ê¥¢√ø∏ˆ÷·µƒƒø±ÍŒª÷√
-
-
-        ito::RetVal connectToSocket();
-        ito::RetVal sendSocketData(const QString &data);
-
+        QString m_host;  //!< Â≠òÂÇ®‰∏ªÊú∫ÂêçÊàñ IP Âú∞ÂùÄ
+        int m_port;      //!< Â≠òÂÇ®Á´ØÂè£Âè∑
+        QTcpSocket *m_socket;  //!< Qt ÁöÑ socket ÂØπË±°
+        bool m_async;
+        int m_nrOfAxes;
+        QVector<double> m_targetPos;  //!< Â≠òÂÇ®ÊØè‰∏™ËΩ¥ÁöÑÁõÆÊ†á‰ΩçÁΩÆ
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = nullptr);
@@ -84,20 +82,16 @@ class MycobotControl : public ito::AddInActuator
         ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = nullptr);
-        ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
+        ito::RetVal getStatus(QSharedPointer<QVector<int>> status, ItomSharedSemaphore *waitCond);
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
-        ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
+        ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore *waitCond);
         ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = nullptr);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = nullptr);
 
-        // ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);    //!< Slot to trigger a Status and position request
-
     private slots:
-        void dockWidgetVisibilityChanged(bool visible); //overwritten from AddInBase
+        void dockWidgetVisibilityChanged(bool visible); // ÈáçÂÜôËá™ AddInBase
 };
 
-//----------------------------------------------------------------------------------------------------------------------------------
-
-#endif // MYCOBOTCONTROL_H
+#endif // MyCobot280Pi_H
