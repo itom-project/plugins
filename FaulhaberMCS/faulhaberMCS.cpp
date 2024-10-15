@@ -34,6 +34,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
+#include <qelapsedtimer.h>
+#include <qdatetime.h>
 
 #include "dockWidgetFaulhaberMCS.h"
 
