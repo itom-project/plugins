@@ -43,7 +43,7 @@ include_directories(
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ptpCam.h
 )
 
@@ -52,7 +52,7 @@ set(PLUGIN_UI
 
 set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ptpCam.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote2.cpp
 )
 
 #Define Version in pluginVersion.h
@@ -75,6 +75,7 @@ endif(WIN32)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
 
+add_dependencies(${target_name} libptp2)
 add_dependencies(${target_name} LibUSB)
 
 # Qt: enable all automoc, autouic and autorcc.
@@ -87,7 +88,7 @@ set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
 #documentation
-itom_configure_plugin_documentation(${target_name} dslrRemote)
+itom_configure_plugin_documentation(${target_name} DslrRemote2)
 
 # COPY SECTION
 set(COPY_SOURCES "")

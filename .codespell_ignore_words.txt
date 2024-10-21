@@ -13,5 +13,6 @@ oclock
 pevent
 puls
 ser
+serie
 te
 timestemp

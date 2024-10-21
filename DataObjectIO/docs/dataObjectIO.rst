@@ -36,13 +36,15 @@ These algorithms are defined in the plugin:
    :raises ValueError: if the message_body exceeds 160 characters
    :raises TypeError: if the message_body is not a basestring
 
+
 Details
-==============
+=======
 
 Detailed overview about all defined algorithms:
 
 .. pluginfilterlist::
     :plugin: DataObjectIO
+
 
 Changelog
 ==========
