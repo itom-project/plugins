@@ -1,8 +1,23 @@
 /* ********************************************************************
-    Template for an actuator plugin for the software itom
+    Plugin "ThorlabsDMH" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+    This file is part of a plugin for the measurement software itom.
+
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #include "dialogThorlabsDMH.h"
@@ -14,14 +29,12 @@
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInBase *grabber) :
-    AbstractAddInConfigDialog(grabber),
-    m_firstRun(true)
+DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInActuator* actuator) :
+    AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pluginPointer(actuator)
 {
     ui.setupUi(this);
-
-    //disable dialog, since no parameters are known yet. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
+    ui.paramEditor->setPlugin(m_pluginPointer);
 };
 
 
@@ -33,36 +46,19 @@ void DialogThorlabsDMH::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun)
     {
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-
-        //this is the first time that parameters are sent to this dialog,
-        //therefore you can add some initialization work here
+        setWindowTitle(
+            QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         m_firstRun = false;
-
-        //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }
-
-    //set the status of all widgets depending on the values of params
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogThorlabsDMH::applyParameters()
 {
-    ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase> > values;
-    bool success = false;
-
-    //foreach widget, do:
-    //   check if the current value of the widget is different than the corresponding
-    //   parameter in m_currentParameters.
-    //   If so, write something like:
-    //   values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("name",ito::ParamBase::Int, newValue)))
-
-    retValue += setPluginParameters(values, msgLevelWarningAndError);
-
-    return retValue;
+    QVector<QSharedPointer<ito::ParamBase>> values = ui.paramEditor->getAndResetChangedParameters();
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -74,22 +70,20 @@ void DialogThorlabsDMH::on_buttonBox_clicked(QAbstractButton* btn)
 
     if (role == QDialogButtonBox::RejectRole)
     {
-        reject(); //close dialog with reject
+        reject(); // close dialog with reject
     }
     else if (role == QDialogButtonBox::AcceptRole)
     {
-        accept(); //AcceptRole
+        accept(); // AcceptRole
     }
     else
     {
-        applyParameters(); //ApplyRole
+        applyParameters(); // ApplyRole
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogThorlabsDMH::enableDialog(bool enabled)
 {
-    //e.g.
-    ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
+    ui.paramEditor->setEnabled(enabled);
 }

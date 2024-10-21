@@ -13,39 +13,39 @@ DockWidgetThorlabsDMH::DockWidgetThorlabsDMH(ito::AddInActuator *actuator) :
     m_inEditing(false),
     m_firstRun(true)
 {
-    ui.setupUi(this);
-
-    //in order to simplify the communication with the axis specific
-    //widgets without the need of programming the same thing multiple
-    //times, all relevant widget pointers are now saved in few vectors.
-
-    m_btnRelInc.append(ui.btnXp);
-    m_btnRelInc.append(ui.btnYp);
-    m_btnRelInc.append(ui.btnZp);
-    foreach(QPushButton* btn, m_btnRelInc)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
-    }
-
-    m_btnRelDec.append(ui.btnXm);
-    m_btnRelDec.append(ui.btnYm);
-    m_btnRelDec.append(ui.btnZm);
-    foreach(QPushButton* btn, m_btnRelDec)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
-    }
-
-    m_spinCurrentPos.append(ui.spinCurrentPosX);
-    m_spinCurrentPos.append(ui.spinCurrentPosY);
-    m_spinCurrentPos.append(ui.spinCurrentPosZ);
-
-    m_spinTargetPos.append(ui.spinTargetPosX);
-    m_spinTargetPos.append(ui.spinTargetPosY);
-    m_spinTargetPos.append(ui.spinTargetPosZ);
-
-    m_labels.append(ui.lblAxisX);
-    m_labels.append(ui.lblAxisY);
-    m_labels.append(ui.lblAxisZ);
+//    ui.setupUi(this);
+//
+//    //in order to simplify the communication with the axis specific
+//    //widgets without the need of programming the same thing multiple
+//    //times, all relevant widget pointers are now saved in few vectors.
+//
+//    m_btnRelInc.append(ui.btnXp);
+//    m_btnRelInc.append(ui.btnYp);
+//    m_btnRelInc.append(ui.btnZp);
+//    foreach(QPushButton* btn, m_btnRelInc)
+//    {
+//        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
+//    }
+//
+//    m_btnRelDec.append(ui.btnXm);
+//    m_btnRelDec.append(ui.btnYm);
+//    m_btnRelDec.append(ui.btnZm);
+//    foreach(QPushButton* btn, m_btnRelDec)
+//    {
+//        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
+//    }
+//
+//    m_spinCurrentPos.append(ui.spinCurrentPosX);
+//    m_spinCurrentPos.append(ui.spinCurrentPosY);
+//    m_spinCurrentPos.append(ui.spinCurrentPosZ);
+//
+//    m_spinTargetPos.append(ui.spinTargetPosX);
+//    m_spinTargetPos.append(ui.spinTargetPosY);
+//    m_spinTargetPos.append(ui.spinTargetPosZ);
+//
+//    m_labels.append(ui.lblAxisX);
+//    m_labels.append(ui.lblAxisY);
+//    m_labels.append(ui.lblAxisZ);
 
     enableWidgets(true);
 }
@@ -61,121 +61,121 @@ void DockWidgetThorlabsDMH::targetChanged(QVector<double> targetPos)
 {
     for (int i = 0; i < targetPos.size(); i++)
     {
-        m_spinTargetPos[i]->setValue(targetPos[i]);
+        /*m_spinTargetPos[i]->setValue(targetPos[i]);*/
     }
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
 {
-    bool running = false;
-    QString style;
+    //bool running = false;
+    //QString style;
 
-    for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
-    {
-        if (status[i] & ito::actuatorMoving)
-        {
-            style = "background-color: yellow";
-            running = true;
-        }
-        else if (status[i] & ito::actuatorInterrupted)
-        {
-            style = "background-color: red";
-        }
-        /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
-        {
-            style = "background-color: green";
-        }*/
-        else
-        {
-            style = "background-color: ";
-        }
+    //for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
+    //{
+    //    if (status[i] & ito::actuatorMoving)
+    //    {
+    //        style = "background-color: yellow";
+    //        running = true;
+    //    }
+    //    else if (status[i] & ito::actuatorInterrupted)
+    //    {
+    //        style = "background-color: red";
+    //    }
+    //    /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
+    //    {
+    //        style = "background-color: green";
+    //    }*/
+    //    else
+    //    {
+    //        style = "background-color: ";
+    //    }
 
-        m_spinCurrentPos[i]->setStyleSheet(style);
-    }
+    //    m_spinCurrentPos[i]->setStyleSheet(style);
+    //}
 
-    enableWidgets(!running);
+    //enableWidgets(!running);
 
-    for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
-    {
-        m_spinCurrentPos[i]->setValue(positions[i]);
-    }
+    //for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
+    //{
+    //    m_spinCurrentPos[i]->setValue(positions[i]);
+    //}
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
 {
-    double dpos = ui.spinStepSize->value() / -1e3;
+    //double dpos = ui.spinStepSize->value() / -1e3;
 
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
+    //if (qobject_cast<QPushButton*>(sender()))
+    //{
+    //    int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
 
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
-        }
-    }
+    //    if (idx >= 0)
+    //    {
+    //        setActuatorPosition(idx, dpos, true);
+    //    }
+    //}
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
 {
-    double dpos = ui.spinStepSize->value() / 1e3;
+    //double dpos = ui.spinStepSize->value() / 1e3;
 
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
+    //if (qobject_cast<QPushButton*>(sender()))
+    //{
+    //    int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
 
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
-        }
-    }
+    //    if (idx >= 0)
+    //    {
+    //        setActuatorPosition(idx, dpos, true);
+    //    }
+    //}
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_btnStop_clicked()
 {
-    setActuatorInterrupt();
+    //setActuatorInterrupt();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_btnStart_clicked()
 {
-    QVector<int> axis;
-    QVector<double> dpos;
+    //QVector<int> axis;
+    //QVector<double> dpos;
 
-    for (int i = 0; i < m_btnRelDec.size(); ++i)
-    {
-        axis << i;
-        dpos << m_spinTargetPos[i]->value();
-    }
+    //for (int i = 0; i < m_btnRelDec.size(); ++i)
+    //{
+    //    axis << i;
+    //    dpos << m_spinTargetPos[i]->value();
+    //}
 
-    setActuatorPosition(axis, dpos, false);
+    //setActuatorPosition(axis, dpos, false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_btnRefresh_clicked()
 {
-    requestActuatorStatusAndPositions(true, true);
+    //requestActuatorStatusAndPositions(true, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::enableWidgets(bool enabled)
 {
-    for (int i = 0; i < m_btnRelDec.size(); i++)
-    {
-        m_btnRelDec[i]->setEnabled(enabled);
-        m_btnRelInc[i]->setEnabled(enabled);
-    }
+    //for (int i = 0; i < m_btnRelDec.size(); i++)
+    //{
+    //    m_btnRelDec[i]->setEnabled(enabled);
+    //    m_btnRelInc[i]->setEnabled(enabled);
+    //}
 
-    ui.btnStart->setVisible(enabled);
-    ui.btnStop->setVisible(!enabled);
+    //ui.btnStart->setVisible(enabled);
+    //ui.btnStop->setVisible(!enabled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::identifierChanged(const QString &identifier)
 {
-    ui.lblIdentifier->setText(identifier);
+    //ui.lblIdentifier->setText(identifier);
 }

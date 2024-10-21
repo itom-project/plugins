@@ -32,10 +32,10 @@ class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
 
         void enableWidgets(bool enabled);
 
-        QVector<QPushButton*> m_btnRelDec;
-        QVector<QPushButton*> m_btnRelInc;
-        QVector<QDoubleSpinBox*> m_spinCurrentPos;
-        QVector<QDoubleSpinBox*> m_spinTargetPos;
+        /*QVector<QPushButton*> m_btnRelDec;
+        QVector<QPushButton*> m_btnRelInc;*/
+       /* QVector<QDoubleSpinBox*> m_spinCurrentPos;
+        QVector<QDoubleSpinBox*> m_spinTargetPos;*/
         QVector<QLabel*> m_labels;
 
 

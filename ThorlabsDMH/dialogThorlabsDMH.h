@@ -1,8 +1,23 @@
 /* ********************************************************************
-    Template for an actuator plugin for the software itom
+    Plugin "ThorlabsDMH" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+    This file is part of a plugin for the measurement software itom.
+
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #ifndef DIALOGTHORLABSDMH_H
@@ -12,6 +27,7 @@
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
+#include "common/addInInterface.h"
 #include "ui_dialogThorlabsDMH.h"
 
 #include <qstring.h>
@@ -28,7 +44,7 @@ class DialogThorlabsDMH : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogThorlabsDMH(ito::AddInBase *grabber);
+    DialogThorlabsDMH(ito::AddInActuator* actuator);
         ~DialogThorlabsDMH() {};
 
         ito::RetVal applyParameters();
@@ -37,6 +53,7 @@ class DialogThorlabsDMH : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
+        QPointer<ito::AddInBase> m_pluginPointer;
         Ui::DialogThorlabsDMH ui;
 
     public slots:
