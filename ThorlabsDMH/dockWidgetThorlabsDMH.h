@@ -16,13 +16,14 @@
 #include <qstring.h>
 
 #include "ui_dockWidgetThorlabsDMH.h"
+#include "ThorlabsDMH.h"
 
 class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetThorlabsDMH(ito::AddInActuator *actuator);
+        DockWidgetThorlabsDMH(ThorlabsDMH *actuator);//IST ES RICHTIG, DASS NICHT ADDINACTUATOR HIER?
         ~DockWidgetThorlabsDMH() {};
 
     private:
@@ -30,13 +31,20 @@ class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
         bool m_inEditing;
         bool m_firstRun;
 
+        QVector<SliderWidget*> m_sliderWidget;
+
         void enableWidgets(bool enabled);
+
+        ThorlabsDMH* m_pActuator;
 
         /*QVector<QPushButton*> m_btnRelDec;
         QVector<QPushButton*> m_btnRelInc;*/
        /* QVector<QDoubleSpinBox*> m_spinCurrentPos;
         QVector<QDoubleSpinBox*> m_spinTargetPos;*/
         QVector<QLabel*> m_labels;
+
+        void setZernike(QVector<double> zernikeAmplitude);
+        void updateSlider();
 
 
     public slots:
@@ -46,6 +54,8 @@ class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
         void targetChanged(QVector<double> targetPositions);
 
+        void dockWidgetVisibilityChanged(bool visible);
+
     private slots:
 
         void btnRelDecClicked();    //slot if any button for a relative, negative movement is clicked
@@ -54,6 +64,10 @@ class DockWidgetThorlabsDMH : public ito::AbstractAddInDockWidget
         void on_btnRefresh_clicked();       //slot if the refresh button is clicked
         void on_btnStart_clicked(); //slot if the start button is clicked
         void on_btnStop_clicked();  //slot if the stop button is clicked
+
+        void on_slider_valueChanged(double value, int sliderID); // if slider value changed
+        void on_relaxMirror_clicked();
+        void on_resetZernike_clicked();
 
 };
 

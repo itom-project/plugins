@@ -137,12 +137,12 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         tr("list of zernike values").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("sets a List of Zernike coefficients"));
+    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("sets a List of Zernike coefficients on the entire mirror surface"));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
 
-    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("relax the mirror"));
+    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("relax the mirror (hysteresis compensation)"));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -675,16 +675,15 @@ ito::RetVal ThorlabsDMH::execFunc(
             ViStatus err;
             TLDFMX_zernike_flag_t zernike = Z_All_Flag;
             ViReal64 zernikePattern[MAX_SEGMENTS];
-            ViReal64 zernikeAmplitude[TLDFMX_MAX_ZERNIKE_TERMS];
 
             for (int i = 0; i < TLDFMX_MAX_ZERNIKE_TERMS; i++)
             {
-                zernikeAmplitude[i] = targetZernike[i + 4];
+                m_ZernikeAmplitude[i] = targetZernike[i + 4];
             }
 
             // Calculate voltage pattern
             err = TLDFMX_calculate_zernike_pattern(
-                m_insrumentHdl, zernike, zernikeAmplitude, zernikePattern);
+                m_insrumentHdl, zernike, m_ZernikeAmplitude, zernikePattern);
             if (err)
             {
                 // get error msg
@@ -717,6 +716,7 @@ ito::RetVal ThorlabsDMH::execFunc(
                         .toLatin1()
                         .data());
             }
+            emit parametersChanged(m_params);
         }
     }
     else if (funcName == "relaxMirror")
@@ -1226,6 +1226,18 @@ ito::RetVal ThorlabsDMH::setPosAbs(
             }
             else
             {
+                double minVoltage = m_params["minVoltageMirror"].getVal<double>();
+                double maxVoltage = m_params["maxVoltageMirror"].getVal<double>();
+                if (pos[cntPos] < minVoltage || pos[cntPos] > maxVoltage)
+                {
+                    retValue += ito::RetVal::format(
+                        ito::retError,
+                        1,
+                        tr("Voltage of axis %i outside the boundaries (%.2f - %.2f): %.2f ").toLatin1().data(), i,
+                        minVoltage,
+                        maxVoltage,
+                        pos[cntPos]);
+                }
                 m_targetPos[i] = pos[cntPos];
             }
 
@@ -1374,7 +1386,24 @@ ito::RetVal ThorlabsDMH::setPosRel(
             }
             else
             {
-                m_targetPos[i] = pos[cntPos] + SegmentVoltages[cntPos];
+                m_targetPos[i] = pos[cntPos] + SegmentVoltages[i];
+
+                double minVoltage = m_params["minVoltageMirror"].getVal<double>();
+                double maxVoltage = m_params["maxVoltageMirror"].getVal<double>();
+
+                if (m_targetPos[i] < minVoltage || m_targetPos[i] > maxVoltage)
+                {
+                    retValue += ito::RetVal::format(
+                        ito::retError,
+                        1,
+                        tr("Voltage of axis %i outside the boundaries (%.2f - %.2f): %.2f ")
+                            .toLatin1()
+                            .data(),
+                        i,
+                        minVoltage,
+                        maxVoltage,
+                        m_targetPos[i]);
+                }
             }
 
             cntPos++;
@@ -1898,4 +1927,18 @@ void ThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
 const ito::RetVal ThorlabsDMH::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogThorlabsDMH(this));
+}
+
+
+ito::RetVal ThorlabsDMH::getZernikeAmplitude(QVector<double>& zernikeAmplitude)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    zernikeAmplitude.resize(TLDFMX_MAX_ZERNIKE_TERMS);
+    for (int i = 0; i < TLDFMX_MAX_ZERNIKE_TERMS; ++i)
+    {
+        zernikeAmplitude[i] = m_ZernikeAmplitude[i];
+    }
+
+    return retValue;
 }

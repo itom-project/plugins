@@ -81,6 +81,9 @@ public:
         return 1;
     }; //!< indicates that this plugin has got a configuration dialog
 
+    // PARAMETER getter FUNCTIONS
+    ito::RetVal getZernikeAmplitude(QVector<double>& zernikeAmplitude);
+
 private:
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
                  //!< not return until positioning was done.
@@ -88,6 +91,9 @@ private:
 
     ViChar m_resourceName[TLDFM_BUFFER_SIZE];
     ViSession m_insrumentHdl;
+
+    // init Zernike pattern to zero
+    ViReal64 m_ZernikeAmplitude[TLDFMX_MAX_ZERNIKE_TERMS] = {0};
 
     static QList<QString> openedDevices;
 

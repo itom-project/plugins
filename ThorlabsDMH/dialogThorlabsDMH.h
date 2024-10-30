@@ -44,7 +44,7 @@ class DialogThorlabsDMH : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-    DialogThorlabsDMH(ito::AddInActuator* actuator);
+        DialogThorlabsDMH(ito::AddInActuator* actuator);
         ~DialogThorlabsDMH() {};
 
         ito::RetVal applyParameters();

@@ -27,6 +27,7 @@
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
+#include "paramEditorWidget.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInActuator* actuator) :
