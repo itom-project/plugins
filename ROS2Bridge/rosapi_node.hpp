@@ -11,7 +11,7 @@
 #include <rosidl_runtime_cpp/traits.hpp>
 #include <rosidl_typesupport_cpp/message_type_support.hpp>
 
-// 包含所有需要的服务和消息类型
+// Contains all the required services and message types
 #include <rosapi_msgs/msg/type_def.hpp>
 #include <rosapi_msgs/srv/delete_param.hpp>
 #include <rosapi_msgs/srv/get_action_servers.hpp>
@@ -46,7 +46,7 @@ public:
 private:
     void register_services();
 
-    // 服务回调函数
+    // Service callback function
     void handle_get_topics(const std::shared_ptr<rosapi_msgs::srv::Topics::Request> request,
                            std::shared_ptr<rosapi_msgs::srv::Topics::Response> response);
 
@@ -119,12 +119,12 @@ private:
     void handle_get_ros_version(const std::shared_ptr<rosapi_msgs::srv::GetROSVersion::Request> request,
                                 std::shared_ptr<rosapi_msgs::srv::GetROSVersion::Response> response);
 
-    // 辅助方法
+    // Ancillary methods
     std::pair<std::string, std::string> get_node_and_param_name(const std::string &param);
 
     void print_malformed_param_name_warning(const std::string &param_name);
 
-    // 服务成员变量
+    // Service member variables
     rclcpp::Service<rosapi_msgs::srv::Topics>::SharedPtr get_topics_service_;
     rclcpp::Service<rosapi_msgs::srv::TopicsForType>::SharedPtr get_topics_for_type_service_;
     rclcpp::Service<rosapi_msgs::srv::TopicsAndRawTypes>::SharedPtr get_topics_and_raw_types_service_;
@@ -150,8 +150,6 @@ private:
     rclcpp::Service<rosapi_msgs::srv::GetTime>::SharedPtr get_time_service_;
     rclcpp::Service<rosapi_msgs::srv::GetROSVersion>::SharedPtr get_ros_version_service_;
 
-    // 其他必要的成员变量
-    // 您可能需要在 C++ 中实现或包含等效的功能
 };
 
 #endif // ROSAPI_NODE_H

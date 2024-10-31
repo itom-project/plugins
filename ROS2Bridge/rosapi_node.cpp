@@ -10,14 +10,14 @@ RosapiNode::RosapiNode() : Node("rosapi")
     this->declare_parameter<std::vector<std::string>>("services_glob", {"*"});
     this->declare_parameter<std::vector<std::string>>("params_glob", {"*"});
 
-    // 如果需要，初始化 globs、params 和 proxy 等价物
+    // Initialize globs, params, and proxy equivalents if needed
 
     register_services();
 }
 
 void RosapiNode::register_services()
 {
-    // 如果需要，初始化 proxy 和 params 等价物
+    // Initialize the proxy and params equivalents if needed
 
     get_topics_service_ = this->create_service<rosapi_msgs::srv::Topics>(
         "/rosapi/topics",
@@ -35,7 +35,7 @@ void RosapiNode::register_services()
         "/rosapi/services",
         std::bind(&RosapiNode::handle_get_services, this, std::placeholders::_1, std::placeholders::_2));
 
-    // 在 RosapiNode::register_services() 方法中
+    // in the RosapiNode::register_services() method
 
     get_services_for_type_service_ = this->create_service<rosapi_msgs::srv::ServicesForType>(
         "/rosapi/services_for_type",
@@ -119,7 +119,7 @@ void RosapiNode::register_services()
         std::bind(&RosapiNode::handle_get_ros_version, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-// 以下是服务回调函数的实现
+// The following is the implementation of the service callback function
 void RosapiNode::handle_get_topics(const std::shared_ptr<rosapi_msgs::srv::Topics::Request> /*request*/,
                                    std::shared_ptr<rosapi_msgs::srv::Topics::Response> response)
 {
@@ -152,13 +152,13 @@ void RosapiNode::handle_get_topics_and_raw_types(const std::shared_ptr<rosapi_ms
     {
         response->topics.push_back(topic.first);
         response->types.push_back(topic.second[0]);
-        // 这里假设 typedefs_full_text 可以从类型中获取，这可能需要额外的实现
+        // The assumption here is that typedefs_full_text can be fetched from the type, which may require additional implementation
         response->typedefs_full_text.push_back("typedef for " + topic.second[0]);
     }
 }
 
 
-// 获取所有服务
+// Get all the services
 void RosapiNode::handle_get_services(const std::shared_ptr<rosapi_msgs::srv::Services::Request> /*request*/,
                                      std::shared_ptr<rosapi_msgs::srv::Services::Response> response)
 {
@@ -169,7 +169,7 @@ void RosapiNode::handle_get_services(const std::shared_ptr<rosapi_msgs::srv::Ser
     }
 }
 
-// 根据类型获取服务
+// Get services based on type
 void RosapiNode::handle_get_services_for_type(const std::shared_ptr<rosapi_msgs::srv::ServicesForType::Request> request,
                                               std::shared_ptr<rosapi_msgs::srv::ServicesForType::Response> response)
 {
@@ -183,7 +183,7 @@ void RosapiNode::handle_get_services_for_type(const std::shared_ptr<rosapi_msgs:
     }
 }
 
-// 获取所有节点
+// Get all nodes
 void RosapiNode::handle_get_nodes(const std::shared_ptr<rosapi_msgs::srv::Nodes::Request> /*request*/,
                                   std::shared_ptr<rosapi_msgs::srv::Nodes::Response> response)
 {
@@ -191,58 +191,58 @@ void RosapiNode::handle_get_nodes(const std::shared_ptr<rosapi_msgs::srv::Nodes:
     response->nodes = node_names;
 }
 
-// 返回指定节点的详细信息，包括发布的主题、订阅的主题和提供的服务
+// Returns the details of the specified node, including the topics published, subscribed topics, and services offered
 void RosapiNode::handle_get_node_details(const std::shared_ptr<rosapi_msgs::srv::NodeDetails::Request> request,
                                          std::shared_ptr<rosapi_msgs::srv::NodeDetails::Response> response)
 {
     const std::string target_node_name = request->node;
 
-    // 获取系统中的所有主题并过滤出该节点的发布者和订阅者
+    // Get all the topics in the system and filter out the publishers and subscribers of that node
     auto topics_and_types = this->get_topic_names_and_types();
     for (const auto &topic : topics_and_types)
     {
-        // 获取主题的发布者信息
+        // Get the publisher information for a topic
         auto publishers_info = this->get_publishers_info_by_topic(topic.first);
         for (const auto &publisher : publishers_info)
         {
             if (publisher.node_name() == target_node_name)
             {
-                response->publishing.push_back(topic.first); // 添加发布的主题
+                response->publishing.push_back(topic.first); // Add a published topic
             }
         }
 
-        // 获取主题的订阅者信息
+        // Get subscriber information for a topic
         auto subscribers_info = this->get_subscriptions_info_by_topic(topic.first);
         for (const auto &subscriber : subscribers_info)
         {
             if (subscriber.node_name() == target_node_name)
             {
-                response->subscribing.push_back(topic.first); // 添加订阅的主题
+                response->subscribing.push_back(topic.first); // Add a subscribed topic
             }
         }
     }
 
-    // 获取系统中的所有服务并过滤出该节点提供的服务
+    // Obtain all the services in the system and filter out the services provided by the node
     auto services_and_types = this->get_service_names_and_types();
     for (const auto &service : services_and_types)
     {
-        // 使用 get_service_names_and_types_by_node 检查是否该节点提供此服务
+        // Use get_service_names_and_types_by_node to check if the node offers this service
         auto node_services = this->get_service_names_and_types_by_node(target_node_name, this->get_namespace());
         if (node_services.find(service.first) != node_services.end())
         {
-            response->services.push_back(service.first); // 添加提供的服务
+            response->services.push_back(service.first); // Add the services offered
         }
     }
 }
 
-// 获取所有 action 服务器
+// Get all Action Servers
 void RosapiNode::handle_get_action_servers(const std::shared_ptr<rosapi_msgs::srv::GetActionServers::Request> /*request*/,
                                            std::shared_ptr<rosapi_msgs::srv::GetActionServers::Response> response)
 {
     auto topics_and_types = this->get_topic_names_and_types();
     for (const auto &topic : topics_and_types)
     {
-        // 假设 action 服务器主题包含 "/action/" 以便进行筛选
+        // Let's say the Action Server topic contains "/action/" for filtering
         if (topic.first.find("/action/") != std::string::npos)
         {
             response->action_servers.push_back(topic.first);
@@ -250,7 +250,7 @@ void RosapiNode::handle_get_action_servers(const std::shared_ptr<rosapi_msgs::sr
     }
 }
 
-// 获取主题的类型
+// Get the type of topic
 void RosapiNode::handle_get_topic_type(const std::shared_ptr<rosapi_msgs::srv::TopicType::Request> request,
                                        std::shared_ptr<rosapi_msgs::srv::TopicType::Response> response)
 {
@@ -262,11 +262,11 @@ void RosapiNode::handle_get_topic_type(const std::shared_ptr<rosapi_msgs::srv::T
     }
     else
     {
-        response->type = "";  // 主题未找到时返回空字符串
+        response->type = "";  // Returns an empty string when the topic is not found
     }
 }
 
-// 获取服务的类型
+// The type of service that was obtained
 void RosapiNode::handle_get_service_type(const std::shared_ptr<rosapi_msgs::srv::ServiceType::Request> request,
                                          std::shared_ptr<rosapi_msgs::srv::ServiceType::Response> response)
 {
@@ -278,23 +278,23 @@ void RosapiNode::handle_get_service_type(const std::shared_ptr<rosapi_msgs::srv:
     }
     else
     {
-        response->type = "";  // 服务未找到时返回空字符串
+        response->type = "";  // Returns an empty string when the service is not found
     }
 }
 
-// 获取指定主题的发布者列表
+// Get a list of publishers for a specified topic
 void RosapiNode::handle_get_publishers(const std::shared_ptr<rosapi_msgs::srv::Publishers::Request> request,
                                        std::shared_ptr<rosapi_msgs::srv::Publishers::Response> response)
 {
     auto publishers_info = this->get_publishers_info_by_topic(request->topic);
     for (const auto &pub_info : publishers_info)
     {
-        // 提取发布者的节点名称并添加到响应中
+        // Extract the publisher's node name and add it to the response
         response->publishers.push_back(pub_info.node_name());
     }
 }
 
-// 获取指定主题的订阅者列表
+// Get a list of subscribers for a specified topic
 void RosapiNode::handle_get_subscribers(const std::shared_ptr<rosapi_msgs::srv::Subscribers::Request> request,
                                         std::shared_ptr<rosapi_msgs::srv::Subscribers::Response> response)
 {
@@ -304,8 +304,7 @@ void RosapiNode::handle_get_subscribers(const std::shared_ptr<rosapi_msgs::srv::
 
         for (const auto &info : subscriptions_info)
         {
-            response->subscribers.push_back(info.node_name());  // 只获取订阅者的节点名称
-        }
+            response->subscribers.push_back(info.node_name());  // Get only the subscriber's node name
     }
     catch (const rclcpp::exceptions::RCLError &e)
     {
@@ -320,7 +319,7 @@ void RosapiNode::handle_get_service_providers(const std::shared_ptr<rosapi_msgs:
 {
     try
     {
-        // 获取所有服务名称和其广告的节点名称
+        // Get the names of all services and the node names of their ads
         auto services_and_types = this->get_service_names_and_types();
 
         // 遍历所有服务，并检查是否包含请求的服务名称
@@ -331,11 +330,11 @@ void RosapiNode::handle_get_service_providers(const std::shared_ptr<rosapi_msgs:
             // 如果找到与请求服务名称相同的服务
             if (service_name == request->service)
             {
-                // 使用 get_service_names_and_types_by_node 获取提供该服务的节点
+                // Use get_service_names_and_types_by_node to get the node that provides the service
                 auto nodes_for_service = this->get_service_names_and_types_by_node(service_name, this->get_namespace());
                 for (const auto &node : nodes_for_service)
                 {
-                    response->providers.push_back(node.first);  // 将节点名称添加到响应
+                    response->providers.push_back(node.first);  // Add the node name to the response
                 }
             }
         }
@@ -347,30 +346,30 @@ void RosapiNode::handle_get_service_providers(const std::shared_ptr<rosapi_msgs:
     }
 }
 
-// 根据服务获取节点名称
+// Obtain the node name based on the service
 void RosapiNode::handle_get_service_node(const std::shared_ptr<rosapi_msgs::srv::ServiceNode::Request> request,
                                          std::shared_ptr<rosapi_msgs::srv::ServiceNode::Response> response)
 {
     try
     {
-        // 获取所有已知节点的名称和命名空间
+        // Get the names and namespaces of all known nodes
         auto all_nodes = this->get_node_names();
 
         for (const auto &node : all_nodes)
         {
-            // 查询该节点提供的所有服务
+            // Query all services provided by the node
             auto services = this->get_service_names_and_types_by_node(node, this->get_namespace());
 
-            // 检查该节点是否提供了请求的服务
+            // Check whether the node provides the requested service
             auto it = services.find(request->service);
             if (it != services.end())
             {
-                // 如果找到该服务，返回提供该服务的节点名称
+                // If the service is found, returns the name of the node that provided the service
                 response->node = node;
                 return;
             }
         }
-        // 如果没有找到服务提供者，返回空字符串
+        // If no service provider is found, an empty string is returned
         response->node = "";
     }
     catch (const std::exception &e)
@@ -381,12 +380,12 @@ void RosapiNode::handle_get_service_node(const std::shared_ptr<rosapi_msgs::srv:
     }
 }
 
-// 获取消息类型的详细信息
+// Get the details of the message type
 void RosapiNode::handle_get_message_details(const std::shared_ptr<rosapi_msgs::srv::MessageDetails::Request> request,
                                             std::shared_ptr<rosapi_msgs::srv::MessageDetails::Response> response)
 {
-    // 此处应获取消息类型定义并填充 response->typedefs
-    // 由于ROS 2 C++缺少动态消息类型支持，您需要手动填充此信息
+    // Here you should get the message type definition and populate response->typedefs
+    // Since ROS 2 C++ lacks News Feed type support, I'll need to populate this information manually
     // ToDo
     rosapi_msgs::msg::TypeDef type_def;
     type_def.type = request->type;
@@ -395,11 +394,11 @@ void RosapiNode::handle_get_message_details(const std::shared_ptr<rosapi_msgs::s
     response->typedefs.push_back(type_def);
 }
 
-// 获取服务请求的详细信息
+// Get the details of the service request
 void RosapiNode::handle_get_service_request_details(const std::shared_ptr<rosapi_msgs::srv::ServiceRequestDetails::Request> request,
                                                     std::shared_ptr<rosapi_msgs::srv::ServiceRequestDetails::Response> response)
 {
-    // 您可以通过编写自定义方法获取请求的TypeDef信息
+
     // ToDo
     rosapi_msgs::msg::TypeDef request_type_def;
     request_type_def.type = request->type + "Request";
@@ -408,11 +407,10 @@ void RosapiNode::handle_get_service_request_details(const std::shared_ptr<rosapi
     response->typedefs.push_back(request_type_def);
 }
 
-// 获取服务响应的详细信息
+// Get the details of the service response
 void RosapiNode::handle_get_service_response_details(const std::shared_ptr<rosapi_msgs::srv::ServiceResponseDetails::Request> request,
                                                      std::shared_ptr<rosapi_msgs::srv::ServiceResponseDetails::Response> response)
 {
-    // 同样，您可以通过编写自定义方法获取响应的TypeDef信息
 
     // ToDo
     rosapi_msgs::msg::TypeDef response_type_def;
@@ -425,13 +423,13 @@ void RosapiNode::handle_get_service_response_details(const std::shared_ptr<rosap
 void RosapiNode::handle_set_param(const std::shared_ptr<rosapi_msgs::srv::SetParam::Request> request,
                                   std::shared_ptr<rosapi_msgs::srv::SetParam::Response> /*response*/)
 {
-    // 设置参数
+    // Set the parameters
     this->set_parameter(rclcpp::Parameter(request->name, request->value));
-    // 不需要设置 response，因为响应为空
+
 }
 
 
-// 获取参数
+// Get the parameters
 void RosapiNode::handle_get_param(const std::shared_ptr<rosapi_msgs::srv::GetParam::Request> request,
                                   std::shared_ptr<rosapi_msgs::srv::GetParam::Response> response)
 {
@@ -446,7 +444,7 @@ void RosapiNode::handle_get_param(const std::shared_ptr<rosapi_msgs::srv::GetPar
     }
 }
 
-// 检查参数是否存在
+// Check if the parameter exists
 void RosapiNode::handle_has_param(const std::shared_ptr<rosapi_msgs::srv::HasParam::Request> request,
                                   std::shared_ptr<rosapi_msgs::srv::HasParam::Response> response)
 {
@@ -459,16 +457,16 @@ void RosapiNode::handle_delete_param(const std::shared_ptr<rosapi_msgs::srv::Del
     if (this->has_parameter(request->name))
     {
         this->undeclare_parameter(request->name);
-        // 不需要设置 response，因为响应为空
+    
     }
     else
     {
         RCLCPP_WARN(this->get_logger(), "Parameter not found for deletion: %s", request->name.c_str());
-        // 不需要设置 response，因为响应为空
+   
     }
 }
 
-// 获取所有参数名称
+// Get all parameter names
 void RosapiNode::handle_get_param_names(const std::shared_ptr<rosapi_msgs::srv::GetParamNames::Request> /*request*/,
                                         std::shared_ptr<rosapi_msgs::srv::GetParamNames::Response> response)
 {
@@ -476,14 +474,14 @@ void RosapiNode::handle_get_param_names(const std::shared_ptr<rosapi_msgs::srv::
     response->names = param_list.names;
 }
 
-// 获取当前时间
+// Get the current time
 void RosapiNode::handle_get_time(const std::shared_ptr<rosapi_msgs::srv::GetTime::Request> /*request*/,
                                  std::shared_ptr<rosapi_msgs::srv::GetTime::Response> response)
 {
     response->time = this->now();
 }
 
-// 获取 ROS 版本
+// Get the ROS version
 void RosapiNode::handle_get_ros_version(const std::shared_ptr<rosapi_msgs::srv::GetROSVersion::Request> /*request*/,
                                         std::shared_ptr<rosapi_msgs::srv::GetROSVersion::Response> response)
 {
@@ -492,7 +490,7 @@ void RosapiNode::handle_get_ros_version(const std::shared_ptr<rosapi_msgs::srv::
 }
 
 
-// 辅助方法
+// Ancillary methods
 std::pair<std::string, std::string> RosapiNode::get_node_and_param_name(const std::string &param)
 {
     auto pos = param.find(":");
@@ -508,7 +506,7 @@ void RosapiNode::print_malformed_param_name_warning(const std::string &param_nam
     RCLCPP_WARN(this->get_logger(), "Malformed parameter name: %s; expecting <node_name>:<param_name>", param_name.c_str());
 }
 
-// 主函数
+// Main function
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
