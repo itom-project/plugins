@@ -9,7 +9,7 @@
 #include <qpushbutton.h>
 #include <qslider.h>
 
-#include "ui_dockWidgetMyCobot280pi.h"
+#include "ui_dockWidgetMyCobot280Pi.h"
 
 namespace ito {
     class AddInActuator; //forward declaration
