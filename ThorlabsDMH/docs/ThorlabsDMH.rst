@@ -17,8 +17,8 @@ Overview
 .. pluginsummaryextended::
     :plugin: ThorlabsDMH
 
-The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror.
-The Zernike coefficients 4 to 15 can also be set using an additional function.
+.. note::
+    when manually manipulating the segment voltages, the Zernike-coeffitients do not match anymore.
 
 Initialization
 ==============
@@ -94,7 +94,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **numSegments**: int, read-only
     Number of segments.
     
-    *Value range: [0, 15], Default: 40*
+    *Value range: [0, 40], Default: 40*
 **numTipTilt**: int, read-only
     Number of tip/tilt elements.
     

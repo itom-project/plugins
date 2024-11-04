@@ -60,9 +60,11 @@ ThorlabsDMHInterface::ThorlabsDMHInterface()
 
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] =
-        "This template can be used for implementing a new type of actuator plugin \n\
-\n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...\n no tip tilt";
+        "The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
+        A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror. \
+        The Zernike coefficients 4 to 15 can also be set using an additional function. \n\
+        The segment IDs of Thorlabs(1 to 40) correspond to the axes(0 to 39). \n\
+        The functionality for tip tilt actuator is not implemented.";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
@@ -228,7 +230,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         "numSegments",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        new ito::IntMeta(0, 15, 1, "Device parameter"),
+        new ito::IntMeta(0, 40, 1, "Device parameter"),
         tr("Number of segments.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -570,6 +572,16 @@ ito::RetVal ThorlabsDMH::init(
                     .toLatin1()
                     .data());
         }
+    }
+
+    if (!retValue.containsError())
+    {
+        for (int i = 0; i < m_nrOfAxes; i++)
+        {
+            m_currentStatus[i] =
+                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+        emit parametersChanged(m_params);
     }
 
     /*if (!retValue.containsError())

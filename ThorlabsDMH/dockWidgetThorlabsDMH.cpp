@@ -238,10 +238,6 @@ void DockWidgetThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
         ui.axisController->setActuator(actuator);
         ui.axisController->setNumAxis(40);
         ui.axisController->setAxisEnabled(0, true);
-        for (size_t i = 0; i < 40; i++)
-        {
-            ui.axisController->setAxisName(i, QString::number(i + 1));
-        }
         ui.axisController->setAxisType(0, MotorAxisController::TypeRotational);
         ui.axisController->setEnabled(true);
     }
