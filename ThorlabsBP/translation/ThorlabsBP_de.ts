@@ -87,10 +87,6 @@
 <context>
     <name>DockWidgetThorlabsBP</name>
     <message>
-        <source>Thorlabs ISM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -114,28 +110,28 @@
         <source>Axis Control</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Thorlabs BP DCServo</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>ThorlabsBP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsBP is an acutator plugin to control the following integrated devices from Thorlabs:
+        <source>ThorlabsBP is an acutator plugin to control the following integrated devices from Thorlabs: 
 
-* Benchtop Piezo (1 channel)
-* Benchtop Piezo (3 channels)
+* Benchtop Piezo (1 channel) 
+* Benchtop Piezo (3 channels) 
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.Benchtop.Piezo.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
 
-This plugin has been tested with the Benchtop Piezo with 1 and 3 channels.
+This plugin has been tested with the Benchtop Piezo with 1 and 3 channels. 
 
 The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected. Else the values are always in volts.</source>
         <translation type="unfinished"></translation>
@@ -192,15 +188,15 @@ The position values are always in mm if the corresponding axis is in closed-loop
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>timeout occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

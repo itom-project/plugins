@@ -5,25 +5,20 @@
     <name>CVBInterface</name>
     <message>
         <location filename="../commonVisionBloxInterface.cpp" line="+67"/>
-        <source>This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer.
-
- Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and
- exposure time, all parameters need to be read and set using the parameter raw:suffix where suffix is the real GenICam parameter, obtained
- via the Stemmer configuration tool. If a bitdepth &gt; 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file
- from Stemmer GenICam and don&apos;t set the pixelFormat property to auto but Mono16.
-
- In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections.
-
+        <source>This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. 
+ 
+ Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and 
+ exposure time, all parameters need to be read and set using the parameter raw:suffix where suffix is the real GenICam parameter, obtained 
+ via the Stemmer configuration tool. If a bitdepth &gt; 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file 
+ from Stemmer GenICam and don&apos;t set the pixelFormat property to auto but Mono16. 
+ 
+ In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. 
+ 
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Licensed under LGPL, Stemmer Common Vision Blox under its own license.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+19"/>
         <source>If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -156,12 +151,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
-        <source>you need to indiciate a suffix for the node you want to set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+31"/>
+        <location line="+109"/>
         <source>invalid index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,7 +211,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+175"/>
+        <location line="-542"/>
+        <source>you need to indicate a suffix for the node you want to set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+717"/>
         <location line="+32"/>
         <location line="+33"/>
         <location line="+26"/>
@@ -231,7 +226,7 @@
         <location line="+68"/>
         <location line="+41"/>
         <location line="+45"/>
-        <source>node map not avaible</source>
+        <source>node map not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

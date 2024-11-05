@@ -145,7 +145,7 @@
     <message>
         <location line="+25"/>
         <source>no of the %1 devices that fit to the vendor and product ID can be opened since they are already in use.</source>
-        <translation type="unfinished">Keines der %1 Geräte, das zu der Produkt-ID und dem Vendor passt, kann geöffnet werden, da diese bereits in Benutzung sind.</translation>
+        <translation type="unfinished">Keines der %1 Geräte, das zu dieser Vendor- und Produkt-ID passt, kann geöffnet werden, da bereits alle in Gebraucht sind.</translation>
     </message>
     <message>
         <location line="+8"/>

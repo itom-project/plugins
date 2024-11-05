@@ -43,10 +43,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>A simple free space Fresnel propagation using 1 fft</source>
         <translation type="unfinished"></translation>
     </message>

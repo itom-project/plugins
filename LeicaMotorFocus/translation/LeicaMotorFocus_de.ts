@@ -211,8 +211,8 @@
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+258"/>
-        <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
+        <location filename="../LeicaMotorFocus.cpp" line="+259"/>
+        <source>Unexpected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -382,11 +382,6 @@
         <source>The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage of Leica MZ12 or MZ12.5 stereo-microscopes.
 
 For the initialization of this plugin you already need an opened serial IO port (using the plugin &apos;SerialIO&apos;). Give the handle of the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator is closed again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

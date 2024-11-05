@@ -68,20 +68,15 @@
     </message>
     <message>
         <location filename="../ThorlabsFF.cpp" line="51"/>
-        <source>ThorlabsFF is an plugin to control the Thorlabs Filter Flipper:
+        <source>ThorlabsFF is an plugin to control the Thorlabs Filter Flipper: 
 
-* Filter Flipper (MFF101)
+* Filter Flipper (MFF101) 
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.IntegratedStepperMotors.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
 
 This plugin has been tested with the flipper MFF101.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ThorlabsFF.cpp" line="65"/>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

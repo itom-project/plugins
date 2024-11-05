@@ -367,7 +367,14 @@ For running this plugin you need an installed Ensemble driver and a connected de
 This plugin comes with version 4.06 of the Ensemble driver. You can change them by newer libraries (Version 4.XX). The manual of Ensemble allows redistributing the Ensemble libraries without having the end-user install the Ensemble software. For further information about license information of Aerotech see their documentation. 
 
 For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dieses Plugin erlaubt die Kommunikation mit Controllern des Typs Ensemble (Version 4.xx) der Firma Aerotch. 
+
+Werden bei der Initialisierung keine Parameter angegeben, verbindet das Plugin alle verfügbaren Achsen des Controllers. Ansonsten kann eine Liste der Achsennummern (0..9), die verbunden werden sollen, angegeben werden. Die erste Achse der Liste erhält dann die Achsen-ID 0, die Zweite die ID 1 usw. 
+Um das Plugin zu starten wird ein installierter Ensemble-Treiber und ein verbundenes Gerät benötigt. 
+
+Das Plugin wird mit der Ensemble-Treiberversion 4.06 ausgeliefert. Dieser kann mit einer neuern Bibliothek (Version 4.XX) ausgetauscht werden. Es ist erlaub eine neue Bibliotheken ohne die Endbenutzer-Software von Ensemble zu installieren. Für weitere Informationen bezüglich der Lizent von Aerotech siehe deren Dokumentation. 
+
+Zum Starten der Ensemble-Bibliothek wird das Visual C++ 2008 SP1 Redistributable-Package von Microsoft benötigt (siehe  Ensemble Programmierhilfe).</translation>
     </message>
     <message>
         <source>N.A.</source>

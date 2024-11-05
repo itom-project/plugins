@@ -187,7 +187,11 @@
     <message>
         <location line="+8"/>
         <source>If 0, the axis is not homed. 1: homed.</source>
+<<<<<<< Updated upstream
         <translation type="unfinished">Bei 0 ist die Achse nicht referenziert. 1: ist referenziert (homed).</translation>
+=======
+        <translation type="unfinished"></translation>
+>>>>>>> Stashed changes
     </message>
     <message>
         <location line="+291"/>
@@ -281,6 +285,7 @@
     <message>
         <location line="+2"/>
         <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. 
+<<<<<<< Updated upstream
 
 The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
         <translation type="unfinished">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert. 
@@ -295,6 +300,20 @@ The real number of simulated axes is given by the initialization parameter &apos
 
 Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.</translation>
     </message>
+=======
+
+The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes.
+
+The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
+        <translation type="obsolete">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.
+
+Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.</translation>
+    </message>
+>>>>>>> Stashed changes
 </context>
 <context>
     <name>dialogDummyMotor</name>

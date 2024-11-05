@@ -617,21 +617,18 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage. 
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
-        <translation>UhlText ist eine itom-Plugin, das zur Steuerung eines 2 bis 4 Achsen-
-Schrittmotorgeräts der Firma Uhl (F95-x) und Lang LSTEP 2x genutzt werden kann.
-Es wird über actuator(&quot;UhlText&quot;, SerialIO, ...) initialisiert.
+        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
 
-WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen
-Befehlssprachen. Diese DLL ist für Geräte geschrieben, die via RS232-Port mit ASCII-Befehlen gesteuert werden.
-WARNUNG: Die Kalibrierungsrichtung der Achsen unterscheiden sich je nach Motor/Controller.
-Die Fahrrichtung der Kalibrierung ist vor dem Gebrauch zu überprüfen. 
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen. 
 
-Dieses Plugin wurde mit freundlicher Genehmigung der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
+Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>1 -&gt; calibration during initialization</source>
-        <translation>1 -&gt; Kalibrierung während der Initialisierung</translation>
+        <translation type="unfinished">1 -&gt; Kalibrierung während der Initialisierung</translation>
     </message>
     <message>
         <location line="+2"/>

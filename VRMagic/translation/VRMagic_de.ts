@@ -101,21 +101,16 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>Plugin for cameras / framgrabbers from VRMagic that run with the VRMagic API.
-Currently, only monochrome cameras with 8, 10 or 16 bit depth are supported.
+        <source>Plugin for cameras / framgrabbers from VRMagic that run with the VRMagic API. 
+Currently, only monochrome cameras with 8, 10 or 16 bit depth are supported. 
 This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VRMagic</name>
     <message>
-        <location line="+40"/>
+        <location line="+43"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -420,7 +415,7 @@ This plugin has been tested using the VRmAVC-2 grabber  under Windows.</source>
 <context>
     <name>VRMagicInterface</name>
     <message>
-        <location line="-772"/>
+        <location line="-767"/>
         <source>Device number.</source>
         <translation type="unfinished"></translation>
     </message>
