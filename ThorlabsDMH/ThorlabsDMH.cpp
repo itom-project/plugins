@@ -62,7 +62,7 @@ ThorlabsDMHInterface::ThorlabsDMHInterface()
     char docstring[] =
         "The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
         A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror. \
-        The Zernike coefficients 4 to 15 can also be set using an additional function. \n\
+        The Zernike coefficients 4 to 15 can also be set using an additional 'exec' function. \n\
         The segment IDs of Thorlabs(1 to 40) correspond to the axes(0 to 39). \n\
         The functionality for tip tilt actuator is not implemented.";
     m_detaildescription = QObject::tr(docstring);
@@ -80,8 +80,8 @@ ThorlabsDMHInterface::ThorlabsDMHInterface()
         "serialNo",
         ito::ParamBase::String,
         "",
-        tr("Serial number of the device to be loaded, if empty, the first device that can be "
-           "opened will be opened")
+        tr("Serial number of the device to be loaded. If empty, the first device that can be "
+           "opened will be opened.")
             .toLatin1()
             .data()));
 }
@@ -129,22 +129,22 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
                       12,
                       zernikeID,
                       new ito::IntArrayMeta(4, 15, 1, 0, 12),
-                      tr("list of zernike IDs").toLatin1().data());
+                      tr("List of Zernike IDs.").toLatin1().data());
     pMand << ito::Param(
         "ZernikeValues",
         ito::ParamBase::DoubleArray,
         12,
         zernike,
         new ito::DoubleArrayMeta(-1.0, 1.0, 0, 0, 12),
-        tr("list of zernike values").toLatin1().data());
+        tr("List of Zernike values.").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("sets a List of Zernike coefficients on the entire mirror surface"));
+    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("Sets a list of Zernike coefficients on the entire mirror surface."));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
 
-    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("relax the mirror (hysteresis compensation)"));
+    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("Relax the mirror (hysteresis compensation)."));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -156,6 +156,7 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "ThorlabsDMH",
         "Name of the plugin.");
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
