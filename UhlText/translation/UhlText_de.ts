@@ -172,7 +172,7 @@
 <context>
     <name>UhlText</name>
     <message>
-        <location filename="../UhlText.cpp" line="+332"/>
+        <location filename="../UhlText.cpp" line="+333"/>
         <location line="+22"/>
         <source>No signs read after 10 tries</source>
         <translation type="unfinished">Keine Antwort auch nach 10 Versuchen</translation>
@@ -218,12 +218,11 @@
         <translation type="unfinished">Uhl &apos;setPos&apos;: Achse %1 am Endanschlag</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Joystick is activ. Programming error?</source>
-        <translation type="unfinished">Joystick ist aktiv. Programmierfehler?</translation>
+        <translation type="obsolete">Joystick ist aktiv. Programmierfehler?</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+25"/>
         <source>Unexpected Answer. S or @ expected, but got chr(%1)</source>
         <translation type="unfinished">Unerwartete Antwort. S oder @ erwartet, aber chr(%1) bekommen</translation>
     </message>
@@ -238,12 +237,11 @@
         <translation type="unfinished">Zeitüberschreitung</translation>
     </message>
     <message>
-        <location line="+205"/>
         <source>Accelaration of all axis in mm/s^2</source>
-        <translation type="unfinished">Beschleunigung für alle Achsen in mm/s^2</translation>
+        <translation type="obsolete">Beschleunigung für alle Achsen in mm/s^2</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+207"/>
         <source>Speed of all axis in mm/s</source>
         <translation type="unfinished">Geschwindigkeit für alle Achsen in mm/s</translation>
     </message>
@@ -389,7 +387,17 @@
         <translation type="unfinished">Es wurde in der Antwort des Geräts ein &apos;J&apos; gefunden. (Eine Achse befindet sich im Joystick-Modus.)</translation>
     </message>
     <message>
-        <location line="+606"/>
+        <location line="+306"/>
+        <source>Joystick is active. Programming error?</source>
+        <translation>Joystick ist aktiv. Programmierfehler?</translation>
+    </message>
+    <message>
+        <location line="+277"/>
+        <source>Acceleration of all axis in mm/s^2</source>
+        <translation type="unfinished">Beschleunigung aller Achsen in mm/s^2</translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>timeout for axes movements in seconds</source>
         <translation type="unfinished">Zeitüberschreitung für Achsenbewegungen in Sekunden</translation>
     </message>
@@ -548,7 +556,7 @@
 <context>
     <name>UhlTextInterface</name>
     <message>
-        <location line="-2237"/>
+        <location line="-2238"/>
         <source>DLL for 2-4 axis Uhl / Lang LStep-Controller</source>
         <translation type="unfinished">DLL für 2-4 achsige Uhltische / LStep-Kontroller</translation>
     </message>
@@ -566,7 +574,6 @@ WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Bef
 WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The UhlText is a plugin, which can be used to control the 2-4 axis
 stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
 It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
@@ -577,7 +584,7 @@ WARNING: The calibration direction of the stages differs according to motor / co
 Check calibration direction before usage.
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
-        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+        <translation type="obsolete">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
 Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
 
 WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
@@ -586,23 +593,45 @@ WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Contr
 Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>N.A.</source>
         <translation type="vanished">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+20"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished">Eine initialisierte SerialIO-Instanz</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>1 -&gt; calibration during initilization</source>
-        <translation type="unfinished">1 -&gt; Kalibrierung während der Initialisierung</translation>
+        <translation type="obsolete">1 -&gt; Kalibrierung während der Initialisierung</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The UhlText is a plugin, which can be used to control the 2-4 axis
+stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
+It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
+
+WARNING: There are different controller versions with different
+command languages. This DLL is for devices that are controlled by ASCII commands via the RS232 port.
+WARNING: The calibration direction of the stages differs according to motor / controller.
+Check calibration direction before usage. 
+
+This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
+        <translation>UhlText ist eine itom-Plugin, das zur Steuerung eines 2 bis 4 Achsen-
+Schrittmotorgeräts der Firma Uhl (F95-x) und Lang LSTEP 2x genutzt werden kann.
+Es wird über actuator(&quot;UhlText&quot;, SerialIO, ...) initialisiert.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen
+Befehlssprachen. Diese DLL ist für Geräte geschrieben, die via RS232-Port mit ASCII-Befehlen gesteuert werden.
+WARNUNG: Die Kalibrierungsrichtung der Achsen unterscheiden sich je nach Motor/Controller.
+Die Fahrrichtung der Kalibrierung ist vor dem Gebrauch zu überprüfen. 
+
+Dieses Plugin wurde mit freundlicher Genehmigung der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>1 -&gt; calibration during initialization</source>
+        <translation>1 -&gt; Kalibrierung während der Initialisierung</translation>
     </message>
     <message>
         <location line="+2"/>

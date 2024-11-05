@@ -8,10 +8,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Error opening exiftool: </source>
         <translation type="unfinished"></translation>
     </message>

@@ -120,7 +120,7 @@
     <message>
         <location line="+98"/>
         <source>The absolute value of the difference between the position command and the position feedback exceeded the threshold specified by the PositionErrorThreshold parameter.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Absolutwert der Differenz zwischen dem Positionsbefehl und der Positionsrückmeldung hat den durch den Parameter PositionErrorThreshold angegebenen Schwellenwert überschritten.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -180,7 +180,7 @@
     <message>
         <location line="+3"/>
         <source>The absolute value of the difference between the velocity command and the velocity feedback exceeded the threshold specified by the VelocityErrorThreshold parameter.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Absolutwert der Differenz zwischen dem Geschwindigkeitsbefehl und der Geschwindigkeitsrückmeldung hat den durch den Parameter VelocityErrorThreshold angegebenen Schwellenwert überschritten.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -205,7 +205,7 @@
     <message>
         <location line="+3"/>
         <source>One or more of the drives on the network lost communications with the controller.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Controller hat die Verbindung zu einem oder mehreren Netzlaufwerken verloren.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -304,7 +304,7 @@
         <location line="-162"/>
         <location line="+70"/>
         <location line="+35"/>
-        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+125"/>
+        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+124"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
@@ -359,20 +359,15 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech.
+        <source>This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. 
 
-If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the second the axis ID 1 and so on.
-For running this plugin you need an installed Ensemble driver and a connected device.
+If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the second the axis ID 1 and so on. 
+For running this plugin you need an installed Ensemble driver and a connected device. 
 
-This plugin comes with version 4.06 of the Ensemble driver. You can change them by newer libraries (Version 4.XX). The manual of Ensemble allows redistributing the Ensemble libraries without having the end-user install the Ensemble software. For further information about license information of Aerotech see their documentation.
+This plugin comes with version 4.06 of the Ensemble driver. You can change them by newer libraries (Version 4.XX). The manual of Ensemble allows redistributing the Ensemble libraries without having the end-user install the Ensemble software. For further information about license information of Aerotech see their documentation. 
 
 For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.</source>
-        <translation></translation>
     </message>
     <message>
         <source>N.A.</source>

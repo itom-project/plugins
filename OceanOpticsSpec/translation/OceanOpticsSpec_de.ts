@@ -106,6 +106,10 @@
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OceanOpticsSpecInterface</name>
@@ -122,10 +126,6 @@
     <name>QObject</name>
     <message>
         <source>Ocean Optics Spectrometers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
