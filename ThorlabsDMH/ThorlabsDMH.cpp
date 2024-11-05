@@ -60,11 +60,11 @@ ThorlabsDMHInterface::ThorlabsDMHInterface()
 
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] =
-        "The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
-        A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror. \
-        The Zernike coefficients 4 to 15 can also be set using an additional 'exec' function. \n\
-        The segment IDs of Thorlabs(1 to 40) correspond to the axes(0 to 39). \n\
-        The functionality for tip tilt actuator is not implemented.";
+"The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
+A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror. \
+The Zernike coefficients 4 to 15 can also be set using an additional 'exec' function. \n\
+The segment IDs of Thorlabs (1 to 40) correspond to the axes (0 to 39). \n\
+The functionality for tip tilt actuator is not implemented.";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;

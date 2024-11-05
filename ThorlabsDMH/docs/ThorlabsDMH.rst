@@ -17,7 +17,7 @@ Overview
 .. pluginsummaryextended::
     :plugin: ThorlabsDMH
 
-.. note::
+.. hint::
     When manually manipulating the segment voltages, the Zernike coefficients do not match anymore.
 
 Initialization
@@ -192,7 +192,7 @@ The surface can be manipulated using Zernikes. The coefficients 4, 5, 6, 11 and 
 
     mot.exec("setZernikes", [4, 5, 6, 11, 14], [0.1, -0.6, 0.3, 0.124, -0.426])
 
-To set all Zernike coefficients to zero, the following command can be used:
+Setting all Zernike coefficients to zero can be set with the following command:
 
 .. code-block:: python
 
