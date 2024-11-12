@@ -77,10 +77,6 @@
         <source>ThorlabsPowerMeter</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ThorlabsPowerMeter</name>

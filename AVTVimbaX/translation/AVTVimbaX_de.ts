@@ -121,7 +121,7 @@
     </message>
 </context>
 <context>
-    <name>DialogAVTVimbaX</name>
+    <name>DialogAvtVimbaX</name>
     <message>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
@@ -248,7 +248,7 @@
     </message>
 </context>
 <context>
-    <name>DockWidgetAVTVimbaX</name>
+    <name>DockWidgetAvtVimbaX</name>
     <message>
         <source>Form</source>
         <translation type="unfinished"></translation>
@@ -305,22 +305,19 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>AVT GigE and firewire cameras using Vimba interface</source>
+        <source>AVT GigE, firewire and USB cameras using Vimba interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models:
+        <source>This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: 
 
-- Marlin, F033 (monochrome, Firewire)
-- Manta G-917B and G-146B (monochrome, GigE)
+- Marlin, F033 (monochrome, Firewire) 
+- Manta G-917B and G-146B (monochrome, GigE) 
+- Alvium 1800 U-811c (monochrome, USB) 
 
-The plugin was tested with AVT Vimba 1.3.0 and 1.4.0.
+The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0. 
 
-In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed.
+In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. 
 Color formats are not supported.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -151,17 +151,12 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+106"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../dialogSerialIO.cpp" line="+525"/>
+        <location filename="../dialogSerialIO.cpp" line="+547"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>Undefined error.</source>
         <translation>Unbekannter Fehler.</translation>
     </message>
@@ -169,7 +164,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+69"/>
+        <location filename="../SerialIO.cpp" line="+176"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -254,17 +249,15 @@
         <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
-        <location line="+177"/>
         <source>Mandatory paramers are NULL</source>
-        <translation>Pflichtparameter ist NULL</translation>
+        <translation type="vanished">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Optional paramers are NULL</source>
-        <translation>Optionaler Parameter ist NULL</translation>
+        <translation type="vanished">Optionaler Parameter ist NULL</translation>
     </message>
     <message>
-        <location line="+225"/>
+        <location line="+422"/>
         <source>timeout while reading from serial port.</source>
         <translation>Zeitüberschreitung beim Lesen vom Serial-Port.</translation>
     </message>
@@ -274,7 +267,17 @@
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="-107"/>
+        <source>Mandatory parameters are NULL</source>
+        <translation>Pflichtparameter sind NULL</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Optional parameters are NULL</source>
+        <translation>Optionale Parameter sind NULL</translation>
+    </message>
+    <message>
+        <location line="+102"/>
         <source>StopDevice not necessary</source>
         <translation>&quot;StopDevice&quot; nicht nötig</translation>
     </message>
@@ -292,12 +295,11 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-147"/>
+        <location line="-148"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
-        <location line="+36"/>
         <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
 It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.
@@ -330,7 +332,7 @@ Example
     #get result
     answer = bytearray(9) #supposed length is 9 characters
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns</source>
-        <translation>SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
+        <translation type="vanished">SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
 Es wird zur Kommunikation mit unterschiedlichen Plugins (z. B. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;) verwendet.
 Das Plugin wurde für Linux und Windows implementiert, die möglichen Baudraten sind Betriebssystemabhängig.
 
@@ -364,7 +366,7 @@ Beispiel
     num = s.getVal(answer) #Wenn ok, dann enthält num die Anzahl der empfangenen Zeichen (max: Länge der Antwort)</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+76"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -404,7 +406,74 @@ Beispiel
         <translation>Bitmaske für Flusskontrolle (für nähere Informationen siehe Docstring)</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-57"/>
+        <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
+It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilities of the operating system. 
+
+flow bitmask 
+-------------- 
+
+The flow bitmask is an OR combination of the following possible values:
+Xon/Xoff - default: Xoff, Xon=1 (1. bit)
+rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit)
+cts control - default: disabled, enabled=8 (4. bit)
+dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) 
+dsr control - default: disabled, enabled = 64 
+
+If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command.
+On the other side, any obtained value from the serial port is scanned for &apos;endlineRead&apos; character and automatically split.
+Use an empty endline character if you want to organize all this by yourself.
+
+Example
+--------
+
+..
+    
+    s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
+    
+    #send command
+    sendString = bytearray(b&quot;POS?&quot;) #or bytearray([80,79,83,63]);
+    s.setVal(sendString)
+    
+    #get result
+    answer = bytearray(9) #supposed length is 9 characters
+    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns</source>
+        <translation>SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
+Es wird zur Kommunikation mit unterschiedlichen Plugins (z. B. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;) verwendet.
+Das Plugin wurde für Linux und Windows implementiert, die möglichen Baudraten sind Betriebssystemabhängig. 
+
+Flusskontrolle 
+-------------- 
+
+Die Flusskontrolle ist eine &apos;OR&apos;-Verknüpfung mit folgenden möglichen Werten: 
+Xon/Xoff - Standard: Xoff, Xon=1 (1. bit)
+rts control - Standard: disabled, enabled=2, handshake=(4 or (4+2)) (2. und 3. bit)
+cts control - Standard: disabled, enabled=8 (4. bit)
+dtr control - Standard: disabled, enabled = 16, handshake =( 32 or (32+16)) (5. und 6. bit) 
+dsr control - Standard: disabled, enabled = 64 
+
+Wurde eine Terminierung (Endline) mit angegeben, wird diese automatisch bei jeder Nachricht an das Gerät angehängt.
+Beim Lesen hingegen wird die Antwort nach der &apos;endlineRead&apos;-Terminierung gescannt und automatisch abgeschnitten.
+Um die Terminierung selbst zu organisieren, dürfen diese Terminierungen keine Zeichen enthalten.
+
+Beispiel
+--------
+
+..
+    
+    s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
+    
+    #Kommando senden
+    sendString = bytearray(b&quot;POS?&quot;) #Oder bytearray([80,79,83,63]);
+    s.setVal(sendString)
+    
+    #Antwort
+    answer = bytearray(9) #angenommene Antwortlänge ist 9 Zeichen
+    num = s.getVal(answer) #Wenn ok, dann enthält num die Anzahl der empfangenen Zeichen (max: Länge der Antwort)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -427,17 +496,17 @@ Beispiel
 <context>
     <name>dialogSerialIO</name>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="-76"/>
+        <location filename="../dialogSerialIO.cpp" line="-85"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+174"/>
         <source>Error: malformed command string - not send</source>
         <translation>Fehler: Syntaxfehler- nicht gesendet</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+111"/>
         <source>Error: &apos;%1&apos; could not be interpreted - not send</source>
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>

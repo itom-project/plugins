@@ -51,7 +51,7 @@
     <message>
         <location line="+11"/>
         <source>ignore empty messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Leere Nachrichten ignorieren</translation>
     </message>
     <message>
         <source>ignor empty messages</source>
@@ -66,7 +66,7 @@
 <context>
     <name>ItomUSBDevice</name>
     <message>
-        <location filename="../ItomLibUSB.cpp" line="+143"/>
+        <location filename="../ItomLibUSB.cpp" line="+139"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -145,7 +145,7 @@
     <message>
         <location line="+25"/>
         <source>no of the %1 devices that fit to the vendor and product ID can be opened since they are already in use.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keines der %1 Geräte, das zu dieser Vendor- und Produkt-ID passt, kann geöffnet werden, da bereits alle in Gebraucht sind.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -176,7 +176,7 @@
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <location line="-676"/>
+        <location line="-672"/>
         <source>itom-plugin for a usb port communication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
@@ -184,12 +184,18 @@
         <location line="+11"/>
         <source>LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
 It can be used by plugins for communication analog to the serial port.
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.
 
 To connect to a device you need the vendor id and the product id.
 
 The setVal and getVal functions will write and read on the specified endpoint.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">LibUSB ist ein itom-Plugin, das über einen seriellen Port eine Direct/Row-Verbindung zu einem Gerät herstellt.
+Es kann von Plugins genutzt werden, die analog über einen Seriellen Port kommunizieren.
+Das Plugin wurde für Windows erstellt, sollte aber auch mit Linux benutzt werden können, da libUSB auch unter Linux verfügbar ist.
+
+Um eine Verbindung zu einem Gerät aufbauen zu können wird eine Vendor- und eine Produkt-ID benötigt.
+
+Die Funktionen setVal und getVal schreiben und lesen auf dem angegebenen Endgerät.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -228,11 +234,6 @@ The setVal and getVal functions will write and read on the specified endpoint.</
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <location line="-14"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
     <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
         <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>

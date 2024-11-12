@@ -73,7 +73,7 @@
     </message>
     <message>
         <location line="+14"/>
-        <source>samples per aquisition:</source>
+        <source>samples per acquisition:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -187,7 +187,7 @@
 <context>
     <name>MeasurementComputing</name>
     <message>
-        <location filename="../MeasurementComputing.cpp" line="+119"/>
+        <location filename="../MeasurementComputing.cpp" line="+117"/>
         <source>name of itom plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,12 +228,12 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>first analog output channel (See pin descirption of your device).</source>
+        <source>first analog output channel (See pin description of your device).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>last analog output channel (See pin descirption of your device).</source>
+        <source>last analog output channel (See pin description of your device).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -480,30 +480,25 @@
 <context>
     <name>MeasurementComputingInterface</name>
     <message>
-        <location line="-1366"/>
+        <location line="-1364"/>
         <source>MeasurementComputing Digital-Analog Converter Plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>The MeasurementComputing is a itom-Plugin to give a direct access to the MeasurementComputing USB digital to analog converter (e. g. USB-1208LS).
+        <source>The MeasurementComputing is a itom-Plugin to give a direct access to the MeasurementComputing USB digital to analog converter (e. g. USB-1208LS). 
 
-Measurement Computing devices are available with analog input and output, digital I/O, counter and temperature ports. Before you can use this itom-Plugin, you must configure the D/A board using the software &apos;InstaCal&apos;.
-First define a board number in the software &apos;InstaCal&apos; (e.g. 0).
-This board number is a mandatory itom plugin initiation parameter.
+Measurement Computing devices are available with analog input and output, digital I/O, counter and temperature ports. Before you can use this itom-Plugin, you must configure the D/A board using the software &apos;InstaCal&apos;. 
+First define a board number in the software &apos;InstaCal&apos; (e.g. 0). 
+This board number is a mandatory itom plugin initiation parameter. 
 
-The analog input channels are acquire by using the **acquire**-function, then the data are returned to python by the **getVal**- or **copyVal**-function. Returned data are a dataobject of the size m x n, where m are the number of channels and n the number of acquired samples. The analog output values are set by the **setVal**-function. Digital I/O, counter and temperature ports can be used by the **exec**-functions, see in the description below.
-Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact information of each key executive at Measurement Computing.
+The analog input channels are acquire by using the **acquire**-function, then the data are returned to python by the **getVal**- or **copyVal**-function. Returned data are a dataobject of the size m x n, where m are the number of channels and n the number of acquired samples. The analog output values are set by the **setVal**-function. Digital I/O, counter and temperature ports can be used by the **exec**-functions, see in the description below. 
+Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact information of each key executive at Measurement Computing. 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+22"/>
         <source>board number of the connected device. This number must be defined by the software &apos;InstaCal&apos;</source>
         <translation type="unfinished"></translation>
     </message>

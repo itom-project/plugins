@@ -152,7 +152,7 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+220"/>
+        <location filename="../dispWindow.cpp" line="+224"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished">Durchschnittlicher Grauwert für die Intensitätskalibrierung</translation>
     </message>
@@ -328,17 +328,12 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-1239"/>
+        <location line="-1236"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+19"/>
         <source>x0 position of window</source>
         <translation type="unfinished">x0-Fensterposition</translation>
     </message>
@@ -483,7 +478,7 @@
     </message>
     <message>
         <location filename="../dispWindow.cpp" line="-55"/>
-        <source>This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW.
+        <source>This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. 
 
 For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that require this library.</source>
         <translation type="unfinished"></translation>

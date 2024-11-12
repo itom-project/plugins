@@ -91,7 +91,7 @@
     </message>
     <message>
         <location line="+130"/>
-        <location line="+109"/>
+        <location line="+110"/>
         <location line="+36"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
@@ -142,7 +142,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+61"/>
         <source>identification %s does not fit to required identification string NV1CL Vxxxx</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,7 +150,7 @@
 <context>
     <name>PiezosystemJena_NV40_1Interface</name>
     <message>
-        <location line="-1084"/>
+        <location line="-1086"/>
         <source>An opened serial port (the right communication parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -169,11 +169,6 @@ This system needs a serial port. The parameters are set automatically during ini
 It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance).</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+8"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>dialogPiezosystemJena_NV40_1</name>
@@ -189,7 +184,7 @@ It is initialized by actuator(&quot;PiezosystemJena_NV40_1&quot;, serialInstance
     </message>
     <message>
         <location line="+6"/>
-        <source>Asychronous</source>
+        <source>Asynchronous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -61,7 +61,7 @@
     </message>
     <message>
         <location filename="../dialogSMC100.cpp" line="46"/>
-        <source>EoR ans encoder</source>
+        <source>EoR and encoder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -191,11 +191,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../SMC100Interface.cpp" line="83"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../SMC100Interface.cpp" line="73"/>
         <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
@@ -226,7 +221,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     </message>
     <message>
         <location filename="../SMC100.cpp" line="91"/>
-        <source>asynchronous (1) or sychronous (0) mode</source>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -311,7 +306,7 @@ It has been tested with two connected controllers SMC100CC. This system needs a 
     </message>
     <message>
         <location filename="../SMC100.cpp" line="1172"/>
-        <source>Array size doesn't match the number of axis</source>
+        <source>Array size doesn&apos;t match the number of axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

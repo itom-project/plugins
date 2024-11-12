@@ -303,31 +303,26 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+130"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-27"/>
-        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models:
+        <location filename="../IDSInterface.cpp" line="+103"/>
+        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
 
-* UI145xSE-C (colored, USB2)
-* UI124xSE-M (monochrome, USB2)
-* UI224xSE-M (monochrome, USB2)
-* UI337xCP-C (colored, USB3)
-* UI318xCP-M (monochrome, USB3)
-* UI318xCP-C (colored, USB3)
-* UI306xCP-M (monochrome, USB3)
-* UI148xLE-M (monochrome, USB2)
-* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL
+* UI145xSE-C (colored, USB2) 
+* UI124xSE-M (monochrome, USB2) 
+* UI224xSE-M (monochrome, USB2) 
+* UI337xCP-C (colored, USB3) 
+* UI318xCP-M (monochrome, USB3) 
+* UI318xCP-C (colored, USB3) 
+* UI306xCP-M (monochrome, USB3) 
+* UI148xLE-M (monochrome, USB2) 
+* UI145xLE-M (monochrome, USB2), equivalent to Thorlabs DCC1545M-GL 
 
-(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU).
+(Hint: use this plugin to also operate Thorlabs cameras that are OEM products from IDS, denoted by DCC or DCU). 
 
-The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx.
+The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
 
-In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
 
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart. 
 
 Note on supported sensor bit depths on monochrome cameras: The plugin may list a supported bit depth of 16 bit even if the camera explicitly does not support 16 bit color mode. The returned 16 bit images are most probably a MSB-Aligned representation of the maximum supported bit depth. (See IDS uEye handbook, appendix Color- and Dataformat)</source>
         <translation type="unfinished"></translation>
@@ -351,7 +346,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
 <context>
     <name>IDSuEye</name>
     <message>
-        <location filename="../IDSuEye.cpp" line="+62"/>
+        <location filename="../IDSuEye.cpp" line="+60"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -446,7 +441,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2102"/>
+        <location line="+2101"/>
         <source>Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,7 +457,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2223"/>
+        <location line="-2222"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -502,7 +497,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+901"/>
+        <location line="+902"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -512,7 +507,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+118"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +522,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+895"/>
+        <location line="+918"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
