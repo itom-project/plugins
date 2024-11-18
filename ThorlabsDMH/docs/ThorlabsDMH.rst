@@ -20,6 +20,15 @@ Overview
 .. hint::
     When manually manipulating the segment voltages, the Zernike coefficients do not match anymore.
 
+Installation
+============
+
+Beside the THORLABS **"Deformable Mirrors Software"** (`download here <https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=DMP40>`_) 
+you also need to install the THORLABS **"Optical Power Monitor"** software (`download here <https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=OPM>`_).
+This is required because a necessary header file is not included in the **"Deformable Mirrors Software"**. 
+THORLABS has been informed about this issue and will address it in a future version.
+
+
 Initialization
 ==============
 
