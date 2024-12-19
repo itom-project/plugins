@@ -111,7 +111,7 @@
     </message>
     <message>
         <location line="+1"/>
-        <source>Plugin for cameras from XIMEA that run with the XIMEA API. 
+        <source>Plugin for cameras from XIMEA that run with the XIMEA API.
 This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ042RG-CM) under Windows.</source>
         <translation type="unfinished"></translation>
     </message>

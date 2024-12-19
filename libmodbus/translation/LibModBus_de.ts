@@ -129,15 +129,15 @@ Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&ap
         <location line="+11"/>
         <source>LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.
-Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. 
-The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. 
-The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers separated by &apos;,&apos; and different registers separated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos; 
+Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions.
+The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written.
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag &apos;registers&apos; containing a string with address and number of consecutive registers separated by &apos;,&apos; and different registers separated by &apos;;&apos; i.e.: &apos;10,2;34,1;77,4&apos; to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:&apos;10,2;34;77,4&apos;
 If no MetaTag is set, values of m_params[&apos;registers&apos;] is tried to be used for addressing.</source>
         <translation type="unfinished">LibModBus ist ein itom-Plugin, das eine Kommunikationsschnittstelle mit modbusTCP und modbusRTU bereitstellt.
 Das Plugin basiert auf der libmodbus v3.1.1 Bibliothek und wurde nur unter Windows getestet.
-Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus adressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F). 
-Die genutzten Plugin-Funktionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll. 
-Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Adressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Adresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Adressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos; 
+Register werden durch modbus_read_registers (0x03) und modbus_write_registers (0x10) Funktionen von libmodbus adressiert, Spulen durch modbus_read_bits (0x01) und modbus_write_bits (0x0F).
+Die genutzten Plugin-Funktionen sind getVal(dObj) und setVal(dObj) mit einem dataObject der Größe 1xN, während N die Nummer des Registers ist, welches gelesen/geschrieben werden soll.
+Erwartet wird ein dataObject entweder vom Typ uint16 für Register oder uint8 für Spulen. Die Adressierung des Registers wird über das MetaTag &apos;registers&apos; des dataObjects durchgeführt, welches einen String mit der Adresse und Anzahl der aufeinanderfolgenden Register getrennt durch Komme und verschiedene Register getrennt durch Semikolon, z.B. &apos;10,2;34,1;77,4&apos; zur Adressierung der Register 10,11;34;77..80. Anzahl 1 von fortlaufenden Registern kann weggelassen werden; im Beispiel: &apos;10,2;34;77,4&apos;
 Falls keine MetaTag gesetzt wurde, wird der Wert von m_params[&apos;registers&apos;] zur Adressierung genutzt.</translation>
     </message>
     <message>

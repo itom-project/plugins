@@ -5,15 +5,15 @@
     <name>CVBInterface</name>
     <message>
         <location filename="../commonVisionBloxInterface.cpp" line="+67"/>
-        <source>This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. 
- 
- Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and 
- exposure time, all parameters need to be read and set using the parameter raw:suffix where suffix is the real GenICam parameter, obtained 
- via the Stemmer configuration tool. If a bitdepth &gt; 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file 
- from Stemmer GenICam and don&apos;t set the pixelFormat property to auto but Mono16. 
- 
- In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. 
- 
+        <source>This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer.
+
+ Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and
+ exposure time, all parameters need to be read and set using the parameter raw:suffix where suffix is the real GenICam parameter, obtained
+ via the Stemmer configuration tool. If a bitdepth &gt; 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file
+ from Stemmer GenICam and don&apos;t set the pixelFormat property to auto but Mono16.
+
+ In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections.
+
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE.</source>
         <translation type="unfinished"></translation>
     </message>

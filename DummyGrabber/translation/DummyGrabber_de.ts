@@ -233,18 +233,18 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. 
+        <source>The DummyGrabber is a virtual camera which emulates a camera with white noise.
 
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). You can choose between different image types (noise, GaussianSpot). The value range is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The gaussianSpot has some random noise for the position and amplitude to move around a bit. The real size of the camera image is controlled using the parameter &apos;roi&apos; if the sizes stay within the limits given by the size of the camera chip.
 
-You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1. 
+You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1.
 
 This plugin can also be used as template for other grabber.</source>
-        <translation type="unfinished">Der DummyGrabber ist eine virtuelle Kamera, womit eine Kamera mit weißem Rauschen simuliert wird. 
+        <translation type="unfinished">Der DummyGrabber ist eine virtuelle Kamera, womit eine Kamera mit weißem Rauschen simuliert wird.
 
 Die Kamera wird mit der maximalen Breite und Höhe des simulierten Kamerachips inizialisiert (beides muss ein Vielfaches von 4 sein). Es gibt unterschiedliche Bildtypen zur Auswahl (Rauschen, Gaußscher Spot) Der Wertebereich wird zwischen 0 und der aktuellen Bittiefe (bpp - bit per pixel) skaliert. Gaußscher Spot (gaussianSpot) erzeugt einen Spot, dessen Position und Amplitude durch ein zufälliges Rauschen leicht variiert wird. Die tatsächliche Größe des Kamerabilds wird über den Parameter &apos;ROI&apos; eingestellt, wenn die Maße innerhalb der Größe des Kamerachips liegen.
 
-Diese Kamera kann entweder als ein 2D-Sensor (Breite und Höhe &gt;= 4) oder als Linienkamera (Höhe = 1) inizialisiert werden. 
+Diese Kamera kann entweder als ein 2D-Sensor (Breite und Höhe &gt;= 4) oder als Linienkamera (Höhe = 1) inizialisiert werden.
 
 Dieses Plugin kann ebenfalls als Vorlage zur Programmierung anderer Grabber dienen.</translation>
     </message>
