@@ -79,10 +79,6 @@ The functionality for tip tilt actuator is not implemented.";
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Destructor of Interface Class.
-/*!
-
-*/
 ThorlabsDMHInterface::~ThorlabsDMHInterface()
 {
 }
@@ -102,11 +98,6 @@ ito::RetVal ThorlabsDMHInterface::closeThisInst(ito::AddInBase** addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of plugin.
-/*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or
-   remove entries from m_params in this constructor or later in the init method
-*/
 ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
 {
     ito::IntMeta* imeta;
@@ -351,10 +342,6 @@ ThorlabsDMH::~ThorlabsDMH()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! initialization of plugin
-/*!
-    \sa close
-*/
 ito::RetVal ThorlabsDMH::init(
     QVector<ito::ParamBase>* paramsMand,
     QVector<ito::ParamBase>* paramsOpt,
@@ -583,12 +570,6 @@ ito::RetVal ThorlabsDMH::init(
         emit parametersChanged(m_params);
     }
 
-    /*if (!retValue.containsError())
-    {
-        QSharedPointer<QVector<ito::ParamBase>> _dummy;
-        retValue += execFunc("relaxMirror", _dummy, _dummy, _dummy, nullptr);
-    }*/
-
     // An error occurs if the device has no power
     retValue += getError();
 
@@ -610,10 +591,6 @@ ito::RetVal ThorlabsDMH::init(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shutdown of plugin
-/*!
-    \sa init
-*/
 ito::RetVal ThorlabsDMH::close(ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -972,20 +949,12 @@ ito::RetVal ThorlabsDMH::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-    the given axis should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal ThorlabsDMH::calib(const int axis, ItomSharedSemaphore* waitCond)
 {
     return calib(QVector<int>(1, axis), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! calib
-/*!
-    the given axes should be calibrated (e.g. by moving to a reference switch).
-*/
 ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1025,59 +994,22 @@ ito::RetVal ThorlabsDMH::calib(const QVector<int> axis, ItomSharedSemaphore* wai
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setOrigin
-/*!
-    the given axis should be set to origin. That means (if possible) its current position should be
-    considered to be the new origin (zero-position). If this operation is not possible, return a
-    warning.
-*/
 ito::RetVal ThorlabsDMH::setOrigin(const int axis, ItomSharedSemaphore* waitCond)
 {
     return setOrigin(QVector<int>(1, axis), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setOrigin
-/*!
-    the given axes should be set to origin. That means (if possible) their current position should
-   be considered to be the new origin (zero-position). If this operation is not possible, return a
-    warning.
-*/
+
 ito::RetVal ThorlabsDMH::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // if (isMotorMoving())
-    //{
-    //     retValue += ito::RetVal(
-    //         ito::retError,
-    //         0,
-    //         tr("motor is running. Additional actions are not possible.").toLatin1().data());
-    // }
-    // else
-    //{
-    //     foreach (const int& i, axis)
-    //     {
-    //         if (i >= 0 && i < m_nrOfAxes)
-    //         {
-    //             // todo: set axis i to origin (current position is considered to be the
-    //             0-position).
-    //         }
-    //         else
-    //         {
-    //             retValue += ito::RetVal::format(
-    //                 ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
-    //         }
-    //     }
-
-    //    retValue += updateStatus();
-    //}
-
     retValue += ito::RetVal(
         ito::retWarning,
         0,
-        tr("Not needed and not implemented for this actauator.").toLatin1().data());
+        tr("Not needed and not implemented for this actuator.").toLatin1().data());
 
     if (waitCond)
     {
@@ -1088,12 +1020,6 @@ ito::RetVal ThorlabsDMH::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getStatus
-/*!
-    re-checks the status (current position, available, end switch reached, moving, at target...) of
-   all axes and returns the status of each axis as vector. Each status is an or-combination of the
-   enumeration ito::tActuatorStatus.
-*/
 ito::RetVal ThorlabsDMH::getStatus(
     QSharedPointer<QVector<int>> status, ItomSharedSemaphore* waitCond)
 {
@@ -1112,10 +1038,6 @@ ito::RetVal ThorlabsDMH::getStatus(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getPos
-/*!
-    returns the current position (in V) of the given axis
-*/
 ito::RetVal ThorlabsDMH::getPos(
     const int axis, QSharedPointer<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1135,10 +1057,6 @@ ito::RetVal ThorlabsDMH::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! getPos
-/*!
-    returns the current position (in V) of all given axes
-*/
 ito::RetVal ThorlabsDMH::getPos(
     QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1200,32 +1118,12 @@ ito::RetVal ThorlabsDMH::getPos(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-    starts moving the given axis to the desired absolute target position
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if the axis reached the given target position (async = 0)
-
-    In some cases only relative movements are possible, then get the current position, determine the
-    relative movement and call the method relatively move the axis.
-*/
 ito::RetVal ThorlabsDMH::setPosAbs(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
     return setPosAbs(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosAbs
-/*!
-    starts moving all given axes to the desired absolute target positions
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if all axes reached their given target positions (async = 0)
-
-    In some cases only relative movements are possible, then get the current position, determine the
-    relative movement and call the method relatively move the axis.
-*/
 ito::RetVal ThorlabsDMH::setPosAbs(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1358,32 +1256,12 @@ ito::RetVal ThorlabsDMH::setPosAbs(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-    starts moving the given axis by the given relative distance
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if the axis reached the given target position (async = 0)
-
-    In some cases only absolute movements are possible, then get the current position, determine the
-    new absolute target position and call setPosAbs with this absolute target position.
-*/
 ito::RetVal ThorlabsDMH::setPosRel(const int axis, const double pos, ItomSharedSemaphore* waitCond)
 {
     return setPosRel(QVector<int>(1, axis), QVector<double>(1, pos), waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! setPosRel
-/*!
-    starts moving the given axes by the given relative distances
-
-    depending on m_async this method directly returns after starting the movement (async = 1) or
-    only returns if all axes reached the given target positions (async = 0)
-
-    In some cases only absolute movements are possible, then get the current positions, determine
-   the new absolute target positions and call setPosAbs with these absolute target positions.
-*/
 ito::RetVal ThorlabsDMH::setPosRel(
     QVector<int> axis, QVector<double> pos, ItomSharedSemaphore* waitCond)
 {
@@ -1523,13 +1401,6 @@ ito::RetVal ThorlabsDMH::setPosRel(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method must be overwritten from ito::AddInActuator
-/*!
-    WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is
-   indicated) have stopped or a timeout or user interruption occurred. The timeout can be given in
-   milliseconds, or -1 if no timeout should be considered. The flag-parameter can be used for your
-   own purpose.
-*/
 ito::RetVal ThorlabsDMH::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
     ito::RetVal retVal(ito::retOk);
@@ -1878,14 +1749,6 @@ ito::RetVal ThorlabsDMH::getError()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot called if the dock widget of the plugin becomes (in)visible
-/*!
-    Overwrite this method if the plugin has a dock widget. If so, you can connect the
-   parametersChanged signal of the plugin with the dock widget once its becomes visible such that no
-   resources are used if the dock widget is not visible. Right after a re-connection emit
-   parametersChanged(m_params) in order to send the current status of all plugin parameters to the
-   dock widget.
-*/
 void ThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1940,7 +1803,7 @@ const ito::RetVal ThorlabsDMH::showConfDialog(void)
     return apiShowConfigurationDialog(this, new DialogThorlabsDMH(this));
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ThorlabsDMH::getZernikeAmplitude(QVector<double>& zernikeAmplitude)
 {
     ito::RetVal retValue = ito::retOk;
