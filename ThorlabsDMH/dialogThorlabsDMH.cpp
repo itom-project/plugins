@@ -24,10 +24,10 @@
 
 #include "common/addInInterface.h"
 
-#include <qdialogbuttonbox.h>
-#include <qvector.h>
-#include <qsharedpointer.h>
 #include "paramEditorWidget.h"
+#include <qdialogbuttonbox.h>
+#include <qsharedpointer.h>
+#include <qvector.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInActuator* actuator) :
@@ -42,7 +42,7 @@ DialogThorlabsDMH::DialogThorlabsDMH(ito::AddInActuator* actuator) :
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogThorlabsDMH::parametersChanged(QMap<QString, ito::Param> params)
 {
-    //save the currently set parameters to m_currentParameters
+    // save the currently set parameters to m_currentParameters
     m_currentParameters = params;
 
     if (m_firstRun)
@@ -52,7 +52,6 @@ void DialogThorlabsDMH::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
         enableDialog(true);
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

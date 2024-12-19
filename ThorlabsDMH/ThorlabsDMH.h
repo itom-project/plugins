@@ -33,14 +33,6 @@ either version 2 of the Licence, or
 #include "TLDFMX.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- *\class    ThorlabsDMHInterface
- *
- *\brief    Interface-Class for ThorlabsDMH-Class
- *
- *    \sa    AddInActuator, ThorlabsDMH
- *
- */
 class ThorlabsDMHInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
@@ -59,10 +51,6 @@ private:
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- *\class    ThorlabsDMH
-
- */
 class ThorlabsDMH : public ito::AddInActuator
 {
     Q_OBJECT

@@ -23,9 +23,9 @@ Overview
 Installation
 ============
 
-Beside the THORLABS **"Deformable Mirrors Software"** (`download here <https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=DMP40>`_) 
+Beside the THORLABS **"Deformable Mirrors Software"** (`download here <https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=DMP40>`_)
 you also need to install the THORLABS **"Optical Power Monitor"** software (`download here <https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=OPM>`_).
-This is required because a necessary header file is not included in the **"Deformable Mirrors Software"**. 
+This is required because a necessary header file is not included in the **"Deformable Mirrors Software"**.
 THORLABS has been informed about this issue and will address it in a future version.
 
 
@@ -205,7 +205,7 @@ Setting all Zernike coefficients to zero can be set with the following command:
 
 .. code-block:: python
 
-    mot.exec("setZernikes", list(range(4, 16)), [0]*15)
+    mot.exec("setZernikes", list(range(4, 16)), [0]*12)
 
 Changelog
 ==========

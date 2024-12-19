@@ -47,20 +47,14 @@
 QList<QString> ThorlabsDMH::openedDevices = QList<QString>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! Constructor of Interface Class.
-/*!
-    \todo add necessary information about your plugin here.
-*/
 ThorlabsDMHInterface::ThorlabsDMHInterface()
 {
     m_type = ito::typeActuator;
     setObjectName("ThorlabsDMH");
 
     m_description = QObject::tr("ThorlabsDMH");
-
-    // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] =
-"The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
+        "The Thorlabs DMH deformable mirror has 40 segments, which can be used as axes in this plugin. \
 A voltage of 0V to 300V can be set for each segment, with 150V representing a flat mirror. \
 The Zernike coefficients 4 to 15 can also be set using an additional 'exec' function. \n\
 The segment IDs of Thorlabs (1 to 40) correspond to the axes (0 to 39). \n\
@@ -74,8 +68,6 @@ The functionality for tip tilt actuator is not implemented.";
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    // add mandatory and optional parameters for the initialization here.
-    // append them to m_initParamsMand or m_initParamsOpt.
     m_initParamsOpt.append(ito::Param(
         "serialNo",
         ito::ParamBase::String,
@@ -139,12 +131,18 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
         tr("List of Zernike values.").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("setZernikes", pMand, pOpt, pOut, tr("Sets a list of Zernike coefficients on the entire mirror surface."));
+    registerExecFunc(
+        "setZernikes",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Sets a list of Zernike coefficients on the entire mirror surface."));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
 
-    registerExecFunc("relaxMirror", pMand, pOpt, pOut, tr("Relax the mirror (hysteresis compensation)."));
+    registerExecFunc(
+        "relaxMirror", pMand, pOpt, pOut, tr("Relax the mirror (hysteresis compensation)."));
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -154,9 +152,9 @@ ThorlabsDMH::ThorlabsDMH() : AddInActuator(), m_async(0)
     ito::Param paramVal(
         "name",
         ito::ParamBase::String | ito::ParamBase::Readonly,
-        "ThorlabsDMH",
-        "Name of the plugin.");
-    paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
+        tr("ThorlabsDMH").toUtf8().data(),
+        tr("Name of the plugin.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -729,6 +727,26 @@ ito::RetVal ThorlabsDMH::execFunc(
                         .toLatin1()
                         .data());
             }
+
+            ViReal64 segmentVoltages[MAX_SEGMENTS];
+            err = TLDFM_get_segment_voltages(m_insrumentHdl, segmentVoltages);
+
+            for (int i = 0; i < m_nrOfAxes; i++)
+            {
+                if (i < 0 || i >= m_nrOfAxes)
+                {
+                    retValue += ito::RetVal::format(
+                        ito::retError, 1, tr("Axis %i not available.").toLatin1().data(), i);
+                }
+                else
+                {
+                    m_targetPos[i] = segmentVoltages[i];
+                    m_currentPos[i] = segmentVoltages[i];
+                }
+            }
+
+            sendStatusUpdate(false);
+            sendTargetUpdate();
             emit parametersChanged(m_params);
         }
     }
@@ -1130,10 +1148,10 @@ ito::RetVal ThorlabsDMH::getPos(
     // check device for error
     retValue += getError();
 
-    ViReal64 SegmentVoltages[MAX_SEGMENTS];
+    ViReal64 segmentVoltages[MAX_SEGMENTS];
     ViStatus err;
 
-    err = TLDFM_get_segment_voltages(m_insrumentHdl, SegmentVoltages);
+    err = TLDFM_get_segment_voltages(m_insrumentHdl, segmentVoltages);
 
     if (err)
     {
@@ -1156,7 +1174,7 @@ ito::RetVal ThorlabsDMH::getPos(
             if (axis[i] >= 0 && axis[i] < m_nrOfAxes)
             {
                 m_currentPos[axis[i]] =
-                    SegmentVoltages[axis[i]]; // set m_currentPos[i] to the obtained position
+                    segmentVoltages[axis[i]]; // set m_currentPos[i] to the obtained position
                 (*pos)[i] = m_currentPos[axis[i]];
             }
             else
@@ -1246,7 +1264,10 @@ ito::RetVal ThorlabsDMH::setPosAbs(
                     retValue += ito::RetVal::format(
                         ito::retError,
                         1,
-                        tr("Voltage of axis %i outside the boundaries (%.2f - %.2f): %.2f ").toLatin1().data(), i,
+                        tr("Voltage of axis %i outside the boundaries (%.2f - %.2f): %.2f ")
+                            .toLatin1()
+                            .data(),
+                        i,
                         minVoltage,
                         maxVoltage,
                         pos[cntPos]);
@@ -1914,29 +1935,6 @@ void ThorlabsDMH::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to show the configuration dialog
-/*!
-    This method is called from the main thread from itom and should show the configuration dialog of
-   the plugin. If the instance of the configuration dialog has been created, its slot
-   'parametersChanged' is connected to the signal 'parametersChanged' of the plugin. By invoking the
-   slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately
-   emitted with m_params as argument. Therefore the configuration dialog obtains the current set of
-   parameters and can be adjusted to its values.
-
-    The configuration dialog should emit reject() or accept() depending if the user wanted to close
-   the dialog using the ok or cancel button. If ok has been clicked (accept()), this method calls
-   applyParameters of the configuration dialog in order to force the dialog to send all changed
-   parameters to the plugin. If the user clicks an apply button, the configuration dialog itself
-   must call applyParameters.
-
-    If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function
-   apiShowConfigurationDialog that does all the things mentioned in this description.
-
-    Remember that you need to implement hasConfDialog in your plugin and return 1 in order to
-   signalize itom that the plugin has a configuration dialog.
-
-    \sa hasConfDialog
-*/
 const ito::RetVal ThorlabsDMH::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogThorlabsDMH(this));

@@ -23,44 +23,43 @@
 #ifndef DIALOGTHORLABSDMH_H
 #define DIALOGTHORLABSDMH_H
 
+#include "common/abstractAddInConfigDialog.h"
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
-#include "common/abstractAddInConfigDialog.h"
 
 #include "common/addInInterface.h"
 #include "ui_dialogThorlabsDMH.h"
 
-#include <qstring.h>
-#include <qmap.h>
 #include <qabstractbutton.h>
+#include <qmap.h>
+#include <qstring.h>
 
-namespace ito
-{
-    class AddInBase; //forward declaration
+namespace ito {
+class AddInBase; // forward declaration
 }
 
 class DialogThorlabsDMH : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 
-    public:
-        DialogThorlabsDMH(ito::AddInActuator* actuator);
-        ~DialogThorlabsDMH() {};
+public:
+    DialogThorlabsDMH(ito::AddInActuator* actuator);
+    ~DialogThorlabsDMH() {};
 
-        ito::RetVal applyParameters();
+    ito::RetVal applyParameters();
 
-    private:
-        void enableDialog(bool enabled);
-        bool m_firstRun;
+private:
+    void enableDialog(bool enabled);
+    bool m_firstRun;
 
-        QPointer<ito::AddInBase> m_pluginPointer;
-        Ui::DialogThorlabsDMH ui;
+    QPointer<ito::AddInBase> m_pluginPointer;
+    Ui::DialogThorlabsDMH ui;
 
-    public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
 
-    private slots:
-        void on_buttonBox_clicked(QAbstractButton* btn);
+private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
 };
 
 #endif

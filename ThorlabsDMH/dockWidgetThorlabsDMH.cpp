@@ -12,9 +12,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetThorlabsDMH::DockWidgetThorlabsDMH(ThorlabsDMH* actuator) :
-    AbstractAddInDockWidget(actuator), m_pActuator(actuator),
-    m_inEditing(false),
-    m_firstRun(true)
+    AbstractAddInDockWidget(actuator), m_pActuator(actuator), m_inEditing(false), m_firstRun(true)
 {
     ui.setupUi(this);
 
@@ -63,115 +61,10 @@ void DockWidgetThorlabsDMH::updateSlider()
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::targetChanged(QVector<double> targetPos)
-{
-    for (int i = 0; i < targetPos.size(); i++)
-    {
-        /*m_spinTargetPos[i]->setValue(targetPos[i]);*/
-    }
- }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
-{
-    //bool running = false;
-    //QString style;
-
-    //for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
-    //{
-    //    if (status[i] & ito::actuatorMoving)
-    //    {
-    //        style = "background-color: yellow";
-    //        running = true;
-    //    }
-    //    else if (status[i] & ito::actuatorInterrupted)
-    //    {
-    //        style = "background-color: red";
-    //    }
-    //    /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
-    //    {
-    //        style = "background-color: green";
-    //    }*/
-    //    else
-    //    {
-    //        style = "background-color: ";
-    //    }
-
-    //    m_spinCurrentPos[i]->setStyleSheet(style);
-    //}
-
-    //enableWidgets(!running);
-
-    //for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
-    //{
-    //    m_spinCurrentPos[i]->setValue(positions[i]);
-    //}
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
-{
-    //double dpos = ui.spinStepSize->value() / -1e3;
-
-    //if (qobject_cast<QPushButton*>(sender()))
-    //{
-    //    int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
-
-    //    if (idx >= 0)
-    //    {
-    //        setActuatorPosition(idx, dpos, true);
-    //    }
-    //}
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
-{
-    //double dpos = ui.spinStepSize->value() / 1e3;
-
-    //if (qobject_cast<QPushButton*>(sender()))
-    //{
-    //    int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
-
-    //    if (idx >= 0)
-    //    {
-    //        setActuatorPosition(idx, dpos, true);
-    //    }
-    //}
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::on_btnStop_clicked()
-{
-    //setActuatorInterrupt();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::on_btnStart_clicked()
-{
-    //QVector<int> axis;
-    //QVector<double> dpos;
-
-    //for (int i = 0; i < m_btnRelDec.size(); ++i)
-    //{
-    //    axis << i;
-    //    dpos << m_spinTargetPos[i]->value();
-    //}
-
-    //setActuatorPosition(axis, dpos, false);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::on_btnRefresh_clicked()
-{
-    //requestActuatorStatusAndPositions(true, true);
-}
-
 void DockWidgetThorlabsDMH::setZernike(QVector<double> zernikeAmplitude)
 {
     QSharedPointer<QVector<ito::ParamBase>> pMand(
-        new QVector<ito::ParamBase>()); // MUSS ICH HIER ANGEBEN, WIE GROß DER ARRAY
-                                        // WIRD?????????????????????????????????
+        new QVector<ito::ParamBase>());
     QVector<int> zernikeID = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     ito::ParamBase param1(
@@ -189,7 +82,7 @@ void DockWidgetThorlabsDMH::setZernike(QVector<double> zernikeAmplitude)
     m_pActuator->execFunc("setZernikes", pMand, _dummy, _dummy, nullptr);
 }
 
-
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_slider_valueChanged(double value, int sliderID)
 {
     if (!m_inEditing)
@@ -203,12 +96,14 @@ void DockWidgetThorlabsDMH::on_slider_valueChanged(double value, int sliderID)
     }
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_relaxMirror_clicked()
 {
     QSharedPointer<QVector<ito::ParamBase>> _dummy;
     m_pActuator->execFunc("relaxMirror", _dummy, _dummy, _dummy, nullptr);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetThorlabsDMH::on_resetZernike_clicked()
 {
     QVector<double> zernikeAmplitude(12, 0.0);
@@ -222,10 +117,9 @@ void DockWidgetThorlabsDMH::enableWidgets(bool enabled)
     ui.axisController->setEnabled(enabled);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetThorlabsDMH::identifierChanged(const QString &identifier)
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetThorlabsDMH::identifierChanged(const QString& identifier)
 {
-    //ui.lblIdentifier->setText(identifier);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
