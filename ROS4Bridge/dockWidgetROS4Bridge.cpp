@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "LibUSB" for itom software
+    Plugin "ROS4Bridge" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetLibUSB.h"
+#include "dockWidgetROS4Bridge.h"
 
 #include "math.h"
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -37,39 +37,38 @@ char getHexChar(int i)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetLibUSB::DockWidgetLibUSB(QMap<QString, ito::Param> params, int uniqueID)
+DockWidgetROS4Bridge::DockWidgetROS4Bridge(ito::AddInDataIO *dataIO) :
+    AbstractAddInDockWidget(dataIO),
+    m_inEditing(false)
 {
     ui.setupUi(this);
-    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
+
+/*    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
 //    ui.lblName->setText(temp);
     ui.lblID->setText(QString::number(uniqueID));
-
-    valuesChanged(params);
+    valuesChanged(params);*/
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetLibUSB::valuesChanged(QMap<QString, ito::Param> params)
+ void DockWidgetROS4Bridge::parametersChanged(QMap<QString, ito::Param> params)
 {
-    if (params.keys().contains("debug"))
+    if (!m_inEditing)
     {
+        m_inEditing = true;
+        ui.checkIgnoreEmpty->setChecked(params["debugIgnoreEmpty"].getVal<int>());
         ui.groupBox_3->setEnabled(params["debug"].getVal<int>());
+        m_inEditing = false;
     }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-/* void DockWidgetLibUSB::uniqueIDChanged(const int uniqueID)
-{
-    ui.lblID->setText(QString::number(uniqueID));
-}*/
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetLibUSB::on_ClrButton_clicked()
+void DockWidgetROS4Bridge::on_ClrButton_clicked()
 {
     ui.textTransfer->clear();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetLibUSB::serialLog(QByteArray data, const char InOutChar)
+void DockWidgetROS4Bridge::serialLog(QByteArray data, QByteArray endline, const char InOutChar)
 {
     if (ui.groupBox_3->isEnabled())
     {
@@ -94,6 +93,8 @@ void DockWidgetLibUSB::serialLog(QByteArray data, const char InOutChar)
             displayLength = 3;
             displayType = 3;
         }
+
+        data = data + endline;
 
         text1.resize((displayLength+1) * data.length());
         text2.resize((3 * data.length()));
@@ -209,11 +210,27 @@ void DockWidgetLibUSB::serialLog(QByteArray data, const char InOutChar)
             text3 = " [" + QByteArray(QString::number(data.length()).toLatin1().data()) + "]";
         }
 
-        if (!(ui.CheckBox->isChecked() && data.isEmpty()))
+        if (!(ui.checkIgnoreEmpty->isChecked() && data.isEmpty() && endline.isEmpty()))
         {
             ui.textTransfer->append((QString)InOutChar + " " + text1 + text2 + text3);
         }
     }
  }
 
- //-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetROS4Bridge::identifierChanged(const QString &identifier)
+{
+    ui.lblIdentifier->setText(identifier);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetROS4Bridge::on_checkIgnoreEmpty_clicked()
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("debugIgnoreEmpty", ito::ParamBase::Int, (int)ui.checkIgnoreEmpty->isChecked()));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}

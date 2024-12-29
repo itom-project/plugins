@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "LibUSB" for itom software
+    Plugin "ROS4Bridge" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,12 +20,15 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETLibUSB_H
-#define DOCKWIDGETLibUSB_H
+#ifndef DOCKWIDGETROS4Bridge_H
+#define DOCKWIDGETROS4Bridge_H
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
-#include "ui_dockWidgetLibUSB.h"
+#include "common/addInInterface.h"
+#include "common/abstractAddInDockWidget.h"
+
+#include "ui_dockWidgetROS4Bridge.h"
 
 #include <QtGui>
 #include <qwidget.h>
@@ -33,26 +36,30 @@
 #include <qstring.h>
 #include <qbytearray.h>
 
-class DockWidgetLibUSB : public QWidget
+class DockWidgetROS4Bridge : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetLibUSB(QMap<QString, ito::Param> params, int uniqueID);
-        ~DockWidgetLibUSB() {};
+        DockWidgetROS4Bridge(ito::AddInDataIO *dataIO);
+        ~DockWidgetROS4Bridge() {};
 
     private:
-        Ui::DockWidgetLibUSB ui;
+        Ui::DockWidgetROS4Bridge ui;
+        bool m_inEditing;
 
     signals:
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
+//        void valuesChanged(QMap<QString, ito::Param> params);
 //        void uniqueIDChanged(const int uniqueID);
-        void serialLog(QByteArray data, const char InOutChar);
+        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void identifierChanged(const QString &identifier);
 
     private slots:
         void on_ClrButton_clicked();
+        void on_checkIgnoreEmpty_clicked();
 };
 
 #endif

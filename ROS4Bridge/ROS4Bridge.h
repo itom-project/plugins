@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "ItomUSBDevice" for itom software
+    Plugin "ROS4Bridge" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,65 +20,102 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ITOMUSBDEVICE_H
-#define ITOMUSBDEVICE_H
+#ifndef ROS4Bridge_H
+#define ROS4Bridge_H
 
 #include "common/addInInterface.h"
 #include "DataObject/dataobj.h"
-#include "libusb.h" //from the libusb.info project!
+#include "dialogROS4Bridge.h"
 
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
-struct USBDevice
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------------------
+class SerialPort
 {
-    USBDevice() : vendorID(0), productID(0), busNr(0), deviceAddr(0) {};
-    USBDevice(uint16_t vendor_id, uint16_t product_id, uint8_t bus_nr, uint8_t device_addr) :
-        vendorID(vendor_id), productID(product_id), busNr(bus_nr), deviceAddr(device_addr) {}
-    bool operator == (const USBDevice& dev) const
-    {
-        return (vendorID == dev.vendorID) &&
-               (productID == dev.productID) &&
-               (busNr == dev.busNr) &&
-               (deviceAddr == dev.deviceAddr);
-    }
-    uint16_t vendorID;
-    uint16_t productID;
-    uint8_t busNr;
-    uint8_t deviceAddr;
+    private:
+        struct serParams {
+            serParams() :
+                port(0),
+                baud(9600),
+                bits(8),
+                parity(0),
+                stopbits(1),
+                flow(0),
+//                debug(0),
+//                debugIgnoreEmpty(0),
+                sendDelay(0),
+                timeout(4000) { endline[0] = '\n'; endline[1] = 0; endline[2] = 0; }
+            char port;
+            int baud;
+            char bits;
+            char parity;
+            char stopbits;
+            char flow;
+            char endline[3];
+//            char debug;
+//            char debugIgnoreEmpty;
+            int sendDelay;
+            int timeout;
+        };
+        serParams m_serParams;
+        char *m_pDevice;
+
+#ifdef WIN32
+        HANDLE m_dev;
+#else
+        int m_dev;
+#endif
+
+    public:
+        enum PortType { COM, TTYS, TTYUSB, TTYACM }; //COM is for windows, TTYS is a serial port on linux, TTYUSB is a usb-serial port on linux
+        SerialPort() : m_pDevice(0), m_dev(0) {}
+        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits, const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType);
+        const ito::RetVal sclose(void);
+        const ito::RetVal sread(char *buf, int *len, const int sendDelay);
+        int sreadable(void) const;
+        const ito::RetVal swrite(const char c) const;
+        const ito::RetVal swrite(const char *buf, const int len, const int sendDelay) const;
+        const ito::RetVal setparams(const serParams &params);
+        const ito::RetVal setparams(const int baud, const char* endline, const int bits = 8, const int stopbits = 0, const int parity = 0, const int flow = 0, const int sendDelay = 0, const int timeout = 4000);
+        int isOpen() { return m_dev != 0 ? 1 : 0; }
+        const ito::RetVal sclearbuffer(int BufferType);
+        const ito::RetVal getendline(char *eline);
+        const bool isValidBaudRate(const int baud);
+
+        static int baudRates[];
+        int m_baudRatesSize;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
+class ROS4Bridge : public ito::AddInDataIO //, public DummyGrabberInterface
 {
     Q_OBJECT
 
     protected:
-        virtual ~ItomUSBDevice();
-        ItomUSBDevice();
+        virtual ~ROS4Bridge();
+        ROS4Bridge();
 
     public:
-        friend class ItomUSBDeviceInterface;
+        friend class ROS4BridgeInterface;
+//        friend class SerialPort;
         const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 0; } //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
+        int isOpen() { return m_serport.isOpen(); }
 
     private:
-
-        libusb_device_handle *m_pDevice;
-        bool m_autoDetach;
-
+        SerialPort m_serport;
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
+        bool m_debugIgnoreEmpty;   /*! Enables / Disables to ignore empty messages */
         static int m_instCounter;
-        int m_timeoutMS;
-        int m_endpoint_read;
-        int m_endpoint_write;
-        USBDevice m_currentDevice;
-
-        static QVector<USBDevice> openedDevices;
-        static QMutex openedDevicesReadWriteMutex;
+        QByteArray m_preBuf;
 
     signals:
-        void serialLog(QByteArray data, const char InOutChar);
+        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
         void uniqueIDChanged(const int);
         //void parametersChanged(QMap<QString, ito::tParam>); (defined in AddInBase)
 
@@ -108,7 +145,7 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class ItomUSBDeviceInterface : public ito::AddInInterfaceBase
+class ROS4BridgeInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
@@ -118,8 +155,8 @@ class ItomUSBDeviceInterface : public ito::AddInInterfaceBase
     protected:
 
     public:
-        ItomUSBDeviceInterface();
-        ~ItomUSBDeviceInterface();
+        ROS4BridgeInterface();
+        ~ROS4BridgeInterface();
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
     private:
@@ -128,4 +165,4 @@ class ItomUSBDeviceInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-#endif // ItomUSBDevice_H
+#endif // ROS4Bridge_H

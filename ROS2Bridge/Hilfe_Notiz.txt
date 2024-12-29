@@ -1,3 +1,0 @@
-其应该具备如下的功能：
-1.Called by the rosapi/Topics service. Returns a list of all the topics being published.
-2.

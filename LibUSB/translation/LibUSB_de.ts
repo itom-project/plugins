@@ -66,7 +66,7 @@
 <context>
     <name>ItomUSBDevice</name>
     <message>
-        <location filename="../ItomLibUSB.cpp" line="+143"/>
+        <location filename="../ItomLibUSB.cpp" line="+139"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -176,7 +176,7 @@
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <location line="-676"/>
+        <location line="-672"/>
         <source>itom-plugin for a usb port communication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
@@ -184,7 +184,7 @@
         <location line="+11"/>
         <source>LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
 It can be used by plugins for communication analog to the serial port.
-The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also available on Linux.
 
 To connect to a device you need the vendor id and the product id.
 
@@ -228,11 +228,6 @@ The setVal and getVal functions will write and read on the specified endpoint.</
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <location line="-14"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
     <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
         <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>

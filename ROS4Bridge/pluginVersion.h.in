@@ -37,7 +37,7 @@
 #define PLUGIN_COMPANY              "Institut f. Technische Optik"
 #define PLUGIN_AUTHOR               "Jinbao Xiong (ITO), Bernd Bertschinger (ITO)"
 #define PLUGIN_COPYRIGHT            "(C) 2024, ITO, Universität Stuttgart"
-#define PLUGIN_NAME                 "ROS43Bridge"
+#define PLUGIN_NAME                 "ROS4Bridge"
 
 #endif // PLUGINVERSION_H
 

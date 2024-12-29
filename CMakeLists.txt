@@ -417,6 +417,12 @@ if(PLUGIN_rawImport)
     add_subdirectory(RawImport)
 endif(PLUGIN_rawImport)
 
+# ROS2Bridge
+itom_plugin_option(PLUGIN_ROS2Bridge)
+if(PLUGIN_ROS2Bridge)
+    add_subdirectory(ROS2Bridge)
+endif(PLUGIN_ROS2Bridge)
+
 # Roughness
 itom_plugin_option(PLUGIN_Roughness)
 if(PLUGIN_Roughness)
