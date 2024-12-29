@@ -9,7 +9,7 @@ macro(itom_plugin_option PLUGIN_ID)
     "+-------------------------------+-----------------------------------+"
     "| PLUGIN_aerotechA3200          |   T   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
-    "| PLUGIN_aerotechEnsemble       |   D   |   D   |    D    |    D    |"
+    "| PLUGIN_aerotechEnsemble       |   D   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
     "| PLUGIN_andorSDK3              |   S   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
@@ -49,7 +49,7 @@ macro(itom_plugin_option PLUGIN_ID)
     "+-------------------------------+-----------------------------------+"
     "| PLUGIN_DemoAlgorithms         |   S   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
-    "| PLUGIN_FaulhaberMCS           |   D   |   D   |    D    |    D    |"
+    "| PLUGIN_FaulhaberMCS           |   D   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
     "| PLUGIN_FFTWFilters            |   S   |   X   |    X    |    X    |"
     "+-------------------------------+-----------------------------------+"
@@ -184,9 +184,9 @@ macro(itom_plugin_option PLUGIN_ID)
     if(WIN32)
         set(INDEX 1)
     elseif(APPLE)
-        set(INDEX 3)
+        set(INDEX 2)
     elseif(UNIX)
-        set(INDEX 4)
+        set(INDEX 3)
     endif(WIN32)
 
     foreach(PLUGIN_ROW ${PLUGINS_LIST})
