@@ -79,6 +79,8 @@ Please be aware that this plugin is currently under development and used and tes
 TO install ROS2 - Jazzy Jalisco, please follow the installation instructions from:
 https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html or follow the instructions listed below:
 
+1. ROS2 Installation:
+
 set locale:
     locale  # check for UTF-8
     sudo apt update && sudo apt install locales
@@ -100,15 +102,20 @@ Install development tools:
 Install ROS 2:
     sudo apt update
     sudo apt upgrade
+    sudo apt install ros-jazzy-desktop
+    sudo apt install ros-jazzy-ros-base
 
+2. Install rosapi
+    sudo apt install ros-jazzy-rosapi
 
+3. Setup environment
 
-For compiling this plugin, download the latest pco.sdk (pco Software-Development-Toolkit) from https://www.excelitas.com/product/pco-software-development-kits
-and choose **General SDK** tp download the latest pco.sdk and install it on your computer.
-Then set the CMake variable **PCO_SDK_DIR** or environment variable **PCO_SDK_ROOT** the to the base directory of the pco.sdk. (eg. C:\Program Files\PCO Digital Camera Toolbox\pco.sdk)
-In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board, the GigE connection etc.
-If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
-For GigE cameras you also need to install the PCO GigE driver and make sure that the connection is properly configured.
+    source /opt/ros/jazzy/setup.bash
+
+    Please be aware that the setup environment is not defined permanently and
+    only valid for the command shell that calls the bash script. A more permanent
+    solution is under investigation.
+
 
 Changelog
 ==========
