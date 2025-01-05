@@ -169,12 +169,7 @@ by the Windows path environment variable (e.g. append &quot;C:/Program Files/And
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+17"/>
         <source>camera index that should be opened. The first camera is 0, the second 1...</source>
         <translation type="unfinished"></translation>
     </message>

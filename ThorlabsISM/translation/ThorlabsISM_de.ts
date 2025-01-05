@@ -138,10 +138,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ThorlabsISM is an acutator plugin to control the following integrated devices from Thorlabs:
 
 * Long Travel Stage (e.g. LTS150 and LTS300)
@@ -158,10 +154,6 @@ This plugin has been tested with the cage rotator K10CR1.</source>
 </context>
 <context>
     <name>ThorlabsISM</name>
-    <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
@@ -187,14 +179,6 @@ This plugin has been tested with the cage rotator K10CR1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Target speed in °/s (travelMode == %1) or mm/s (travelMode == %2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target acceleration in °/s^2 (travelMode == %1) or mm/s^2 (travelMode == %2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>timeout for move operations in sec</source>
         <translation type="unfinished"></translation>
     </message>
@@ -208,14 +192,6 @@ This plugin has been tested with the cage rotator K10CR1.</source>
     </message>
     <message>
         <source>travel mode: linear (%1), rotational (%2), undefined (%3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Minimum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum stage position in mm (travelMode == %1) or ° (travelMode == %2). For °, given positions will be wrapped by 360°.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -238,6 +214,26 @@ This plugin has been tested with the cage rotator K10CR1.</source>
         <source>end switch reached</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target speed in %1/s (travelMode == %2) or mm/s (travelMode == %3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target acceleration in %1/s^2 (travelMode == %2) or mm/s^2 (travelMode == %3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum stage position in mm (travelMode == %1) or %2 (travelMode == %3). For %4, given positions will be wrapped by 360%5 for absolute moves.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum stage position in mm (travelMode == %1) or %2 (travelMode == %3). For %4, given positions will be wrapped by 360%5 for absolute moves.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ThorlabsISMInterface</name>
@@ -247,6 +243,10 @@ This plugin has been tested with the cage rotator K10CR1.</source>
     </message>
     <message>
         <source>There seems to be an additional conversion factor for some devices between device and real world units. This can be given here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

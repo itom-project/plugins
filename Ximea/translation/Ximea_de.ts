@@ -115,16 +115,11 @@
 This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ042RG-CM) under Windows.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+6"/>
-        <source>LGPL / do not copy Ximea-DLLs</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Ximea</name>
     <message>
-        <location line="+49"/>
+        <location line="+56"/>
         <source>Dark Image, if null, empty image will be generated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -345,17 +340,32 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>this camera cannot be configured and used since it is propably used by another process</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+318"/>
+        <location line="+322"/>
         <source>Camera is not connected or does not work properly!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+357"/>
+        <location line="+118"/>
+        <source>Freeing bandwidth error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+114"/>
+        <source>Error occurred and acquisition has been stopped or didn&apos;t start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Acquisition has been stopped with error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Device has been reset, abnormal initial state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+95"/>
         <location line="+19"/>
         <source>LoadLibrary(&quot;xiapiX64.dll&quot;). Error code: %i</source>
         <translation type="unfinished"></translation>
@@ -464,7 +474,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-961"/>
+        <location line="-948"/>
         <source>Gain in % (the percentage is mapped to the dB-values).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -529,7 +539,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+429"/>
+        <location line="+73"/>
+        <source>this camera cannot be configured and used since it is probably used by another process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+343"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -564,12 +579,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Freeing bandwith error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Read block error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -750,17 +760,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Error occurred and acquisition has been stoped or didn&apos;t start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Acquisition has been stoped with error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Input ICC profile missed or corrupted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -800,12 +800,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Device has been reseted, abnormal initial state</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>No Devices found</source>
         <translation type="unfinished"></translation>
     </message>

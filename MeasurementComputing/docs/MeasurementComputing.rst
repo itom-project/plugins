@@ -125,23 +125,23 @@ The table below shows the range codes for the **input_range_code** and **output_
     +----------------+-------------------+----------------+----------------+
     |BIPPT2VOLTS     |-0.2 to +0.2       |UNIPT01VOLTS    |0 to 0.01       |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT1VOLTS     |-0.1 to +0.1       |                                 |
+    |BIPPT1VOLTS     |-0.1 to +0.1       |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT05VOLTS    |-0.05 to +0.05     |                                 |
+    |BIPPT05VOLTS    |-0.05 to +0.05     |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT01VOLTS    |-0.01 to +0.01     |                                 |
+    |BIPPT01VOLTS    |-0.01 to +0.01     |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT005VOLTS   |-0.005 to +0.005   |                                 |
+    |BIPPT005VOLTS   |-0.005 to +0.005   |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIP1PT67VOLTS   |-1.67 to +1.67     |                                 |
+    |BIP1PT67VOLTS   |-1.67 to +1.67     |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT312VOLTS   |-0.312 to +0.312   |                                 |
+    |BIPPT312VOLTS   |-0.312 to +0.312   |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT156VOLTS   |-0.156 to +0.156   |                                 |
+    |BIPPT156VOLTS   |-0.156 to +0.156   |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT125VOLTS   |-0.125 to +0.125   |                                 |
+    |BIPPT125VOLTS   |-0.125 to +0.125   |                |                |
     +----------------+-------------------+----------------+----------------+
-    |BIPPT078VOLTS   |-0.078 to +0.078   |                                 |
+    |BIPPT078VOLTS   |-0.078 to +0.078   |                |                |
     +----------------+-------------------+----------------+----------------+
 
 Additional functions (exec functions)
@@ -149,18 +149,25 @@ Additional functions (exec functions)
 
 The plugin execFunctions are:
 
-    =============    ==============================================================================================================================================================================================
-    Name            Description
-    =============    ==============================================================================================================================================================================================
-    **getBitIn**       reads a single bit of the specified I/O port. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a input port.
-    **getCIn**         reads and returns the current count of the specified counter input channel. Use the parameter counter_set_value to reset the counter.
-    **getDIn**         reads the digital I/O port value. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a input port.
-    **getTIn**         reads and returns the temperature value of the specific input channel defined by the temperature_input_channel. Use the parameter temperature_scale the define the temperature scaling value.
-    **getVIn**         reads and returns the voltage value of the specified input channel in the parameter voltage_input_channel.
-    **setBitOut**      sets a single bit of the specified I/O port. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a output port.
-    **setDOut**        sets the digital I/O port value. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a output port.
-    **setVOut**        set the voltage value at the specific analog output channel defined by the parameter voltage_output_channel.
-    =============    ==============================================================================================================================================================================================
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    |     Name      |            Description                                                                                                                                                                               |
+    +===============+======================================================================================================================================================================================================+
+    | **getBitIn**  | reads a single bit of the specified I/O port. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a input port.       |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **getCIn**    | reads and returns the current count of the specified counter input channel. Use the parameter counter_set_value to reset the counter.                                                                |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **getDIn**    | reads the digital I/O port value. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a input port.                   |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **getTIn**    | reads and returns the temperature value of the specific input channel defined by the temperature_input_channel. Use the parameter temperature_scale the define the temperature scaling value.        |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **getVIn**    | reads and returns the voltage value of the specified input channel in the parameter voltage_input_channel.                                                                                           |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **setBitOut** | sets a single bit of the specified I/O port. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a output port.       |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **setDOut**   | sets the digital I/O port value. Use the parameters digital_port_name to define the port you want to use. Use the parameter digital_port_mode to define the port as a output port.                   |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | **setVOut**   | set the voltage value at the specific analog output channel defined by the parameter voltage_output_channel.                                                                                         |
+    +---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. py:function::  instance.exec('getVIn', voltage_input_channel)
 

@@ -305,11 +305,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>AVT GigE and firewire cameras using Vimba interface</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Licensed under LGPL</source>
+        <source>AVT GigE, firewire and USB cameras using Vimba interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -317,8 +313,9 @@
 
 - Marlin, F033 (monochrome, Firewire)
 - Manta G-917B and G-146B (monochrome, GigE)
+- Alvium 1800 U-811c (monochrome, USB)
 
-The plugin was tested with AVT Vimba 1.3.0 and 1.4.0.
+The plugin was tested with AVT Vimba 1.3.0, 1.4.0, 2.5.0.
 
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed.
 Color formats are not supported.</source>

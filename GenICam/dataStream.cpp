@@ -1796,10 +1796,10 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
 
 //-------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(
-    const char* ptr, 
-    const size_t& width, 
-    const size_t& height, 
-    bool littleEndian, 
+    const char* ptr,
+    const size_t& width,
+    const size_t& height,
+    bool littleEndian,
     ito::DataObject& dobj,
     bool considerModelWorkarounds /*= true*/)
 {

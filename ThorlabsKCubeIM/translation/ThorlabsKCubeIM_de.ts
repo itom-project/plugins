@@ -91,6 +91,10 @@
         <source>Maximum voltage settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>dual channel mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DockWidgetThorlabsKCubeIM</name>
@@ -161,10 +165,6 @@ Please install the Kinesis driver package in advance with the same bit-version (
 This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ThorlabsKCubeIM</name>
@@ -181,19 +181,11 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>timeout for move operations in sec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>1 to lock the front panel, else 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>motor is running. Additional actions are not possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -230,6 +222,26 @@ This plugin has been tested with the cage rotator KIM101.</source>
     </message>
     <message>
         <source>Software version of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>synchronous (0, default) or asynchronous (1) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>single Channel mode (0, default) or dual Channel mode (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>disable (0, default) or enable axis (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>motor is running. Additional actions are not possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>In dualChannel mode axis 0 and 1 or axis 2 and 3 must be given</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

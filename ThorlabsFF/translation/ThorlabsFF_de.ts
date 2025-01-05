@@ -79,11 +79,6 @@ Please install the Kinesis driver package in advance with the same bit-version (
 This plugin has been tested with the flipper MFF101.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../ThorlabsFF.cpp" line="65"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ThorlabsFF</name>

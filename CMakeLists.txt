@@ -85,6 +85,12 @@ if(PLUGIN_AVTVimba)
     add_subdirectory(AVTVimba)
 endif(PLUGIN_AVTVimba)
 
+# AVTVimbaX
+itom_plugin_option(PLUGIN_AVTVimbaX)
+if(PLUGIN_AVTVimbaX)
+    add_subdirectory(AVTVimbaX)
+endif(PLUGIN_AVTVimbaX)
+
 # BasicFilters
 itom_plugin_option(PLUGIN_BasicFilters)
 if(PLUGIN_BasicFilters)
@@ -174,6 +180,12 @@ itom_plugin_option(PLUGIN_DemoAlgorithms)
 if(PLUGIN_DemoAlgorithms)
     add_subdirectory(DemoAlgorithms)
 endif(PLUGIN_DemoAlgorithms)
+
+# FaulhaberMCS
+itom_plugin_option(PLUGIN_FaulhaberMCS)
+if(PLUGIN_FaulhaberMCS)
+    add_subdirectory(FaulhaberMCS)
+endif(PLUGIN_FaulhaberMCS)
 
 # FFTW-Wrapper
 itom_plugin_option(PLUGIN_FFTWFilters)
@@ -464,6 +476,14 @@ itom_plugin_option(PLUGIN_ThorlabsBDCServo)
 if(PLUGIN_ThorlabsBDCServo)
     add_subdirectory(ThorlabsBDCServo)
 endif(PLUGIN_ThorlabsBDCServo)
+
+# ThorlabsFF High-Stroke Deformable Mirrors
+if(WIN32)
+    option(PLUGIN_ThorlabsDMH "Build the Thorlabs High-Stroke Deformable Mirrors plugin." ${ITOM_BUILD_SHIPMENT})
+    if(PLUGIN_ThorlabsDMH)
+        add_subdirectory(ThorlabsDMH)
+    endif(PLUGIN_ThorlabsDMH)
+endif()
 
 # ThorlabsFF filter flipper
 itom_plugin_option(PLUGIN_ThorlabsFF)

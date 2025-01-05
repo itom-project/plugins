@@ -4,27 +4,22 @@
 <context>
     <name>FringeProj</name>
     <message>
-        <location filename="../FringeProj.cpp" line="+638"/>
+        <location filename="../FringeProj.cpp" line="+641"/>
         <source>Calculate the indexmap for graycode image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+18"/>
         <source>Unwrapped phase by Graycode (CiMap)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Creates the X- and Y-Map for the given disparity map. The values consider the given scaling factor and the disparity-dependent shift due to the tilted illumination.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
-        <source>Continous 3D-image stack (uint8 or uint16)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+48"/>
         <source>Pixels with bright image &gt; brightUpperLimit will be set to invalid (-10)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -55,13 +50,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+118"/>
-        <location line="+79"/>
-        <source>Contrast threashold (val &lt; threas = invalid)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-271"/>
+        <location line="-74"/>
         <source>Threshold for contrast. Only pixels with ((bright-dark) &gt; contThres) will be considered</source>
         <translation type="unfinished"></translation>
     </message>
@@ -72,11 +61,13 @@
     </message>
     <message>
         <location line="+103"/>
+        <location line="+80"/>
+        <location line="+79"/>
         <source>Contrast threshold (val &lt; threas = invalid)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-155"/>
         <source>Wrapped phase result (float32, [-pi..pi] or -10 for invalid)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -86,22 +77,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+246"/>
+        <location line="+72"/>
+        <source>N x Y x X continuous image stack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+174"/>
         <source>error calling calcPhaseMap4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-412"/>
+        <location line="-428"/>
         <source>Reconstructs wrapped phase from N phaseshifted images with a shift of 2pi / N. The definition of the phase is equal to calcPhaseMap4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Reconstructs wrapped phase from four 90degree phase shifted images. The phase value is determined using the Carré algorithm: atan2(I3-I1,I2-I0).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+56"/>
+        <source>Continuous 3D-image stack (uint8 or uint16)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+112"/>
         <source>4 x Y x X image stack (uint8 or uint16) with 4 phase shifted images (90° each)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -112,12 +113,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4"/>
-        <source>N x Y x X continous image stack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>Wrapped phase result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -215,7 +211,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-536"/>
+        <location line="-558"/>
         <source>Algorithms used for fringe projection (phase shifting and Gray code)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -225,12 +221,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+602"/>
+        <location line="+629"/>
         <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value.
 
 The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1)

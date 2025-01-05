@@ -2,9 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogThorlabsBP</name>
+    <name>DialogThorlabsBDCServo</name>
     <message>
-        <source>Thorlabs BP</source>
+        <source>Thorlabs BDC Servo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12,11 +12,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Device:</source>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>[unknown]</source>
+        <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -28,10 +28,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Timeout:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -40,35 +36,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Timeout:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Axis settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum output voltage:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>75 V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>100 V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>150 V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum travel range:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>0 µm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zero this axis (requires few seconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -76,7 +48,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Closed loop</source>
+        <source> mm/s^2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Velocity:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> mm/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zero this axis (requires few seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backlash:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> mm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -85,9 +81,9 @@
     </message>
 </context>
 <context>
-    <name>DockWidgetThorlabsBP</name>
+    <name>DockWidgetThorlabsBDCServo</name>
     <message>
-        <source>Thorlabs ISM</source>
+        <source>Thorlabs BDC Servo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -114,35 +110,37 @@
         <source>Axis Control</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>CH 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CH 2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <source>licensed under LGPL</source>
+        <source>ThorlabsBDCServo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsBP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ThorlabsBP is an acutator plugin to control the following integrated devices from Thorlabs:
+        <source>ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* Benchtop Piezo (1 channel)
-* Benchtop Piezo (3 channels)
+* Benchtop DC Servo (M30XY)
 
-It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.Benchtop.Piezo.
+It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.Benchtop.DCServo.
 
 Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
-This plugin has been tested with the Benchtop Piezo with 1 and 3 channels.
-
-The position values are always in mm if the corresponding axis is in closed-loop mode and if a strain gauge feedback is connected. Else the values are always in volts.</source>
+This plugin has been tested with the Benchtop DC Servo M30XY.
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsBP</name>
+    <name>ThorlabsBDCServo</name>
     <message>
         <source>name of plugin</source>
         <translation type="unfinished"></translation>
@@ -153,6 +151,10 @@ The position values are always in mm if the corresponding axis is in closed-loop
     </message>
     <message>
         <source>Description of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Firmware version of the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -172,27 +174,31 @@ The position values are always in mm if the corresponding axis is in closed-loop
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If 0, the axis is not zeroed. 1: zeroed. If the axis is not zeroed, it is possible that position values at the edge of the valid range can not be reached.</source>
+        <source>If 0, the axis is not homed. 1: homed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If 0, the axis is not equipped with a strain gauge feedback, else 1.</source>
+        <source>Acceleration values for each axis in mm/s^2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open loop (0), closed loop (1)</source>
+        <source>Velocity values for each axis in mm/s.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum travel range for each axis in mm. This requires an actuator with built in position sensing. These values might not be correct if the motor is in open loop mode.</source>
+        <source>Maximum travel position for each axis in mm.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum output voltage (75, 100 or 150 V).</source>
+        <source>Minimum travel position for each axis in mm. </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
+        <source>Backlash distance setting in mm (used to control hysteresis).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -200,18 +206,18 @@ The position values are always in mm if the corresponding axis is in closed-loop
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>timeout occurred</source>
+        <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsBPInterface</name>
+    <name>ThorlabsBDCServoInterface</name>
     <message>
         <source>Serial number of the device to be loaded, if empty, the first device that can be opened will be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>list of channels to connect to. If an empty list is given, all connected channels are used. The plugin axis indices are then mapped to the channels.</source>
+        <source>If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

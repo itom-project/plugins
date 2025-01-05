@@ -146,7 +146,7 @@ COM port must be adapted.
     try:
         conex
     except NameError:
-        serial = dataIO("SerialIO", comPort, 921600, "\r\n", enableDebug=True)
+        serial = dataIO("SerialIO", comPort, 921600, "\r\n")
         conex = dataIO("NewportConexLDS", serial)
 
     conex.getParamListInfo()
@@ -241,4 +241,4 @@ Create 2 dimensional plot of data. First data points below a laser power level o
 Changelog
 ==========
 
-* itom setup 4.3.0 - v1.1.0: Renamed timeStemp to timeStamp
+* itom setup 4.3.0 release - v1.1.0: Renamed timeStemp to timeStamp

@@ -395,10 +395,17 @@ It is initialized by actuator(&quot;UhlRegister&quot;, SerialIO, ...).
 WARNING: There are different controller versions with different
 command languages. This DLL is for F9S Register devices.
 WARNING: The calibration direction of the stages differs according to motor / controller.
-Check calibration direction before usage. 
+Check calibration direction before usage.
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG</source>
-        <translation type="unfinished"></translation>
+        <translation>UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F9S-x) verwendet werden kann.
+
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlRegister&quot;, SerialIO, ...)&apos;.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für F9S Geräte.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung ist die Fahrrichtung der Kalibrierung zu überprüfen.
+
+Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht</translation>
     </message>
     <message>
         <location line="+23"/>

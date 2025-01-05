@@ -588,16 +588,11 @@ This system needs a serial port, which differs depending on the controller type.
 It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+13"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SuperlumBS</name>
     <message>
-        <location line="+28"/>
+        <location line="+47"/>
         <source>The current com-port ID of this specific device. -1 means undefined.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -690,7 +685,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>(0) optical output is disabeld, (1) optical output is enabled.</source>
+        <source>(0) optical output is disabled, (1) optical output is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -700,12 +695,12 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+629"/>
+        <location line="+634"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-559"/>
+        <location line="-564"/>
         <source>name of given parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -725,24 +720,24 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+32"/>
         <location line="+93"/>
         <location line="+40"/>
         <location line="+33"/>
-        <location line="+29"/>
+        <location line="+28"/>
         <location line="+6"/>
-        <location line="+281"/>
+        <location line="+286"/>
         <location line="+105"/>
         <location line="+391"/>
         <location line="+237"/>
         <location line="+30"/>
         <location line="+55"/>
-        <location line="+190"/>
+        <location line="+192"/>
         <source>invalid answer &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1484"/>
+        <location line="-1490"/>
         <source>Optical output of device is enabled!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -757,15 +752,15 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <location line="+13"/>
         <location line="+18"/>
         <location line="+34"/>
-        <location line="+38"/>
+        <location line="+37"/>
         <location line="+23"/>
-        <location line="+41"/>
+        <location line="+42"/>
         <location line="+19"/>
         <location line="+17"/>
-        <location line="+21"/>
-        <location line="+16"/>
-        <location line="+16"/>
-        <location line="+16"/>
+        <location line="+22"/>
+        <location line="+17"/>
+        <location line="+17"/>
+        <location line="+17"/>
         <location line="+109"/>
         <location line="+105"/>
         <location line="+7"/>
@@ -780,8 +775,8 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <location line="+55"/>
         <location line="+16"/>
         <location line="+16"/>
-        <location line="+16"/>
-        <location line="+16"/>
+        <location line="+17"/>
+        <location line="+17"/>
         <location line="+23"/>
         <location line="+10"/>
         <location line="+16"/>
@@ -791,7 +786,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1340"/>
+        <location line="-1346"/>
         <source>Optical Output is ENABLED!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -801,7 +796,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+119"/>
         <source>&apos;%s&apos; is not a possible modulation frequency.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -866,7 +861,7 @@ It is initialized by dataIO(&quot;SuperlumBS&quot;, SerialIO).</source>
 <context>
     <name>SuperlumBSInterface</name>
     <message>
-        <location line="-1258"/>
+        <location line="-1269"/>
         <source>An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

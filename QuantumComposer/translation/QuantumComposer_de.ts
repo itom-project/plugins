@@ -11,10 +11,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>QuantumComposer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -84,10 +80,6 @@ endline    \r\n
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: output inhibit, CHAN: channel).cycle).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Gate logic level (LOW, HIGH).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -129,10 +121,6 @@ endline    \r\n
     </message>
     <message>
         <source>List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>List of states to enalbe/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -252,10 +240,6 @@ endline    \r\n
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input parameter is not a dataIO instance of ther SerialIO Plugin!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Answer of the identification request is not valid!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,6 +265,18 @@ endline    \r\n
     </message>
     <message>
         <source>The lengths of the channel list (%1) and widths list (%2) must be the same.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Global gate mode of the system output. (DIS: disabled, PULS: pulse inhibit, OUTP: output inhibit, CHAN: channel).cycle).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List of states to enable/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input parameter is not a dataIO instance of the SerialIO Plugin!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

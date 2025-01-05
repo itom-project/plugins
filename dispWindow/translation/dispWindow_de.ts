@@ -152,7 +152,7 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+220"/>
+        <location filename="../dispWindow.cpp" line="+224"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished">Durchschnittlicher Grauwert für die Intensitätskalibrierung</translation>
     </message>
@@ -328,17 +328,12 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-1239"/>
+        <location line="-1236"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+19"/>
         <source>x0 position of window</source>
         <translation type="unfinished">x0-Fensterposition</translation>
     </message>

@@ -62,7 +62,7 @@
 <context>
     <name>GenICamClass</name>
     <message>
-        <location filename="../genicam.cpp" line="+158"/>
+        <location filename="../genicam.cpp" line="+194"/>
         <source>width of ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -112,27 +112,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+757"/>
+        <location line="+762"/>
         <source>Invokes the command &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+163"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+68"/>
         <source>Acquisition failed since device has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>AcquisitionMode &apos;multiFrame&apos; (or other than &apos;Continous&apos; and &apos;SingleFrame&apos;) not supported, yet.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+433"/>
+        <location line="+461"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -152,7 +147,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="-82"/>
+        <source>AcquisitionMode &apos;multiFrame&apos; (or other than &apos;Continuous&apos; and &apos;SingleFrame&apos;) not supported, yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+155"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,42 +175,47 @@
 <context>
     <name>GenICamInterface</name>
     <message>
-        <location line="-1359"/>
+        <location line="-1405"/>
         <source>Indicate either a string containing the vendor and model name separated with a semicolon (e.g. &apos;XIMEA GmbH.;xiApi&apos;) or the path to a cti file (GenICam GenTL transport layer) with the file suffix .cti of the respective camera driver. If nothing is indicated, a list of all auto-detected vendors and models is returned.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>interface to be opened (e.g. IIDC, U3V, USB3, USB, Ethernet...). Open with an empty string to get a list of all possible interfaces for the chosen transport layer. Default: &apos;auto&apos; opens the first supported interface of the chosen transport layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>name of the device to be opened. Leave empty to open first detected device of given transport layer and interface.</source>
+        <location line="+6"/>
+        <source>name of the device to be opened. Leave empty to open first detected device of given transport layer and interface. Some cameras don&apos;t have a persistent device ID. Then, it is better to identify them with their serial number. If this is desired this parameter can also be set to &apos;Serial:your_serial_number&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+7"/>
         <source>index of data stream to be opened (default: 0).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Visibility level of parameters (%1: Beginner, %2: Expert, %3: Guru, %4: Invisible).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>port index to be opened (default: 0).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, information, 4: debug, 5: all (gives even information about parameter changes or buffer states)).</source>
+        <location line="+4"/>
+        <source>verbose level (0: print nothing, 1: only print errors, 2: print errors and warnings, 3: print errors, warnings, information, 4: debug, 5: all (gives even information about parameter changes or buffer states), higher: special debug values).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+11"/>
+        <source>If 1: all announced buffers will be additionally flushed with &apos;ACQ_QUEUE_ALL_TO_INPUT&apos; to the input queue in startDevice or in case of any buffer errors. If 0: this is not the case (default). It seems that the Allied Vision Goldeye G-008 camera requires this option to be set to 1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>Access level to the device: (Readonly: %1, Control: %2, Exclusive: %3).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -222,23 +227,18 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="-65"/>
+        <location line="-96"/>
         <source>Camera control of devices that support the GenICam standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <source>licensed under LGPL, this plugin is based on GenICam licensed under the GenICam license 1.5 (see GenICam_License.txt)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../deviceContainer.cpp" line="+209"/>
+        <location filename="../deviceContainer.cpp" line="+207"/>
         <source>cti file &apos;%1&apos; does not export all necessary methods of the GenTL standard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+301"/>
-        <location filename="../dataStream.cpp" line="+71"/>
+        <location filename="../dataStream.cpp" line="+70"/>
         <location filename="../basePort.cpp" line="+90"/>
         <source>cti file does not export all functions of the GenTL protocol.</source>
         <translation type="unfinished"></translation>

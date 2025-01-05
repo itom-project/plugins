@@ -3,7 +3,7 @@
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`HMBSpider8`
+**Summary**:    :pluginsummary:`HBMSpider8`
 **Type**:       :plugintype:`HBMSpider8`
 **License**:    :pluginlicense:`HBMSpider8`
 **Platforms**:  Windows, Linux
@@ -30,10 +30,8 @@ Initialization
 
 The following parameters are mandatory or optional for initializing an instance of this plugin:
 
-    .. plugininitparams::
-        :plugin: HBMSpider8
-        **SerialIO**: ito::ParamBase::HWRef
-            An open serial port on which the HBM Spider 8 is connected
+.. plugininitparams::
+    :plugin: HBMSpider8
 
 Parameters
 ===========

@@ -4,7 +4,7 @@
 <context>
     <name>DialogThorlabsDCxCam</name>
     <message>
-        <location filename="../dialogIDS.ui" line="+26"/>
+        <location filename="../dialogThorlabsDCxCam.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -165,7 +165,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DialogThorlabsDCxCam.cpp" line="+50"/>
+        <location filename="../dialogThorlabsDCxCam.cpp" line="+49"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -178,7 +178,7 @@
 <context>
     <name>DockWidgetThorlabsDCxCam</name>
     <message>
-        <location filename="../dockWidgetIDS.ui" line="+14"/>
+        <location filename="../dockWidgetThorlabsDCxCam.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,52 +286,17 @@
     </message>
 </context>
 <context>
-    <name>ThorlabsDCxCamInterface</name>
+    <name>QObject</name>
     <message>
-        <location filename="../ThorlabsDCxCamInterface.cpp" line="+102"/>
-        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models:
-- UI145xSE-C (colored, USB2)
-- UI124xSE-M (monochrome, USB2).
-- UI224xSE-M (monochrome, USB2).
-- UI337xCP-C (colored, USB3)
-
-The plugin has been compiled using the IDS library version %1.%2.
-
-In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.
-
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>initial color model of camera (&apos;gray&apos;, &apos;color&apos; or &apos;auto&apos; (default)). &apos;color&apos; is only possible for color cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)</source>
+        <location filename="../thorlabsDCxCamInterface.cpp" line="+78"/>
+        <source>ThorlabsDCxCam grabber.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ThorlabsDCxCam</name>
     <message>
-        <location filename="../ThorlabsDCxCam.cpp" line="+61"/>
+        <location filename="../thorlabsDCxCam.cpp" line="+64"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -397,26 +362,6 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     </message>
     <message>
         <location line="+6"/>
-        <source>Index of left boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Index of top boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Index of right boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Index of bottom boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>trigger modes for starting a new image acquisition, depending on the camera the following modes are supported: &apos;off&apos; (fixed frame_rate), without fixed frame_rate: &apos;software&apos;, &apos;hi_lo&apos;, &apos;lo_hi&apos;, &apos;pre_hi_lo&apos;, &apos;pre_lo_hi&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -431,13 +376,13 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1954"/>
+        <location line="+1896"/>
         <location line="+5"/>
         <source>Warning framerate is out of bounds, set to closest value possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1981"/>
+        <location line="-1923"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -467,7 +412,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+904"/>
+        <location line="+896"/>
         <source>StopDevice of ThorlabsDCxCam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -492,7 +437,7 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+717"/>
+        <location line="+667"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,10 +448,30 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     </message>
 </context>
 <context>
-    <name>QObject</name>
+    <name>ThorlabsDCxCamInterface</name>
     <message>
-        <location filename="../ThorlabsDCxCamInterface.cpp" line="-51"/>
-        <source>IDS uEye grabber.</source>
+        <location filename="../thorlabsDCxCamInterface.cpp" line="+7"/>
+        <source>This plugin supports Thorlabs DCx cameras and has currently been tested with the following models:
+- ...
+
+The plugin has been compiled using the Thorlabs DCx library version %1.%2. You can run it with an installed driver version %3.%4x.xx.
+
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>initial color model of camera (&apos;gray&apos;, &apos;color&apos; or &apos;auto&apos; (default)). &apos;color&apos; is only possible for color cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

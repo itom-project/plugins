@@ -18,12 +18,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Licensed under LGPL, Stemmer Common Vision Blox under its own license.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+19"/>
         <source>If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -156,12 +151,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
-        <source>you need to indiciate a suffix for the node you want to set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+31"/>
+        <location line="+109"/>
         <source>invalid index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,7 +211,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+175"/>
+        <location line="-542"/>
+        <source>you need to indicate a suffix for the node you want to set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+717"/>
         <location line="+32"/>
         <location line="+33"/>
         <location line="+26"/>
@@ -231,7 +226,7 @@
         <location line="+68"/>
         <location line="+41"/>
         <location line="+45"/>
-        <source>node map not avaible</source>
+        <source>node map not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

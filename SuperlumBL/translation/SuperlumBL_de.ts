@@ -169,16 +169,11 @@ This system needs a serial port, which differs depending on the controller type.
 It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+12"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SuperlumBL</name>
     <message>
-        <location line="+26"/>
+        <location line="+38"/>
         <source>Name of plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -199,7 +194,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
     </message>
     <message>
         <location line="+2"/>
-        <source>(0) optical output is disabeld, (1) optical output is enabled.</source>
+        <source>(0) optical output is disabled, (1) optical output is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -214,12 +209,12 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
     </message>
     <message>
         <location line="+11"/>
-        <location line="+327"/>
+        <location line="+338"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-257"/>
+        <location line="-268"/>
         <source>name of given parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -242,35 +237,35 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
         <location line="+17"/>
         <location line="+13"/>
         <location line="+5"/>
-        <location line="+93"/>
+        <location line="+103"/>
         <location line="+18"/>
-        <location line="+31"/>
-        <location line="+131"/>
+        <location line="+32"/>
+        <location line="+132"/>
         <location line="+7"/>
         <location line="+201"/>
         <location line="+19"/>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>invalid answer &apos;%s&apos; for sending  &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-515"/>
-        <location line="+81"/>
+        <location line="-527"/>
+        <location line="+90"/>
         <source>invalid answer &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-62"/>
+        <location line="-66"/>
         <source>Could not disable optical output. Answer was &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+46"/>
         <source>Could not enable optical output. Answer was &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+108"/>
         <source>Given parameter and m_param do not have the same type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -285,7 +280,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+83"/>
         <location line="+69"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
@@ -304,7 +299,7 @@ It is initialized by dataIO(&quot;SuperlumBL&quot;, SerialIO, deviceName).</sour
 <context>
     <name>SuperlumBLInterface</name>
     <message>
-        <location line="-641"/>
+        <location line="-653"/>
         <source>An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

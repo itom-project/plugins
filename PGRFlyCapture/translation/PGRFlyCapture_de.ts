@@ -206,67 +206,67 @@
 <context>
     <name>PGRFlyCapture</name>
     <message>
-        <location filename="../PGRFlyCapture.cpp" line="+258"/>
+        <location filename="../PGRFlyCapture.cpp" line="+305"/>
         <source>Pixelsize in x (cols)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Pixelsize in y (rows)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+46"/>
         <source>Current video mode, default is Mode7</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-58"/>
+        <location line="-85"/>
         <source>Integrationtime of CCD programmed in seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>gain (normalized value 0..1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Camera brightness control (EV)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Sharpness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Gamma adjustment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+20"/>
         <source>region of interest, ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,12 +281,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+62"/>
         <source>Interface of camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2280"/>
+        <location line="+1818"/>
+        <location line="+14"/>
+        <location line="+20"/>
+        <location line="+14"/>
+        <location line="+20"/>
+        <location line="+22"/>
+        <location line="+28"/>
+        <location line="+16"/>
+        <source>getVal of PGRFlyCapture failed, since retrieved NULL-Pointer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+334"/>
         <source>Bitdepth of %i bit is not supported by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,87 +358,131 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1695"/>
+        <location line="-1772"/>
         <source>print all current parameters of the camera for internal checks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+6"/>
+        <source>the GPIO pin to be edited</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+2"/>
+        <location line="+16"/>
+        <source>ON or OFF this function; 0: OFF, 1 : ON</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <location line="+16"/>
+        <source>0 = active low; 1 = active high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <location line="+16"/>
+        <source>delay after start of exposure until the strobe signal asserts in ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <location line="+16"/>
+        <source>duration of the strobe signal in ms, a value of 0 means de-assert at the end of exposure, if required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>sets the strobe mode with the given parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>the GPO pin to get the mode from</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>gets the strobe mode of the given source pin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>name of the camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+31"/>
         <source>If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>-1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The grab strategy employed during image transfer. 0: DROP_FRAMES: Grabs the newest image in the user buffer each time the RetrieveBuffer() function is called, 1: BUFFER_FRAMES: Images accumulate in the user buffer, 2: UNSPECIFIED_GRAB_MODE, 3: GRAB_MODE_FORCE_32BITS)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Packet size of current image settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+10"/>
         <source>On some computers, a blue screen sometimes occurs if the time gap between starting the camera and acquiring an image is too short. In this case, try to increase this parameter (in s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Serial number of the connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Model identifier of the connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Name of the camera vendor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Identifier of the chip in connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Resolution of the chip in connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Serial number of the firmware used in the connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Built time of the firmware used in the connected camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
         <source>Direct read/write of registers, use the hex-number of the register as suffix to read/write a specific register (e.g. getParam(&apos;cam_register:0xA01F&apos;))</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>With some cameras, parameter changes like the exposure time or gain will only take effect x images after the change. If this parameter is set to &gt; 0, the given number of images are acquired after changing any parameter in order to delete the intermediate images.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -441,12 +497,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+181"/>
+        <location line="+180"/>
         <source>only indices in the range [0,3] are allowed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+348"/>
         <source>Error setting packetsize: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -464,7 +520,7 @@
     <message>
         <location line="-18"/>
         <location line="+28"/>
-        <location line="+18"/>
+        <location line="+19"/>
         <location line="+18"/>
         <source>Error getting parameter %s: %s</source>
         <translation type="unfinished"></translation>
@@ -531,7 +587,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+87"/>
         <source>Acquire of PGRFlyCapture can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -546,24 +602,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
-        <source>Camera not started or triggered</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <location line="+14"/>
-        <location line="+20"/>
-        <location line="+14"/>
-        <location line="+20"/>
-        <location line="+22"/>
-        <location line="+28"/>
-        <location line="+16"/>
-        <source>getVal of PGRFlyCapture failed, since retrived NULL-Pointer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location line="+212"/>
         <source>retrieveData of PGRFlyCapture failed, since bitdepth %i not implemented.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -571,7 +610,7 @@
 <context>
     <name>PGRFlyCaptureInterface</name>
     <message>
-        <location line="-2128"/>
+        <location line="-2201"/>
         <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera. In color mode, bpp is limited to 8 per color.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -579,7 +618,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-30"/>
+        <location line="-22"/>
+        <source>Point Grey FlyCapture2 Cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-12"/>
         <source>This plugin supports Point Grey cameras (currently USB models only) that can be run by the FlyCapture2 interface from Point Grey Research.
 This plugin was mainly tested with Flea3 (monochrome) and Grasshopper3 cameras (monochrome, color) under Windows and Linux.
 
@@ -594,27 +638,17 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Point Grey FlyCapture2 Cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>GPL / this plugin needs to link agains the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
+        <location line="+24"/>
         <source>Continuous camera number [0,10], default: -1 uses the next free camera.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Limits the bitdepth to the given level [8, 12, 16]. As default the maximum level is used (-1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Direct enable software sync if present</source>
         <translation type="unfinished"></translation>
     </message>

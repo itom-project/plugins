@@ -204,7 +204,7 @@
 <context>
     <name>PCOCamera</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+202"/>
+        <location filename="../PCOCamera.cpp" line="+200"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -269,12 +269,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>CCD, camera and power supply temperatures in degree celcius</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+8"/>
         <source>Switch the IR sensitivity of the image sensor, Parameter is not available for all cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -309,7 +304,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-2"/>
+        <source>CCD, camera and power supply temperatures in degree celsius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Pixelrate of the image sensor in MHz</source>
         <translation type="unfinished"></translation>
     </message>
@@ -364,7 +364,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1449"/>
+        <location line="-1447"/>
         <source>DLL for PCO-Cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -378,11 +378,6 @@ The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Developm
 Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.
 
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>LGPL / copyright of the external DLLs belongs to PCO</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

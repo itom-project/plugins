@@ -389,12 +389,12 @@
     <message>
         <location line="+306"/>
         <source>Joystick is active. Programming error?</source>
-        <translation type="unfinished"></translation>
+        <translation>Joystick ist aktiv. Programmierfehler?</translation>
     </message>
     <message>
         <location line="+277"/>
         <source>Acceleration of all axis in mm/s^2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beschleunigung aller Achsen in mm/s^2</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -614,15 +614,21 @@ It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
 WARNING: There are different controller versions with different
 command languages. This DLL is for devices that are controlled by ASCII commands via the RS232 port.
 WARNING: The calibration direction of the stages differs according to motor / controller.
-Check calibration direction before usage. 
+Check calibration direction before usage.
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
+
+Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>1 -&gt; calibration during initialization</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1 -&gt; Kalibrierung während der Initialisierung</translation>
     </message>
     <message>
         <location line="+2"/>

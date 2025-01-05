@@ -235,12 +235,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>Wavelength to seperate between roughness and waviness</source>
+        <source>Wavelength to separate between roughness and waviness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Wavelength to seperate between waviness and form</source>
+        <source>Wavelength to separate between waviness and form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -264,18 +264,13 @@
 - 2D FFT (over the last two axes)
 - 2D inverse FFT (over the last two axes)
 
-The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .
+The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.It was published under GNU General Public License and can be downloaded under http://www.fftw.org/ .
 
 To build this plugin you will need the libs from the fftw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>GPL (uses FFTW licensed under GPL, too)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+568"/>
+        <location line="+584"/>
         <source>Perform fftshift as known from Python, Matlab and so on, i.e. make the
 zero order of diffraction appear in the center.
 

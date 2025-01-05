@@ -173,12 +173,7 @@
 <context>
     <name>PIHexapodCtrl</name>
     <message>
-        <location filename="../PIHexapodCtrl.cpp" line="+183"/>
-        <source>asynchronous (1.0) or sychronous (0.0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PIHexapodCtrl.cpp" line="+186"/>
         <source>Number of axes (here always 1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,12 +315,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>F-361 communications error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>MOV! command motion in progress</source>
         <translation type="unfinished"></translation>
     </message>
@@ -481,7 +471,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>asynchronous (1.0) or synchronous (0.0) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>speed of every axis in physical units / s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -555,7 +550,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+734"/>
+        <location line="+569"/>
+        <source>F-361 communication error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+165"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,7 +568,7 @@
 <context>
     <name>PIHexapodCtrlInterface</name>
     <message>
-        <location line="-1576"/>
+        <location line="-1577"/>
         <source>PI Hexapods H810, H824, H840, H850</source>
         <translation type="unfinished"></translation>
     </message>
@@ -588,12 +588,7 @@ to initialize the x,y,z,u,v and w axis, respectively.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+19"/>
         <source>An opened serial port (If connected via Serial-Port).</source>
         <translation type="unfinished"></translation>
     </message>

@@ -135,10 +135,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>invalid data type / not implemeneted yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Algorithms used for digital image correlation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -147,11 +143,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>N.A.</source>
+        <source>invalid data type / not implemented yet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
