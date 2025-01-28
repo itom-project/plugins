@@ -807,7 +807,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int | ito::ParamBase::In,
         1,
         32767,
-        50,
+        400,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingSpeed_register))
             .toUtf8()
@@ -819,7 +819,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int | ito::ParamBase::In,
         1,
         30000,
-        400,
+        50,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingAcceleration_register))
             .toUtf8()
