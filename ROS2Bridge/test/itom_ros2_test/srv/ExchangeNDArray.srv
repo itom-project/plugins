@@ -1,0 +1,9 @@
+# ExchangeNDArray.srv
+
+# Request section
+std_msgs/Float32MultiArray request_array  # Sent N-dimensional array
+
+---
+# Response section
+std_msgs/Float32MultiArray response_array  # Returned N-dimensional array
+

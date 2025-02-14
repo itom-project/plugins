@@ -35,7 +35,7 @@ ito::RetVal MyCobot280PiInterface::closeThisInst(ito::AddInBase **addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MyCobot280PiInterface::MyCobot280PiInterface(QObject * /*parent*/)
+MyCobot280PiInterface::MyCobot280PiInterface(QObject * /*Parent*/)
 {
     m_autoLoadPolicy = ito::autoLoadKeywordDefined;
     m_autoSavePolicy = ito::autoSaveAlways;
@@ -56,20 +56,20 @@ MyCobot280PiInterface::MyCobot280PiInterface(QObject * /*parent*/)
     m_aboutThis = QObject::tr(GITVERSION);
 
     // Corrected the "numAxis" parameter initialization
-    ito::Param paramVal("numAxis", ito::ParamBase::Int);  // 只使用两个参数
-    paramVal.setVal<int>(6);  // 设置默认值为 6
-    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // 设置元数据，范围为 [1, 6]
+    ito::Param paramVal("numAxis", ito::ParamBase::Int);  // Use only two parameters
+    paramVal.setVal<int>(6);  // Set the default value to 6
+    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // Set metadata, range [1, 6]
     m_initParamsOpt.append(paramVal);
 
-    // "host" 参数初始化
-    paramVal = ito::Param("host", ito::ParamBase::String);  // 只使用两个参数
-    paramVal.setVal<const char*>("127.0.0.1");  // 设置默认值为 "127.0.0.1"
+    // "host" parameter initialization
+    paramVal = ito::Param("host", ito::ParamBase::String);  // Use only two parameters
+    paramVal.setVal<const char*>("127.0.0.1");  // Set the default value to "127.0.0.1"
     m_initParamsOpt.append(paramVal);
 
-    // "port" 参数初始化
-    paramVal = ito::Param("port", ito::ParamBase::Int);  // 只使用两个参数
-    paramVal.setVal<int>(9999);  // 设置默认值为 9999
-    paramVal.setMeta(new ito::IntMeta(1, 65535), true);  // 设置端口范围 [1, 65535]
+    // "port" parameter initialization
+    paramVal = ito::Param("port", ito::ParamBase::Int);  // Use only two parameters
+    paramVal.setVal<int>(9999);  // Set the default value to 9999
+    paramVal.setMeta(new ito::IntMeta(1, 65535), true);  // Set port range [1, 65535]
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -105,32 +105,32 @@ MyCobot280Pi::MyCobot280Pi() :
     m_async(false),      
     m_nrOfAxes(6)
 {
-    // 插入 name 参数
+    // Insert name parameter
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyCobot280Pi", "Name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly);  // 初始化参数
-    paramVal.setVal<int>(6);  // 设置默认值
-    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // 设置元数据范围 [1, 6]
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly);  // Initialization parameters
+    paramVal.setVal<int>(6);  // Set default values
+    paramVal.setMeta(new ito::IntMeta(1, 6), true);  // Set metadata range [1, 6]
     m_params.insert(paramVal.getName(), paramVal);
 
-    // 插入 host 参数，将 QString 转换为 const char*
-    paramVal = ito::Param("host", ito::ParamBase::String);  // 初始化参数
-    paramVal.setVal<const char*>(m_host.toLatin1().data());  // 设置值
+    // Insert the host parameter and convert QString to const char*
+    paramVal = ito::Param("host", ito::ParamBase::String);  // Initialization parameters
+    paramVal.setVal<const char*>(m_host.toLatin1().data());  // Set value
     m_params.insert(paramVal.getName(), paramVal);
 
-    // 插入 port 参数，保持整数类型
-    paramVal = ito::Param("port", ito::ParamBase::Int);  // 初始化参数
-    paramVal.setVal<int>(m_port);  // 设置默认值
+    // Insert port parameter to keep integer type
+    paramVal = ito::Param("port", ito::ParamBase::Int);  // Initialization parameters
+    paramVal.setVal<int>(m_port);  // Set default values
     m_params.insert(paramVal.getName(), paramVal);
 
 
 
 
-    // 初始化目标位置数组
+    // Initialize the target position array
     m_targetPos = QVector<double>(6, 0.0);
 
-    // 创建 GUI 支持的 Dock Widget
+    // Create a GUI-supported Dock Widget
     if (hasGuiSupport())
     {
         DockWidgetMyCobot280Pi *MyCobotWid = new DockWidgetMyCobot280Pi(getID(), this);
@@ -269,15 +269,15 @@ ito::RetVal MyCobot280Pi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito:
     ito::RetVal retValue(ito::retOk);
 
     //steps todo:
-    // - get all initialization parameters
-    // - try to detect your device
-    // - establish a connection to the device
-    // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
-    // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - set m_nrOfAxes to the number of axes
-    // - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding values
-    // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
-    // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
+    // -get all initialization parameters
+    // -try to detect your device
+    // -establish a connection to the device
+    // -synchronize the current parameters of the device with the current values of parameters inserted in m_params
+    // -if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
+    // -set m_nrOfAxes to the number of axes
+    // -resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding values
+    // -call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
+    // -call setInitialized(true) to confirm the end of the initialization (even if it failed)
 
 
     if (!retValue.containsError())
@@ -302,8 +302,8 @@ ito::RetVal MyCobot280Pi::close(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
 
     //todo:
-    // - disconnect the device if not yet done
-    // - this function is considered to be the "inverse" of init.
+    // -disconnect the device if not yet done
+    // -this function is considered to be the "inverse" of init.
 
     if (waitCond)
     {
@@ -352,26 +352,26 @@ ito::RetVal MyCobot280Pi::connectToSocket()
 ito::RetVal MyCobot280Pi::sendSocketData(const QString &data)
 {
     if (m_socket && m_socket->state() == QAbstractSocket::ConnectedState) {
-        // 发送数据
+        // Send data
         qint64 bytesWritten = m_socket->write(data.toUtf8());
         
-        // 检查是否成功写入数据
+        // Check whether the data is successfully written
         if (bytesWritten == -1) {
             return ito::RetVal(ito::retError, 0, QString("Failed to send data: %1").arg(m_socket->errorString()).toLatin1().data());
         }
 
-        // 确保数据被完全发送
+        // Ensure that the data is sent completely
         if (!m_socket->flush()) {
             return ito::RetVal(ito::retError, 0, "Failed to flush data to the socket");
         }
 
-        // 等待服务器响应（等待时间可调整，单位为毫秒）
-        if (m_socket->waitForReadyRead(2000)) {  // 5000 毫秒 = 5 秒
-            // 读取所有数据并返回
+        // Waiting for server response (waiting time can be adjusted in milliseconds)
+        if (m_socket->waitForReadyRead(2000)) {  // 5000 milliseconds = 5 seconds
+            // Read all data and return
             QByteArray responseData = m_socket->readAll();
             QString response = QString::fromUtf8(responseData);
 
-            // 打印服务器回复 (可根据需求返回给调用函数)
+            // Print server reply (can be returned to the calling function according to requirements)
             qDebug() << "Response from server:\n" << response;
             
             return ito::RetVal(ito::retOk, 0, QString("Response: %1").arg(response).toLatin1().data());
@@ -697,7 +697,7 @@ void MyCobot280Pi::dockWidgetVisibilityChanged(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MyCobot280Pi::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*flags*/)
+ito::RetVal MyCobot280Pi::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*Flags*/)
 {
     ito::RetVal retVal(ito::retOk);
     bool done = false;
@@ -786,8 +786,8 @@ ito::RetVal MyCobot280Pi::waitForDone(const int timeoutMS, const QVector<int> ax
 }
 
 ito::RetVal MyCobot280Pi::updateStatus() {
-    // 实现状态更新逻辑
+    // Implement status update logic
     ito::RetVal retVal(ito::retOk);
-    // 这里实现你的逻辑
+    // Implement your logic here
     return retVal;
 }

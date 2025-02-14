@@ -1,0 +1,8 @@
+from itom import dataIO
+from itom import dataObject
+from itom import plot
+from itom import liveImage
+
+test_conversion = dataIO("ROS2Bridge", ServiceServerName = "whatever")
+data = dataObject()
+test_conversion.getVal(data)

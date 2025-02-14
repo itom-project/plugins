@@ -1,0 +1,9 @@
+# ExchangePointCloud.srv
+
+# Request section
+sensor_msgs/PointCloud2 request_cloud  # Point cloud data sent by the client
+
+---
+# Response section
+sensor_msgs/PointCloud2 response_cloud  # Point cloud data returned by the server
+

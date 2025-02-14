@@ -1,0 +1,11 @@
+# ExchangeObject.srv
+
+# Request section
+std_msgs/String object_type       # Object type (e.g., "3D Model", "Pose", "PointCloud", etc.)
+std_msgs/String serialized_data   # Serialized representation of the object (e.g., JSON, YAML, Protobuf)
+
+---
+# Response section
+std_msgs/String status            # Response status (e.g., "success", "error")
+std_msgs/String response_object   # Returned serialized object
+

@@ -1,9 +1,9 @@
-// ROS2Bridge.cpp
+// Ro s2 bridge.cpp
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 #include "ROS2Bridge.h"
-
+#include "dockWidgetROS2Bridge.h"
 #include <math.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -12,7 +12,7 @@
 #include <qwaitcondition.h>
 #include "pluginVersion.h"
 #include "gitVersion.h"
-
+#include <qmetaobject.h>
 #include "common/helperCommon.h"
 #include "common/paramMeta.h"
 
@@ -41,12 +41,11 @@ ito::RetVal ROS2BridgeInterface::closeThisInst(ito::AddInBase **addInInst)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ROS2BridgeInterface::ROS2BridgeInterface(QObject * /*parent*/)
+ROS2BridgeInterface::ROS2BridgeInterface()
 {
-    m_autoLoadPolicy = ito::autoLoadKeywordDefined;
-    m_autoSavePolicy = ito::autoSaveAlways;
 
-    m_type = ito::typeActuator;
+
+    m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("ROS2Bridge");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
@@ -58,7 +57,7 @@ to simulate or develop your measurement system at another computer. Whenever a p
 this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) \
 expired.";*/
 
-    m_description = QObject::tr("A virtual motor to test real actuators.");
+    m_description = tr("A Bridge between ITOM and ROS2.");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
 "The RO24Bridge is a virtual actuator plugin that emulates up to 10 linear axes. \n\
@@ -75,6 +74,8 @@ expired.");
     m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
+    ito::Param paramVal("ServiceServerName", ito::ParamBase::String, "default Name", tr("The name of the service server to connect to").toLatin1().data() );
+    m_initParamsMand.append(paramVal);
 
 
     return;
@@ -91,100 +92,215 @@ const ito::RetVal ROS2Bridge::showConfDialog(void)
 return ito::retOk;
 }
 
-ROS2Bridge::ROS2Bridge() : AddInActuator()
+ROS2Bridge::ROS2Bridge() : AddInDataIO()
 {
-    // 初始化参数
+    // Initialize the parameters related to the itom plug-in
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ROS2Bridge", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
+    ito::RetVal retValue;
+    paramVal = ito::Param(
+        "ServiceServerName",
+        ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave,
+        "/add_two_ints",
+        tr("The name of the service server to connect to").toLatin1().data() );
+    m_params.insert(paramVal.getName(), paramVal);
 
-    // 创建ROS 2节点
-    // rclcpp::init(0, nullptr);
-    // node_ = rclcpp::Node::make_shared("ros2_itom_bridge");
+    
+    int argc = 1;
+    
+    const char* argv[] = {"ros2_itom_bridge", nullptr};
 
-    // // 注册服务
-    // register_services();
+    // Call rclcpp::init
+    try
+    {
+        RCLCPP_INFO(rclcpp::get_logger("ROS2Bridge"), "Initializing ROS...");
+        rclcpp::init(argc, const_cast<char**>(argv));
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "[ROS2Bridge] rclcpp::init() failed: " << ex.what() << std::endl;
+        throw;
+    }
 
-    // 创建并设置 DockWidget
+    // Create a ROS 2 node
+    try
+    {
+        node_ = rclcpp::Node::make_shared("ros2_itom_bridge");
+        RCLCPP_INFO(rclcpp::get_logger("ROS2Bridge"), "ROS Node created: ros2_itom_bridge");
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "[ROS2Bridge] Failed to create node: " << ex.what() << std::endl;
+        throw;
+    }
+
+    // 5. Periodically call spin_some through the Qt timer
+    rosSpinTimer_ = new QTimer(this);
+    connect(rosSpinTimer_, &QTimer::timeout, this, [this]() {
+        rclcpp::spin_some(node_);
+    });
+    rosSpinTimer_->start(10); // Process callbacks every 10 milliseconds
+
+    // 6. Create a service
+    RCLCPP_INFO(node_->get_logger(), "Before creating Test Server.");
+    try
+    {
+        test_server_ = node_->create_service<itom_ros2_test::srv::Exchange2DArray>(
+            "image_exchange",
+            std::bind(&ROS2Bridge::handle_image_request, this, std::placeholders::_1, std::placeholders::_2));
+
+        RCLCPP_INFO(node_->get_logger(), "After creating Test Server.");
+    }
+    catch(const std::exception &ex)
+    {
+        RCLCPP_ERROR(node_->get_logger(), "Failed to create service: %s", ex.what());
+        throw;
+    }
+
+    // 7. Create and set DockWidget (itom GUI related)
     if (hasGuiSupport())
     {
         DockWidgetROS2Bridge *dw = new DockWidgetROS2Bridge(m_params, getID());
         Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        QDockWidget::DockWidgetFeatures features =
+            QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char*>()), features, areas, dw);
 
-        // 注册 dockWidgetVisibilityChanged 槽函数
         connect(this, SIGNAL(dockWidgetVisibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
     }
-
-    // // 初始化并启动定时器
-    // rosSpinTimer_ = new QTimer(this);
-    // connect(rosSpinTimer_, &QTimer::timeout, this, [this]() {
-    //     rclcpp::spin_some(node_);
-    // });
-    // rosSpinTimer_->start(10); // 每10毫秒调用一次
 }
+
 
 ROS2Bridge::~ROS2Bridge()
 {
-    // 停止定时器
+    // Stop timer
     if (rosSpinTimer_)
     {
         rosSpinTimer_->stop();
         delete rosSpinTimer_;
     }
 
-    // 清理ROS 2资源`
+    // Clean up ROS 2 resources`
     rclcpp::shutdown();
 }
 
-void ROS2Bridge::register_services()
-{
-    get_topics_service_ = node_->create_service<rosapi_msgs::srv::Topics>(
-        "/rosapi/topics",
-        std::bind(&ROS2Bridge::handle_get_topics, this, std::placeholders::_1, std::placeholders::_2));
-}
 
-void ROS2Bridge::handle_get_topics(const std::shared_ptr<rosapi_msgs::srv::Topics::Request> /*request*/,
-                                   std::shared_ptr<rosapi_msgs::srv::Topics::Response> response)
+//--------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ROS2Bridge::setCvMatToDataObject(ito::DataObject &dataObj, const cv::Mat *mat)
 {
-    auto topics_and_types = node_->get_topic_names_and_types();
-    for (const auto &topic : topics_and_types)
+    ito::RetVal retval;
+    RCLCPP_INFO(node_->get_logger(), "test1.");
+    // 1. Check whether the input mat is empty
+    if (!mat)
     {
-        response->topics.push_back(topic.first);
-        response->types.push_back(topic.second[0]);
+        return ito::RetVal(ito::retError, 0, "mat must not be NULL");
     }
-}
-
-void ROS2Bridge::onRequestRefreshTopics()
-{
-    try
+    RCLCPP_INFO(node_->get_logger(), "test2.");
+    // 2. Determine the data type
+    ito::tDataType cameraMatrixType;
+    cv::Mat mat_;
+    RCLCPP_INFO(node_->get_logger(), "test3.");
+    if (mat->type() == CV_8UC3)  // BGR -> RGBA
     {
-        auto topics_and_types = node_->get_topic_names_and_types();
-        QStringList topics, types;
-        for (const auto &topic : topics_and_types)
-        {
-            topics.append(QString::fromStdString(topic.first));
+        cameraMatrixType = ito::tRGBA32;
 
-            QString typeList;
-            for (const auto &type : topic.second)
-            {
-                if (!typeList.isEmpty())
-                {
-                    typeList += ", ";
-                }
-                typeList += QString::fromStdString(type);
-            }
-            types.append(typeList);
+        cv::Mat in[] = { *mat, cv::Mat(mat->rows, mat->cols, CV_8UC1) };
+        in[1].setTo(255); // Alpha channels are all 255
+        cv::Mat out;
+        cv::merge(in, 2, out);
+        out.convertTo(mat_, cv::DataType<ito::Rgba32>::type);
+            RCLCPP_INFO(node_->get_logger(), "test4.");
+    }
+    else if (mat->type() == CV_8UC4)  // Convert directly to RGBA32
+    {
+        cameraMatrixType = ito::tRGBA32;
+        mat->convertTo(mat_, cv::DataType<ito::Rgba32>::type);
+            RCLCPP_INFO(node_->get_logger(), "test5.");
+    }
+    else
+    {
+        cameraMatrixType = ito::guessDataTypeFromCVMat(mat, retval);
+        mat_ = *mat;
+            RCLCPP_INFO(node_->get_logger(), "test6.");
+    }
+
+    // 3. Check whether existing dataObj can be reused
+    if (!retval.containsError() &&
+        dataObj.calcNumMats() == 1 &&
+        dataObj.getDims() == mat_.dims &&
+        dataObj.getType() == cameraMatrixType)
+    {
+        cv::Mat *plane = dataObj.getCvPlaneMat(0);
+            RCLCPP_INFO(node_->get_logger(), "test7.");
+        if (plane->data == mat_.data && plane->size == mat_.size)
+        {    RCLCPP_INFO(node_->get_logger(), "test8.");
+            return retval;
         }
-        // 发出信号，更新 UI
-        emit updateTopicsList(topics, types);
     }
-    catch (const std::exception &e)
+
+    // 4. Assign dataObj
+    if (!retval.containsError())
     {
-        RCLCPP_ERROR(node_->get_logger(), "Failed to get topics: %s", e.what());
-        // 根据需要处理错误
+        if (mat_.dims == 0)
+        {
+            dataObj = ito::DataObject();
+                RCLCPP_INFO(node_->get_logger(), "test9.");
+        }
+        else
+        {
+            dataObj = ito::DataObject(mat_.dims, mat_.size, cameraMatrixType, &mat_, 1);
+                RCLCPP_INFO(node_->get_logger(), "test10.");
+        }
     }
+
+//     Retval = Ito::Retok;
+        RCLCPP_INFO(node_->get_logger(), "test11.");
+    return retval;
 }
+
+
+//Test for 2D Data
+
+void ROS2Bridge::handle_image_request(
+        const std::shared_ptr<itom_ros2_test::srv::Exchange2DArray::Request> request,
+        std::shared_ptr<itom_ros2_test::srv::Exchange2DArray::Response> response)
+    {
+        RCLCPP_INFO(node_->get_logger(), "Received an image request.");
+
+        // Convert ros image message to open cv image
+
+        try
+        {
+            input_image = cv_bridge::toCvCopy(request->request_image, "bgr8")->image;
+        }
+        catch (const cv_bridge::Exception &e)
+        {
+            RCLCPP_INFO(node_->get_logger(), "Failed to convert ROS image message to OpenCV image: %s", e.what());
+            return;
+        }
+
+        // Check if the input image is valid
+        if (input_image.empty())
+        {
+            RCLCPP_INFO(node_->get_logger(), "Input image is empty.");
+            return;
+        }
+
+        // Rotate the image (for example, rotate 90 degrees)
+        cv::Mat rotated_image;
+        cv::rotate(input_image, rotated_image, cv::ROTATE_90_CLOCKWISE);
+        RCLCPP_INFO(node_->get_logger(), "Image rotated successfully.");
+
+        // Convert to ros image message
+        auto ros_image_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rotated_image).toImageMsg();
+
+        // Fill the response
+        response->response_image = *ros_image_msg;
+        RCLCPP_INFO(node_->get_logger(), "Response sent back to client.");
+    }
+
+
+
 
 void ROS2Bridge::dockWidgetVisibilityChanged(bool visible)
 {
@@ -209,7 +325,22 @@ void ROS2Bridge::dockWidgetVisibilityChanged(bool visible)
 ito::RetVal ROS2Bridge::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
+
+    if (!retValue.containsError())
+    {
+        //checkData(); //check if image must be reallocated
+
+        //emit parametersChanged(m_params);
+    }
+
     retValue == ito::retOk;
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
     return retValue;
 }
 
@@ -217,17 +348,48 @@ ito::RetVal ROS2Bridge::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
 ito::RetVal ROS2Bridge::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
+
+    if (!retValue.containsError())
+    {
+        //checkData(); //check if image must be reallocated
+
+        //emit parametersChanged(m_params);
+    }
+
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
     retValue == ito::retOk;
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal ROS2Bridge::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retVal(ito::retOk);
+
+    if (!retVal.containsError())
+    {
+        //checkData(); //check if image must be reallocated
+
+        //emit parametersChanged(m_params);
+    }
+
+    setIdentifier(QString::number(getID()));
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retVal;
+        waitCond->release();
+    }
+
     setInitialized(true);
-    return retValue;
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -247,8 +409,9 @@ ito::RetVal ROS2Bridge::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::calib(const int axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ROS2Bridge::startDevice(ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
     retValue == ito::retOk;
@@ -256,7 +419,7 @@ ito::RetVal ROS2Bridge::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+ito::RetVal ROS2Bridge::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
     retValue == ito::retOk;
@@ -264,81 +427,7 @@ ito::RetVal ROS2Bridge::calib(const QVector<int> axis, ItomSharedSemaphore *wait
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setOrigin(const int axis, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retValue;
-    retValue == ito::retOk;
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ROS2Bridge::waitForDone(const int timeoutMS, const QVector<int> axis /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
+ito::RetVal ROS2Bridge::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue;
     retValue == ito::retOk;
@@ -346,4 +435,77 @@ ito::RetVal ROS2Bridge::waitForDone(const int timeoutMS, const QVector<int> axis
 }
 
 
-// 其余代码保持不变
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ROS2Bridge::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue;
+    ito::RetVal retval;
+
+
+//     ItomSharedSemaphoreLocker locker(waitCond);
+//     retValue == ito::retOk;
+//     if (waitCond)
+//     {
+//         waitCond->returnValue = retValue;
+//         waitCond->release();
+//     }
+        ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
+
+        if (input_image.empty())
+        {
+            RCLCPP_INFO(node_->get_logger(), "input_image is empty.");
+        }
+
+        // 3. Call setOutputArrayToDataObject to convert
+        retValue += setCvMatToDataObject(*dObj, &input_image);
+
+//         if (retValue.containsError())
+//         {
+//             std::cout << "Error converting cv::Mat to ito::DataObject" << std::endl;
+//         }
+//         else
+//         {
+//             std::cout << "Conversion successful!" << std::endl;
+//         }
+
+    return retValue;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ROS2Bridge::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    //const char *buf = data;
+    //char endline[3] = {0, 0, 0};
+    ito::RetVal retval(ito::retOk);
+
+    //m_serport.getendline(endline);
+    //if (m_debugMode)
+    //{
+    //    emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
+    //}
+    //retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ROS2Bridge::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    ito::RetVal retValue;
+    retValue == ito::retOk;
+    return retValue;
+}
+
+
+// The rest of the code remains the same

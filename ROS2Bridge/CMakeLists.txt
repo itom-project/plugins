@@ -19,21 +19,27 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 
-# 找到 itom SDK 所需的组件
+# Locate the components required for the itom SDK
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED)
-# 找到 Qt 库
+# Locate the Qt library
 find_package(Qt5 COMPONENTS Widgets Xml LinguistTools REQUIRED)
 
-# 找到 ROS 2 所需的组件
+# Locate the components required for ROS 2
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosapi_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(example_interfaces REQUIRED)
+find_package(itom_ros2_test REQUIRED HINTS)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
-itom_init_plugin_library(${target_name}) # 初始化插件库
+itom_init_plugin_library(${target_name}) # Initialize the plug-in library
 itom_find_package_qt(ON Core Widgets LinguistTools)
 
 include_directories(
@@ -63,21 +69,21 @@ set(PLUGIN_SOURCES
 )
 
 
-# 定义插件版本
+# Define the plug-in version
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
-# 如果使用 MSVC，添加版本信息
+# If you are using MSVC, add the version information
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
 
-# 添加插件库
+# Add a plug-in library
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
-# Qt: 启用 automoc、autouic 和 autorcc
+# Qt: Enable automoc, autouic, and autorcc
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 
-# 链接库
+# Link Library
 target_link_libraries(${target_name}
     ${ITOM_SDK_LIBRARIES}
     ${QT5_LIBRARIES}
@@ -87,16 +93,16 @@ target_link_libraries(${target_name}
 )
 
 
-#rosapi_msgs
-ament_target_dependencies(${target_name} rclcpp rosapi_msgs std_msgs)
 
-# 翻译
+ament_target_dependencies(${target_name} rclcpp rosapi_msgs std_msgs example_interfaces itom_ros2_test sensor_msgs cv_bridge)
+
+# Translation
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
 itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
 itom_configure_plugin_documentation(${target_name} ROS2Bridge)
 
-# 复制部分
+# Duplicate part
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 itom_add_pluginlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)

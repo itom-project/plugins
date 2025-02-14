@@ -1,0 +1,9 @@
+# Exchange2DArray.srv
+
+# Request section
+sensor_msgs/Image request_image  # Sent image data
+
+---
+# Response section
+sensor_msgs/Image response_image  # Returned image data
+

@@ -1,0 +1,4 @@
+# Exchange1DArray.srv
+float32[] request_array  
+---
+float32[] response_array  
