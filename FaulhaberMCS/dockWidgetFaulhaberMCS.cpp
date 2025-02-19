@@ -71,7 +71,10 @@ void DockWidgetFaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
         QPointer<ito::AddInActuator> actuator(m_pActuator);
         ui.axisController->setActuator(actuator);
         ui.axisController->setNumAxis(1);
-        ui.axisController->setAxisType(0, MotorAxisController::TypeRotational);
+        ui.axisController->setAxisUnit(0, MotorAxisController::AxisUnit::UnitAU);
+        ui.axisController->setArbitraryUnit("inc.");
+        ui.axisController->setDefaultRelativeStepSize(1);
+        ui.axisController->setDefaultDecimals(0);
     }
     else
     {
