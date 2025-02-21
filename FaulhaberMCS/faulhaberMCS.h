@@ -172,6 +172,8 @@ private:
     const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
     const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
 
+    const Register nominalVoltage_register = {0x2604, 0x00};
+
     const ito::uint8 shutDown_register = 0x06;
     const ito::uint8 enableOperation_register = 0x0F;
     const ito::uint8 disable_register = 0x07;
@@ -296,6 +298,9 @@ private:
 
     ito::RetVal getPositionUpperLimit(ito::int32& limit);
     ito::RetVal setPositionUpperLimit(const ito::int32 limit);
+
+    ito::RetVal getNominalVoltage(ito::uint16& voltage);
+    ito::RetVal setNominalVoltage(const ito::uint16 voltage);
 
     // CONTROL
     ito::RetVal getTorqueGainControl(ito::uint32& gain);

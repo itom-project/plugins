@@ -207,6 +207,17 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(-4, 10, 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "nominalVoltage",
+        ito::ParamBase::Int,
+        0,
+        tr("Nominal voltage of device. Register '%1'.")
+            .arg(convertHexToString(nominalVoltage_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "General"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category communication ---------------------------//
     paramVal = ito::Param(
         "netMode",
@@ -1642,6 +1653,12 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(option));
             }
         }
+        else if (key == "nominalVoltage")
+        {
+            ito::uint16 voltage;
+            retValue += getNominalVoltage(voltage);
+
+        }
         *val = it.value();
     }
 
@@ -1836,6 +1853,11 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             retValue += setVelocityIntegralPartOption(static_cast<ito::uint8>(val->getVal<int>()));
         }
+        else if (key == "nominalVoltage")
+        {
+            retValue += setNominalVoltage(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+
         if (!retValue.containsError())
         {
             retValue += it->copyValueFrom(&(*val));
@@ -2871,6 +2893,20 @@ ito::RetVal FaulhaberMCS::setPositionUpperLimit(const ito::int32 limit)
         positionUpperLimit_register.subindex,
         limit,
         sizeof(limit));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getNominalVoltage(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        nominalVoltage_register.index, nominalVoltage_register.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setNominalVoltage(const ito::uint16 voltage)
+{
+    return setRegister<ito::uint16>(
+        nominalVoltage_register.index, nominalVoltage_register.subindex, voltage, sizeof(voltage));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
