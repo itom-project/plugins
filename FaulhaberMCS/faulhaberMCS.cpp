@@ -257,6 +257,16 @@ FaulhaberMCS::FaulhaberMCS() :
         "Communication"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "ignoreCRC",
+        ito::ParamBase::Int,
+        0,
+        1,
+        0,
+        tr("Ignore CRC checksum. Default is '0'.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Communication"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category temperatures ---------------------------//
     paramVal = ito::Param(
         "temperatureCPU",
@@ -986,8 +996,6 @@ ito::RetVal FaulhaberMCS::init(
 
         *m_serialBufferLength = m_serialBufferSize;
         std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
-
-
         retValue += setCommunicationSettings(TRANSMIT_EMCY_VIA_RS232); // Transmit EMCYs via RS232
     }
 
@@ -1521,6 +1529,16 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(node));
             }
         }
+        else if (key == "ignoreCRC")
+        {
+            ito::uint32 communicationSettings;
+            retValue += getCommunicationSettings(communicationSettings);
+            if (!retValue.containsError())
+            {
+                retValue +=
+                    it->setVal<int>(static_cast<int>(isBitSet(communicationSettings, IGNORE_CRC)));
+            }
+        }
         else if (key == "deviceID")
         {
             ito::uint16 device;
@@ -1781,6 +1799,20 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "netMode")
         {
             retValue += setNetMode(static_cast<ito::uint8>(val->getVal<int>()));
+        }
+        else if (key == "ignoreCRC")
+        {
+            ito::uint32 communicationSettings;
+            retValue += getCommunicationSettings(communicationSettings);
+            if (val->getVal<int>() == 1)
+            {
+                communicationSettings |= IGNORE_CRC;
+            }
+            else
+            {
+                communicationSettings &= ~IGNORE_CRC;
+            }
+            retValue += setCommunicationSettings(communicationSettings);
         }
         else if (key == "nodeID")
         {
@@ -3218,6 +3250,13 @@ ito::RetVal FaulhaberMCS::setCommunicationSettings(const ito::uint32& settings)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getCommunicationSettings(ito::uint32& settings)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        communicationSettings_register.index, communicationSettings_register.subindex, settings);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getError()
 {
     ito::RetVal retVal = ito::retOk;
@@ -4175,4 +4214,16 @@ void FaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
 const ito::RetVal FaulhaberMCS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogFaulhaberMCS(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FaulhaberMCS::isBitSet(uint32_t value, int bitPosition)
+{
+    return (value & (1 << bitPosition)) != 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FaulhaberMCS::isBitUnset(uint32_t value, int bitPosition)
+{
+    return (value & (1 << bitPosition)) == 0;
 }

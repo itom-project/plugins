@@ -108,6 +108,8 @@ private:
         TRANSMIT_ASYNC_MESSAGES_VIA_RS232 = 0x00020000,
         IGNORE_CRC = 0x00800000
     };
+    bool isBitSet(uint32_t value, int bitPosition);
+    bool isBitUnset(uint32_t value, int bitPosition);
 
     struct Register
     {
@@ -122,8 +124,9 @@ private:
     const Register revisionNumber_register = {0x1018, 0x03};
     const Register firmwareVersion_register = {0x100A, 0x00};
     const Register operationMode_register = {0x6060, 0x00};
-    const Register netMode_register = {0x2400, 0x05};
     const Register nodeID_register = {0x2400, 0x03};
+    const Register netMode_ignoreCRC = {0x2400, 0x04};
+    const Register netMode_register = {0x2400, 0x05};
     const Register deviceID_register = {0x2400, 0x08};
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
@@ -239,6 +242,7 @@ private:
     void updateStatusBits();
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
+    ito::RetVal getCommunicationSettings(ito::uint32& settings);
     ito::RetVal getError();
     ito::RetVal interpretEMCYError(const ito::uint16& errorCode);
     ito::RetVal interpretCIA402Error(const QByteArray& errorBytes);
