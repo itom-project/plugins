@@ -519,11 +519,11 @@ if(PLUGIN_ThorlabsPowerMeter)
     add_subdirectory(ThorlabsPowerMeter)
 endif(PLUGIN_ThorlabsPowerMeter)
 
-# UhlRegister
-itom_plugin_option(PLUGIN_UhlRegister)
-if(PLUGIN_UhlRegister)
-    add_subdirectory(UhlRegister)
-endif(PLUGIN_UhlRegister)
+# Thorlabs Elliptec piezoelectric resonant motor technology
+itom_plugin_option(PLUGIN_ThorlabsElliptec)
+if(PLUGIN_ThorlabsElliptec)
+    add_subdirectory(ThorlabsElliptec)
+endif(PLUGIN_ThorlabsElliptec)
 
 # UhlText
 itom_plugin_option(PLUGIN_UhlText)
