@@ -155,6 +155,7 @@ private:
     const Register negativeTorqueLimit_register = {0x60E1, 0x00};
     const Register positionLowerLimit_register = {0x607D, 0x01};
     const Register positionUpperLimit_register = {0x607D, 0x02};
+    const Register motionProfileType_register = {0x6086, 0x00};
 
     const Register torqueGainControl_register = {0x2342, 0x01};
     const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
@@ -355,6 +356,9 @@ private:
     ito::RetVal getTargetTorqueMCS(ito::int16& torque);
     ito::RetVal getVoltageMCS(ito::int16& current);
     ito::RetVal setVoltageMCS(ito::int16& current);
+
+    ito::RetVal getMotionProfileType(ito::int16& type);
+    ito::RetVal setMotionProfileType(const ito::int16& type);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);

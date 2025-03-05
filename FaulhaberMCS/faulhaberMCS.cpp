@@ -764,6 +764,17 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "motionProfile",
+        ito::ParamBase::Int,
+        0,
+        tr("Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '%1'.")
+            .arg(convertHexToString(motionProfileType_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Motion control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC FUNCTIONS
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -1666,6 +1677,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             retValue += getNominalVoltage(voltage);
 
         }
+        else if (key == "motionProfile")
+        {
+            ito::int16 mode;
+            retValue += getMotionProfileType(mode);
+        }
         *val = it.value();
     }
 
@@ -1873,6 +1889,10 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "nominalVoltage")
         {
             retValue += setNominalVoltage(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "motionProfile")
+        {
+            retValue += setMotionProfileType(static_cast<ito::int16>(val->getVal<int>()));
         }
 
         if (!retValue.containsError())
@@ -2865,6 +2885,22 @@ ito::RetVal FaulhaberMCS::setVoltageMCS(ito::int16& current)
 {
     return setRegister<ito::int16>(
         voltageValue_register.index, voltageValue_register.subindex, current, sizeof(current));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMotionProfileType(ito::int16& type)
+{
+    return readRegisterWithParsedResponse<ito::int16>(
+        motionProfileType_register.index, motionProfileType_register.subindex, type);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setMotionProfileType(const ito::int16& type)
+{
+    return setRegister<ito::int16>(
+        motionProfileType_register.index,
+        motionProfileType_register.subindex,
+        type, sizeof(type));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

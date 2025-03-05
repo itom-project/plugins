@@ -102,6 +102,10 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     '0x6072.00'.
 
     *Value range: [1, 30000], Default: 2000*
+**motionProfile**: int
+    Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '0x6086.00'.
+
+    *Value range: [0, 1], Default: 0*
 **moveTimeout**: int
     Timeout for movement in ms.
 
@@ -153,7 +157,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **profileVelocity**: int
     Profile velocity in 1/min. Register '0x6081.00'.
 
-    *Value range: [1, 32767], Default: 1000*
+    *Value range: [1, 32767], Default: 4429*
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
@@ -194,7 +198,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureCPU**: int, read-only
     CPU temperature in [°C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 40*
+    *Value range: [0, 32767], Default: 41*
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
@@ -202,7 +206,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 22*
+    *Value range: [0, 32767], Default: 28*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
