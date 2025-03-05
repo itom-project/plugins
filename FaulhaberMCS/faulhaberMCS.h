@@ -108,6 +108,8 @@ private:
         TRANSMIT_ASYNC_MESSAGES_VIA_RS232 = 0x00020000,
         IGNORE_CRC = 0x00800000
     };
+    bool isBitSet(uint32_t value, int bitPosition);
+    bool isBitUnset(uint32_t value, int bitPosition);
 
     struct Register
     {
@@ -122,8 +124,9 @@ private:
     const Register revisionNumber_register = {0x1018, 0x03};
     const Register firmwareVersion_register = {0x100A, 0x00};
     const Register operationMode_register = {0x6060, 0x00};
-    const Register netMode_register = {0x2400, 0x05};
     const Register nodeID_register = {0x2400, 0x03};
+    const Register netMode_ignoreCRC = {0x2400, 0x04};
+    const Register netMode_register = {0x2400, 0x05};
     const Register deviceID_register = {0x2400, 0x08};
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
@@ -171,6 +174,8 @@ private:
     const Register homingLimitCheckDelayTime_register = {0x2324, 0x02};
     const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
     const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
+
+    const Register nominalVoltage_register = {0x2604, 0x00};
 
     const ito::uint8 shutDown_register = 0x06;
     const ito::uint8 enableOperation_register = 0x0F;
@@ -237,6 +242,7 @@ private:
     void updateStatusBits();
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
+    ito::RetVal getCommunicationSettings(ito::uint32& settings);
     ito::RetVal getError();
     ito::RetVal interpretEMCYError(const ito::uint16& errorCode);
     ito::RetVal interpretCIA402Error(const QByteArray& errorBytes);
@@ -296,6 +302,9 @@ private:
 
     ito::RetVal getPositionUpperLimit(ito::int32& limit);
     ito::RetVal setPositionUpperLimit(const ito::int32 limit);
+
+    ito::RetVal getNominalVoltage(ito::uint16& voltage);
+    ito::RetVal setNominalVoltage(const ito::uint16 voltage);
 
     // CONTROL
     ito::RetVal getTorqueGainControl(ito::uint32& gain);

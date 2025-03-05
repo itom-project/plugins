@@ -207,6 +207,17 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(-4, 10, 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "nominalVoltage",
+        ito::ParamBase::Int,
+        0,
+        tr("Nominal voltage of device. Register '%1'.")
+            .arg(convertHexToString(nominalVoltage_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "General"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category communication ---------------------------//
     paramVal = ito::Param(
         "netMode",
@@ -244,6 +255,16 @@ FaulhaberMCS::FaulhaberMCS() :
         std::numeric_limits<ito::uint16>::max(),
         1,
         "Communication"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "ignoreCRC",
+        ito::ParamBase::Int,
+        0,
+        1,
+        0,
+        tr("Ignore CRC checksum. Default is '0'.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Communication"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category temperatures ---------------------------//
@@ -807,7 +828,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int | ito::ParamBase::In,
         1,
         32767,
-        50,
+        400,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingSpeed_register))
             .toUtf8()
@@ -819,7 +840,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int | ito::ParamBase::In,
         1,
         30000,
-        400,
+        50,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingAcceleration_register))
             .toUtf8()
@@ -975,8 +996,6 @@ ito::RetVal FaulhaberMCS::init(
 
         *m_serialBufferLength = m_serialBufferSize;
         std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
-
-
         retValue += setCommunicationSettings(TRANSMIT_EMCY_VIA_RS232); // Transmit EMCYs via RS232
     }
 
@@ -1510,6 +1529,16 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(node));
             }
         }
+        else if (key == "ignoreCRC")
+        {
+            ito::uint32 communicationSettings;
+            retValue += getCommunicationSettings(communicationSettings);
+            if (!retValue.containsError())
+            {
+                retValue +=
+                    it->setVal<int>(static_cast<int>(isBitSet(communicationSettings, IGNORE_CRC)));
+            }
+        }
         else if (key == "deviceID")
         {
             ito::uint16 device;
@@ -1642,6 +1671,12 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(option));
             }
         }
+        else if (key == "nominalVoltage")
+        {
+            ito::uint16 voltage;
+            retValue += getNominalVoltage(voltage);
+
+        }
         *val = it.value();
     }
 
@@ -1765,6 +1800,20 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             retValue += setNetMode(static_cast<ito::uint8>(val->getVal<int>()));
         }
+        else if (key == "ignoreCRC")
+        {
+            ito::uint32 communicationSettings;
+            retValue += getCommunicationSettings(communicationSettings);
+            if (val->getVal<int>() == 1)
+            {
+                communicationSettings |= IGNORE_CRC;
+            }
+            else
+            {
+                communicationSettings &= ~IGNORE_CRC;
+            }
+            retValue += setCommunicationSettings(communicationSettings);
+        }
         else if (key == "nodeID")
         {
             ito::uint8 node = static_cast<ito::uint8>(val->getVal<int>());
@@ -1836,6 +1885,11 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             retValue += setVelocityIntegralPartOption(static_cast<ito::uint8>(val->getVal<int>()));
         }
+        else if (key == "nominalVoltage")
+        {
+            retValue += setNominalVoltage(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+
         if (!retValue.containsError())
         {
             retValue += it->copyValueFrom(&(*val));
@@ -2874,6 +2928,20 @@ ito::RetVal FaulhaberMCS::setPositionUpperLimit(const ito::int32 limit)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getNominalVoltage(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        nominalVoltage_register.index, nominalVoltage_register.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setNominalVoltage(const ito::uint16 voltage)
+{
+    return setRegister<ito::uint16>(
+        nominalVoltage_register.index, nominalVoltage_register.subindex, voltage, sizeof(voltage));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getTorqueGainControl(ito::uint32& gain)
 {
     return readRegisterWithParsedResponse<ito::uint32>(
@@ -3179,6 +3247,13 @@ ito::RetVal FaulhaberMCS::setCommunicationSettings(const ito::uint32& settings)
         communicationSettings_register.subindex,
         settings,
         sizeof(settings));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getCommunicationSettings(ito::uint32& settings)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        communicationSettings_register.index, communicationSettings_register.subindex, settings);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4139,4 +4214,16 @@ void FaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
 const ito::RetVal FaulhaberMCS::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogFaulhaberMCS(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FaulhaberMCS::isBitSet(uint32_t value, int bitPosition)
+{
+    return (value & (1 << bitPosition)) != 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool FaulhaberMCS::isBitUnset(uint32_t value, int bitPosition)
+{
+    return (value & (1 << bitPosition)) == 0;
 }

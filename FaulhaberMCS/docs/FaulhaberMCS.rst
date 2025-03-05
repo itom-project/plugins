@@ -46,7 +46,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: 10*
+    *Value range: [-32768, 32767], Default: -7*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
@@ -84,6 +84,10 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     homed (1) or not homed (0).
 
     *Value range: [0, 1], Default: 0*
+**ignoreCRC**: int
+    Ignore CRC checksum. Default is '0'.
+
+    *Value range: [0, 1], Default: 0*
 **internalLimitActive**: int, read-only
     1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not reached
     (Bit 11).
@@ -103,15 +107,19 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, inf], Default: 60000*
 **name**: str, read-only
-    FaulhaberMCS
+
 **netMode**: int
     RS232 net mode. Register '0x2400.05'.
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **nodeID**: int
     Node number. Register '0x2400.03'.
 
     *Value range: [0, 255], Default: 1*
+**nominalVoltage**: int
+    Nominal voltage of device. Register '0x2604.00'.
+
+    *Value range: [0, 32767], Default: 0*
 **operation**: int
     Enable (1) or Disable (0) operation.
 
@@ -163,12 +171,12 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **serialNumber**: str, read-only
     Serial number of device. Register '0x2400.03'.
 
-    *Match: "", Default: "492300001"*
+    *Match: "", Default: "202400190"*
 **setPointAcknowledged**: int, read-only
     1: New set-point has been loaded, 0: Previous set-point being changed or already reached
     (Bit 12).
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **switchOnDisabled**: int, read-only
     1: Switch on disabled, 0: Switch on enabled (Bit 6).
 
@@ -192,11 +200,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 30*
+    *Value range: [0, 32767], Default: 37*
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 29*
+    *Value range: [0, 32767], Default: 21*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -292,6 +300,19 @@ First an instance must be initialized using the ``SerialIO`` Plugin.
 
     com = dataIO("SerialIO", 6, 115200, "\n")  # adapt COM port number
     mot = actuator("FaulhaberMCS", com, 1)
+
+If you use several devices in a RS232 network, you can initialize several instances of the plugin with same serialIO instance and different nodeID:
+
+.. code-block:: python
+
+    from itom import actuator, dataIO
+
+    com = dataIO("SerialIO", 6, 115200, "\n")  # adapt COM port number
+    mot1 = actuator("FaulhaberMCS", com, 1)  # nodeID 1
+    mot1.setParam("netMode", 1)
+
+    mot2 = actuator("FaulhaberMCS", com, 2)  # nodeID 2
+    mot2.setParam("netMode", 1)
 
 The current position can be set to zero by using the ``setOrigin`` method of the plugin:
 
