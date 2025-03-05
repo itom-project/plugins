@@ -53,14 +53,14 @@ void DockWidgetFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
     QString unit = "";
     switch (mode)
     {
+    case -1:
+        unit = "x10 mV";
+        break;
     case 1:
         unit = "inc.";
         break;
     case 3:
         unit = "1/min";
-        break;
-    case -1:
-        unit = "x10 mV";
         break;
     case 6:
         unit = "";

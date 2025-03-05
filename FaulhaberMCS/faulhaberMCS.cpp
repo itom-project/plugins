@@ -1316,13 +1316,19 @@ ito::RetVal FaulhaberMCS::init(
     {
         retValue += updateStatus();
 
-        ito::int32 pos;
-        ito::int32 target;
+        ito::int32 pos = 0;
+        ito::int32 target = 0;
 
         for (int i = 0; i < m_numOfAxes; i++)
         {
             switch (m_params["operationMode"].getVal<int>())
             {
+            case -1:
+                ito::int16 voltage;
+                retValue += getVoltageMCS(voltage);
+                pos = static_cast<int>(voltage);
+                target = pos;
+                break;
             case 1: // position mode
                 retValue += getPosMCS(pos);
                 retValue += getTargetPosMCS(target);
@@ -1338,6 +1344,7 @@ ito::RetVal FaulhaberMCS::init(
 
                 retValue += getTargetTorqueMCS(torque);
                 target = static_cast<int>(torque);
+                break;
             }
             m_currentPos[i] = static_cast<double>(pos);
             m_targetPos[i] = static_cast<double>(target);
@@ -2363,8 +2370,13 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             foreach (const int i, axis)
             {
                 ito::int32 newVal = static_cast<ito::int32>(pos[i]);
+                ito::int16 voltage;
                 switch (m_params["operationMode"].getVal<int>())
                 {
+                case -1:
+                    voltage = static_cast<ito::int16>(newVal);
+                    retValue += setVoltageMCS(voltage);
+                    break;
                 case 1: // position mode
                     retValue += setPosAbsMCS(newVal);
                     break;
@@ -2839,6 +2851,20 @@ ito::RetVal FaulhaberMCS::getTargetTorqueMCS(ito::int16& torque)
 {
     return readRegisterWithParsedResponse<ito::int16>(
         torqueTargetValue_register.index, torqueTargetValue_register.subindex, torque);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVoltageMCS(ito::int16& current)
+{
+    return readRegisterWithParsedResponse<ito::int16>(
+        voltageValue_register.index, voltageValue_register.subindex, current);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVoltageMCS(ito::int16& current)
+{
+    return setRegister<ito::int16>(
+        voltageValue_register.index, voltageValue_register.subindex, current, sizeof(current));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3692,15 +3718,14 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    char motor;
     int currentPos = 0;
     int targetPos = 0;
     QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
 
-    QVector<int> _axis = axis;
-    if (_axis.size() == 0) // all axis
+    QVector<int> _axis = axis.isEmpty() ? QVector<int>(m_numOfAxes) : axis;
+    if (_axis.isEmpty())
     {
         for (int i = 0; i < m_numOfAxes; i++)
         {
@@ -3711,7 +3736,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     timer.start();
     while (!done && !timeout && !retVal.containsWarningOrError())
     {
-        if (!done && isInterrupted()) // movement interrupted
+        if (!done && isInterrupted())
         {
             quickStop();
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
@@ -3722,34 +3747,39 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             return retVal;
         }
 
-        if (!retVal.containsError()) // short delay to reduce CPU load
+        if (!retVal.containsError())
         {
-            // short delay of 10ms
             waitMutex.lock();
             waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
             waitMutex.unlock();
             setAlive();
         }
 
-        foreach (auto i, axis) // Check for completion
+        for (const auto& i : axis)
         {
             switch (m_params["operationMode"].getVal<int>())
             {
-            case 1: // position mode
+            case -1:
+                ito::int16 voltage;
+                retVal += getVoltageMCS(voltage);
+                currentPos = static_cast<int>(voltage);
+                targetPos = currentPos;
+                break;
+            case 1:
                 retVal += getPosMCS(currentPos);
                 retVal += getTargetPosMCS(targetPos);
                 break;
-            case 3: // velocity mode
+            case 3:
                 retVal += getVelocityMCS(currentPos);
                 retVal += getTargetVelocityMCS(targetPos);
                 break;
-            case 10: // cyclic synch torque mode
+            case 10:
                 ito::int16 torque;
                 retVal += getTorqueMCS(torque);
                 currentPos = static_cast<int>(torque);
-
                 retVal += getTargetTorqueMCS(torque);
                 targetPos = static_cast<int>(torque);
+                break;
             }
 
             m_currentPos[i] = static_cast<double>(currentPos);
@@ -3758,102 +3788,29 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += updateStatus();
             int mode = m_params["operationMode"].getVal<int>();
 
-            // target reached bit or internal limit
-            if ((m_statusWord[10]) or m_statusWord[11])
+            if (m_statusWord[10] || m_statusWord[11])  // target flag
             {
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorAtTarget,
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
-
-                switch (m_params["operationMode"].getVal<int>())
-                {
-                case 1: // position mode
-                    retVal += getPosMCS(currentPos);
-                    retVal += getTargetPosMCS(targetPos);
-                    break;
-                case 3: // velocity mode
-                    retVal += getVelocityMCS(currentPos);
-                    retVal += getTargetVelocityMCS(targetPos);
-                    break;
-                case 10: // cyclic synch torque mode
-                    ito::int16 torque;
-                    retVal += getTorqueMCS(torque);
-                    currentPos = static_cast<int>(torque);
-
-                    retVal += getTargetTorqueMCS(torque);
-                    targetPos = static_cast<int>(torque);
-                }
-
-                m_currentPos[i] = static_cast<double>(currentPos);
-                m_targetPos[i] = static_cast<double>(targetPos);
-
-                break;
             }
-            else if (m_statusWord[13]) // following error
+            else if (m_statusWord[13])  // error flag
             {
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorError,
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
-
-                switch (m_params["operationMode"].getVal<int>())
-                {
-                case 1: // position mode
-                    retVal += getPosMCS(currentPos);
-                    retVal += getTargetPosMCS(targetPos);
-                    break;
-                case 3: // velocity mode
-                    retVal += getVelocityMCS(currentPos);
-                    retVal += getTargetVelocityMCS(targetPos);
-                    break;
-                case 10: // cyclic synch torque mode
-                    ito::int16 torque;
-                    retVal += getTorqueMCS(torque);
-                    currentPos = static_cast<int>(torque);
-
-                    retVal += getTargetTorqueMCS(torque);
-                    targetPos = static_cast<int>(torque);
-                }
-
-                m_currentPos[i] = static_cast<double>(currentPos);
-                m_targetPos[i] = static_cast<double>(targetPos);
-
-                break;
             }
-            else if (mode != 1)  // not position mode
+            else if (mode != 1)  // no target flag for other mode than position control mode
             {
                 setStatus(
                     m_currentStatus[i],
                     ito::actuatorError,
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
-
-                switch (m_params["operationMode"].getVal<int>())
-                {
-                case 1: // position mode
-                    retVal += getPosMCS(currentPos);
-                    retVal += getTargetPosMCS(targetPos);
-                    break;
-                case 3: // velocity mode
-                    retVal += getVelocityMCS(currentPos);
-                    retVal += getTargetVelocityMCS(targetPos);
-                    break;
-                case 10: // cyclic synch torque mode
-                    ito::int16 torque;
-                    retVal += getTorqueMCS(torque);
-                    currentPos = static_cast<int>(torque);
-
-                    retVal += getTargetTorqueMCS(torque);
-                    targetPos = static_cast<int>(torque);
-                }
-
-                m_currentPos[i] = static_cast<double>(currentPos);
-                m_targetPos[i] = static_cast<double>(targetPos);
-
-                break;
             }
             else
             {
@@ -3867,10 +3824,9 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         sendStatusUpdate(false);
 
-        if (timer.hasExpired(timeoutMS)) // timeout during movement
+        if (timer.hasExpired(timeoutMS))
         {
             timeout = true;
-            // timeout occurred, set the status of all currently moving axes to timeout
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
             retVal += ito::RetVal(
                 ito::retError,
@@ -3890,6 +3846,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     return retVal;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::updateStatus()
 {
@@ -3902,6 +3859,11 @@ ito::RetVal FaulhaberMCS::updateStatus()
         ito::int32 intPos = 0;
         switch (m_params["operationMode"].getVal<int>())
         {
+        case -1:
+            ito::int16 voltage;
+            retVal += getVoltageMCS(voltage);
+            intPos = static_cast<int>(voltage);
+            break;
         case 1: // position mode
             retVal += getPosMCS(intPos);
             break;
@@ -3912,6 +3874,7 @@ ito::RetVal FaulhaberMCS::updateStatus()
             ito::int16 torque;
             retVal += getTorqueMCS(torque);
             intPos = static_cast<int>(torque);
+            break;
         }
         m_currentPos[i] = static_cast<double>(intPos);
 

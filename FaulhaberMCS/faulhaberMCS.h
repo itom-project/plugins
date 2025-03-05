@@ -137,6 +137,7 @@ private:
     const Register positionRelativeValue_register = {0x607a, 0x00};
     const Register velocityActualValue_register = {0x606c, 0x00};
     const Register velocityTargetValue_register = {0x60FF, 0x00};
+    const Register voltageValue_register = {0x2341, 0x00};
     const Register torqueTargetValue_register = {0x6071, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
     const Register currentActualValue_register = {0x6078, 0x00};
@@ -352,6 +353,8 @@ private:
     ito::RetVal getTorqueMCS(ito::int16& torque);
     ito::RetVal setTorqueMCS(const ito::int16 torque);
     ito::RetVal getTargetTorqueMCS(ito::int16& torque);
+    ito::RetVal getVoltageMCS(ito::int16& current);
+    ito::RetVal setVoltageMCS(ito::int16& current);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);

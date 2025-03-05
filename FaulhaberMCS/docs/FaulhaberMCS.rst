@@ -37,7 +37,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **acceleration**: int
     Acceleration in 1/s². Register '0x6083.00'.
 
-    *Value range: [1, 30000], Default: 4250*
+    *Value range: [1, 30000], Default: 2829*
 **async**: int, read-only
     Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is
     implemented.
@@ -46,11 +46,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: -7*
+    *Value range: [-32768, 32767], Default: 3*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
-    *Value range: [1, 30000], Default: 1280*
+    *Value range: [1, 30000], Default: 849*
 **deviceID**: int
     Explicit device ID. Register '0x2400.08'
 
@@ -66,11 +66,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **firmware**: str, read-only
     Firmware version. Register '0x100A.00'
 
-    *Match: "", Default: "0111.02N"*
+    *Match: "", Default: "0111.02O"*
 **fluxGainControl**: int
     Flux control gain parameter [mOm]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [-1, 0], Default: 1834*
 **fluxIntegralTimeControl**: int
     Flux control integral time control parameter [µs]. Register '0x2342.01'.
 
@@ -128,10 +128,12 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: Operation enabled, 0: Operation disabled (Bit 2).
 
     *Value range: [0, 1], Default: 1*
-**operationMode**: int, read-only
-    Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not
-    activated, 1: PP (default), 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST. Register
-    '0x6060.00'.
+**operationMode**: int
+    Operation Mode. -4: Analog Torque Control Mode, -3: Analog Veclocity Control Mode, -2:
+    Analog Position Control Mode, -1: Voltage mode, 0: Controller not activated, 1: Profile
+    Position Mode (default), 3: Profile Velocity Mode, 6: Homing, 8: Cyclic Synchronous
+    Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic Synchronous Torque Mode.
+    Register '0x6060.00'.
 
     *Value range: [-4, 10], Default: 1*
 **positionLimits**: Sequence[int]
@@ -151,7 +153,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **profileVelocity**: int
     Profile velocity in 1/min. Register '0x6081.00'.
 
-    *Value range: [1, 32767], Default: 4000*
+    *Value range: [1, 32767], Default: 1000*
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
@@ -167,7 +169,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **revisionNumber**: str, read-only
     Revision number. Register '0x1018.03'
 
-    *Match: "", Default: "14"*
+    *Match: "", Default: "15"*
 **serialNumber**: str, read-only
     Serial number of device. Register '0x2400.03'.
 
@@ -176,7 +178,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: New set-point has been loaded, 0: Previous set-point being changed or already reached
     (Bit 12).
 
-    *Value range: [0, 1], Default: 1*
+    *Value range: [0, 1], Default: 0*
 **switchOnDisabled**: int, read-only
     1: Switch on disabled, 0: Switch on enabled (Bit 6).
 
@@ -189,22 +191,18 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: Target has reached, 0: is moving (Bit 10).
 
     *Value range: [0, 1], Default: 1*
-**targetTorque**: int
-    Set target value of the torque in relative scaling. Register '0x6071.00'.
-
-    *Value range: [-32768, 32767], Default: 0*
 **temperatureCPU**: int, read-only
     CPU temperature in [°C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 44*
+    *Value range: [0, 32767], Default: 40*
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 37*
+    *Value range: [0, 32767], Default: 34*
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 21*
+    *Value range: [0, 32767], Default: 22*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -212,7 +210,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **torqueGainControl**: int
     Torque control gain parameter [mOm]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [-1, 0], Default: 1834*
 **torqueIntegralTimeControl**: int
     Torque control integral time control parameter [µs]. Register '0x2342.01'.
 
@@ -222,7 +220,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Register negative limit '0x60E1.00', positive limit '0x60E0.00'.
 
     *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 6000], Default:
-    [6000, 6000]*
+    [1000, 1000]*
 **velocityDeviationThresholdControl**: int
     Velocity deviation threshold control parameter. Register '0x2344.03'.
 
@@ -234,7 +232,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **velocityGainControl**: int
     Velocity gain control parameter [As 1e-6]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [-1, 0], Default: 1834*
 **velocityIntegralPartOption**: int
     Velocity integral part option. Configuration of the speed control loop. '0': integral
     component active, '1': stopped integral component in the position windoed (in PP mode),
@@ -244,7 +242,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **velocityIntegralTimeControl**: int
     Velocity integral time control parameter [µs]. Register '0x2344.02'.
 
-    *Value range: [0, 65535], Default: 23*
+    *Value range: [0, 65535], Default: 26*
 **velocityWarningThresholdControl**: int
     Velocity warning threshold control parameter. Register '0x2344.05'.
 
@@ -294,6 +292,20 @@ Exemplary usage from Python
 In the following examples, it is shown how to use this Plugin.
 First an instance must be initialized using the ``SerialIO`` Plugin.
 
+Initialization and parameter
+----------------------------
+
+The following code initializes an instance of the plugin and sets the parameter ``netMode`` to 1.
+If you use several devices in a RS232 network, you can initialize several instances of the plugin with same serialIO instance and different nodeID.
+
+.. hint::
+
+    * The COM port number must be adapted to the used COM port.
+    * The RS232 network mode must be set in Faulhaber Motion Manager before connecting to the other devices.
+    * Asynchronous communication must be disabled in Faulhaber Motion Manager.
+
+Initialization of one motor with nodeID 1:
+
 .. code-block:: python
 
     from itom import actuator, dataIO
@@ -301,7 +313,7 @@ First an instance must be initialized using the ``SerialIO`` Plugin.
     com = dataIO("SerialIO", 6, 115200, "\n")  # adapt COM port number
     mot = actuator("FaulhaberMCS", com, 1)
 
-If you use several devices in a RS232 network, you can initialize several instances of the plugin with same serialIO instance and different nodeID:
+Initialization of two motors with nodeID 1 and 2:
 
 .. code-block:: python
 
@@ -309,28 +321,13 @@ If you use several devices in a RS232 network, you can initialize several instan
 
     com = dataIO("SerialIO", 6, 115200, "\n")  # adapt COM port number
     mot1 = actuator("FaulhaberMCS", com, 1)  # nodeID 1
-    mot1.setParam("netMode", 1)
-
     mot2 = actuator("FaulhaberMCS", com, 2)  # nodeID 2
-    mot2.setParam("netMode", 1)
 
 The current position can be set to zero by using the ``setOrigin`` method of the plugin:
 
 .. code-block:: python
 
     mot.setOrigin(0)
-
-The relative position can be set to a specific value by using the ``setPosRel`` method of the plugin:
-
-.. code-block:: python
-
-    mot.setPosRel(0, 4096)
-
-The absolute position can be set to a specific value by using the ``setPosAbs`` method of the plugin:
-
-.. code-block:: python
-
-    mot.setPosAbs(0, 4096)
 
 Additional homing methods can be executed by using the ``exec`` method of the plugin:
 
@@ -397,6 +394,65 @@ The velocity control parameter are changed by the plugin parameter:
     mot.setParam("velocityDeviationTimeControl", 100)
     mot.setParam("velocityWarningThresholdControl", 30000)
     mot.setParam("velocityIntegralPartOption", 0)
+
+Operation mode
+--------------
+
+**Profile Position mode** (Register 0x6060.00 = 1, default) is used to move the motor to a specific position.
+The relative position can be set to a specific value by using the ``setPosRel`` method of the plugin:
+
+.. hint::
+
+    ``setPosRel`` method does only work in Profile Position mode.
+
+.. code-block:: python
+
+    mot.setPosRel(0, 4096)  # inc.
+
+The absolute position can be set to a specific value by using the ``setPosAbs`` method of the plugin:
+
+.. code-block:: python
+
+    mot.setPosAbs(0, 4096)  # inc.
+
+**Voltage mode** (Register 0x6060.00 = -1) is used to control the motor speed by setting the voltage.
+First change the operation mode to voltage mode:
+
+.. code-block:: python
+
+    mot.setParam("operationMode", -1)
+
+The voltage can be set to a specific value by using the ``setPosAbs`` method of the plugin:
+
+.. code-block:: python
+
+    mot.setPosAbs(0, 120)  # x10 mV
+
+**Profile Velocity mode** (Register 0x6060.00 = 3) is used to move the motor with a specific velocity.
+First change the operation mode to voltage mode:
+
+.. code-block:: python
+
+    mot.setParam("operationMode", 3)
+
+The velocity can be set to a specific value by using the ``setPosAbs`` method of the plugin:
+
+.. code-block:: python
+
+    mot.setVelocity(1000)  # 1/min
+
+**Cyclic Synchronous Torque mode** (Register 0x6060.00 = 10) is used to control the motor torque.
+First change the operation mode to voltage mode:
+
+.. code-block:: python
+
+    mot.setParam("operationMode", 10)
+
+The torque can be set to a specific value by using the ``setPosAbs`` method of the plugin:
+
+.. code-block:: python
+
+    mot.setTorque(1000)  # I_N/1000
 
 Changelog
 ==========
