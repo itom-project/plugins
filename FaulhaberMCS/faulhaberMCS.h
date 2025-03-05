@@ -135,9 +135,11 @@ private:
     const Register positionTargetValue_register = {0x6062, 0x00};
     const Register positionAbsolutValue_register = {0x607a, 0x00};
     const Register positionRelativeValue_register = {0x607a, 0x00};
+    const Register velocityActualValue_register = {0x606c, 0x00};
+    const Register velocityTargetValue_register = {0x60FF, 0x00};
+    const Register torqueTargetValue_register = {0x6071, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
     const Register currentActualValue_register = {0x6078, 0x00};
-    const Register targetTorque_register = {0x6071, 0x00};
     const Register statusWord_register = {0x6041, 0x00};
     const Register controlWord_register = {0x6040, 0x00};
     const Register maxMotorSpeed_register = {0x6080, 0x00};
@@ -282,9 +284,6 @@ private:
     ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
     ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
 
-    ito::RetVal getTargetTorque(ito::int16& torque);
-    ito::RetVal setTargetTorque(const ito::int16 torque);
-
     ito::RetVal getNetMode(ito::uint8& mode);
     ito::RetVal setNetMode(const ito::uint8& mode);
 
@@ -342,11 +341,17 @@ private:
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
     ito::RetVal getWindingTemperature(ito::int16& temp);
 
-    // POSITION
+    // MOTION
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);
     ito::RetVal setPosAbsMCS(const ito::int32& pos);
     ito::RetVal setPosRelMCS(const ito::int32& pos);
+    ito::RetVal getVelocityMCS(ito::int32& pos);
+    ito::RetVal setVelocityMCS(const ito::int32& pos);
+    ito::RetVal getTargetVelocityMCS(ito::int32& pos);
+    ito::RetVal getTorqueMCS(ito::int16& torque);
+    ito::RetVal setTorqueMCS(const ito::int16 torque);
+    ito::RetVal getTargetTorqueMCS(ito::int16& torque);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);

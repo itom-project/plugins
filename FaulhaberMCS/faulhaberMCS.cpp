@@ -195,12 +195,12 @@ FaulhaberMCS::FaulhaberMCS() :
 
     paramVal = ito::Param(
         "operationMode",
-        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        ito::ParamBase::Int,
         -4,
         10,
         1,
-        tr("Operation Mode. -4: ATC, -3: AVC, -2: APC, -1: Voltage mode, 0: Controller not "
-           "activated, 1: PP (default), 3: PV, 6: Homing, 8: CSP, 9: CSV, 10: CST. Register '%1'.")
+        tr("Operation Mode. -4: Analog Torque Control Mode, -3: Analog Veclocity Control Mode, -2: Analog Position Control Mode, -1: Voltage mode, 0: Controller not "
+           "activated, 1: Profile Position Mode (default), 3: Profile Velocity Mode, 6: Homing, 8: Cyclic Synchronous Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic Synchronous Torque Mode. Register '%1'.")
             .arg(convertHexToString(operationMode_register))
             .toUtf8()
             .data());
@@ -361,21 +361,6 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Actual value of the torque in relative scaling. Register '%1'.")
             .arg(convertHexToString(torqueActualValue_register))
-            .toUtf8()
-            .data());
-    paramVal.setMeta(new ito::IntMeta(
-        std::numeric_limits<ito::int16>::min(),
-        std::numeric_limits<ito::int16>::max(),
-        1,
-        "Movement"));
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param(
-        "targetTorque",
-        ito::ParamBase::Int,
-        0,
-        tr("Set target value of the torque in relative scaling. Register '%1'.")
-            .arg(convertHexToString(targetTorque_register))
             .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
@@ -1219,16 +1204,6 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
-        ito::int16 torque;
-        retValue += getTargetTorque(torque);
-        if (!retValue.containsError())
-        {
-            m_params["targetTorque"].setVal<int>(torque);
-        }
-    }
-
-    if (!retValue.containsError())
-    {
         ito::uint32 torque;
         retValue += getTorqueGainControl(torque);
         if (!retValue.containsError())
@@ -1342,14 +1317,30 @@ ito::RetVal FaulhaberMCS::init(
         retValue += updateStatus();
 
         ito::int32 pos;
+        ito::int32 target;
 
         for (int i = 0; i < m_numOfAxes; i++)
         {
-            retValue += getPosMCS(pos);
-            m_currentPos[i] = static_cast<double>(pos);
+            switch (m_params["operationMode"].getVal<int>())
+            {
+            case 1: // position mode
+                retValue += getPosMCS(pos);
+                retValue += getTargetPosMCS(target);
+                break;
+            case 3: // velocity mode
+                retValue += getVelocityMCS(pos);
+                retValue += getTargetVelocityMCS(target);
+                break;
+            case 10: // cyclic synch torque mode
+                ito::int16 torque;
+                retValue += getTorqueMCS(torque);
+                pos = static_cast<int>(torque);
 
-            retValue += getTargetPosMCS(pos);
-            m_targetPos[i] = static_cast<double>(pos);
+                retValue += getTargetTorqueMCS(torque);
+                target = static_cast<int>(torque);
+            }
+            m_currentPos[i] = static_cast<double>(pos);
+            m_targetPos[i] = static_cast<double>(target);
             m_currentStatus[i] =
                 ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
         }
@@ -1564,15 +1555,6 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(static_cast<int>(current));
-            }
-        }
-        else if (key == "targetTorque")
-        {
-            ito::int16 torque;
-            retValue += getTargetTorque(torque);
-            if (!retValue.containsError())
-            {
-                retValue += it->setVal<int>(static_cast<int>(torque));
             }
         }
         else if (key == "torqueLimits")
@@ -1827,10 +1809,6 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "deviceID")
         {
             retValue += setExplicitDeviceID(static_cast<ito::uint16>(val->getVal<int>()));
-        }
-        else if (key == "targetTorque")
-        {
-            retValue += setTargetTorque(static_cast<ito::int16>(val->getVal<int>()));
         }
         else if (key == "torqueLimits")
         {
@@ -2385,7 +2363,19 @@ ito::RetVal FaulhaberMCS::setPosAbs(
             foreach (const int i, axis)
             {
                 ito::int32 newVal = static_cast<ito::int32>(pos[i]);
-                retValue += setPosAbsMCS(newVal);
+                switch (m_params["operationMode"].getVal<int>())
+                {
+                case 1: // position mode
+                    retValue += setPosAbsMCS(newVal);
+                    break;
+                case 3: // velocity mode
+                    retValue += setVelocityMCS(newVal);
+                    break;
+                case 10: // cyclic synchronous torque control
+                    retValue += setTorqueMCS(newVal);
+                    break;
+                }
+
                 m_targetPos[i] = static_cast<ito::float64>(newVal);
             }
 
@@ -2463,6 +2453,16 @@ ito::RetVal FaulhaberMCS::setPosRel(
             {
                 m_targetPos[i] = m_currentPos[i] + pos[i];
             }
+        }
+
+        if (m_params["operationMode"].getVal<int>() != 1)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Operation mode must be set to 'Position Mode' to set relative position.")
+                    .toUtf8()
+                    .data());
         }
 
         if (retValue.containsError())
@@ -2818,17 +2818,27 @@ ito::RetVal FaulhaberMCS::setMaxTorqueLimit(const ito::uint16 limit)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getTargetTorque(ito::int16& torque)
+ito::RetVal FaulhaberMCS::getTorqueMCS(ito::int16& torque)
 {
     return readRegisterWithParsedResponse<ito::int16>(
-        targetTorque_register.index, targetTorque_register.subindex, torque);
+        torqueActualValue_register.index, torqueActualValue_register.subindex, torque);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTargetTorque(const ito::int16 torque)
+ito::RetVal FaulhaberMCS::setTorqueMCS(const ito::int16 torque)
 {
     return setRegister<ito::int16>(
-        targetTorque_register.index, targetTorque_register.subindex, torque, sizeof(torque));
+        torqueTargetValue_register.index,
+        torqueTargetValue_register.subindex,
+        torque,
+        sizeof(torque));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTargetTorqueMCS(ito::int16& torque)
+{
+    return readRegisterWithParsedResponse<ito::int16>(
+        torqueTargetValue_register.index, torqueTargetValue_register.subindex, torque);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3295,6 +3305,34 @@ ito::RetVal FaulhaberMCS::setPosRelMCS(const ito::int32& pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityMCS(ito::int32& pos)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        velocityActualValue_register.index, velocityActualValue_register.subindex, pos);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVelocityMCS(const ito::int32& pos)
+{
+    ito::RetVal retVal = ito::retOk;
+    setRegister<ito::int32>(
+        velocityTargetValue_register.index,
+        velocityTargetValue_register.subindex,
+        pos,
+        sizeof(pos));
+    setControlWord(0x000f);
+    setControlWord(0x003F);
+    return updateStatus();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getTargetVelocityMCS(ito::int32& pos)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        velocityTargetValue_register.index, velocityTargetValue_register.subindex, pos);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setHomingMode(const ito::int8& mode)
 {
     return setRegister<ito::int8>(
@@ -3695,14 +3733,33 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         foreach (auto i, axis) // Check for completion
         {
-            retVal += getPosMCS(currentPos);
-            m_currentPos[i] = static_cast<double>(currentPos);
+            switch (m_params["operationMode"].getVal<int>())
+            {
+            case 1: // position mode
+                retVal += getPosMCS(currentPos);
+                retVal += getTargetPosMCS(targetPos);
+                break;
+            case 3: // velocity mode
+                retVal += getVelocityMCS(currentPos);
+                retVal += getTargetVelocityMCS(targetPos);
+                break;
+            case 10: // cyclic synch torque mode
+                ito::int16 torque;
+                retVal += getTorqueMCS(torque);
+                currentPos = static_cast<int>(torque);
 
-            retVal += getTargetPosMCS(targetPos);
+                retVal += getTargetTorqueMCS(torque);
+                targetPos = static_cast<int>(torque);
+            }
+
+            m_currentPos[i] = static_cast<double>(currentPos);
             m_targetPos[i] = static_cast<double>(targetPos);
 
             retVal += updateStatus();
-            if ((m_statusWord[10])) // target reached bit
+            int mode = m_params["operationMode"].getVal<int>();
+
+            // target reached bit or internal limit
+            if ((m_statusWord[10]) or m_statusWord[11])
             {
                 setStatus(
                     m_currentStatus[i],
@@ -3710,10 +3767,90 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
 
-                retVal += getPosMCS(currentPos);
-                m_currentPos[i] = static_cast<double>(currentPos);
+                switch (m_params["operationMode"].getVal<int>())
+                {
+                case 1: // position mode
+                    retVal += getPosMCS(currentPos);
+                    retVal += getTargetPosMCS(targetPos);
+                    break;
+                case 3: // velocity mode
+                    retVal += getVelocityMCS(currentPos);
+                    retVal += getTargetVelocityMCS(targetPos);
+                    break;
+                case 10: // cyclic synch torque mode
+                    ito::int16 torque;
+                    retVal += getTorqueMCS(torque);
+                    currentPos = static_cast<int>(torque);
 
-                retVal += getTargetPosMCS(targetPos);
+                    retVal += getTargetTorqueMCS(torque);
+                    targetPos = static_cast<int>(torque);
+                }
+
+                m_currentPos[i] = static_cast<double>(currentPos);
+                m_targetPos[i] = static_cast<double>(targetPos);
+
+                break;
+            }
+            else if (m_statusWord[13]) // following error
+            {
+                setStatus(
+                    m_currentStatus[i],
+                    ito::actuatorError,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                done = true;
+
+                switch (m_params["operationMode"].getVal<int>())
+                {
+                case 1: // position mode
+                    retVal += getPosMCS(currentPos);
+                    retVal += getTargetPosMCS(targetPos);
+                    break;
+                case 3: // velocity mode
+                    retVal += getVelocityMCS(currentPos);
+                    retVal += getTargetVelocityMCS(targetPos);
+                    break;
+                case 10: // cyclic synch torque mode
+                    ito::int16 torque;
+                    retVal += getTorqueMCS(torque);
+                    currentPos = static_cast<int>(torque);
+
+                    retVal += getTargetTorqueMCS(torque);
+                    targetPos = static_cast<int>(torque);
+                }
+
+                m_currentPos[i] = static_cast<double>(currentPos);
+                m_targetPos[i] = static_cast<double>(targetPos);
+
+                break;
+            }
+            else if (mode != 1)  // not position mode
+            {
+                setStatus(
+                    m_currentStatus[i],
+                    ito::actuatorError,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                done = true;
+
+                switch (m_params["operationMode"].getVal<int>())
+                {
+                case 1: // position mode
+                    retVal += getPosMCS(currentPos);
+                    retVal += getTargetPosMCS(targetPos);
+                    break;
+                case 3: // velocity mode
+                    retVal += getVelocityMCS(currentPos);
+                    retVal += getTargetVelocityMCS(targetPos);
+                    break;
+                case 10: // cyclic synch torque mode
+                    ito::int16 torque;
+                    retVal += getTorqueMCS(torque);
+                    currentPos = static_cast<int>(torque);
+
+                    retVal += getTargetTorqueMCS(torque);
+                    targetPos = static_cast<int>(torque);
+                }
+
+                m_currentPos[i] = static_cast<double>(currentPos);
                 m_targetPos[i] = static_cast<double>(targetPos);
 
                 break;
@@ -3762,9 +3899,20 @@ ito::RetVal FaulhaberMCS::updateStatus()
     {
         m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable;
 
-        ito::int32 intPos;
-        retVal += getPosMCS(intPos);
-
+        ito::int32 intPos = 0;
+        switch (m_params["operationMode"].getVal<int>())
+        {
+        case 1: // position mode
+            retVal += getPosMCS(intPos);
+            break;
+        case 3: // velocity mode
+            retVal += getVelocityMCS(intPos);
+            break;
+        case 10: // cyclic synch torque mode
+            ito::int16 torque;
+            retVal += getTorqueMCS(torque);
+            intPos = static_cast<int>(torque);
+        }
         m_currentPos[i] = static_cast<double>(intPos);
 
         if (m_params["targetReached"].getVal<int>())

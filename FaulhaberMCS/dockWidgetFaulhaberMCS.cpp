@@ -48,6 +48,28 @@ void DockWidgetFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
     ui.radioButtonFollowingError->setCheckable(params["followingError"].getVal<int>());
 
     ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
+
+    int mode = params["operationMode"].getVal<int>();
+    QString unit = "";
+    switch (mode)
+    {
+    case 1:
+        unit = "inc.";
+        break;
+    case 3:
+        unit = "1/min";
+        break;
+    case -1:
+        unit = "x10 mV";
+        break;
+    case 6:
+        unit = "";
+        break;
+    case 10:
+        unit = "I_N/1000";
+        break;
+    }
+    ui.axisController->setArbitraryUnit(unit);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
