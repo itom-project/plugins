@@ -20,6 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+// this plugin is also inspired by https://github.com/roesel/elliptec.
+
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
@@ -38,8 +40,6 @@
 #include <qdatetime.h>
 
 #include "dockWidgetThorlabsElliptec.h"
-
-QList<ito::uint8> ThorlabsElliptec::openedNodes = QList<ito::uint8>();
 
 //------------------------------------------------------------------------------
 ThorlabsElliptecInterface::ThorlabsElliptecInterface()
@@ -67,14 +67,17 @@ ThorlabsElliptecInterface::ThorlabsElliptecInterface()
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-    auto meta = new ito::IntMeta(0x0, 0xF, 1, "Communication");
+    // up to 16 devices can be connected to one Elliptec bus distributor
+    auto meta = new ito::IntArrayMeta(0x0, 0xF, 1, 1, 16, 1, "Communication");
+    int addresses[] = { 0x0, };
     meta->setRepresentation(ito::ParamMeta::HexNumber);
     paramVal = ito::Param(
-        "address",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        0x0,
+        "addresses",
+        ito::ParamBase::IntArray | ito::ParamBase::In,
+        1,
+        addresses,
         meta,
-        tr("Address of stage, 0x0 - 0xF.").toUtf8().data());
+        tr("Address of stages, 0x0 - 0xF.").toUtf8().data());
     m_initParamsOpt.append(paramVal);
 }
 
@@ -87,21 +90,21 @@ ThorlabsElliptecInterface::~ThorlabsElliptecInterface()
 ito::RetVal ThorlabsElliptecInterface::getAddInInst(ito::AddInBase** addInInst)
 {
     NEW_PLUGININSTANCE(ThorlabsElliptec)
-        return ito::retOk;
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptecInterface::closeThisInst(ito::AddInBase** addInInst)
 {
     REMOVE_PLUGININSTANCE(ThorlabsElliptec)
-        return ito::retOk;
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------
 ThorlabsElliptec::ThorlabsElliptec() :
-    AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
-    m_statusWord(0x0000), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
-    m_waitForMCSTimeout(3000), m_nodeAppended(false), m_serialBufferSize(100)
+    AddInActuator(),
+    m_serialBufferSize(200),
+    m_requestTimeOutMS(500)
 {
     m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
         delete[] ptr; // Custom deleter to release the array properly
@@ -118,9 +121,12 @@ ThorlabsElliptec::ThorlabsElliptec() :
         nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("comPort",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        1, nullptr, "");
+    m_params.insert(paramVal.getName(), paramVal);
 
-
-
+    QVector<ito::Param> pMand, pOpt, pOut;
 
     registerExecFunc(
         "homing",
@@ -135,18 +141,13 @@ ThorlabsElliptec::ThorlabsElliptec() :
     pOpt.clear();
     pOut.clear();
 
-    // initialize the current position vector, the status vector and the target position vector
-    m_currentPos.fill(0.0, m_numOfAxes);
-    m_currentStatus.fill(0, m_numOfAxes);
-    m_targetPos.fill(0.0, m_numOfAxes);
-
     //------------------------------------------------- DOCK WIDGET
     DockWidgetThorlabsElliptec* dw = new DockWidgetThorlabsElliptec(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable |
         QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char*>()), features, areas, dw);
+    createDockWidget(QString(m_params["name"].getVal<const char*>()), features, areas, dw);
 }
 
 //------------------------------------------------------------------------------
@@ -164,63 +165,46 @@ ito::RetVal ThorlabsElliptec::init(
     ito::RetVal retValue(ito::retOk);
 
     m_pSerialIO = paramsMand->at(0).getVal<ito::AddInDataIO*>();
+    m_addresses.resize(paramsOpt->at(0).getLen());
+    memcpy(m_addresses.data(), paramsOpt->at(0).getVal<int*>(), m_addresses.size());
 
     if (m_pSerialIO->getBasePlugin()->getType() &
         (ito::typeDataIO | ito::typeRawIO))
     {
         QSharedPointer<ito::Param> val(new ito::Param("port"));
-        retValue += m_pSerialIO->getParam(val, NULL);
+        retValue += m_pSerialIO->getParam(val, nullptr);
 
         if (!retValue.containsError())
         {
-            m_port = val->getVal<int>();
+            m_params["comPort"].copyValueFrom(val.data());
         }
-        m_node = (ito::uint8)paramsMand->at(1).getVal<int>();
-        if (openedNodes.contains(m_node))
+
+        if (!retValue.containsError())
         {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("An instance of noder number '%1' is already open.")
-                .arg(m_node)
-                .toUtf8()
-                .data());
-        }
-        else
-        {
-            ito::uint8 node;
-            retValue += getNodeID(node);
-            if (!retValue.containsError())
-            {
-                if (node != m_node)
-                {
-                    retValue = ito::RetVal(
-                        ito::retError,
-                        0,
-                        tr("The node number of the device is '%1' and not '%2'.")
-                        .arg(node)
-                        .arg(m_node)
-                        .toUtf8()
-                        .data());
-                }
-                else
-                {
-                    openedNodes.append(m_node);
-                    m_nodeAppended = true;
-                    m_params["nodeID"].setVal<int>(m_node);
-                }
-            }
-            else
-            {
-                retValue = ito::RetVal(
-                    ito::retError,
-                    999,
-                    tr("No device found for serialIO port '%1' and node '%2'.")
-                    .arg(m_port)
-                    .arg(m_node)
-                    .toUtf8()
-                    .data());
-            }
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)),
+                nullptr);
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)),
+                nullptr);
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(
+                    new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)),
+                nullptr);
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)),
+                nullptr);
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)),
+                nullptr);
+            retValue += m_pSerialIO->setParam(
+                QSharedPointer<ito::ParamBase>(
+                    new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")),
+                nullptr);
+
+            QSharedPointer<QVector<ito::ParamBase>> _dummy;
+            m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
+            m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
         }
     }
     else
@@ -233,20 +217,8 @@ ito::RetVal ThorlabsElliptec::init(
 
     if (!retValue.containsError())
     {
-        QSharedPointer<QVector<ito::ParamBase>> _dummy;
-        m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
-        m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
-        m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize]);
-        m_serialBufferLength = QSharedPointer<int>(new int(m_serialBufferSize));
-
-        *m_serialBufferLength = m_serialBufferSize;
-        std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
-
-
-        retValue += setCommunicationSettings(TRANSMIT_EMCY_VIA_RS232); // Transmit EMCYs via RS232
+        retValue += identifyDevices();
     }
-
-
 
     if (!retValue.containsError())
     {
@@ -286,16 +258,6 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if (m_nodeAppended)
-    {
-        openedNodes.removeOne(m_node);
-        if (openedNodes.isEmpty())
-        {
-            m_serialBuffer.clear();
-            m_serialBufferLength.clear();
-        }
-    }
-
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -303,6 +265,40 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
     }
 
     return retValue;
+}
+
+//------------------------------------------------------------------------------
+ito::RetVal ThorlabsElliptec::identifyDevices()
+{
+    ito::RetVal retValue;
+    QByteArray response;
+    bool ok;
+
+    foreach(const int address, m_addresses)
+    {
+        ok = true;
+        unsigned char adr = (unsigned char)address;
+        retValue += sendCommandAndGetResponse(adr, "IN", "", response);
+
+        if (response.toLower().startsWith("in") && response.size() >= 33)
+        {
+            int motorType = response.mid(3, 2).toInt(&ok, 16);
+            QByteArray serial = response.mid(5, 8);
+            QByteArray year = response.mid(13, 4);
+            int fwRelease = response.mid(17, 2).toInt(&ok, 16);
+            int hwRelease = response.mid(19, 2).toInt(&ok, 16);
+            int travel = response.mid(21, 4).toInt(&ok, 16);
+            int pulses = response.mid(25, 8).toInt(&ok, 16);
+        }
+        else
+        {
+            retValue += ito::RetVal::format(ito::retError,
+                0,
+                "Identification of device at address %i failed. Response format mismatch.",
+                adr);
+            return retValue;
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -925,33 +921,36 @@ ito::RetVal ThorlabsElliptec::updateStatus()
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::sendCommand(const QByteArray& command)
+ito::RetVal ThorlabsElliptec::sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray())
 {
+    // data must be a big-endian string representation of a number, if it is a number!
     QSharedPointer<QVector<ito::ParamBase>> _dummy;
     m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
     m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
 
-    ito::RetVal retVal = m_pSerialIO->setVal(command.data(), command.length(), nullptr);
+    QByteArray cmd = QByteArray::number(address, 16) + cmdId + data;
+    ito::RetVal retVal = m_pSerialIO->setVal(cmd.constData(), cmd.length(), nullptr);
     setAlive();
     return retVal;
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(const QByteArray& command, QByteArray& response)
+ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
+    unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray& response)
 {
     ito::RetVal retVal = ito::retOk;
-    retVal += sendCommand(command);
+    retVal += sendCommand(address, cmdId, data);
 
     if (!retVal.containsError())
     {
-        retVal += readResponse(response, command[3]);
+        retVal += readResponse(response);
     }
 
     return retVal;
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response, const ito::uint8& command)
+ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
@@ -961,26 +960,23 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response, const ito::uint
 
     ito::uint8 length;
     ito::uint8 recievedCommand;
+    response = "";
 
     bool done = false;
     int offset = 0;
     int start = 0;
     int endIndex = 0;
 
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-
     timer.start();
 
     while (!done && !retValue.containsError())
     {
-        waitMutex.lock();
-        waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-        waitMutex.unlock();
+        QThread::msleep(10);
         setAlive();
 
         retValue += m_pSerialIO->getVal(m_serialBuffer, m_serialBufferLength, nullptr);
         response += QByteArray(m_serialBuffer.data(), *m_serialBufferLength);
+
         if (retValue.containsError())
         {
             retValue += ito::RetVal(
@@ -994,7 +990,7 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response, const ito::uint
         else
         {
             // FOUND
-            if ((response.contains(m_S) && response.contains(m_E)))
+            if (response.endsWith("\r\n"))
             {
                 done = true;
             }
@@ -1004,301 +1000,13 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response, const ito::uint
         {
             retValue += ito::RetVal(
                 ito::retError,
-                m_delayAfterSendCommandMS,
+                0,
                 tr("timeout during read command.").toUtf8().data());
             return retValue;
         }
     }
-    if (!(response.contains(m_S) && response.contains(m_E)))
-    {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("The character 'S' or 'E' was not detected in the received bytearray.")
-            .toUtf8()
-            .data());
-    }
-
-    if (!retValue.containsError())
-    {
-        int start = response.indexOf(m_S);
-        response = response.right(start + response.size() + 1);
-        length = static_cast<ito::uint8>(response[1]);
-        recievedCommand = static_cast<ito::uint8>(response[3]);
-
-        if (recievedCommand == 0x03) // error
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            retValue += interpretCIA402Error(response.sliced(start, length + 1));
-#else
-            retValue += interpretCIA402Error(response.mid(start, length + 1));
-#endif
-        }
-    }
 
     return retValue;
-}
-
-//------------------------------------------------------------------------------
-template <typename T>
-inline ito::RetVal ThorlabsElliptec::readRegisterWithParsedResponse(
-    const ito::uint16& index, const ito::uint8& subindex, T& answer)
-{
-    QByteArray response;
-    ito::RetVal retValue = readRegister(index, subindex, response);
-    if (!retValue.containsError())
-        retValue += parseResponse<T>(response, answer);
-    return retValue;
-}
-
-//------------------------------------------------------------------------------
-template <typename T>
-ito::RetVal ThorlabsElliptec::parseResponse(QByteArray& response, T& parsedResponse)
-{
-    ito::RetVal retValue = ito::retOk;
-
-    qsizetype startIndex = response.indexOf(m_S);
-
-    // Extract basic components from the response
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    ito::uint8 length = static_cast<ito::uint8>(response[startIndex + 1]);
-    ito::uint8 nodeNumber = static_cast<ito::uint8>(response[startIndex + 2]);
-    ito::uint8 command = static_cast<ito::uint8>(response[startIndex + 3]);
-
-#else
-    ito::uint8 length = static_cast<ito::uint8>(response.at(startIndex + 1));
-    ito::uint8 nodeNumber = static_cast<ito::uint8>(response.at(startIndex + 2));
-    ito::uint8 command = static_cast<ito::uint8>(response.at(startIndex + 3));
-#endif
-
-    // Verify node number
-    if (nodeNumber != m_node)
-    {
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("The node number '%1' does not match the expected node number '%2'.")
-            .arg(nodeNumber)
-            .arg(m_node)
-            .toUtf8()
-            .data());
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    ito::uint8 receivedCRC = static_cast<ito::uint8>(response[startIndex + length]);
-#else
-    ito::uint8 receivedCRC = static_cast<ito::uint8>(response.at(startIndex + length));
-#endif
-
-    ito::uint8 checkCRC = 0x00;
-    QByteArray data = "";
-
-    // Process the response based on command type
-    switch (command)
-    {
-    case 0x01: // SDO read request/response
-        if (length > 7)
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, startIndex + length - 1));
-            data = response.sliced(7, startIndex + length - 7 + 1);
-#else
-            checkCRC = calculateChecksum(response.mid(1, startIndex + length - 1));
-            data = response.mid(7, startIndex + length - 7 + 1);
-#endif
-        }
-        else
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            checkCRC = calculateChecksum(response.sliced(1, startIndex + length));
-#else
-            checkCRC = calculateChecksum(response.mid(1, startIndex + length));
-#endif
-        }
-
-        if (receivedCRC != checkCRC)
-        {
-            return ito::RetVal(
-                ito::retError,
-                0,
-                tr("Checksum mismatch for SDO read request/response (received: '%1', "
-                    "calculated: "
-                    "'%2').")
-                .arg(receivedCRC)
-                .arg(checkCRC)
-                .toUtf8());
-        }
-
-        if constexpr (std::is_same<T, QString>::value) // convert to QString
-        {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            parsedResponse = QString::fromUtf8(data.sliced(0, data.size() - 1));
-#else
-            parsedResponse = QString::fromUtf8(data.mid(0, data.size() - 1));
-#endif
-        }
-        else if constexpr (
-
-            std::is_integral<T>::value || std::is_floating_point<T>::value) // convert to integer
-        {
-            if (data.size() >= sizeof(T))
-            {
-                std::memcpy(&parsedResponse, data.constData(), sizeof(T));
-            }
-            else
-            {
-                return ito::RetVal(ito::retError, 0, tr("Data size mismatch").toUtf8().data());
-            }
-        }
-        else
-        {
-            return ito::RetVal(ito::retError, 0, tr("Unsupported type").toUtf8().data());
-        }
-        break;
-
-    case 0x02: // SDO write request/response
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        checkCRC = calculateChecksum(response.sliced(1, length - 1));
-#else
-        checkCRC = calculateChecksum(response.mid(1, length - 1));
-#endif
-        if (receivedCRC != checkCRC)
-        {
-            return ito::RetVal(
-                ito::retError,
-                0,
-                tr("Checksum mismatch for SDO write request/response (received: '%1', "
-                    "calculated: "
-                    "'%2').")
-                .arg(receivedCRC)
-                .arg(checkCRC)
-                .toUtf8());
-        }
-        break;
-    case 0x05: // SDO write parameter request
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        checkCRC = calculateChecksum(response.sliced(1, length - 1));
-#else
-        checkCRC = calculateChecksum(response.mid(1, length - 1));
-#endif
-        if (receivedCRC != checkCRC)
-        {
-            return ito::RetVal(
-                ito::retError,
-                0,
-                tr("Checksum mismatch for SDO write parameter request/response (received: "
-                    "'%1', "
-                    "calculated: "
-                    "'%2').")
-                .arg(receivedCRC)
-                .arg(checkCRC)
-                .toUtf8());
-        }
-        m_statusWord = (response[4] << 8) | response[5];
-
-        updateStatusBits();
-        emit parametersChanged(m_params);
-        sendStatusUpdate();
-        break;
-
-    case 0x07: // EMCY notification
-        retValue += getError();
-        break;
-
-    default:
-        return ito::RetVal(
-            ito::retError,
-            0,
-            tr("Unknown command received: %1")
-            .arg(static_cast<ito::uint8>(command))
-            .toUtf8()
-            .data());
-    }
-
-    return retValue;
-}
-
-
-//------------------------------------------------------------------------------
-template <typename T>
-ito::RetVal ThorlabsElliptec::setRegister(
-    const ito::uint16& index,
-    const ito::uint8& subindex,
-    const ito::uint32& value,
-    const ito::uint8& length)
-{
-    ito::RetVal retVal = ito::retOk;
-    QByteArray response;
-    std::vector<ito::uint8> command = {
-        m_node,
-        m_SET,
-        static_cast<ito::uint8>(index & 0xFF),
-        static_cast<ito::uint8>(index >> 8),
-        subindex };
-
-    for (int i = 0; i < length; i++)
-    {
-        command.push_back((value >> (8 * i)) & 0xFF);
-    }
-
-    std::vector<ito::uint8> fullCommand = { static_cast<ito::uint8>(command.size() + 2) };
-    fullCommand.insert(fullCommand.end(), command.begin(), command.end());
-    QByteArray CRC(reinterpret_cast<const char*>(fullCommand.data()), fullCommand.size());
-    fullCommand.push_back(calculateChecksum(CRC));
-    fullCommand.insert(fullCommand.begin(), m_S);
-    fullCommand.push_back(m_E);
-
-    QByteArray data(reinterpret_cast<char*>(fullCommand.data()), fullCommand.size());
-
-    retVal += sendCommandAndGetResponse(data, response);
-
-    if (!retVal.containsError())
-    {
-        T parsedResponse;
-        retVal += parseResponse<T>(response, parsedResponse);
-    }
-
-    return retVal;
-}
-
-//------------------------------------------------------------------------------
-ito::uint8 ThorlabsElliptec::calculateChecksum(const QByteArray& message)
-{
-    ito::uint8 calcCRC = 0xFF;
-    int len = message.size(); // Get the length of the QByteArray
-
-    for (int i = 0; i < len; i++)
-    {
-        calcCRC = calcCRC ^
-            static_cast<ito::uint8>(message[i]); // Access QByteArray data and cast to ito::uint8
-        for (ito::uint8 j = 0; j < 8; j++)
-        {
-            if (calcCRC & 0x01)
-                calcCRC = (calcCRC >> 1) ^ 0xd5;
-            else
-                calcCRC = (calcCRC >> 1);
-        }
-    }
-
-    return calcCRC;
-}
-
-//------------------------------------------------------------------------------
-bool ThorlabsElliptec::verifyChecksum(QByteArray& message, ito::uint8& receivedCRC)
-{
-    // Calculate the CRC of the message excluding SOF, CRC, and EOF
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    ito::uint8 calculatedCRC = calculateChecksum(message.sliced(1, message.size() - 3));
-#else
-    ito::uint8 calculatedCRC = calculateChecksum(message.mid(1, message.size() - 3));
-#endif
-
-    // Compare the calculated CRC with the received CRC
-    if (calculatedCRC != receivedCRC)
-    {
-        return false;
-    }
-    return true;
 }
 
 //------------------------------------------------------------------------------

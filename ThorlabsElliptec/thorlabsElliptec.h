@@ -73,25 +73,17 @@ public:
 
 private:
     ito::AddInDataIO* m_pSerialIO;
-    static QList<ito::uint8> openedNodes;
-    int m_delayAfterSendCommandMS;
-    int m_requestTimeOutMS;
-    int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
-                 //!< not return until positioning was done.
-    int m_numOfAxes;
-    int m_waitForDoneTimeout;
-    int m_waitForMCSTimeout;
-    int m_port;
-    ito::uint16 m_statusWordValue;
-    std::bitset<16> m_statusWord;
 
-    ito::uint8 m_node;
-    bool m_nodeAppended;
-
+    //!< variable to set up async and sync positioning --> Synchrone means program do
+    //!< not return until positioning was done.
+    int m_async;
 
     const int m_serialBufferSize;
     QSharedPointer<int> m_serialBufferLength;
     QSharedPointer<char> m_serialBuffer;
+    int m_requestTimeOutMS;
+
+    QVector<int> m_addresses;
 
 
     ito::RetVal waitForDone(
@@ -102,6 +94,10 @@ private:
     ito::RetVal updateStatus(); // optional method to obtain the status and position of all
                                 // connected axes
 
+    ito::RetVal sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray());
+    ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray &response);
+    ito::RetVal readResponse(QByteArray& response);
+    ito::RetVal identifyDevices();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
