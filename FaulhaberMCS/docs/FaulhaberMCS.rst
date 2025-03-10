@@ -275,7 +275,8 @@ By using the following execFunctions you execute homing according the homing met
 
     In most of the cases before position control is to be used, the drive must perform a reference run to align the position used by the drive to the mechanic setup.
 
-    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mechanical limit stop is set as reference. Register '0x6098.00'.
+    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mecha
+... nical limit stop is set as reference. Register '0x6098.00'.
     :type method: int
     :param offset: Offset of the zero position relative to the position of the reference switch in userdefined units. Register '0x607C.00'.
     :type offset: int - optional
@@ -289,6 +290,7 @@ By using the following execFunctions you execute homing according the homing met
     :type limitCheckDelayTime: int - optional
     :param torqueLimits: Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. Register negative limit '0x2350.00', positive limit '0x2351.00'.
     :type torqueLimits: Sequence[int] - optional
+
 
 Exemplary usage from Python
 ===========================

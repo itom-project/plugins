@@ -861,7 +861,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::IntArray | ito::ParamBase::In,
         2,
         homingTorqueLimits,
-        new ito::IntArrayMeta(0, 1000, 1, "Torque control"),
+        new ito::IntArrayMeta(0, 6000, 1, "Torque control"),
         tr("Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. "
            "Register negative limit '%1', positive limit '%2'.")
             .arg(convertHexToString(homingNegativeTorqueLimit_register))
