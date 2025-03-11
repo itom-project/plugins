@@ -1752,6 +1752,7 @@ ito::RetVal FaulhaberMCS::setParam(
                         .toUtf8()
                         .data());
             }
+            _sleep(100);
         }
         else if (key == "power")
         {
@@ -2181,16 +2182,15 @@ ito::RetVal FaulhaberMCS::performHoming(
             }
         }
 
-        if (!retValue.containsError())
-        {
-            ito::int32 pos;
-            for (int i = 0; i < m_numOfAxes; i++)
-            {
-                retValue += getPosMCS(pos);
-                m_currentPos[i] = static_cast<double>(pos);
 
-                replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
-            }
+        ito::int32 pos;
+        for (int i = 0; i < m_numOfAxes; i++)
+        {
+            retValue += getPosMCS(pos);
+            m_currentPos[i] = static_cast<double>(pos);
+            m_targetPos[i] = static_cast<double>(0);
+
+            replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
         }
 
         retValue += setOperationMode(currentOperation);
