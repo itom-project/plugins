@@ -68,14 +68,13 @@ ThorlabsElliptecInterface::ThorlabsElliptecInterface()
     m_initParamsMand.append(paramVal);
 
     // up to 16 devices can be connected to one Elliptec bus distributor
-    auto meta = new ito::IntArrayMeta(0x0, 0xF, 1, 1, 16, 1, "Communication");
+    auto meta = new ito::IntMeta(0x0, 0xF, 1, "Communication");
     int addresses[] = { 0x0, };
     meta->setRepresentation(ito::ParamMeta::HexNumber);
     paramVal = ito::Param(
         "addresses",
-        ito::ParamBase::IntArray | ito::ParamBase::In,
-        1,
-        addresses,
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0x0,
         meta,
         tr("Address of stages, 0x0 - 0xF.").toUtf8().data());
     m_initParamsOpt.append(paramVal);
@@ -106,6 +105,8 @@ ThorlabsElliptec::ThorlabsElliptec() :
     m_serialBufferSize(200),
     m_requestTimeOutMS(500)
 {
+    ThorlabsElliptec::initElliptecModels();
+
     m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
         delete[] ptr; // Custom deleter to release the array properly
         });
@@ -125,6 +126,13 @@ ThorlabsElliptec::ThorlabsElliptec() :
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         1, nullptr, "");
     m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("numaxis",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        1,
+        1,
+        1,
+        tr("Number of axes attached to this stage: Here always 1. Multiple axes, connected to one bus driver, must init multiple objects with the same serial object.").toLatin1().data());
 
     QVector<ito::Param> pMand, pOpt, pOut;
 
@@ -153,6 +161,7 @@ ThorlabsElliptec::ThorlabsElliptec() :
 //------------------------------------------------------------------------------
 ThorlabsElliptec::~ThorlabsElliptec()
 {
+
 }
 
 //------------------------------------------------------------------------------
@@ -165,12 +174,13 @@ ito::RetVal ThorlabsElliptec::init(
     ito::RetVal retValue(ito::retOk);
 
     m_pSerialIO = paramsMand->at(0).getVal<ito::AddInDataIO*>();
-    m_addresses.resize(paramsOpt->at(0).getLen());
-    memcpy(m_addresses.data(), paramsOpt->at(0).getVal<int*>(), m_addresses.size());
+    m_address = paramsOpt->at(0).getVal<int>();
 
     if (m_pSerialIO->getBasePlugin()->getType() &
         (ito::typeDataIO | ito::typeRawIO))
     {
+        m_pSerialIO->getUserMutex().lock();
+
         QSharedPointer<ito::Param> val(new ito::Param("port"));
         retValue += m_pSerialIO->getParam(val, nullptr);
 
@@ -206,6 +216,8 @@ ito::RetVal ThorlabsElliptec::init(
             m_pSerialIO->execFunc("clearInputBuffer", _dummy, _dummy, _dummy, nullptr);
             m_pSerialIO->execFunc("clearOutputBuffer", _dummy, _dummy, _dummy, nullptr);
         }
+
+        m_pSerialIO->getUserMutex().unlock();
     }
     else
     {
@@ -268,36 +280,141 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
 }
 
 //------------------------------------------------------------------------------
+/*static*/ void ThorlabsElliptec::initElliptecModels()
+{
+    if (elliptecModels.size() == 0)
+    {
+        elliptecModels << ElliptecDevice(
+            6,
+            "ELL6",
+            "Dual-Position Slider",
+            true,
+            true,
+            "mm",
+            QList<double>() << 0.0 << 31.1
+        );
+
+        elliptecModels << ElliptecDevice(
+            9,
+            "ELL9",
+            "Four-Position Slider",
+            true,
+            true,
+            "mm",
+            QList<double>() << 0.0 << 32.0 << 64.0 << 96.0
+        );
+
+        elliptecModels << ElliptecDevice(
+            12,
+            "ELL12",
+            "Six-Position Slider",
+            true,
+            true,
+            "mm",
+            QList<double>() << 0.0 << 19.2 << 38.4 << 57.6 << 76.8 << 96.0
+        );
+
+        elliptecModels << ElliptecDevice(
+            14,
+            "ELL14",
+            "Rotation Mount",
+            false,
+            false,
+            "°",
+            QList<double>()
+        );
+
+        elliptecModels << ElliptecDevice(
+            15,
+            "ELL15",
+            "Motorized Iris",
+            false,
+            true,
+            "mm",
+            QList<double>()
+        );
+
+        elliptecModels << ElliptecDevice(
+            17,
+            "ELL17",
+            "Linear Stage",
+            false,
+            true,
+            "mm",
+            QList<double>()
+        );
+
+        elliptecModels << ElliptecDevice(
+            18,
+            "ELL18",
+            "Rotation Stage",
+            false,
+            false,
+            "°",
+            QList<double>()
+        );
+
+        elliptecModels << ElliptecDevice(
+            20,
+            "ELL20",
+            "Linear Stage",
+            false,
+            true,
+            "mm",
+            QList<double>()
+        );
+    }
+}
+
+//------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptec::identifyDevices()
 {
     ito::RetVal retValue;
     QByteArray response;
-    bool ok;
+    bool ok = true;
+    bool modelFound = false;
 
-    foreach(const int address, m_addresses)
+    unsigned char adr = (unsigned char)m_address;
+    retValue += sendCommandAndGetResponse(adr, "IN", "", response);
+
+    if (response.toLower().startsWith("in") && response.size() >= 33)
     {
-        ok = true;
-        unsigned char adr = (unsigned char)address;
-        retValue += sendCommandAndGetResponse(adr, "IN", "", response);
+        int motorType = response.mid(3, 2).toInt(&ok, 16);
+        QByteArray serial = response.mid(5, 8);
+        QByteArray year = response.mid(13, 4);
+        int fwRelease = response.mid(17, 2).toInt(&ok, 16);
+        int hwRelease = response.mid(19, 2).toInt(&ok, 16);
+        int travel = response.mid(21, 4).toInt(&ok, 16);
+        int pulses = response.mid(25, 8).toInt(&ok, 16);
 
-        if (response.toLower().startsWith("in") && response.size() >= 33)
+        foreach(const auto & model, elliptecModels)
         {
-            int motorType = response.mid(3, 2).toInt(&ok, 16);
-            QByteArray serial = response.mid(5, 8);
-            QByteArray year = response.mid(13, 4);
-            int fwRelease = response.mid(17, 2).toInt(&ok, 16);
-            int hwRelease = response.mid(19, 2).toInt(&ok, 16);
-            int travel = response.mid(21, 4).toInt(&ok, 16);
-            int pulses = response.mid(25, 8).toInt(&ok, 16);
+            if (model.m_modelId == motorType)
+            {
+                m_model = model;
+                modelFound = true;
+                break;
+            }
+        }
+
+        if (!modelFound)
+        {
+            retValue += ito::RetVal::format(ito::retError, 0, "Unknown or unsupported model type for address %i", m_address);
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError,
-                0,
-                "Identification of device at address %i failed. Response format mismatch.",
-                adr);
-            return retValue;
+            setIdentifier(
+                QString("Elliptec %1, Serial %2").arg(m_model.m_name).arg(serial)
+            );
         }
+    }
+    else
+    {
+        retValue += ito::RetVal::format(ito::retError,
+            0,
+            "Identification of device at address %i failed. Response format mismatch.",
+            adr);
+        return retValue;
     }
 }
 
@@ -939,6 +1056,7 @@ ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
     unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray& response)
 {
     ito::RetVal retVal = ito::retOk;
+    m_pSerialIO->getUserMutex().lock();
     retVal += sendCommand(address, cmdId, data);
 
     if (!retVal.containsError())
@@ -946,6 +1064,7 @@ ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
         retVal += readResponse(response);
     }
 
+    m_pSerialIO->getUserMutex().unlock();
     return retVal;
 }
 

@@ -51,6 +51,40 @@ private:
 };
 
 //------------------------------------------------------------------------------
+class ElliptecDevice
+{
+public:
+    ElliptecDevice() {};
+
+    ElliptecDevice(
+        const int &modelId,
+        const QString& name,
+        const QString& description,
+        bool indexed,
+        bool linear,
+        const QString& unit,
+        const QList<double> indexedPositions
+    ) :
+        m_modelId(modelId), m_name(name), m_description(description),
+        m_indexed(indexed), m_linear(linear),
+        m_unit(unit), m_indexedPositions(indexedPositions)
+    {
+        if (!m_indexed)
+        {
+            m_indexedPositions.clear();
+        }
+    }
+
+    QString m_name;
+    QString m_description;
+    bool m_indexed;
+    bool m_linear; //linear: true, rotation: false
+    QString m_unit;
+    QList<double> m_indexedPositions;
+    int m_modelId;
+};
+
+//------------------------------------------------------------------------------
 class ThorlabsElliptec : public ito::AddInActuator
 {
     Q_OBJECT;
@@ -83,8 +117,11 @@ private:
     QSharedPointer<char> m_serialBuffer;
     int m_requestTimeOutMS;
 
-    QVector<int> m_addresses;
+    int m_address;
+    ElliptecDevice m_model;
+    static QList<ElliptecDevice> elliptecModels;
 
+    static void initElliptecModels();
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
