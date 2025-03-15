@@ -27,8 +27,6 @@
 #include "dockWidgetThorlabsElliptec.h"
 #include <qsharedpointer.h>
 
-#include <bitset>
-
 //------------------------------------------------------------------------------
 class ThorlabsElliptecInterface : public ito::AddInInterfaceBase
 {
@@ -63,16 +61,19 @@ public:
         bool indexed,
         bool linear,
         const QString& unit,
-        const QList<double> indexedPositions
+        int numIndexedPositions,
+        const QString supportedCmds
     ) :
         m_modelId(modelId), m_name(name), m_description(description),
         m_indexed(indexed), m_linear(linear),
-        m_unit(unit), m_indexedPositions(indexedPositions)
+        m_unit(unit), m_numIndexedPositions(numIndexedPositions)
     {
         if (!m_indexed)
         {
-            m_indexedPositions.clear();
+            m_numIndexedPositions = 0;
         }
+
+        m_supportedCmds = supportedCmds.split(";");
     }
 
     QString m_name;
@@ -80,8 +81,9 @@ public:
     bool m_indexed;
     bool m_linear; //linear: true, rotation: false
     QString m_unit;
-    QList<double> m_indexedPositions;
+    int m_numIndexedPositions;
     int m_modelId;
+    QStringList m_supportedCmds;
 };
 
 //------------------------------------------------------------------------------
@@ -106,6 +108,30 @@ public:
     };
 
 private:
+    struct CmdInfo
+    {
+        CmdInfo() {};
+        CmdInfo(
+            const QByteArray& sendCmd,
+            const QByteArray& rcvCmd,
+            int sendDataNumBytes,
+            int rcvDataNumBytes,
+            bool canReturnStatus)
+        {
+            this->sendCmd = sendCmd;
+            this->rcvCmd = rcvCmd;
+            this->sendDataNumBytes = sendDataNumBytes;
+            this->rcvDataNumBytes = rcvDataNumBytes;
+            this->canReturnStatus = canReturnStatus;
+        };
+
+        QByteArray sendCmd;
+        QByteArray rcvCmd;
+        int sendDataNumBytes;
+        int rcvDataNumBytes;
+        bool canReturnStatus; // if true, the command can also return with GS
+    };
+
     ito::AddInDataIO* m_pSerialIO;
 
     //!< variable to set up async and sync positioning --> Synchrone means program do
@@ -115,13 +141,16 @@ private:
     const int m_serialBufferSize;
     QSharedPointer<int> m_serialBufferLength;
     QSharedPointer<char> m_serialBuffer;
+    bool m_serialMutexLocked;
     int m_requestTimeOutMS;
 
     int m_address;
     ElliptecDevice m_model;
     static QList<ElliptecDevice> elliptecModels;
+    static QMap<QByteArray, CmdInfo> supportedCmds;
 
     static void initElliptecModels();
+    static void initSupportedCmds();
 
     ito::RetVal waitForDone(
         const int timeoutMS = -1,
@@ -131,9 +160,14 @@ private:
     ito::RetVal updateStatus(); // optional method to obtain the status and position of all
                                 // connected axes
 
+    bool getCmdInfo(const QByteArray& cmd, CmdInfo& info) const;
     ito::RetVal sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray());
     ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray &response);
+    ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, int data, QByteArray& response);
     ito::RetVal readResponse(QByteArray& response);
+    ito::RetVal parseStatusResponse(const QByteArray& response) const;
+    QByteArray intToByteArray(int value, int numBytes) const;
+    int byteArrayToInt(const QByteArray& value) const;
     ito::RetVal identifyDevices();
 
 public slots:

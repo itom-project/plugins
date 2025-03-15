@@ -103,7 +103,8 @@ ito::RetVal ThorlabsElliptecInterface::closeThisInst(ito::AddInBase** addInInst)
 ThorlabsElliptec::ThorlabsElliptec() :
     AddInActuator(),
     m_serialBufferSize(200),
-    m_requestTimeOutMS(500)
+    m_requestTimeOutMS(500),
+    m_serialMutexLocked(false)
 {
     ThorlabsElliptec::initElliptecModels();
 
@@ -133,6 +134,15 @@ ThorlabsElliptec::ThorlabsElliptec() :
         1,
         1,
         tr("Number of axes attached to this stage: Here always 1. Multiple axes, connected to one bus driver, must init multiple objects with the same serial object.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("travelRange",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        INT_MIN,
+        INT_MAX,
+        1,
+        tr("Travel range of the axis").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     QVector<ito::Param> pMand, pOpt, pOut;
 
@@ -236,7 +246,7 @@ ito::RetVal ThorlabsElliptec::init(
     {
         retValue += updateStatus();
 
-        ito::int32 pos;
+        /*ito::int32 pos;
 
         for (int i = 0; i < m_numOfAxes; i++)
         {
@@ -249,7 +259,7 @@ ito::RetVal ThorlabsElliptec::init(
                 ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
         }
 
-        retValue += updateStatus();
+        retValue += updateStatus();*/
         sendStatusUpdate(false);
         emit parametersChanged(m_params);
     }
@@ -291,7 +301,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             true,
             "mm",
-            QList<double>() << 0.0 << 31.1
+            2,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -301,7 +312,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             true,
             "mm",
-            QList<double>() << 0.0 << 32.0 << 64.0 << 96.0
+            4,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -311,7 +323,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             true,
             "mm",
-            QList<double>() << 0.0 << 19.2 << 38.4 << 57.6 << 76.8 << 96.0
+            6,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -321,7 +334,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             false,
             "°",
-            QList<double>()
+            0,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -331,7 +345,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             true,
             "mm",
-            QList<double>()
+            0,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -341,7 +356,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             true,
             "mm",
-            QList<double>()
+            0,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -351,7 +367,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             false,
             "°",
-            QList<double>()
+            0,
+            "in;gs;ho;ma;mr;gp"
         );
 
         elliptecModels << ElliptecDevice(
@@ -361,9 +378,43 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             true,
             "mm",
-            QList<double>()
+            0,
+            "in;gs;ho;ma;mr;gp"
         );
     }
+}
+
+//------------------------------------------------------------------------------
+/*static*/ void ThorlabsElliptec::initSupportedCmds()
+{
+    if (supportedCmds.size() > 0)
+    {
+        return;
+    }
+
+    supportedCmds["in"] = CmdInfo("in", "IN", 0, 30, false); // identify
+    supportedCmds["gs"] = CmdInfo("gs", "GS", 0, 2, false); // status
+    supportedCmds["ho"] = CmdInfo("ho", "PO", 1, 8, true); // homing
+    supportedCmds["ma"] = CmdInfo("ma", "PO", 8, 8, true); // move absolute
+    supportedCmds["mr"] = CmdInfo("mr", "PO", 8, 8, true); // move relative
+    supportedCmds["gp"] = CmdInfo("gp", "PO", 0, 8, false); // get position
+}
+
+//------------------------------------------------------------------------------
+bool ThorlabsElliptec::getCmdInfo(const QByteArray& cmd, CmdInfo& info) const
+{
+    if (!m_model.m_supportedCmds.contains(cmd))
+    {
+        return false;
+    }
+
+    if (!supportedCmds.contains(cmd))
+    {
+        return false;
+    }
+
+    info = supportedCmds[cmd];
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -375,17 +426,19 @@ ito::RetVal ThorlabsElliptec::identifyDevices()
     bool modelFound = false;
 
     unsigned char adr = (unsigned char)m_address;
-    retValue += sendCommandAndGetResponse(adr, "IN", "", response);
+    retValue += sendCommandAndGetResponse(adr, "in", "", response);
 
-    if (response.toLower().startsWith("in") && response.size() >= 33)
+    if (!retValue.containsError())
     {
-        int motorType = response.mid(3, 2).toInt(&ok, 16);
-        QByteArray serial = response.mid(5, 8);
-        QByteArray year = response.mid(13, 4);
-        int fwRelease = response.mid(17, 2).toInt(&ok, 16);
-        int hwRelease = response.mid(19, 2).toInt(&ok, 16);
-        int travel = response.mid(21, 4).toInt(&ok, 16);
-        int pulses = response.mid(25, 8).toInt(&ok, 16);
+        int motorType = byteArrayToInt(response.mid(3 - 3, 2));
+        QByteArray serial = response.mid(5 - 3, 8);
+        QByteArray year = response.mid(13 - 3, 4);
+        int fwRelease = byteArrayToInt(response.mid(17 - 3, 2));
+        int hwRelease = byteArrayToInt(response.mid(19 - 3, 2));
+        int travelRange = byteArrayToInt(response.mid(21 - 3, 4));
+        int pulses = byteArrayToInt(response.mid(25 - 3, 8));
+
+        m_params["travelRange"].setVal<int>(travelRange);
 
         foreach(const auto & model, elliptecModels)
         {
@@ -600,8 +653,10 @@ ito::RetVal ThorlabsElliptec::getPos(
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     QSharedPointer<QVector<double>> pos2(new QVector<double>(1, 0.0));
+
     ito::RetVal retValue =
         getPos(QVector<int>(1, axis), pos2, nullptr); // forward to multi-axes version
+
     *pos = (*pos2)[0];
 
     if (waitCond)
@@ -620,23 +675,30 @@ ito::RetVal ThorlabsElliptec::getPos(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    foreach(const int i, axis)
+    if (axis.size() != 1 || pos->size() != 1 || axis[0] != 0)
     {
-        if (i >= 0 && i < m_numOfAxes)
+        retValue += ito::RetVal(ito::retError, 0, "Only one axis supported (index 0)");
+    }
+    else
+    {
+        QByteArray response;
+        retValue += sendCommandAndGetResponse(m_address, "gp", "", response);
+
+        if (!retValue.containsError())
         {
-            ito::int32 intPos;
-            retValue += getPosMCS(intPos);
-            if (!retValue.containsError())
+            double value = byteArrayToInt(response);
+
+            if (m_model.m_indexed)
             {
-                m_currentPos[i] =
-                    static_cast<double>(intPos); // set m_currentPos[i] to the obtained position
-                (*pos)[i] = m_currentPos[i];
+                // convert value to indexed values 0, 1, 2, 3 ... (up to number of indexed positions)
+                double travelRange = m_params["travelRange"].getVal<int>();
+                double factor = travelRange / (m_model.m_numIndexedPositions - 1);
+                (*pos)[0] = qRound(value / factor) + 1.;
             }
-        }
-        else
-        {
-            retValue += ito::RetVal::format(
-                ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
+            else
+            {
+                (*pos)[0] = value;
+            }
         }
     }
 
@@ -663,23 +725,11 @@ ito::RetVal ThorlabsElliptec::setPosAbs(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // check if pos in integer32 value range
-    foreach(const auto i, axis)
+    if (axis.size() != 1 || pos.size() != 1 || axis[0] != 0)
     {
-        if (pos[i] > std::numeric_limits<ito::int32>::max() ||
-            pos[i] < std::numeric_limits<ito::int32>::min())
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Target position %1 is out of range").arg(pos[i]).toUtf8().data());
-            waitCond->returnValue = retValue;
-            waitCond->release();
-            return retValue;
-        }
+        retValue += ito::RetVal(ito::retError, 0, "Only one axis supported (index 0)");
     }
-
-    if (isMotorMoving())
+    else if (isMotorMoving())
     {
         retValue += ito::RetVal(
             ito::retError,
@@ -690,7 +740,7 @@ ito::RetVal ThorlabsElliptec::setPosAbs(
     {
         foreach(const int i, axis)
         {
-            if (i < 0 || i >= m_numOfAxes)
+            if (i < 0 || i >= )
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
@@ -1052,20 +1102,110 @@ ito::RetVal ThorlabsElliptec::sendCommand(unsigned char address, const QByteArra
 }
 
 //------------------------------------------------------------------------------
+QByteArray ThorlabsElliptec::intToByteArray(int value, int numBytes) const
+{
+    QByteArray byteArray(numBytes, 0); // Erstelle ein QByteArray mit 4 Bytes
+
+    // Erstelle einen QDataStream, um die Zahl in das QByteArray zu schreiben
+    QDataStream stream(&byteArray, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::BigEndian); // Setze die Byte-Reihenfolge auf Big-Endian
+    stream << value; // Schreibe die Zahl in das Byte-Array
+
+    // Ausgabe des Byte-Arrays zur Überprüfung
+    return byteArray.toHex();
+}
+
+//------------------------------------------------------------------------------
+int ThorlabsElliptec::byteArrayToInt(const QByteArray& value) const
+{
+    return value.toInt(nullptr, 16);
+}
+
+//------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
     unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray& response)
 {
     ito::RetVal retVal = ito::retOk;
-    m_pSerialIO->getUserMutex().lock();
-    retVal += sendCommand(address, cmdId, data);
+    bool serialMutexLockedLocal = false;
+
+    if (!m_serialMutexLocked)
+    {
+        m_pSerialIO->getUserMutex().lock();
+        m_serialMutexLocked = true;
+        serialMutexLockedLocal = true;
+    }
+
+    CmdInfo info;
+
+    if (getCmdInfo(cmdId, info))
+    {
+        if (data.size() != info.sendDataNumBytes)
+        {
+            retVal += ito::RetVal(ito::retError, 0, "required data of cmd has not the same length than the given data");
+        }
+        else
+        {
+            retVal += sendCommand(address, cmdId, data);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "invalid or unsupported cmd for this device");
+    }
 
     if (!retVal.containsError())
     {
         retVal += readResponse(response);
     }
 
-    m_pSerialIO->getUserMutex().unlock();
+    if (!retVal.containsError())
+    {
+        if (response.size() != (3 + info.rcvDataNumBytes))
+        {
+            retVal += ito::RetVal(ito::retError, 0, "length of device response is wrong.");
+        }
+        else if (response[0] != address)
+        {
+            retVal += ito::RetVal(ito::retError, 0, "device response is assigned to wrong address.");
+        }
+        else if (response.mid(1, 2) == info.rcvCmd)
+        {
+            // correct answer
+            response = response.mid(3);
+        }
+        else if (response.mid(1, 2) == "GS" && info.canReturnStatus)
+        {
+            retVal += parseStatusResponse(response);
+        }
+        else
+        {
+            retVal += ito::RetVal(ito::retError, 0, "invalid response");
+        }
+    }
+
+    if (serialMutexLockedLocal)
+    {
+        m_pSerialIO->getUserMutex().unlock();
+        m_serialMutexLocked = false;
+        serialMutexLockedLocal = false;
+    }
     return retVal;
+}
+
+//------------------------------------------------------------------------------
+ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, int data, QByteArray& response)
+{
+    CmdInfo info;
+
+    if (getCmdInfo(cmdId, info))
+    {
+        QByteArray dataStr = intToByteArray(data, info.sendDataNumBytes);
+        return sendCommandAndGetResponse(address, cmdId, dataStr, response);
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "invalid or unsupported cmd for this device");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1126,6 +1266,57 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response)
     }
 
     return retValue;
+}
+
+//------------------------------------------------------------------------------
+ito::RetVal ThorlabsElliptec::parseStatusResponse(const QByteArray& response) const
+{
+    if (response.size() != 4)
+    {
+        return ito::RetVal(ito::retError, 0, "invalid response size");
+    }
+    else if (response.mid(1, 2) != "GS")
+    {
+        return ito::RetVal(ito::retError, 0, "invalid response command");
+    }
+    else
+    {
+        int status = response.mid(3, 1).toInt(nullptr, 16);
+
+        switch (status)
+        {
+        case 0:
+            return ito::retOk;
+        case 1:
+            return ito::RetVal(ito::retError, status, "Communication time out");
+        case 2:
+            return ito::RetVal(ito::retError, status, "Mechanical time out");
+        case 3:
+            return ito::RetVal(ito::retError, status, "Command error or not supported");
+        case 4:
+            return ito::RetVal(ito::retError, status, "Value out of range");
+        case 5:
+            return ito::RetVal(ito::retError, status, "Module isolated");
+        case 6:
+            return ito::RetVal(ito::retError, status, "Module out of isolation");
+        case 7:
+            return ito::RetVal(ito::retError, status, "Initializing error");
+        case 8:
+            return ito::RetVal(ito::retError, status, "Thermal error");
+        case 9:
+            return ito::RetVal(ito::retError, status, "Busy");
+        case 10:
+            return ito::RetVal(ito::retError, status, "Sensor Error(May appear during self - test.If code persists there is an error)");
+        case 11:
+            return ito::RetVal(ito::retError, status, "Motor Error(May appear during self - test.If code persists there is an error)");
+        case 12:
+            return ito::RetVal(ito::retError, status, "Out of Range(e.g., stage has been instructed to move beyond its travel range).");
+        case 13:
+            return ito::RetVal(ito::retError, status, "Over Current error");
+        default:
+            return ito::RetVal(ito::retError, status, "Reserved error code");
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
