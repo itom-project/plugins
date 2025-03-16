@@ -143,6 +143,7 @@ private:
     QSharedPointer<char> m_serialBuffer;
     bool m_serialMutexLocked;
     int m_requestTimeOutMS;
+    int m_waitForDoneTimeoutMS;
 
     int m_address;
     ElliptecDevice m_model;
@@ -166,6 +167,8 @@ private:
     ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, int data, QByteArray& response);
     ito::RetVal readResponse(QByteArray& response);
     ito::RetVal parseStatusResponse(const QByteArray& response) const;
+    double positionFromPosResponse(const QByteArray& response) const;
+    QByteArray positionTo8ByteArray(double position) const;
     QByteArray intToByteArray(int value, int numBytes) const;
     int byteArrayToInt(const QByteArray& value) const;
     ito::RetVal identifyDevices();

@@ -104,9 +104,13 @@ ThorlabsElliptec::ThorlabsElliptec() :
     AddInActuator(),
     m_serialBufferSize(200),
     m_requestTimeOutMS(500),
+    m_waitForDoneTimeoutMS(60000),
     m_serialMutexLocked(false)
 {
+    // init some static data and LUTs.
+    // executed in main thread, therefore thread-safe!
     ThorlabsElliptec::initElliptecModels();
+    ThorlabsElliptec::initSupportedCmds();
 
     m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
         delete[] ptr; // Custom deleter to release the array properly
@@ -142,6 +146,14 @@ ThorlabsElliptec::ThorlabsElliptec() :
         INT_MAX,
         1,
         tr("Travel range of the axis").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("calibDirection",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        1,
+        0,
+        tr("The direction for the calib / homeing operation. 0: clockwise, 1: counter-clockwise. Only relevant for rotary stages.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     QVector<ito::Param> pMand, pOpt, pOut;
@@ -389,6 +401,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
 {
     if (supportedCmds.size() > 0)
     {
+        // already initialized
         return;
     }
 
@@ -569,8 +582,36 @@ ito::RetVal ThorlabsElliptec::calib(const QVector<int> axis, ItomSharedSemaphore
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    retValue +=
-        ito::RetVal(ito::retError, 0, tr("'Calib' function is not implemented.").toUtf8().data());
+    if (axis.size() != 1 || axis[0] != 0)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Only implemented for one single axis with index 0");
+    }
+    else
+    {
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate(true);
+
+        int dir = m_params["calibDirection"].getVal<int>();
+        QByteArray response;
+        retValue += sendCommandAndGetResponse(m_address, "ho", 1, response);
+
+        if (!retValue.containsError())
+        {
+            double value = positionFromPosResponse(response);
+
+            m_currentPos[0] = value;
+            m_targetPos[0] = value;
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
+            sendTargetUpdate();
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorError, ito::actSwitchesMask | ito::actStatusMask);
+        }
+
+        sendStatusUpdate();
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -578,8 +619,6 @@ ito::RetVal ThorlabsElliptec::calib(const QVector<int> axis, ItomSharedSemaphore
     }
     return retValue;
 }
-
-
 
 //------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptec::setOrigin(const int axis, ItomSharedSemaphore* waitCond)
@@ -591,39 +630,12 @@ ito::RetVal ThorlabsElliptec::setOrigin(const int axis, ItomSharedSemaphore* wai
 ito::RetVal ThorlabsElliptec::setOrigin(QVector<int> axis, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue(ito::retError, 0, "set origin not supported.");
 
-    if (isMotorMoving())
+    if (waitCond)
     {
-        retValue +=
-            ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toUtf8().data());
-
-        if (waitCond)
-        {
-            waitCond->release();
-            waitCond->returnValue = retValue;
-        }
-    }
-    else
-    {
-        foreach(const int& i, axis)
-        {
-            retValue += homingCurrentPosToZero(i);
-            setStatus(
-                m_currentStatus[i],
-                ito::actuatorAtTarget,
-                ito::actSwitchesMask | ito::actStatusMask);
-            m_params["homed"].setVal<int>(1);
-        }
-
-        if (waitCond)
-        {
-            waitCond->returnValue = retValue;
-            waitCond->release();
-        }
-
-        sendStatusUpdate();
-        sendTargetUpdate();
+        waitCond->returnValue = retValue;
+        waitCond->release();
     }
 
     return retValue;
@@ -686,19 +698,13 @@ ito::RetVal ThorlabsElliptec::getPos(
 
         if (!retValue.containsError())
         {
-            double value = byteArrayToInt(response);
-
-            if (m_model.m_indexed)
-            {
-                // convert value to indexed values 0, 1, 2, 3 ... (up to number of indexed positions)
-                double travelRange = m_params["travelRange"].getVal<int>();
-                double factor = travelRange / (m_model.m_numIndexedPositions - 1);
-                (*pos)[0] = qRound(value / factor) + 1.;
-            }
-            else
-            {
-                (*pos)[0] = value;
-            }
+            double value = positionFromPosResponse(response);
+            m_currentPos[0] = value;
+            setStatus(axis, ito::actuatorAvailable | ito::actuatorEnabled); // todo: at target? moving?
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorAvailable | ito::actuatorEnabled | ito::actuatorError); // todo: at target? moving?
         }
     }
 
@@ -738,60 +744,47 @@ ito::RetVal ThorlabsElliptec::setPosAbs(
     }
     else
     {
-        foreach(const int i, axis)
+        m_targetPos[0] = pos[0];
+
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate();
+        sendTargetUpdate();
+
+        if (m_async && waitCond) // async disabled
         {
-            if (i < 0 || i >= )
-            {
-                retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
-            }
-            else
-            {
-                m_targetPos[i] = pos[i];
-            }
+            waitCond->returnValue = retValue;
+            waitCond->release();
         }
+
+        QByteArray data = positionTo8ByteArray(pos[0]);
+        QByteArray response;
+        retValue += sendCommandAndGetResponse(m_address, "ma", data, response);
 
         if (retValue.containsError())
         {
-            if (waitCond)
+            if (retValue.errorCode() == 1000)
             {
-                waitCond->returnValue = retValue;
-                waitCond->release();
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+            }
+            else
+            {
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorError);
             }
         }
         else
         {
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate();
+            m_currentPos[0] = positionFromPosResponse(response);
+        }
 
-            foreach(const int i, axis)
-            {
-                ito::int32 newVal = static_cast<ito::int32>(pos[i]);
-                retValue += setPosAbsMCS(newVal);
-                m_targetPos[i] = static_cast<ito::float64>(newVal);
-            }
 
-            sendTargetUpdate();
+        sendStatusUpdate();
 
-            if (m_async && waitCond) // async disabled
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-            }
-
-            retValue += waitForDone(m_waitForDoneTimeout, axis); // drops into timeout
-
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
-
-            if (!m_async && waitCond)
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-            }
+        if (!m_async && waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
         }
     }
-
 
     return retValue;
 }
@@ -809,23 +802,11 @@ ito::RetVal ThorlabsElliptec::setPosRel(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    // check if pos in integer32 value range
-    foreach(const auto i, axis)
+    if (axis.size() != 1 || pos.size() != 1 || axis[0] != 0)
     {
-        if (pos[i] > std::numeric_limits<ito::int32>::max() ||
-            pos[i] < std::numeric_limits<ito::int32>::min())
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Relative position %1 is out of range").arg(pos[i]).toUtf8().data());
-            waitCond->returnValue = retValue;
-            waitCond->release();
-            return retValue;
-        }
+        retValue += ito::RetVal(ito::retError, 0, "Only one axis supported (index 0)");
     }
-
-    if (isMotorMoving())
+    else if (isMotorMoving())
     {
         retValue += ito::RetVal(
             ito::retError,
@@ -834,57 +815,45 @@ ito::RetVal ThorlabsElliptec::setPosRel(
     }
     else
     {
-        foreach(const int i, axis)
+        m_targetPos[0] = pos[0];
+
+        setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+        sendStatusUpdate();
+        sendTargetUpdate();
+
+        if (m_async && waitCond) // async disabled
         {
-            if (i < 0 || i >= m_numOfAxes)
-            {
-                retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toUtf8().data(), i);
-            }
-            else
-            {
-                m_targetPos[i] = m_currentPos[i] + pos[i];
-            }
+            waitCond->returnValue = retValue;
+            waitCond->release();
         }
+
+        QByteArray data = positionTo8ByteArray(pos[0]);
+        QByteArray response;
+        retValue += sendCommandAndGetResponse(m_address, "mr", data, response);
 
         if (retValue.containsError())
         {
-            if (waitCond)
+            if (retValue.errorCode() == 1000)
             {
-                waitCond->returnValue = retValue;
-                waitCond->release();
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+            }
+            else
+            {
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorError);
             }
         }
         else
         {
-            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            sendStatusUpdate();
+            m_currentPos[0] = positionFromPosResponse(response);
+        }
 
-            foreach(const int i, axis)
-            {
-                ito::int32 newPos = static_cast<ito::int32>(pos[i]);
-                retValue += setPosRelMCS(newPos);
-                m_currentPos[i] = static_cast<ito::float64>(newPos);
-            }
 
-            sendTargetUpdate();
+        sendStatusUpdate();
 
-            if (m_async && waitCond) // async disabled
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-            }
-
-            retValue += waitForDone(m_waitForDoneTimeout, axis); // drops into timeout
-
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate();
-
-            if (!m_async && waitCond)
-            {
-                waitCond->returnValue = retValue;
-                waitCond->release();
-            }
+        if (!m_async && waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
         }
     }
 
@@ -903,40 +872,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
 
     if (funcName == "homing")
     {
-        retValue += updateStatus();
 
-        if (!m_params["operationEnabled"].getVal<int>())
-        {
-            retValue += ito::RetVal(
-                ito::retError,
-                0,
-                tr("Operation is not enabled. Please enable operation first.").toUtf8().data());
-        }
-
-        if (!retValue.containsError())
-        {
-            ito::int8 method = static_cast<ito::int8>((*paramsMand)[0].getVal<int>());
-            ito::int32 offset = static_cast<ito::int32>((*paramsOpt)[0].getVal<int>());
-            ito::uint32 switchSeekVelocity =
-                static_cast<ito::uint32>((*paramsOpt)[1].getVal<int>());
-            ito::uint32 homingSpeed = static_cast<ito::uint32>((*paramsOpt)[2].getVal<int>());
-            ito::uint32 acceleration = static_cast<ito::uint32>((*paramsOpt)[3].getVal<int>());
-            ito::uint16 limitCheckDelayTime =
-                static_cast<ito::uint16>((*paramsOpt)[4].getVal<int>());
-
-            ito::uint16 negativeLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[0]);
-            ito::uint16 positiveLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[1]);
-
-            retValue += performHoming(
-                method,
-                offset,
-                switchSeekVelocity,
-                homingSpeed,
-                acceleration,
-                limitCheckDelayTime,
-                negativeLimit,
-                positiveLimit);
-        }
     }
 
     if (waitCond)
@@ -954,106 +890,9 @@ ito::RetVal ThorlabsElliptec::execFunc(
 //------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptec::waitForDone(const int timeoutMS, const QVector<int> axis, const int flags)
 {
-    ito::RetVal retVal(ito::retOk);
-    bool done = false;
-    bool timeout = false;
-    char motor;
-    int currentPos = 0;
-    int targetPos = 0;
-    QElapsedTimer timer;
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
+    // unused method.
 
-    QVector<int> _axis = axis;
-    if (_axis.size() == 0) // all axis
-    {
-        for (int i = 0; i < m_numOfAxes; i++)
-        {
-            _axis.append(i);
-        }
-    }
-
-    timer.start();
-    while (!done && !timeout && !retVal.containsWarningOrError())
-    {
-        if (!done && isInterrupted()) // movement interrupted
-        {
-            quickStop();
-            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-            retVal += startupSequence();
-            done = true;
-            sendStatusUpdate();
-            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toUtf8().data());
-            return retVal;
-        }
-
-        if (!retVal.containsError()) // short delay to reduce CPU load
-        {
-            // short delay of 10ms
-            waitMutex.lock();
-            waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-            waitMutex.unlock();
-            setAlive();
-        }
-
-        foreach(auto i, axis) // Check for completion
-        {
-            retVal += getPosMCS(currentPos);
-            m_currentPos[i] = static_cast<double>(currentPos);
-
-            retVal += getTargetPosMCS(targetPos);
-            m_targetPos[i] = static_cast<double>(targetPos);
-
-            retVal += updateStatus();
-            if ((m_statusWord[10])) // target reached bit
-            {
-                setStatus(
-                    m_currentStatus[i],
-                    ito::actuatorAtTarget,
-                    ito::actSwitchesMask | ito::actStatusMask);
-                done = true;
-
-                retVal += getPosMCS(currentPos);
-                m_currentPos[i] = static_cast<double>(currentPos);
-
-                retVal += getTargetPosMCS(targetPos);
-                m_targetPos[i] = static_cast<double>(targetPos);
-
-                break;
-            }
-            else
-            {
-                setStatus(
-                    m_currentStatus[i],
-                    ito::actuatorMoving,
-                    ito::actSwitchesMask | ito::actStatusMask);
-                done = false;
-            }
-        }
-
-        sendStatusUpdate(false);
-
-        if (timer.hasExpired(timeoutMS)) // timeout during movement
-        {
-            timeout = true;
-            // timeout occurred, set the status of all currently moving axes to timeout
-            replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
-            retVal += ito::RetVal(
-                ito::retError,
-                9999,
-                "timeout occurred during movement. If necessary increase the parameter "
-                "'moveTimeout'.");
-            sendStatusUpdate(true);
-
-            quickStop();
-            replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-            retVal += startupSequence();
-            sendStatusUpdate();
-            return retVal;
-        }
-    }
-
-    return retVal;
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------
@@ -1119,6 +958,45 @@ QByteArray ThorlabsElliptec::intToByteArray(int value, int numBytes) const
 int ThorlabsElliptec::byteArrayToInt(const QByteArray& value) const
 {
     return value.toInt(nullptr, 16);
+}
+
+//------------------------------------------------------------------------------
+double ThorlabsElliptec::positionFromPosResponse(const QByteArray& response) const
+{
+    double value = byteArrayToInt(response);
+
+    if (m_model.m_indexed)
+    {
+        // convert value to indexed values 0, 1, 2, 3 ... (up to number of indexed positions)
+        double travelRange = m_params["travelRange"].getVal<int>();
+        double factor = travelRange / (m_model.m_numIndexedPositions - 1);
+        return qRound(value / factor) + 1.;
+    }
+    else
+    {
+        return value;
+    }
+}
+
+//------------------------------------------------------------------------------
+QByteArray ThorlabsElliptec::positionTo8ByteArray(double position) const
+{
+    int value;
+
+    if (m_model.m_indexed)
+    {
+        // convert indexed values 0, 1, 2, 3 ... (up to number of indexed positions) to value
+        double travelRange = m_params["travelRange"].getVal<int>();
+        double factor = travelRange / (m_model.m_numIndexedPositions - 1);
+        position = value / factor + 1.;
+        value = qRound((position - 1.0) * factor);
+    }
+    else
+    {
+        value = position;
+    }
+
+    return intToByteArray(value, 8);
 }
 
 //------------------------------------------------------------------------------
@@ -1259,7 +1137,7 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response)
         {
             retValue += ito::RetVal(
                 ito::retError,
-                0,
+                1000,
                 tr("timeout during read command.").toUtf8().data());
             return retValue;
         }
