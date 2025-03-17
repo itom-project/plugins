@@ -72,7 +72,7 @@ public:
 
 private:
     ito::AddInDataIO* m_pSerialIO;
-    static QList<ito::uint8> openedNodes;
+    QMap<ito::uint8, QList<ito::uint8>> openedNodes;
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do

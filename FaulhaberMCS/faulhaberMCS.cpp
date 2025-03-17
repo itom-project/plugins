@@ -39,7 +39,7 @@
 
 #include "dockWidgetFaulhaberMCS.h"
 
-QList<ito::uint8> FaulhaberMCS::openedNodes = QList<ito::uint8>();
+QMap<ito::uint8, QList<ito::uint8>> openedNodes;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FaulhaberMCSInterface::FaulhaberMCSInterface()
@@ -930,7 +930,7 @@ ito::RetVal FaulhaberMCS::init(
             m_port = val->getVal<int>();
         }
         m_node = (ito::uint8)paramsMand->at(1).getVal<int>();
-        if (openedNodes.contains(m_node))
+        if (openedNodes[m_port].contains(m_node))
         {
             retValue += ito::RetVal(
                 ito::retError,
@@ -959,7 +959,7 @@ ito::RetVal FaulhaberMCS::init(
                 }
                 else
                 {
-                    openedNodes.append(m_node);
+                    openedNodes[m_port].append(m_node);
                     m_nodeAppended = true;
                     m_params["nodeID"].setVal<int>(m_node);
                 }
@@ -1391,7 +1391,7 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
 
     if (m_nodeAppended)
     {
-        openedNodes.removeOne(m_node);
+        openedNodes[m_port].removeOne(m_node);
         if (openedNodes.isEmpty())
         {
             retValue += shutDownSequence();
@@ -1833,7 +1833,7 @@ ito::RetVal FaulhaberMCS::setParam(
             retValue += setNodeID(node);
             if (!retValue.containsError())
             {
-                openedNodes.replace(openedNodes.indexOf(m_node), node);
+                openedNodes[m_port].replace(openedNodes[m_port].indexOf(m_node), node);
                 m_node = node;
             }
         }
