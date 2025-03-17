@@ -873,6 +873,10 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     pOpt.append(paramVal);
 
+    paramVal = ito::Param(
+        "timeout", ito::ParamBase::Int, 0, 60000, 10000, tr("Timeout for homing in ms.").toLatin1().data());
+    pOpt.append(paramVal);
+
     registerExecFunc(
         "homing",
         pMand,
@@ -2015,7 +2019,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
     timer.start();
     QMutex waitMutex;
     QWaitCondition waitCondition;
-    retValue += setOperationMode(static_cast<ito::uint8>(6));
+    retValue += setOperationMode(OperationMode::Homing);
 
     if (retValue.containsError())
     {
@@ -2074,7 +2078,7 @@ ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
             return retValue;
     }
 
-    retValue += setOperationMode(static_cast<ito::uint8>(1));
+    retValue += setOperationMode(OperationMode::ProfilePositionMode);
     retValue += updateStatus();
     return retValue;
 }
@@ -2086,13 +2090,11 @@ ito::RetVal FaulhaberMCS::performHoming(
     const ito::uint32& switchSeekVelocity,
     const ito::uint32& homingSpeed,
     const ito::uint32& acceleration,
-    ito::uint16& limitCheckDelayTime,
-    ito::uint16& negativeLimit,
-    ito::uint16& positiveLimit)
+    const ito::uint16& limitCheckDelayTime,
+    const ito::uint16 *torqueLimits,
+    const ito::uint16& timeoutTime)
 {
     ito::RetVal retValue(ito::retOk);
-
-    ito::uint16 torqueLimits[] = {negativeLimit, positiveLimit};
 
     if (isMotorMoving())
     {
@@ -2101,6 +2103,7 @@ ito::RetVal FaulhaberMCS::performHoming(
     }
     else
     {
+        resetInterrupt();
         bool homingComplete = false;
         int setPoint;
         int target;
@@ -2112,15 +2115,15 @@ ito::RetVal FaulhaberMCS::performHoming(
         ito::int8 currentOperation;
         retValue += getOperationMode(currentOperation);
 
-        retValue += setOperationMode(static_cast<ito::uint8>(6)); // change to homing mode
+        retValue += setOperationMode(OperationMode::Homing); // change to homing mode
 
         // set parameters
+        retValue += setHomingTorqueLimits(torqueLimits);
         retValue += setHomingOffset(offset);
         retValue += setHomingMode(method);
         retValue += setHomingSeekVelocity(switchSeekVelocity);
         retValue += setHomingSpeed(homingSpeed);
         retValue += setHomingAcceleration(acceleration);
-        retValue += setHomingTorqueLimits(torqueLimits);
         retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
 
         setControlWord(0x000F); // homing operation start
@@ -2166,14 +2169,14 @@ ito::RetVal FaulhaberMCS::performHoming(
             waitMutex.unlock();
             setAlive();
 
-            if (timer.hasExpired(m_waitForDoneTimeout)) // timeout during movement
+            if (timer.hasExpired(timeoutTime)) // timeout during movement
             {
                 timeout = true;
                 retValue += ito::RetVal(
                     ito::retError,
                     9999,
                     "Timeout occurred during homing. If necessary increase the parameter "
-                    "'moveTimeout'.");
+                    "'timeoutTime'.");
                 for (int i = 0; i < m_numOfAxes; i++)
                 {
                     replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorTimeout);
@@ -2585,6 +2588,8 @@ ito::RetVal FaulhaberMCS::execFunc(
 
             ito::uint16 negativeLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[0]);
             ito::uint16 positiveLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[1]);
+            ito::uint16 timeout = static_cast<ito::uint16>((*paramsOpt)[6].getVal<int>());
+            ito::uint16 torqueLimits[] = {negativeLimit, positiveLimit};
 
             retValue += performHoming(
                 method,
@@ -2593,8 +2598,8 @@ ito::RetVal FaulhaberMCS::execFunc(
                 homingSpeed,
                 acceleration,
                 limitCheckDelayTime,
-                negativeLimit,
-                positiveLimit);
+                torqueLimits,
+                timeout);
         }
     }
 

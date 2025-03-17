@@ -35,7 +35,7 @@ During the runtime of an instance, the value of these parameters is obtained by
 the method *getParam*, writeable parameters can be changed using *setParam*.
 
 **acceleration**: int
-    Acceleration in 1/s². Register '0x6083.00'.
+    Acceleration in 1/s�. Register '0x6083.00'.
 
     *Value range: [1, 30000], Default: 2829*
 **async**: int, read-only
@@ -46,9 +46,9 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: 3*
+    *Value range: [-32768, 32767], Default: 14*
 **deceleration**: int
-    Deceleration in 1/s². Register '0x6084.00'.
+    Deceleration in 1/s�. Register '0x6084.00'.
 
     *Value range: [1, 30000], Default: 849*
 **deviceID**: int
@@ -72,7 +72,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [-1, 0], Default: 1834*
 **fluxIntegralTimeControl**: int
-    Flux control integral time control parameter [µs]. Register '0x2342.01'.
+    Flux control integral time control parameter [�s]. Register '0x2342.01'.
 
     *Value range: [150, 2600], Default: 150*
 **followingError**: int, read-only
@@ -83,7 +83,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **homed**: int, read-only
     homed (1) or not homed (0).
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **ignoreCRC**: int
     Ignore CRC checksum. Default is '0'.
 
@@ -101,7 +101,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Maximum torque limit in relative scaling. 1000 = motor rated torque. Register
     '0x6072.00'.
 
-    *Value range: [1, 30000], Default: 2000*
+    *Value range: [1, 30000], Default: 5999*
 **motionProfile**: int
     Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '0x6086.00'.
 
@@ -127,7 +127,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **operation**: int
     Enable (1) or Disable (0) operation.
 
-    *Value range: [0, 1], Default: 1*
+    *Value range: [0, 1], Default: 0*
 **operationEnabled**: int, read-only
     1: Operation enabled, 0: Operation disabled (Bit 2).
 
@@ -139,7 +139,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic Synchronous Torque Mode.
     Register '0x6060.00'.
 
-    *Value range: [-4, 10], Default: 1*
+    *Value range: [-4, 10], Default: 3*
 **positionLimits**: Sequence[int]
     Lower/ upper limit of the position range in userdefined uints. Register lower limit
     '0x607D.01', upper limit '0x607D.02'.
@@ -163,7 +163,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 1], Default: 1*
 **quickStopDeceleration**: int
-    Quickstop deceleration in 1/s². Register '0x6085.00'.
+    Quickstop deceleration in 1/s�. Register '0x6085.00'.
 
     *Value range: [1, 32750], Default: 30000*
 **readyToSwitchOn**: int, read-only
@@ -177,7 +177,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **serialNumber**: str, read-only
     Serial number of device. Register '0x2400.03'.
 
-    *Match: "", Default: "202400190"*
+    *Match: "", Default: "492300001"*
 **setPointAcknowledged**: int, read-only
     1: New set-point has been loaded, 0: Previous set-point being changed or already reached
     (Bit 12).
@@ -196,17 +196,17 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 1], Default: 1*
 **temperatureCPU**: int, read-only
-    CPU temperature in [°C]. Register '0x2326.01'.
+    CPU temperature in [�C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 41*
+    *Value range: [0, 32767], Default: 46*
 **temperaturePowerStage**: int, read-only
-    Power stage temperature in [°C]. Register '0x2326.02'.
+    Power stage temperature in [�C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 34*
+    *Value range: [0, 32767], Default: 32*
 **temperatureWinding**: int, read-only
-    Winding temperature in [°C]. Register '0x2326.03'.
+    Winding temperature in [�C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 28*
+    *Value range: [0, 32767], Default: 24*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -216,7 +216,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [-1, 0], Default: 1834*
 **torqueIntegralTimeControl**: int
-    Torque control integral time control parameter [µs]. Register '0x2342.01'.
+    Torque control integral time control parameter [�s]. Register '0x2342.01'.
 
     *Value range: [150, 2600], Default: 150*
 **torqueLimits**: Sequence[int]
@@ -224,7 +224,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Register negative limit '0x60E1.00', positive limit '0x60E0.00'.
 
     *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 6000], Default:
-    [1000, 1000]*
+    [6000, 6000]*
 **velocityDeviationThresholdControl**: int
     Velocity deviation threshold control parameter. Register '0x2344.03'.
 
@@ -244,7 +244,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 2], Default: 0*
 **velocityIntegralTimeControl**: int
-    Velocity integral time control parameter [µs]. Register '0x2344.02'.
+    Velocity integral time control parameter [�s]. Register '0x2344.02'.
 
     *Value range: [0, 65535], Default: 26*
 **velocityWarningThresholdControl**: int
@@ -265,17 +265,16 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 1], Default: 0*
 
-
 Additional functions (exec functions)
 =====================================
 
 By using the following execFunctions you execute homing according the homing methods.
 
-.. py:function::  instance.exec('homing', method [,offset, switchSeekVelocity, homingSpeed, acceleration, limitCheckDelayTime, torqueLimits])
+.. py:function::  instance.exec('homing', method [,offset, switchSeekVelocity, homingSpeed, acceleration, limitCheckDelayTime, torqueLimits, timeout])
 
     In most of the cases before position control is to be used, the drive must perform a reference run to align the position used by the drive to the mechanic setup.
 
-    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mecha
+    :param method: Homing method. Methods 1?34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods ?1??4: A mecha
 ... nical limit stop is set as reference. Register '0x6098.00'.
     :type method: int
     :param offset: Offset of the zero position relative to the position of the reference switch in userdefined units. Register '0x607C.00'.
@@ -290,7 +289,8 @@ By using the following execFunctions you execute homing according the homing met
     :type limitCheckDelayTime: int - optional
     :param torqueLimits: Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. Register negative limit '0x2350.00', positive limit '0x2351.00'.
     :type torqueLimits: Sequence[int] - optional
-
+    :param timeout: Timeout for homing in ms.
+    :type timeout: int - optional
 
 Exemplary usage from Python
 ===========================

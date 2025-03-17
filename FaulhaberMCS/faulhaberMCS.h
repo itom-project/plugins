@@ -117,6 +117,21 @@ private:
         ito::uint8 subindex;
     };
 
+    enum OperationMode : ito::uint8
+    {
+        AnalogTorqueControl = -4,
+        AnalogVelocityControl = -3,
+        AnalogPositionControl = -2,
+        VoldMode = -1,
+        ControlNotActive = 0,
+        ProfilePositionMode = 1,
+        ProfileVelocityMode = 3,
+        Homing = 6,
+        CyclicSynchronousPositionMode = 8,
+        CyclicSynchronousVelocityMode = 9,
+        CyclicSynchronousTorqueMode = 10,
+    };
+
     const Register serialNumber_register = {0x1018, 0x04};
     const Register deviceName_register = {0x1008, 0x00};
     const Register vendorID_register = {0x1018, 0x01};
@@ -376,10 +391,9 @@ private:
         const ito::uint32& switchSeekVelocity,
         const ito::uint32& homingSpeed,
         const ito::uint32& acceleration,
-        ito::uint16& limitCheckDelayTime,
-        ito::uint16& negativeLimit,
-        ito::uint16& positiveLimit);
-
+        const ito::uint16& limitCheckDelayTime,
+        const ito::uint16 *torqueLimits,
+        const ito::uint16& timeoutTime);
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
