@@ -939,7 +939,7 @@ ito::RetVal FaulhaberMCS::init(
             retValue += ito::RetVal(
                 ito::retError,
                 0,
-                tr("An instance of noder number '%1' is already open.")
+                tr("An instance of node number '%1' is already open.")
                     .arg(m_node)
                     .toLatin1()
                     .data());
