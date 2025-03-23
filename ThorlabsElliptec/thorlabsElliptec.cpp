@@ -256,22 +256,9 @@ ito::RetVal ThorlabsElliptec::init(
 
     if (!retValue.containsError())
     {
-        retValue += updateStatus();
+        QSharedPointer<QVector<int>> status(new QVector<int>(1, 0));
+        retValue += getStatus(status, nullptr);
 
-        /*ito::int32 pos;
-
-        for (int i = 0; i < m_numOfAxes; i++)
-        {
-            retValue += getPosMCS(pos);
-            m_currentPos[i] = static_cast<double>(pos);
-
-            retValue += getTargetPosMCS(pos);
-            m_targetPos[i] = static_cast<double>(pos);
-            m_currentStatus[i] =
-                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
-        }
-
-        retValue += updateStatus();*/
         sendStatusUpdate(false);
         emit parametersChanged(m_params);
     }
@@ -648,7 +635,22 @@ ito::RetVal ThorlabsElliptec::getStatus(
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    retValue += updateStatus();
+    QByteArray response;
+    retValue += sendCommandAndGetResponse(m_address, "gs", "", response);
+
+    if (retValue.containsError())
+    {
+        setStatus(m_currentStatus[0],
+            ito::actuatorError | ito::actuatorAvailable | ito::actuatorEnabled,
+            ito::actSwitchesMask |ito::actMovingMask);
+    }
+    else
+    {
+        setStatus(m_currentStatus[0],
+            ito::actuatorAvailable | ito::actuatorEnabled,
+            ito::actSwitchesMask | ito::actMovingMask);
+    }
+
     *status = m_currentStatus;
 
     if (waitCond)
@@ -893,37 +895,6 @@ ito::RetVal ThorlabsElliptec::waitForDone(const int timeoutMS, const QVector<int
     // unused method.
 
     return ito::retOk;
-}
-
-//------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::updateStatus()
-{
-    ito::RetVal retVal = updateStatusMCS();
-
-    for (int i = 0; i < m_numOfAxes; i++)
-    {
-        m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable;
-
-        ito::int32 intPos;
-        retVal += getPosMCS(intPos);
-
-        m_currentPos[i] = static_cast<double>(intPos);
-
-        if (m_params["targetReached"].getVal<int>())
-        {
-            replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
-        }
-        else
-        {
-            setStatus(
-                m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        }
-    }
-
-    emit actuatorStatusChanged(m_currentStatus, m_currentPos);
-    sendStatusUpdate();
-
-    return retVal;
 }
 
 //------------------------------------------------------------------------------

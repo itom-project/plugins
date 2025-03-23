@@ -158,9 +158,6 @@ private:
         const QVector<int> axis = QVector<int>() /*if empty -> all axis*/,
         const int flags = 0 /*for your use*/);
 
-    ito::RetVal updateStatus(); // optional method to obtain the status and position of all
-                                // connected axes
-
     bool getCmdInfo(const QByteArray& cmd, CmdInfo& info) const;
     ito::RetVal sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray());
     ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray &response);
