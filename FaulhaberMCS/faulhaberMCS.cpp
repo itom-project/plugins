@@ -72,7 +72,7 @@ Homing options:\n\n\
         "serialIOInstance",
         ito::ParamBase::HWRef | ito::ParamBase::In,
         nullptr,
-        tr("An opened serial port of 'SerialIO' plugin instance.").toLatin1().data());
+        tr("An opened serial port of 'SerialIO' plugin instance.").toUtf8().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
@@ -133,7 +133,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Serial number of device. Register '%1'.")
             .arg(convertHexToString(nodeID_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -144,7 +144,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Name of device. Register '%1'.")
             .arg(convertHexToString(deviceName_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -155,7 +155,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Vendor ID of device. Register '%1'.")
             .arg(convertHexToString(vendorID_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -166,7 +166,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Product code number. Register '%1'.")
             .arg(convertHexToString(productCode_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -177,7 +177,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Revision number. Register '%1'")
             .arg(convertHexToString(revisionNumber_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -188,7 +188,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "",
         tr("Firmware version. Register '%1'")
             .arg(convertHexToString(firmwareVersion_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "General"), true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -202,7 +202,7 @@ FaulhaberMCS::FaulhaberMCS() :
         tr("Operation Mode. -4: Analog Torque Control Mode, -3: Analog Veclocity Control Mode, -2: Analog Position Control Mode, -1: Voltage mode, 0: Controller not "
            "activated, 1: Profile Position Mode (default), 3: Profile Velocity Mode, 6: Homing, 8: Cyclic Synchronous Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic Synchronous Torque Mode. Register '%1'.")
             .arg(convertHexToString(operationMode_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(-4, 10, 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -213,7 +213,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Nominal voltage of device. Register '%1'.")
             .arg(convertHexToString(nominalVoltage_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "General"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -225,7 +225,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("RS232 net mode. Register '%1'.")
             .arg(convertHexToString(netMode_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Communication"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -235,8 +235,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Node number. Register '%1'.")
-            .arg(convertHexToString(nodeID_register))
-            .toLatin1()
+            .arg(convertHexToString(nodeID_register)).toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint8>::min(),
@@ -251,7 +250,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Explicit device ID. Register '%1'")
             .arg(convertHexToString(deviceID_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint16>::min(),
@@ -266,7 +265,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("Ignore CRC checksum. Default is '0'.").toLatin1().data());
+        tr("Ignore CRC checksum. Default is '0'.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Communication"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -277,7 +276,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("CPU temperature in [°C]. Register '%1'.")
             .arg(convertHexToString(CPUTemperature_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "Temperature"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -288,7 +287,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Power stage temperature in [°C]. Register '%1'.")
             .arg(convertHexToString(powerStageTemperature_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "Temperature"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -299,7 +298,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Winding temperature in [°C]. Register '%1'.")
             .arg(convertHexToString(windingTemperature_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "Temperature"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -313,7 +312,7 @@ FaulhaberMCS::FaulhaberMCS() :
         m_async,
         tr("Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is "
            "implemented.")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -324,7 +323,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         std::numeric_limits<int>::max(),
         60000,
-        tr("Timeout for movement in ms.").toLatin1().data());
+        tr("Timeout for movement in ms.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -334,7 +333,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("Enable (1) or Disable (0) operation.").toLatin1().data());
+        tr("Enable (1) or Disable (0) operation.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -344,7 +343,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("Enable (1) or Disable (0) device power.").toLatin1().data());
+        tr("Enable (1) or Disable (0) device power.").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -354,7 +353,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("homed (1) or not homed (0).").toLatin1().data());
+        tr("homed (1) or not homed (0).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -364,7 +363,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Actual value of the torque in relative scaling. Register '%1'.")
             .arg(convertHexToString(torqueActualValue_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::int16>::min(),
@@ -379,7 +378,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Actual value of the current in relative scaling. Register '%1'.")
             .arg(convertHexToString(currentActualValue_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::int16>::min(),
@@ -395,7 +394,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Torque control gain parameter [mOm]. Register '%1'.")
             .arg(convertHexToString(torqueGainControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint32>::min(),
@@ -410,7 +409,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Torque control integral time control parameter [µs]. Register '%1'.")
             .arg(convertHexToString(torqueGainControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -421,7 +420,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Flux control gain parameter [mOm]. Register '%1'.")
             .arg(convertHexToString(torqueGainControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint32>::min(),
@@ -436,7 +435,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Flux control integral time control parameter [µs]. Register '%1'.")
             .arg(convertHexToString(torqueGainControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -447,7 +446,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Velocity gain control parameter [As 1e-6]. Register '%1'.")
             .arg(convertHexToString(torqueGainControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint32>::min(),
@@ -462,7 +461,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Velocity integral time control parameter [µs]. Register '%1'.")
             .arg(convertHexToString(velocityIntegralTimeControl_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint16>::min(),
@@ -477,7 +476,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Velocity deviation threshold control parameter. Register '%1'.")
             .arg(convertHexToString(velocityDeviationThreshold_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint16>::min(),
@@ -492,7 +491,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Velocity deviation time control parameter. Register '%1'.")
             .arg(convertHexToString(velocityDeviationTime_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint16>::min(),
@@ -507,7 +506,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Velocity warning threshold control parameter. Register '%1'.")
             .arg(convertHexToString(velocityWarningThreshold_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint16>::min(),
@@ -524,7 +523,7 @@ FaulhaberMCS::FaulhaberMCS() :
            "component active, '1': stopped integral component in the position windoed (in PP "
            "mode), '2': integral component deactivated. Register '%1'.")
             .arg(convertHexToString(velocityIntegralPartOption))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 2, 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -536,7 +535,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toLatin1().data());
+        tr("1: Ready to switch ON, 0: Not ready to switch ON (Bit 0).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -547,7 +546,7 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         0,
         tr("1: Drive is in the 'Switched ON' state, 0: No voltage present (Bit 1).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -558,7 +557,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toLatin1().data());
+        tr("1: Operation enabled, 0: Operation disabled (Bit 2).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -568,7 +567,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Error present, 0: No error present (Bit 3).").toLatin1().data());
+        tr("1: Error present, 0: No error present (Bit 3).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -578,7 +577,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toLatin1().data());
+        tr("1: Power supply enabled, 0: Power supply disabled (Bit 4).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -588,7 +587,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toLatin1().data());
+        tr("1: Quick stop enabled, Quick stop disabled (Bit 5).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -598,7 +597,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toLatin1().data());
+        tr("1: Switch on disabled, 0: Switch on enabled (Bit 6).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -610,7 +609,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: One of the monitored temperatures has exceeded at least the warning threshold, 0: "
            "No raised temperatures (Bit 7).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -621,7 +620,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         1,
         0,
-        tr("1: Target has reached, 0: is moving (Bit 10).").toLatin1().data());
+        tr("1: Target has reached, 0: is moving (Bit 10).").toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -633,7 +632,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: Internal range limit (e.g. limit switch reached), 0: Internal range limit not "
            "reached (Bit 11).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -646,7 +645,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: New set-point has been loaded, 0: Previous set-point being changed or already "
            "reached (Bit 12).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -659,7 +658,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("1: Permissible range for the following error exceeded, 0: The actual position follows "
            "the instructions without a following error (Bit 13).")
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Status"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -672,7 +671,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Max motor speed in 1/min. Register '%1'.")
             .arg(convertHexToString(maxMotorSpeed_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -683,7 +682,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Profile velocity in 1/min. Register '%1'.")
             .arg(convertHexToString(profileVelocity_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 32767, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -694,7 +693,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Acceleration in 1/s². Register '%1'.")
             .arg(convertHexToString(acceleration_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -705,7 +704,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Deceleration in 1/s². Register '%1'.")
             .arg(convertHexToString(deceleration_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -716,7 +715,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Quickstop deceleration in 1/s². Register '%1'.")
             .arg(convertHexToString(quickStopDeceleration_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 32750, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -727,7 +726,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Maximum torque limit in relative scaling. 1000 = motor rated torque. Register '%1'.")
             .arg(convertHexToString(maxTorqueLimit_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(1, 30000, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -743,7 +742,7 @@ FaulhaberMCS::FaulhaberMCS() :
            "Register negative limit '%1', positive limit '%2'.")
             .arg(convertHexToString(negativeTorqueLimit_register))
             .arg(convertHexToString(positiveTorqueLimit_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -763,7 +762,7 @@ FaulhaberMCS::FaulhaberMCS() :
            "Register lower limit '%1', upper limit '%2'.")
             .arg(convertHexToString(positionLowerLimit_register))
             .arg(convertHexToString(positionUpperLimit_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -773,7 +772,7 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         tr("Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '%1'.")
             .arg(convertHexToString(motionProfileType_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
@@ -793,7 +792,7 @@ FaulhaberMCS::FaulhaberMCS() :
            "as reference. Method 37: The position is set to 0 without reference run. Methods "
            "–1…–4: A mechanical limit stop is set as reference. Register '%1'.")
             .arg(convertHexToString(homingMode_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pMand.append(paramVal);
 
@@ -806,7 +805,7 @@ FaulhaberMCS::FaulhaberMCS() :
         tr("Offset of the zero position relative to the position of the reference switch in "
            "userdefined units. Register '%1'.")
             .arg(convertHexToString(homingOffset_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -818,7 +817,7 @@ FaulhaberMCS::FaulhaberMCS() :
         400,
         tr("Speed during search for switch. Register '%1'.")
             .arg(convertHexToString(homingSeekVelocity_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -830,7 +829,7 @@ FaulhaberMCS::FaulhaberMCS() :
         400,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingSpeed_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -842,7 +841,7 @@ FaulhaberMCS::FaulhaberMCS() :
         50,
         tr("Speed during search for zero. Register '%1'.")
             .arg(convertHexToString(homingAcceleration_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -854,7 +853,7 @@ FaulhaberMCS::FaulhaberMCS() :
         10,
         tr("Delay time until blockage detection [ms]. Register '%1'.")
             .arg(convertHexToString(homingLimitCheckDelayTime_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
@@ -869,12 +868,17 @@ FaulhaberMCS::FaulhaberMCS() :
            "Register negative limit '%1', positive limit '%2'.")
             .arg(convertHexToString(homingNegativeTorqueLimit_register))
             .arg(convertHexToString(homingPositiveTorqueLimit_register))
-            .toLatin1()
+            .toUtf8()
             .data());
     pOpt.append(paramVal);
 
     paramVal = ito::Param(
-        "timeout", ito::ParamBase::Int, 0, 60000, 10000, tr("Timeout for homing in ms.").toLatin1().data());
+        "timeout",
+        ito::ParamBase::Int,
+        0,
+        60000,
+        10000,
+        tr("Timeout for homing in ms.").toUtf8().data());
     pOpt.append(paramVal);
 
     registerExecFunc(
@@ -884,7 +888,7 @@ FaulhaberMCS::FaulhaberMCS() :
         pOut,
         tr("In most of the cases before position control is to be used, the drive must perform a "
            "reference run to align the position used by the drive to the mechanic setup.")
-            .toLatin1()
+            .toUtf8()
             .data());
     pMand.clear();
     pOpt.clear();
