@@ -466,12 +466,10 @@ if(PLUGIN_ThorlabsBDCServo)
 endif(PLUGIN_ThorlabsBDCServo)
 
 # ThorlabsFF High-Stroke Deformable Mirrors
-if(WIN32)
-    option(PLUGIN_ThorlabsDMH "Build the Thorlabs High-Stroke Deformable Mirrors plugin." ${ITOM_BUILD_SHIPMENT})
-    if(PLUGIN_ThorlabsDMH)
-        add_subdirectory(ThorlabsDMH)
-    endif(PLUGIN_ThorlabsDMH)
-endif()
+itom_plugin_option(PLUGIN_ThorlabsDHM)
+if(PLUGIN_ThorlabsDHM)
+    add_subdirectory(ThorlabsDMH)
+endif(PLUGIN_ThorlabsDHM)
 
 # ThorlabsFF filter flipper
 itom_plugin_option(PLUGIN_ThorlabsFF)
