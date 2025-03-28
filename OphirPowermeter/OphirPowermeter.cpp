@@ -2064,9 +2064,12 @@ ito::RetVal OphirPowermeter::SendQuestionWithAnswerString(
     ito::RetVal retValue = SerialSendCommand(questionCommand);
     retValue += readString(answer, readSigns, timeoutMS);
 
-    if (answer[0] == '*')
+    if (!answer.isEmpty())
     {
-        answer.remove(0, 1);
+        if (answer[0] == '*')
+        {
+            answer.remove(0, 1);
+        }
     }
 
     return retValue;
