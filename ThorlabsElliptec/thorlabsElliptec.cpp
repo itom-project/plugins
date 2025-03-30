@@ -69,14 +69,13 @@ ThorlabsElliptecInterface::ThorlabsElliptecInterface()
 
     // up to 16 devices can be connected to one Elliptec bus distributor
     auto meta = new ito::IntMeta(0x0, 0xF, 1, "Communication");
-    int addresses[] = { 0x0, };
     meta->setRepresentation(ito::ParamMeta::HexNumber);
     paramVal = ito::Param(
-        "addresses",
+        "address",
         ito::ParamBase::Int | ito::ParamBase::In,
         0x0,
         meta,
-        tr("Address of stages, 0x0 - 0xF.").toUtf8().data());
+        tr("Address of stage, 0x0 - 0xF. The address can be changed by setting the parameter later on.").toUtf8().data());
     m_initParamsOpt.append(paramVal);
 }
 
@@ -132,6 +131,16 @@ ThorlabsElliptec::ThorlabsElliptec() :
         1, nullptr, "");
     m_params.insert(paramVal.getName(), paramVal);
 
+    auto meta = new ito::IntMeta(0x0, 0xF, 1, "Communication");
+    meta->setRepresentation(ito::ParamMeta::HexNumber);
+    paramVal = ito::Param(
+        "address",
+        ito::ParamBase::Int | ito::ParamBase::In,
+        0x0,
+        meta,
+        tr("Address of stage, 0x0 - 0xF. The address can be changed by setting the parameter later on.").toUtf8().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("numaxis",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         1,
@@ -159,14 +168,32 @@ ThorlabsElliptec::ThorlabsElliptec() :
     QVector<ito::Param> pMand, pOpt, pOut;
 
     registerExecFunc(
-        "homing",
+        "saveUserData",
         pMand,
         pOpt,
         pOut,
-        tr("In most of the cases before position control is to be used, the drive must perform a "
-            "reference run to align the position used by the drive to the mechanic setup.")
-        .toUtf8()
+        tr("Save motor parameters like forward or backward frequency.")
+        .toLatin1()
         .data());
+
+    registerExecFunc(
+        "optimizeMotors",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Fine tunes the frequency search for forward and backward direction. At first applies a search frequency run for coarse optimization, then starts the fine tuning. This operation might take several minutes. It can be interrupted by the Keyboard Interrupt.")
+        .toLatin1()
+        .data());
+
+    registerExecFunc(
+        "cleanMechanics",
+        pMand,
+        pOpt,
+        pOut,
+        tr("Cleans the mechanics by applying forward and backward runs of the full travel range. This operation might take several minutes. It can be interrupted by the Keyboard Interrupt.")
+        .toLatin1()
+        .data());
+
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -197,6 +224,8 @@ ito::RetVal ThorlabsElliptec::init(
 
     m_pSerialIO = paramsMand->at(0).getVal<ito::AddInDataIO*>();
     m_address = paramsOpt->at(0).getVal<int>();
+
+    m_params["address"].setVal<int>(m_address);
 
     if (m_pSerialIO->getBasePlugin()->getType() &
         (ito::typeDataIO | ito::typeRawIO))
@@ -301,7 +330,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             2,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca"
         );
 
         elliptecModels << ElliptecDevice(
@@ -312,7 +341,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             4,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca"
         );
 
         elliptecModels << ElliptecDevice(
@@ -323,7 +352,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             6,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca"
         );
 
         elliptecModels << ElliptecDevice(
@@ -334,7 +363,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             "°",
             0,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
         );
 
         elliptecModels << ElliptecDevice(
@@ -345,7 +374,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca"
         );
 
         elliptecModels << ElliptecDevice(
@@ -356,7 +385,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
         );
 
         elliptecModels << ElliptecDevice(
@@ -367,7 +396,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             "°",
             0,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
         );
 
         elliptecModels << ElliptecDevice(
@@ -378,7 +407,7 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
         );
     }
 }
@@ -398,6 +427,11 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
     supportedCmds["ma"] = CmdInfo("ma", "PO", 8, 8, true); // move absolute
     supportedCmds["mr"] = CmdInfo("mr", "PO", 8, 8, true); // move relative
     supportedCmds["gp"] = CmdInfo("gp", "PO", 0, 8, false); // get position
+    supportedCmds["us"] = CmdInfo("us", "GS", 0, 2, true); // save user data
+    supportedCmds["ca"] = CmdInfo("ca", "GS", 0, 2, true); // change address
+    supportedCmds["cm"] = CmdInfo("cm", "GS", 0, 2, true); // clean mechanics
+    supportedCmds["st"] = CmdInfo("st", "GS", 0, 2, true); // motion stop
+    supportedCmds["om"] = CmdInfo("om", "GS", 0, 2, true); // optimize motors
 }
 
 //------------------------------------------------------------------------------
@@ -537,6 +571,18 @@ ito::RetVal ThorlabsElliptec::setParam(
 
     if (!retValue.containsError())
     {
+        if (key == "address")
+        {
+            // change the address of the device
+            QByteArray response;
+            retValue += sendCommandAndGetResponse(m_address, "ca", val->getVal<int>(), response);
+
+            if (!retValue.containsError())
+            {
+                m_address = val->getVal<int>();
+            }
+        }
+
         if (!retValue.containsError())
         {
             retValue += it->copyValueFrom(&(*val));
@@ -872,9 +918,57 @@ ito::RetVal ThorlabsElliptec::execFunc(
 {
     ito::RetVal retValue = ito::retOk;
 
-    if (funcName == "homing")
+    if (funcName == "saveUserData")
     {
+        QByteArray response;
+        retValue += sendCommandAndGetResponse(m_address, "us", "", response);
+    }
+    else if (funcName == "optimizeMotors" || funcName == "cleanMechanics")
+    {
+        QByteArray response;
 
+        if (funcName == "optimizeMotors")
+        {
+            retValue += sendCommandAndGetResponse(m_address, "om", "", response);
+        }
+        else
+        {
+            retValue += sendCommandAndGetResponse(m_address, "cm", "", response);
+        }
+
+        if (retValue == ito::retWarning && retValue.errorCode() == 9)
+        {
+            // still busy
+            int maxCounter = 5*60;
+
+            while (maxCounter >= 0)
+            {
+                retValue = sendCommandAndGetResponse(m_address, "gs", "", response);
+
+                if (retValue != ito::retWarning && retValue.errorCode() != 9)
+                {
+                    // there is another response than a busy response...
+                    break;
+                }
+
+                QThread::sleep(2);
+
+                setAlive();
+
+                if (isInterrupted())
+                {
+                    retValue = sendCommandAndGetResponse(m_address, "st", "", response);
+                    break;
+                }
+
+                maxCounter--;
+            }
+
+            if (maxCounter < 0)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "Timeout while executing operation.");
+            }
+        }
     }
 
     if (waitCond)
@@ -898,7 +992,7 @@ ito::RetVal ThorlabsElliptec::waitForDone(const int timeoutMS, const QVector<int
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray())
+ito::RetVal ThorlabsElliptec::sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data /*= QByteArray()*/)
 {
     // data must be a big-endian string representation of a number, if it is a number!
     QSharedPointer<QVector<ito::ParamBase>> _dummy;
@@ -1153,7 +1247,7 @@ ito::RetVal ThorlabsElliptec::parseStatusResponse(const QByteArray& response) co
         case 8:
             return ito::RetVal(ito::retError, status, "Thermal error");
         case 9:
-            return ito::RetVal(ito::retError, status, "Busy");
+            return ito::RetVal(ito::retWarning, status, "Busy");
         case 10:
             return ito::RetVal(ito::retError, status, "Sensor Error(May appear during self - test.If code persists there is an error)");
         case 11:
