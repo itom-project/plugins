@@ -46,7 +46,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: 38*
+    *Value range: [-32768, 32767], Default: 22*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
@@ -93,10 +93,14 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     (Bit 11).
 
     *Value range: [0, 1], Default: 0*
+**loadInertia**: float
+    Load inertia in [gcm²]. Register '0x2329.0A'.
+
+    *Value range: [0:0.1:4.29497e+09], Default: 3.5*
 **maxMotorSpeed**: int
     Max motor speed in 1/min. Register '0x6080.00'.
 
-    *Value range: [1, 32767], Default: 32767*
+    *Value range: [1, 32767], Default: 1500*
 **maxTorqueLimit**: int, read-only
     Maximum torque limit in relative scaling. 1000 = motor rated torque. Register
     '0x6072.00'.
@@ -157,7 +161,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **profileVelocity**: int
     Profile velocity in 1/min. Register '0x6081.00'.
 
-    *Value range: [1, 32767], Default: 1500*
+    *Value range: [1, 32767], Default: 300*
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
@@ -198,7 +202,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureCPU**: int, read-only
     CPU temperature in [°C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 36*
+    *Value range: [0, 32767], Default: 37*
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
@@ -206,7 +210,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 21*
+    *Value range: [0, 32767], Default: 22*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -224,7 +228,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Register negative limit '0x60E1.00', positive limit '0x60E0.00'.
 
     *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 6000], Default:
-    [6000, 6000]*
+    [1000, 1000]*
 **velocityDeviationThresholdControl**: int
     Velocity deviation threshold control parameter. Register '0x2344.03'.
 
