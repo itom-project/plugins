@@ -387,6 +387,17 @@ FaulhaberMCS::FaulhaberMCS() :
         "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "loadInertia",
+        ito::ParamBase::Double,
+        0,
+        tr("Load inertia in [gcm²]. Register '%1'.")
+            .arg(convertHexToString(loadInertia_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::DoubleMeta(0.0, std::numeric_limits<ito::uint32>::max(), 0.1, "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category control ---------------------------//
     paramVal = ito::Param(
         "torqueGainControl",
@@ -1117,6 +1128,16 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::uint32 load;
+        retValue += getLoadInertia(load);
+        if (!retValue.containsError())
+        {
+            m_params["loadInertia"].setVal<double>(std::round(load / 1000.0 * 10) / 10);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int8 mode;
         retValue +=
             setOperationMode(static_cast<ito::int8>(m_params["operationMode"].getVal<int>()));
@@ -1475,6 +1496,16 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(temp));
             }
         }
+        else if (key == "loadInertia")
+        {
+            ito::uint32 load;
+            retValue += getLoadInertia(load);
+            if (!retValue.containsError())
+            {
+                retValue +=
+                    it->setVal<double>(static_cast<double>(std::round(load / 1000.0 * 10) / 10));
+            }
+        }
         else if (key == "maxMotorSpeed")
         {
             ito::uint32 speed;
@@ -1811,6 +1842,10 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "quickStopDeceleration")
         {
             retValue += setQuickStopDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
+        }
+        else if (key == "loadInertia")
+        {
+            retValue += setLoadInertia(static_cast<ito::uint32>(val->getVal<double>()*1000));
         }
         else if (key == "moveTimeout")
         {
@@ -2690,6 +2725,19 @@ ito::RetVal FaulhaberMCS::getWindingTemperature(ito::int16& temp)
 {
     return readRegisterWithParsedResponse<ito::int16>(
         windingTemperature_register.index, windingTemperature_register.subindex, temp);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getLoadInertia(ito::uint32& inertia)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        loadInertia_register.index, loadInertia_register.subindex, inertia);
+}
+
+ito::RetVal FaulhaberMCS::setLoadInertia(const ito::uint32& inertia)
+{
+    return setRegister<ito::uint32>(
+        loadInertia_register.index, loadInertia_register.subindex, inertia, sizeof(inertia));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -146,6 +146,7 @@ private:
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
     const Register windingTemperature_register = {0x2326, 0x03};
+    const Register loadInertia_register = {0x2329, 0x0A};
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
     const Register positionAbsolutValue_register = {0x607a, 0x00};
@@ -357,6 +358,8 @@ private:
     ito::RetVal getCPUTemperature(ito::int16& temp);
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
     ito::RetVal getWindingTemperature(ito::int16& temp);
+    ito::RetVal getLoadInertia(ito::uint32& inertia);
+    ito::RetVal setLoadInertia(const ito::uint32& inertia);
 
     // MOTION
     ito::RetVal getPosMCS(ito::int32& pos);
