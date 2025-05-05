@@ -435,6 +435,12 @@ if(PLUGIN_SerialIO)
     add_subdirectory(SerialIO)
 endif(PLUGIN_SerialIO)
 
+# SmarActMCS2 actuator stages
+itom_plugin_option(PLUGIN_SmarActMCS2)
+if(PLUGIN_SmarActMCS2)
+    add_subdirectory(SmarActMCS2)
+endif(PLUGIN_SmarActMCS2)
+
 # SuperlumBS
 itom_plugin_option(PLUGIN_SuperlumBS)
 if(PLUGIN_SuperlumBS)
