@@ -35,20 +35,22 @@ DockWidgetThorlabsElliptec::DockWidgetThorlabsElliptec(int uniqueID, ito::AddInA
 //------------------------------------------------------------------------------
 void DockWidgetThorlabsElliptec::parametersChanged(QMap<QString, ito::Param> params)
 {
-    ui.radioButtonReadyToSwitchOn->setChecked(params["readyToSwitchOn"].getVal<int>());
-    ui.radioButtonSwitchOn->setChecked(params["switchedOn"].getVal<int>());
-    ui.radioButtonOperationEnabled->setChecked(params["operationEnabled"].getVal<int>());
-    ui.radioButtonFault->setChecked(params["fault"].getVal<int>());
-    ui.radioButtonVoltageEnabled->setChecked(params["voltageEnabled"].getVal<int>());
-    ui.radioButtonQuickStop->setChecked(params["quickStop"].getVal<int>());
-    ui.radioButtonSwitchOnDisabled->setChecked(params["switchOnDisabled"].getVal<int>());
-    ui.radioButtonWarning->setChecked(params["warning"].getVal<int>());
-    ui.radioButtonTargetReached->setChecked(params["targetReached"].getVal<int>());
-    ui.radioButtonInternalLimitActive->setChecked(params["internalLimitActive"].getVal<int>());
-    ui.radioButtonSetPointAcknowledged->setChecked(params["setPointAcknowledged"].getVal<int>());
-    ui.radioButtonFollowingError->setCheckable(params["followingError"].getVal<int>());
+    int axisType = params["axisType"].getVal<int>();
 
-    ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
+    switch (axisType)
+    {
+    case 0:
+        ui.axisController->setAxisType(0, MotorAxisController::TypeRotational);
+        ui.axisController->setAxisUnit(0, MotorAxisController::UnitDeg);
+        break;
+    case 1:
+        ui.axisController->setAxisType(0, MotorAxisController::TypeLinear);
+        ui.axisController->setAxisUnit(0, MotorAxisController::UnitMm);
+        break;
+    default:
+        ui.axisController->setEnabled(false); // indexed not supported here
+        break;
+    }
 }
 
 //------------------------------------------------------------------------------

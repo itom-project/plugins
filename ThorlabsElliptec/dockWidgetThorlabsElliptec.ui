@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>DockWidgetThorlabsElliptec</class>
- <widget class="QWidget" name="DockWidgetFaulhaberMCS">
+ <widget class="QWidget" name="DockWidgetThorlabsElliptec">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>335</width>
-    <height>410</height>
+    <width>343</width>
+    <height>211</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>407</height>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -32,15 +32,12 @@
    <property name="bottomMargin">
     <number>3</number>
    </property>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBoxDeviceStatus">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBoxGeneralInformation">
      <property name="title">
-      <string>Device Status</string>
+      <string>General Information</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
+     <layout class="QGridLayout" name="gridLayout_4">
       <property name="leftMargin">
        <number>3</number>
       </property>
@@ -53,135 +50,32 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <property name="spacing">
+      <property name="verticalSpacing">
        <number>3</number>
       </property>
-      <item row="5" column="0">
-       <widget class="QRadioButton" name="radioButtonQuickStop">
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblIdentifier">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
-         <string>Quick Stop</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QRadioButton" name="radioButtonVoltageEnabled">
-        <property name="text">
-         <string>Voltage enabled</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
+         <string>[Identifier]</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButtonSwitchOnDisabled">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
-         <string>Switch On disabled</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButtonReadyToSwitchOn">
-        <property name="text">
-         <string>Ready to Switch On</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QRadioButton" name="radioButtonOperationEnabled">
-        <property name="text">
-         <string>Operation enabled</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButtonSwitchOn">
-        <property name="text">
-         <string>Switch On</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QRadioButton" name="radioButtonInternalLimitActive">
-        <property name="text">
-         <string>Internal Limit Active</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QRadioButton" name="radioButtonSetPointAcknowledged">
-        <property name="text">
-         <string>Set Point Acknowledged</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QRadioButton" name="radioButtonWarning">
-        <property name="text">
-         <string>Warning</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QRadioButton" name="radioButtonFollowingError">
-        <property name="text">
-         <string>Following Error</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QRadioButton" name="radioButtonFault">
-        <property name="text">
-         <string>Fault</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QRadioButton" name="radioButtonTargetReached">
-        <property name="text">
-         <string>Target reached</string>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
+         <string>Identifier:</string>
         </property>
        </widget>
       </item>
@@ -220,93 +114,32 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>134</height>
+          <height>0</height>
          </size>
         </property>
         <property name="numAxis">
          <number>1</number>
         </property>
         <property name="defaultAxisUnit">
-         <enum>MotorAxisController::AxisUnit::UnitAU</enum>
+         <enum>MotorAxisController::UnitDeg</enum>
         </property>
         <property name="defaultAxisType">
-         <enum>MotorAxisController::AxisType::TypeLinear</enum>
+         <enum>MotorAxisController::TypeRotational</enum>
+        </property>
+        <property name="startAllAvailable">
+         <bool>false</bool>
         </property>
         <property name="defaultRelativeStepSize">
          <double>100.000000000000000</double>
         </property>
         <property name="defaultDecimals">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="movementTypeVisible">
          <bool>true</bool>
         </property>
         <property name="arbitraryUnit">
          <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBoxGeneralInformation">
-     <property name="title">
-      <string>General Information</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="leftMargin">
-       <number>3</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>3</number>
-      </property>
-      <property name="bottomMargin">
-       <number>3</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>3</number>
-      </property>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Identifier:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Serial number:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="lblIdentifier">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>[Identifier]</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="lblSerialNo">
-        <property name="text">
-         <string>[serialNo]</string>
         </property>
        </widget>
       </item>

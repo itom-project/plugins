@@ -111,8 +111,8 @@ ito::RetVal ThorlabsElliptecInterface::closeThisInst(ito::AddInBase** addInInst)
 ThorlabsElliptec::ThorlabsElliptec() :
     AddInActuator(),
     m_serialBufferSize(200),
-    m_requestTimeOutMS(500),
-    m_waitForDoneTimeoutMS(60000),
+    m_requestTimeOutMS(1000),
+    m_waitForDoneTimeoutMS(180000),
     m_serialMutexLocked(false), 
     m_async(0)
 {
@@ -136,9 +136,36 @@ ThorlabsElliptec::ThorlabsElliptec() :
         nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "serial",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "",
+        nullptr);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("model", ito::ParamBase::String | ito::ParamBase::Readonly, "", nullptr);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal =
+        ito::Param("description", ito::ParamBase::String | ito::ParamBase::Readonly, "", nullptr);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal =
+        ito::Param("numMotors", ito::ParamBase::String | ito::ParamBase::Readonly, "number of piezo actuators to move the stage", nullptr);
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("comPort",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         1, nullptr, "");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "axisType",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        -1,
+        1,
+        0,
+        "Axis type: -1: indexed, 0: rotatory, 1: linear");
     m_params.insert(paramVal.getName(), paramVal);
 
     auto meta = new ito::IntMeta(0x0, 0xF, 1, "Communication");
@@ -198,6 +225,48 @@ ThorlabsElliptec::ThorlabsElliptec() :
             .toLatin1()
             .data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("General");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "forwardFrequency1",
+        ito::ParamBase::Int,
+        4,
+        std::numeric_limits<int>::max(),
+        4,
+        tr("The forward frequency for the first motor in Hz")
+            .toLatin1()
+            .data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("MotorSettings");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "backwardFrequency1",
+        ito::ParamBase::Int,
+        4,
+        std::numeric_limits<int>::max(),
+        4,
+        tr("The backward frequency for the first motor in Hz").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("MotorSettings");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "forwardFrequency2",
+        ito::ParamBase::Int,
+        4,
+        std::numeric_limits<int>::max(),
+        4,
+        tr("The forward frequency for the second motor in Hz (if available)").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("MotorSettings");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "backwardFrequency2",
+        ito::ParamBase::Int,
+        4,
+        std::numeric_limits<int>::max(),
+        4,
+        tr("The backward frequency for the second motor in Hz (if available)").toLatin1().data());
+    paramVal.getMetaT<ito::IntMeta>()->setCategory("MotorSettings");
     m_params.insert(paramVal.getName(), paramVal);
 
     QVector<ito::Param> pMand, pOpt, pOut;
@@ -373,7 +442,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             2,
-            "in;gs;ho;ma;mr;gp;us;ca"
+            "in;gs;ho;ma;mr;gp;us;ca;i1;f1;b1",
+            1
         );
 
         elliptecModels << ElliptecDevice(
@@ -384,7 +454,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             4,
-            "in;gs;ho;ma;mr;gp;us;ca"
+            "in;gs;ho;ma;mr;gp;us;ca;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -395,7 +466,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             6,
-            "in;gs;ho;ma;mr;gp;us;ca"
+            "in;gs;ho;ma;mr;gp;us;ca;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -406,7 +478,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             "°",
             0,
-            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -417,7 +490,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp;us;ca"
+            "in;gs;ho;ma;mr;gp;us;ca;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -428,7 +502,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -439,7 +514,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             false,
             "°",
             0,
-            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om;i1;i2;f1;b1;f2;b2",
+            2
         );
 
         elliptecModels << ElliptecDevice(
@@ -450,7 +526,8 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
             true,
             "mm",
             0,
-            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om"
+            "in;gs;ho;ma;mr;gp;us;ca;cm;st;om;i1;i2;f1;b1;f2;b2",
+            2
         );
     }
 }
@@ -475,6 +552,12 @@ ito::RetVal ThorlabsElliptec::close(ItomSharedSemaphore* waitCond)
     supportedCmds["cm"] = CmdInfo("cm", "GS", 0, 2, true); // clean mechanics
     supportedCmds["st"] = CmdInfo("st", "GS", 0, 2, true); // motion stop
     supportedCmds["om"] = CmdInfo("om", "GS", 0, 2, true); // optimize motors
+    supportedCmds["i1"] = CmdInfo("i1", "I1", 0, 22, false); // get motor1info
+    supportedCmds["i2"] = CmdInfo("i2", "I2", 0, 22, false); // get motor2info
+    supportedCmds["f1"] = CmdInfo("f1", "GS", 4, 2, true); // set forward frequency 1
+    supportedCmds["f2"] = CmdInfo("f2", "GS", 4, 2, true); // set forward frequency 2
+    supportedCmds["b1"] = CmdInfo("b1", "GS", 4, 2, true); // set backward frequency 1
+    supportedCmds["b2"] = CmdInfo("b2", "GS", 4, 2, true); // set backward frequency 2
 }
 
 //------------------------------------------------------------------------------
@@ -512,7 +595,7 @@ ito::RetVal ThorlabsElliptec::identifyDevices()
     bool modelFound = false;
 
     unsigned char adr = (unsigned char)m_address;
-    retValue += sendCommandAndGetResponse(adr, "in", "", response);
+    retValue += sendCommandAndGetResponse(adr, "in", "", m_requestTimeOutMS, response);
 
     if (!retValue.containsError())
     {
@@ -555,9 +638,29 @@ ito::RetVal ThorlabsElliptec::identifyDevices()
             }
 
             setIdentifier(
-                QString("Elliptec %1, Serial %2").arg(m_model.m_name).arg(serial)
+                QString("Elliptec %1 (%2), Serial %3").arg(m_model.m_description).arg(m_model.m_name).arg(serial)
             );
+
+            m_params["serial"].setVal<const char*>(serial.data());
+            m_params["model"].setVal<const char*>(m_model.m_name.toLatin1().data());
+            m_params["description"].setVal<const char*>(m_model.m_description.toLatin1().data());
+            m_params["numMotors"].setVal<int>(m_model.m_numMotors);
+
+            if (m_model.m_indexed)
+            {
+                m_params["axisType"].setVal<int>(-1);
+            }
+            else if (m_model.m_linear)
+            {
+                m_params["axisType"].setVal<int>(1);
+            }
+            else
+            {
+                m_params["axisType"].setVal<int>(0);
+            }
         }
+
+        retValue += updateMotorFrequencies();
     }
     else if (retValue.errorCode() == TIMEOUT_ID)
     {
@@ -575,6 +678,51 @@ ito::RetVal ThorlabsElliptec::identifyDevices()
             adr);
     }
 
+    return retValue;
+}
+
+//------------------------------------------------------------------------------
+int ThorlabsElliptec::getFrequencyFromWord(const QByteArray& ba)
+{
+    int value = byteArrayToInt(ba); // period
+    return qRound(14740000.0 / (double)value);
+}
+
+//------------------------------------------------------------------------------
+ito::RetVal ThorlabsElliptec::updateMotorFrequencies()
+{
+    ito::RetVal retValue;
+    QByteArray response;
+
+    retValue += sendCommandAndGetResponse(m_address, "i1", "", m_requestTimeOutMS, response);
+
+    if (!retValue.containsError())
+    {
+        m_params["forwardFrequency1"].setVal<int>(getFrequencyFromWord(response.mid(14, 4)));
+        m_params["backwardFrequency1"].setVal<int>(getFrequencyFromWord(response.mid(18, 4)));
+    }
+
+    if (m_model.m_numMotors < 2)
+    {
+        m_params["backwardFrequency2"].setFlags(
+            m_params["backwardFrequency2"].getFlags() | ito::ParamBase::Readonly);
+        m_params["forwardFrequency2"].setFlags(
+            m_params["forwardFrequency2"].getFlags() | ito::ParamBase::Readonly);
+    }
+    else
+    {
+        retValue += sendCommandAndGetResponse(m_address, "i2", "", m_requestTimeOutMS, response);
+
+        if (!retValue.containsError())
+        {
+            m_params["forwardFrequency2"].setVal<int>(getFrequencyFromWord(response.mid(14, 4)));
+            ;
+            m_params["backwardFrequency2"].setVal<int>(
+                getFrequencyFromWord(response.mid(18, 4)));
+            ;
+        }
+    }
+    
     return retValue;
 }
 
@@ -599,6 +747,12 @@ ito::RetVal ThorlabsElliptec::getParam(QSharedPointer<ito::Param> val, ItomShare
 
     if (!retValue.containsError())
     {
+        if (key == "forwardFrequency1" || key == "forwardFrequency2" ||
+            key == "backwardFrequency1" || key == "backwardFrequency2")
+        {
+            retValue += updateMotorFrequencies();
+        }
+
         *val = it.value();
     }
 
@@ -622,6 +776,7 @@ ito::RetVal ThorlabsElliptec::setParam(
     int index;
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
+    bool valueAlreadyUpdated = false;
 
     // parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -656,15 +811,51 @@ ito::RetVal ThorlabsElliptec::setParam(
         {
             // change the address of the device
             QByteArray response;
-            retValue += sendCommandAndGetResponse(m_address, "ca", val->getVal<int>(), response);
+            retValue += sendCommandAndGetResponse(
+                m_address, "ca", val->getVal<int>(), m_requestTimeOutMS, response);
 
             if (!retValue.containsError())
             {
                 m_address = val->getVal<int>();
             }
         }
+        else if (key == "forwardFrequency1")
+        {
+            int period = 0x8000 | 0x0FFF & qRound(14740000.0 / (double)val->getVal<int>());
+            QByteArray response;
+            retValue += sendCommandAndGetResponse(m_address, "f1", period, m_requestTimeOutMS, response);
+            retValue += updateMotorFrequencies();
+            valueAlreadyUpdated = true;
+        }
+        else if (key == "forwardFrequency2")
+        {
+            int period = 0x8000 | 0x0FFF & qRound(14740000.0 / (double)val->getVal<int>());
+            QByteArray response;
+            retValue +=
+                sendCommandAndGetResponse(m_address, "b1", period, m_requestTimeOutMS, response);
+            retValue += updateMotorFrequencies();
+            valueAlreadyUpdated = true;
+        }
+        else if (key == "backwardFrequency1")
+        {
+            int period = 0x8000 | 0x0FFF & qRound(14740000.0 / (double)val->getVal<int>());
+            QByteArray response;
+            retValue +=
+                sendCommandAndGetResponse(m_address, "f2", period, m_requestTimeOutMS, response);
+            retValue += updateMotorFrequencies();
+            valueAlreadyUpdated = true;
+        }
+        else if (key == "backwardFrequency2")
+        {
+            int period = 0x8000 | 0x0FFF & qRound(14740000.0 / (double)val->getVal<int>());
+            QByteArray response;
+            retValue +=
+                sendCommandAndGetResponse(m_address, "b2", period, m_requestTimeOutMS, response);
+            retValue += updateMotorFrequencies();
+            valueAlreadyUpdated = true;
+        }
 
-        if (!retValue.containsError())
+        if (!valueAlreadyUpdated  && !retValue.containsError())
         {
             retValue += it->copyValueFrom(&(*val));
         }
@@ -707,7 +898,7 @@ ito::RetVal ThorlabsElliptec::calib(const QVector<int> axis, ItomSharedSemaphore
 
         int dir = m_params["calibDirection"].getVal<int>();
         QByteArray response;
-        retValue += sendCommandAndGetResponse(m_address, "ho", 1, response);
+        retValue += sendCommandAndGetResponse(m_address, "ho", 1, m_waitForDoneTimeoutMS, response);
 
         if (!retValue.containsError())
         {
@@ -763,7 +954,7 @@ ito::RetVal ThorlabsElliptec::getStatus(
     ito::RetVal retValue(ito::retOk);
 
     QByteArray response;
-    retValue += sendCommandAndGetResponse(m_address, "gs", "", response);
+    retValue += sendCommandAndGetResponse(m_address, "gs", "", m_requestTimeOutMS, response);
 
     if (retValue.containsError())
     {
@@ -823,7 +1014,7 @@ ito::RetVal ThorlabsElliptec::getPos(
     else
     {
         QByteArray response;
-        retValue += sendCommandAndGetResponse(m_address, "gp", "", response);
+        retValue += sendCommandAndGetResponse(m_address, "gp", "", m_requestTimeOutMS, response);
 
         if (!retValue.containsError())
         {
@@ -894,7 +1085,7 @@ ito::RetVal ThorlabsElliptec::setPosAbs(
 
         QByteArray data = positionTo8ByteArray(pos[0]);
         QByteArray response;
-        retValue += sendCommandAndGetResponse(m_address, "ma", data, response);
+        retValue += sendCommandAndGetResponse(m_address, "ma", data, m_waitForDoneTimeoutMS, response);
 
         if (retValue.containsError())
         {
@@ -906,6 +1097,9 @@ ito::RetVal ThorlabsElliptec::setPosAbs(
             {
                 replaceStatus(axis, ito::actuatorMoving, ito::actuatorError);
             }
+
+            QSharedPointer<double> pos(new double);
+            retValue += getPos(0, pos, nullptr);
         }
         else
         {
@@ -972,7 +1166,7 @@ ito::RetVal ThorlabsElliptec::setPosRel(
 
         QByteArray data = positionTo8ByteArray(pos[0]);
         QByteArray response;
-        retValue += sendCommandAndGetResponse(m_address, "mr", data, response);
+        retValue += sendCommandAndGetResponse(m_address, "mr", data, m_waitForDoneTimeoutMS, response);
 
         if (retValue.containsError())
         {
@@ -984,6 +1178,9 @@ ito::RetVal ThorlabsElliptec::setPosRel(
             {
                 replaceStatus(axis, ito::actuatorMoving, ito::actuatorError);
             }
+
+            QSharedPointer<double> pos(new double);
+            retValue += getPos(0, pos, nullptr);
         }
         else
         {
@@ -1017,7 +1214,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
     if (funcName == "saveUserData")
     {
         QByteArray response;
-        retValue += sendCommandAndGetResponse(m_address, "us", "", response);
+        retValue += sendCommandAndGetResponse(m_address, "us", "", m_requestTimeOutMS, response);
     }
     else if (funcName == "optimizeMotors" || funcName == "cleanMechanics")
     {
@@ -1027,11 +1224,13 @@ ito::RetVal ThorlabsElliptec::execFunc(
 
         if (funcName == "optimizeMotors")
         {
-            retValue += sendCommandAndGetResponse(m_address, "om", "", response);
+            retValue += sendCommandAndGetResponse(
+                m_address, "om", "", 5 * m_waitForDoneTimeoutMS, response);
         }
         else
         {
-            retValue += sendCommandAndGetResponse(m_address, "cm", "", response);
+            retValue += sendCommandAndGetResponse(
+                m_address, "cm", "", 5 * m_waitForDoneTimeoutMS, response);
         }
 
         if (retValue == ito::retWarning && retValue.errorCode() == 9)
@@ -1041,7 +1240,12 @@ ito::RetVal ThorlabsElliptec::execFunc(
 
             while (maxCounter >= 0)
             {
-                retValue = sendCommandAndGetResponse(m_address, "gs", "", response);
+                QThread::sleep(1);
+
+                setAlive();
+
+                retValue = sendCommandAndGetResponse(
+                    m_address, "gs", "", m_requestTimeOutMS * 8, response);
 
                 if (retValue != ito::retWarning && retValue.errorCode() != 9)
                 {
@@ -1049,14 +1253,20 @@ ito::RetVal ThorlabsElliptec::execFunc(
                     break;
                 }
 
-                QThread::sleep(2);
                 setAlive();
 
                 if (isInterrupted())
                 {
-                    retValue = sendCommandAndGetResponse(m_address, "st", "", response);
-                    break;
+                    retValue =
+                        sendCommandAndGetResponse(m_address, "st", "", m_requestTimeOutMS, response);
+                    //break;
                 }
+                else
+                {
+                    QThread::sleep(1);
+                }
+
+                setAlive();
 
                 maxCounter--;
             }
@@ -1126,7 +1336,13 @@ int ThorlabsElliptec::byteArrayToInt(const QByteArray& value) const
 //------------------------------------------------------------------------------
 double ThorlabsElliptec::positionFromPosResponse(const QByteArray& response) const
 {
-    double value = byteArrayToInt(response);
+    unsigned int value_unsigned;
+    std::stringstream ss;
+    ss << std::hex << response.constData();
+    ss >> value_unsigned;
+    // output it as a signed type
+    auto value_signed = static_cast<int>(value_unsigned);
+    double value = value_signed;
 
     if (m_model.m_indexed)
     {
@@ -1166,7 +1382,11 @@ QByteArray ThorlabsElliptec::positionTo8ByteArray(double position) const
 
 //------------------------------------------------------------------------------
 ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
-    unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray& response)
+    unsigned char address,
+    const QByteArray& cmdId,
+    const QByteArray& data,
+    int timeoutMs,
+    QByteArray& response)
 {
     ito::RetVal retVal = ito::retOk;
     bool serialMutexLockedLocal = false;
@@ -1193,12 +1413,16 @@ ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
     }
     else
     {
-        retVal += ito::RetVal(ito::retError, 0, "invalid or unsupported cmd for this device");
+        retVal += ito::RetVal::format(
+            ito::retError,
+            0,
+            "invalid or unsupported command '%s' for this device",
+            cmdId.constData());
     }
 
     if (!retVal.containsError())
     {
-        retVal += readResponse(response);
+        retVal += readResponse(timeoutMs, response);
     }
 
     if (!retVal.containsError())
@@ -1238,23 +1462,24 @@ ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, int data, QByteArray& response)
+ito::RetVal ThorlabsElliptec::sendCommandAndGetResponse(
+    unsigned char address, const QByteArray& cmdId, int data, int timeoutMs, QByteArray& response)
 {
     CmdInfo info;
 
     if (getCmdInfo(cmdId, info))
     {
         QByteArray dataStr = intToByteArray(data, info.sendDataNumBytes);
-        return sendCommandAndGetResponse(address, cmdId, dataStr, response);
+        return sendCommandAndGetResponse(address, cmdId, dataStr, timeoutMs, response);
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "invalid or unsupported cmd for this device");
+        return ito::RetVal::format(ito::retError, 0, "invalid or unsupported command '%s' for this device", cmdId.constData());
     }
 }
 
 //------------------------------------------------------------------------------
-ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response)
+ito::RetVal ThorlabsElliptec::readResponse(int timeoutMs, QByteArray& response)
 {
     ito::RetVal retValue = ito::retOk;
     QElapsedTimer timer;
@@ -1305,7 +1530,7 @@ ito::RetVal ThorlabsElliptec::readResponse(QByteArray& response)
             }
         }
 
-        if (!done && timer.elapsed() > m_requestTimeOutMS && m_requestTimeOutMS >= 0)
+        if (!done && timer.elapsed() > timeoutMs && timeoutMs >= 0)
         {
             retValue += ito::RetVal(
                 ito::retError, TIMEOUT_ID, tr("timeout during read command.").toLatin1().data());

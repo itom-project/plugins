@@ -62,11 +62,12 @@ public:
         bool linear,
         const QString& unit,
         int numIndexedPositions,
-        const QString supportedCmds
+        const QString supportedCmds,
+        int numMotors
     ) :
         m_modelId(modelId), m_name(name), m_description(description),
         m_indexed(indexed), m_linear(linear),
-        m_unit(unit), m_numIndexedPositions(numIndexedPositions)
+        m_unit(unit), m_numIndexedPositions(numIndexedPositions), m_numMotors(numMotors)
     {
         if (!m_indexed)
         {
@@ -84,6 +85,7 @@ public:
     int m_numIndexedPositions;
     int m_modelId;
     QStringList m_supportedCmds;
+    int m_numMotors;
 };
 
 //------------------------------------------------------------------------------
@@ -160,15 +162,22 @@ private:
 
     bool getCmdInfo(const QByteArray& cmd, CmdInfo& info) const;
     ito::RetVal sendCommand(unsigned char address, const QByteArray& cmdId, const QByteArray& data = QByteArray());
-    ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, const QByteArray& data, QByteArray &response);
-    ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, int data, QByteArray& response);
-    ito::RetVal readResponse(QByteArray& response);
+    ito::RetVal sendCommandAndGetResponse(unsigned char address, const QByteArray& cmdId, const QByteArray& data, int timeoutMs, QByteArray &response);
+    ito::RetVal sendCommandAndGetResponse(
+        unsigned char address,
+        const QByteArray& cmdId,
+        int data,
+        int timeoutMs,
+        QByteArray& response);
+    ito::RetVal readResponse(int timeoutMs, QByteArray& response);
     ito::RetVal parseStatusResponse(const QByteArray& response) const;
     double positionFromPosResponse(const QByteArray& response) const;
     QByteArray positionTo8ByteArray(double position) const;
     QByteArray intToByteArray(int value, int numBytes) const;
     int byteArrayToInt(const QByteArray& value) const;
+    int getFrequencyFromWord(const QByteArray& ba);
     ito::RetVal identifyDevices();
+    ito::RetVal updateMotorFrequencies();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);

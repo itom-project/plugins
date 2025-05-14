@@ -47,6 +47,9 @@ public:
 
     ito::RetVal applyParameters();
 
+protected:
+    ito::RetVal observeInvocation(ItomSharedSemaphore* waitCond) const;
+
 private:
     void enableDialog(bool enabled);
     bool m_firstRun;
@@ -59,4 +62,9 @@ public slots:
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
+    void on_cmdOptimizeMotors_clicked();
+    void on_cmdCleanMechanics_clicked();
+    void on_cmdCancelCleaning_clicked();
+    void on_cmdSaverUserData_clicked();
+    void on_cmdHome_clicked();
 };
