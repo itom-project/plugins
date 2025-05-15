@@ -676,7 +676,7 @@ ito::RetVal FringeProj::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
         FringeProj::genGraycodePatternParams,
         genGraycodePatternDoc);
     m_filterList.insert("genGraycodePattern", filter);
-    
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }

@@ -146,13 +146,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsKCubeDCServo is an acutator plugin to control the following integrated devices from Thorlabs: 
+        <source>ThorlabsKCubeDCServo is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* K-Cube Controller for Brushed DC Servo Motors (e.g. KDC101) 
+* K-Cube Controller for Brushed DC Servo Motors (e.g. KDC101)
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.KCube.DCServo.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
 This plugin has been tested with the motorized translation stage MTS25-Z8.</source>
         <translation type="unfinished"></translation>

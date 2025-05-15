@@ -158,13 +158,13 @@
     <name>AndorSDK3Interface</name>
     <message>
         <location filename="../AndorSDK3Interface.cpp" line="+66"/>
-        <source>This plugin supports Andor cameras that can be run using the SDK3 from Andor (e.g. Neo and Zyla series). It has been tested with the following models: 
+        <source>This plugin supports Andor cameras that can be run using the SDK3 from Andor (e.g. Neo and Zyla series). It has been tested with the following models:
 
-- Zyla 5.5 (Dual Camera Link) 
+- Zyla 5.5 (Dual Camera Link)
 
-The plugin has been compiled using the Andor SDK 3.8 
+The plugin has been compiled using the Andor SDK 3.8
 
-In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible 
+In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible
 by the Windows path environment variable (e.g. append &quot;C:/Program Files/Andor SDK3&quot; to the path variable).</source>
         <translation type="unfinished"></translation>
     </message>

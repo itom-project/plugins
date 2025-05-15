@@ -30,7 +30,7 @@
 
 #include "itom_sdk.h"
 
-#define PLUGIN_VERSION              CREATE_VERSION(0, 1, 0)
+#define PLUGIN_VERSION              CREATE_VERSION(0, 6, 0)
 #define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(3, 1, 0)
 #define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_plugins_VERSION_MAJOR},${itom_plugins_VERSION_MINOR},${itom_plugins_VERSION_PATCH})
 #define PLUGIN_LICENCE              "Licensed under LGPL."

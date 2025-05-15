@@ -72,7 +72,7 @@ public:
 
 private:
     ito::AddInDataIO* m_pSerialIO;
-    static QList<ito::uint8> openedNodes;
+    QMap<ito::uint8, QList<ito::uint8>> openedNodes;
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
     int m_async; //!< variable to set up async and sync positioning --> Synchrone means program do
@@ -108,11 +108,28 @@ private:
         TRANSMIT_ASYNC_MESSAGES_VIA_RS232 = 0x00020000,
         IGNORE_CRC = 0x00800000
     };
+    bool isBitSet(uint32_t value, int bitPosition);
+    bool isBitUnset(uint32_t value, int bitPosition);
 
     struct Register
     {
         ito::uint16 index;
         ito::uint8 subindex;
+    };
+
+    enum OperationMode : ito::uint8
+    {
+        AnalogTorqueControl = -4,
+        AnalogVelocityControl = -3,
+        AnalogPositionControl = -2,
+        VoldMode = -1,
+        ControlNotActive = 0,
+        ProfilePositionMode = 1,
+        ProfileVelocityMode = 3,
+        Homing = 6,
+        CyclicSynchronousPositionMode = 8,
+        CyclicSynchronousVelocityMode = 9,
+        CyclicSynchronousTorqueMode = 10,
     };
 
     const Register serialNumber_register = {0x1018, 0x04};
@@ -122,19 +139,24 @@ private:
     const Register revisionNumber_register = {0x1018, 0x03};
     const Register firmwareVersion_register = {0x100A, 0x00};
     const Register operationMode_register = {0x6060, 0x00};
-    const Register netMode_register = {0x2400, 0x05};
     const Register nodeID_register = {0x2400, 0x03};
+    const Register netMode_ignoreCRC = {0x2400, 0x04};
+    const Register netMode_register = {0x2400, 0x05};
     const Register deviceID_register = {0x2400, 0x08};
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
     const Register windingTemperature_register = {0x2326, 0x03};
+    const Register loadInertia_register = {0x2329, 0x0A};
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
     const Register positionAbsolutValue_register = {0x607a, 0x00};
     const Register positionRelativeValue_register = {0x607a, 0x00};
+    const Register velocityActualValue_register = {0x606c, 0x00};
+    const Register velocityTargetValue_register = {0x60FF, 0x00};
+    const Register voltageValue_register = {0x2341, 0x00};
+    const Register torqueTargetValue_register = {0x6071, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
     const Register currentActualValue_register = {0x6078, 0x00};
-    const Register targetTorque_register = {0x6071, 0x00};
     const Register statusWord_register = {0x6041, 0x00};
     const Register controlWord_register = {0x6040, 0x00};
     const Register maxMotorSpeed_register = {0x6080, 0x00};
@@ -149,6 +171,7 @@ private:
     const Register negativeTorqueLimit_register = {0x60E1, 0x00};
     const Register positionLowerLimit_register = {0x607D, 0x01};
     const Register positionUpperLimit_register = {0x607D, 0x02};
+    const Register motionProfileType_register = {0x6086, 0x00};
 
     const Register torqueGainControl_register = {0x2342, 0x01};
     const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
@@ -171,6 +194,8 @@ private:
     const Register homingLimitCheckDelayTime_register = {0x2324, 0x02};
     const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
     const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
+
+    const Register nominalVoltage_register = {0x2604, 0x00};
 
     const ito::uint8 shutDown_register = 0x06;
     const ito::uint8 enableOperation_register = 0x0F;
@@ -237,6 +262,7 @@ private:
     void updateStatusBits();
 
     ito::RetVal setCommunicationSettings(const ito::uint32& settings);
+    ito::RetVal getCommunicationSettings(ito::uint32& settings);
     ito::RetVal getError();
     ito::RetVal interpretEMCYError(const ito::uint16& errorCode);
     ito::RetVal interpretCIA402Error(const QByteArray& errorBytes);
@@ -276,9 +302,6 @@ private:
     ito::RetVal getMaxTorqueLimit(ito::uint16& limit);
     ito::RetVal setMaxTorqueLimit(const ito::uint16 limit);
 
-    ito::RetVal getTargetTorque(ito::int16& torque);
-    ito::RetVal setTargetTorque(const ito::int16 torque);
-
     ito::RetVal getNetMode(ito::uint8& mode);
     ito::RetVal setNetMode(const ito::uint8& mode);
 
@@ -296,6 +319,9 @@ private:
 
     ito::RetVal getPositionUpperLimit(ito::int32& limit);
     ito::RetVal setPositionUpperLimit(const ito::int32 limit);
+
+    ito::RetVal getNominalVoltage(ito::uint16& voltage);
+    ito::RetVal setNominalVoltage(const ito::uint16 voltage);
 
     // CONTROL
     ito::RetVal getTorqueGainControl(ito::uint32& gain);
@@ -332,12 +358,25 @@ private:
     ito::RetVal getCPUTemperature(ito::int16& temp);
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
     ito::RetVal getWindingTemperature(ito::int16& temp);
+    ito::RetVal getLoadInertia(ito::uint32& inertia);
+    ito::RetVal setLoadInertia(const ito::uint32& inertia);
 
-    // POSITION
+    // MOTION
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);
     ito::RetVal setPosAbsMCS(const ito::int32& pos);
     ito::RetVal setPosRelMCS(const ito::int32& pos);
+    ito::RetVal getVelocityMCS(ito::int32& pos);
+    ito::RetVal setVelocityMCS(const ito::int32& pos);
+    ito::RetVal getTargetVelocityMCS(ito::int32& pos);
+    ito::RetVal getTorqueMCS(ito::int16& torque);
+    ito::RetVal setTorqueMCS(const ito::int16 torque);
+    ito::RetVal getTargetTorqueMCS(ito::int16& torque);
+    ito::RetVal getVoltageMCS(ito::int16& current);
+    ito::RetVal setVoltageMCS(ito::int16& current);
+
+    ito::RetVal getMotionProfileType(ito::int16& type);
+    ito::RetVal setMotionProfileType(const ito::int16& type);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);
@@ -355,10 +394,9 @@ private:
         const ito::uint32& switchSeekVelocity,
         const ito::uint32& homingSpeed,
         const ito::uint32& acceleration,
-        ito::uint16& limitCheckDelayTime,
-        ito::uint16& negativeLimit,
-        ito::uint16& positiveLimit);
-
+        const ito::uint16& limitCheckDelayTime,
+        const ito::uint16 *torqueLimits,
+        const ito::uint16& timeoutTime);
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
