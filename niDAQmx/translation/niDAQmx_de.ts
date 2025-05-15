@@ -288,8 +288,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The plugin implements the DAQmx functions for analog and digital I/O devices from National Instruments. 
-The installation needs the NI-DAQmx Library that can be downloaded from the NI website 
+        <source>The plugin implements the DAQmx functions for analog and digital I/O devices from National Instruments.
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website
 (https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx.html).</source>
         <translation type="unfinished"></translation>
     </message>

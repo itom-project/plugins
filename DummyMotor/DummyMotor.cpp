@@ -661,6 +661,17 @@ ito::RetVal DummyMotor::setOrigin(const QVector<int> axis, ItomSharedSemaphore *
             }
         }
 
+        if (!retValue.containsError())
+        {
+            int* homed = new int[m_numaxis];
+            for (int i = 0; i < m_numaxis; ++i)
+            {
+                homed[i] = 1;
+            }
+            m_params["homed"].setVal<int*>(homed, m_numaxis);
+            DELETE_AND_SET_NULL_ARRAY(homed);
+        }
+
         if (waitCond)
         {
             waitCond->returnValue = retValue;

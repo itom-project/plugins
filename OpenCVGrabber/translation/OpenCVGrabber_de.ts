@@ -199,13 +199,13 @@
     </message>
     <message>
         <location line="+19"/>
-        <source>This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb). 
+        <source>This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb).
 
-Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. Therefore this implementation is not the fastest connection to any USB cameras. 
+Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. Therefore this implementation is not the fastest connection to any USB cameras.
 
-Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV. 
+Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV.
 
-The parameters of this plugin are double values that are directly redirected to the OpenCV drivers and might have different units / interpretations for various device types. Especially for DirectShow cameras, also use the native settings dialog (accessible via the configuration dialog) to further parameterize the plugin, especially set the manual / auto flag of parameters (not directly available via source code of OpenCV). 
+The parameters of this plugin are double values that are directly redirected to the OpenCV drivers and might have different units / interpretations for various device types. Especially for DirectShow cameras, also use the native settings dialog (accessible via the configuration dialog) to further parameterize the plugin, especially set the manual / auto flag of parameters (not directly available via source code of OpenCV).
 
 For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter &apos;dump_grabs&apos; to set a number of images that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).</source>
         <translation type="unfinished"></translation>

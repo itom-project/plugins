@@ -63,11 +63,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers. 
+        <source>ThorlabsTCubeTEC is an plugin to control the Thorlabs T-Cube TEC controller for thermoelectric coolers.
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.TCube.TEC.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
 This plugin has been tested with both the simulated T-Cube TEC controller of Kinesis and a real device.</source>
         <translation type="unfinished"></translation>

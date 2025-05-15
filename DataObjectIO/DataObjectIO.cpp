@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -4923,8 +4923,14 @@ ito::RetVal DataObjectIO::loadImage(
             case CV_8U:
                 imageType = ito::tUInt8;
                 break;
+            case CV_8S:
+                imageType = ito::tInt8;
+                break;
             case CV_16U:
                 imageType = ito::tUInt16;
+                break;
+            case CV_16S:
+                imageType = ito::tInt16;
                 break;
             case CV_8UC3:
                 if (reduceChannel)
