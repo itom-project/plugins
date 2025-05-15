@@ -27,6 +27,7 @@
 #include <qdialogbuttonbox.h>
 #include <qsharedpointer.h>
 #include <qvector.h>
+#include <qmessagebox.h>
 
 #include "paramEditorWidget.h"
 
@@ -37,6 +38,9 @@ DialogThorlabsElliptec::DialogThorlabsElliptec(ito::AddInActuator* actuator) :
     ui.setupUi(this);
     enableDialog(false);
     ui.paramEditor->setPlugin(m_pluginPointer);
+    ui.cmdCancelCleaning->setEnabled(false);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
 };
 
 //------------------------------------------------------------------------------
@@ -63,7 +67,7 @@ ito::RetVal DialogThorlabsElliptec::applyParameters()
     return setPluginParameters(values, msgLevelWarningAndError);
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DialogThorlabsElliptec::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
@@ -84,8 +88,181 @@ void DialogThorlabsElliptec::on_buttonBox_clicked(QAbstractButton* btn)
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_cmdOptimizeMotors_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+
+    enableDialog(false);
+    ui.cmdCancelCleaning->setEnabled(true);
+    ui.lblProgress->setText("Cleaning and optimizing motors is running. Please wait for 5-10 minutes.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "execFunc",
+        Q_ARG(QString, "optimizeMotors"),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
+    ui.cmdCancelCleaning->setEnabled(false);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_cmdCleanMechanics_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+
+    enableDialog(false);
+    ui.cmdCancelCleaning->setEnabled(true);
+    ui.lblProgress->setText("Cleaning mechanics is running. Please wait for 5-10 minutes.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "execFunc",
+        Q_ARG(QString, "cleanMechanics"),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
+    ui.cmdCancelCleaning->setEnabled(false);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_cmdCancelCleaning_clicked()
+{
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+    ito::AddInActuator* actuator = qobject_cast<ito::AddInActuator*>(m_pluginPointer.data());
+
+    if (actuator)
+    {
+        ui.lblProgress->setText("Cancellation in progress. Please wait for 2-3 seconds...");
+        actuator->setInterrupt();
+    }
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_cmdSaverUserData_clicked()
+{
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+    m_pluginPointer->execFunc("saveUserData", _dummy, _dummy, _dummy, nullptr);
+}
+
+//------------------------------------------------------------------------------
 void DialogThorlabsElliptec::enableDialog(bool enabled)
 {
     ui.paramEditor->setEnabled(enabled);
+    ui.cmdOptimizeMotors->setEnabled(enabled);
+    ui.cmdSaveUserData->setEnabled(enabled);
+    ui.cmdCleanMechanics->setEnabled(enabled);
+    ui.cmdHome->setEnabled(enabled);
+}
+
+//------------------------------------------------------------------------------
+ito::RetVal DialogThorlabsElliptec::observeInvocation(ItomSharedSemaphore* waitCond) const
+{
+    ito::RetVal retval;
+    bool timeout = false;
+    int aliveCounter = 20; // check alive every 10 seconds
+
+    while (!timeout && waitCond->waitAndProcessEvents(500) == false)
+    {
+        aliveCounter--;
+
+        if (aliveCounter <= 0 && m_pluginPointer->isAlive() == false)
+        {
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Timeout while waiting for answer from plugin instance.").toLatin1().data());
+            timeout = true;
+        }
+        else if (aliveCounter < 0)
+        {
+            aliveCounter = 20;
+        }
+    }
+
+    if (!timeout)
+    {
+        retval += waitCond->returnValue;
+    }
+
+    if (retval.containsError())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error while execution"));
+        if (retval.hasErrorMessage())
+        {
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
+        }
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Warning while execution"));
+        if (retval.hasErrorMessage())
+        {
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_cmdHome_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+
+    enableDialog(false);
+    ui.cmdCancelCleaning->setEnabled(true);
+    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "calib",
+        Q_ARG(int, 0),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
+    ui.cmdCancelCleaning->setEnabled(false);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
 }
