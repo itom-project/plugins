@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "SerialIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -54,7 +54,7 @@ class DockWidgetSerialIO : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
 //        void valuesChanged(QMap<QString, ito::Param> params);
 //        void uniqueIDChanged(const int uniqueID);
-        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void serialLog(QByteArray data, QByteArray endline, bool incomingData);
         void identifierChanged(const QString &identifier);
 
     private slots:
