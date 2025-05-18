@@ -1353,7 +1353,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
                 {
                     setAlive();
                     retValue = sendCommandAndGetResponse(
-                        m_address, "gs", "", m_requestTimeOutMS * 8, response);
+                        m_address, "gs", "", m_requestTimeOutMS * 15, response);
 
                     if (retValue != ito::retWarning && retValue.errorCode() != 9)
                     {
@@ -1373,11 +1373,11 @@ ito::RetVal ThorlabsElliptec::execFunc(
 
             if (elapsed.hasExpired(timeoutMs))
             {
-                retValue += ito::RetVal(ito::retError, 0, "Timeout while executing operation.");
+                retValue += ito::RetVal(ito::retError, 0, "Timeout while executing operation. Stop it.");
 
                 // stop
                 // it might take some seconds until st is finished
-                retValue =
+                retValue +=
                     sendCommandAndGetResponse(m_address, "st", "", m_requestTimeOutMS * 10, response);
             }            
         }
