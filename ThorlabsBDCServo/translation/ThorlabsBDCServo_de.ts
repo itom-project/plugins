@@ -126,15 +126,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs: 
+        <source>ThorlabsBDCServo is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* Benchtop DC Servo (M30XY) 
+* Benchtop DC Servo (M30XY)
 
 It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.Benchtop.DCServo.
 
-Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom. 
+Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
-This plugin has been tested with the Benchtop DC Servo M30XY. 
+This plugin has been tested with the Benchtop DC Servo M30XY.
 </source>
         <translation type="unfinished"></translation>
     </message>

@@ -48,6 +48,28 @@ void DockWidgetFaulhaberMCS::parametersChanged(QMap<QString, ito::Param> params)
     ui.radioButtonFollowingError->setCheckable(params["followingError"].getVal<int>());
 
     ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
+
+    int mode = params["operationMode"].getVal<int>();
+    QString unit = "";
+    switch (mode)
+    {
+    case -1:
+        unit = "x10 mV";
+        break;
+    case 1:
+        unit = "inc.";
+        break;
+    case 3:
+        unit = "1/min";
+        break;
+    case 6:
+        unit = "";
+        break;
+    case 10:
+        unit = "I_N/1000";
+        break;
+    }
+    ui.axisController->setArbitraryUnit(unit);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -71,7 +93,10 @@ void DockWidgetFaulhaberMCS::dockWidgetVisibilityChanged(bool visible)
         QPointer<ito::AddInActuator> actuator(m_pActuator);
         ui.axisController->setActuator(actuator);
         ui.axisController->setNumAxis(1);
-        ui.axisController->setAxisType(0, MotorAxisController::TypeRotational);
+        ui.axisController->setAxisUnit(0, MotorAxisController::AxisUnit::UnitAU);
+        ui.axisController->setArbitraryUnit("inc.");
+        ui.axisController->setDefaultRelativeStepSize(1);
+        ui.axisController->setDefaultDecimals(0);
     }
     else
     {

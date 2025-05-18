@@ -451,10 +451,10 @@
     <name>ThorlabsDCxCamInterface</name>
     <message>
         <location filename="../thorlabsDCxCamInterface.cpp" line="+7"/>
-        <source>This plugin supports Thorlabs DCx cameras and has currently been tested with the following models: 
-- ... 
+        <source>This plugin supports Thorlabs DCx cameras and has currently been tested with the following models:
+- ...
 
-The plugin has been compiled using the Thorlabs DCx library version %1.%2. You can run it with an installed driver version %3.%4x.xx. 
+The plugin has been compiled using the Thorlabs DCx library version %1.%2. You can run it with an installed driver version %3.%4x.xx.
 
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed.</source>
         <translation type="unfinished"></translation>
