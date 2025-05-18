@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>495</height>
+    <width>546</width>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,9 @@
          <width>0</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 1</string>
        </property>
        <property name="title">
         <string>Special Commands and Actions</string>
@@ -79,6 +82,40 @@
              </size>
             </property>
            </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="btnSearch1">
+            <property name="toolTip">
+             <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 1</string>
+            </property>
+            <property name="text">
+             <string>Frequency Search Motor 1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSearch2">
+            <property name="toolTip">
+             <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 2</string>
+            </property>
+            <property name="text">
+             <string>Frequency Search Motor 2</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnResetDefaults">
+            <property name="toolTip">
+             <string>Reset all frequencies to the default values</string>
+            </property>
+            <property name="text">
+             <string>Reset Defaults</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

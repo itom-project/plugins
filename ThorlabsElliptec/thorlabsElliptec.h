@@ -178,6 +178,7 @@ private:
     int getFrequencyFromWord(const QByteArray& ba);
     ito::RetVal identifyDevices();
     ito::RetVal updateMotorFrequencies();
+    ito::RetVal saveUserData();
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);

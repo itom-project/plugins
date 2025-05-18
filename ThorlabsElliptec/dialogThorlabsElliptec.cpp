@@ -54,9 +54,23 @@ void DialogThorlabsElliptec::parametersChanged(QMap<QString, ito::Param> params)
     if (m_firstRun)
     {
         setWindowTitle(
-            QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+            QString((params)["name"].getVal<const char*>()) + " - " + tr("Configuration Dialog"));
         m_firstRun = false;
         enableDialog(true);
+
+        QStringList freqSearchSupportedModels;
+        freqSearchSupportedModels << "ELL14"
+                                  << "ELL17"
+                                  << "ELL18"
+                                  << "ELL20";
+
+        QString modelName = params["model"].getVal<const char*>();
+
+        if (!freqSearchSupportedModels.contains(modelName))
+        {
+            ui.btnSearch1->setEnabled(false);
+            ui.btnSearch2->setEnabled(false);
+        }
     }
 }
 
@@ -245,7 +259,6 @@ void DialogThorlabsElliptec::on_cmdHome_clicked()
     QSharedPointer<QVector<ito::ParamBase>> _dummy;
 
     enableDialog(false);
-    ui.cmdCancelCleaning->setEnabled(true);
     ui.lblProgress->setText("Drive motor to home (zero) position.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
@@ -262,7 +275,100 @@ void DialogThorlabsElliptec::on_cmdHome_clicked()
 
     ui.buttonBox->setEnabled(true);
     enableDialog(true);
-    ui.cmdCancelCleaning->setEnabled(false);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_btnResetDefaults_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+
+    enableDialog(false);
+    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "execFunc",
+        Q_ARG(QString, "resetDefaults"),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_btnSearch2_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+    QSharedPointer<QVector<ito::ParamBase>> mand(new QVector<ito::ParamBase>());
+    mand->append(ito::ParamBase("motorIdx", ito::ParamBase::Int, 1));
+
+    enableDialog(false);
+    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "execFunc",
+        Q_ARG(QString, "searchFrequencies"),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, mand),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
+    ui.progressBar->setVisible(false);
+    ui.lblProgress->setVisible(false);
+}
+
+//------------------------------------------------------------------------------
+void DialogThorlabsElliptec::on_btnSearch1_clicked()
+{
+    ito::RetVal retValue;
+    QSharedPointer<QVector<ito::ParamBase>> _dummy;
+    QSharedPointer<QVector<ito::ParamBase>> mand(new QVector<ito::ParamBase>());
+    mand->append(ito::ParamBase("motorIdx", ito::ParamBase::Int, 0));
+
+    enableDialog(false);
+    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.progressBar->setVisible(true);
+    ui.lblProgress->setVisible(true);
+    ui.buttonBox->setDisabled(true);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(
+        m_pluginPointer.data(),
+        "execFunc",
+        Q_ARG(QString, "searchFrequencies"),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, mand),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(QSharedPointer<QVector<ito::ParamBase>>, _dummy),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    retValue += observeInvocation(locker.getSemaphore());
+
+    ui.buttonBox->setEnabled(true);
+    enableDialog(true);
     ui.progressBar->setVisible(false);
     ui.lblProgress->setVisible(false);
 }

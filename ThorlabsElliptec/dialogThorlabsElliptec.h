@@ -67,4 +67,7 @@ private slots:
     void on_cmdCancelCleaning_clicked();
     void on_cmdSaverUserData_clicked();
     void on_cmdHome_clicked();
+    void on_btnResetDefaults_clicked();
+    void on_btnSearch2_clicked();
+    void on_btnSearch1_clicked();
 };
