@@ -301,7 +301,7 @@ ThorlabsElliptec::ThorlabsElliptec() :
         pMand,
         pOpt,
         pOut,
-        tr("Fine tunes the frequency search for forward and backward direction. At first applies a search frequency run for coarse optimization, then starts the fine tuning. This operation might take several minutes. It can be interrupted by the Keyboard Interrupt.")
+        tr("Fine tunes the frequency search for forward and backward direction. At first applies a search frequency run for coarse optimization, then starts the fine tuning. This operation might take several minutes (e.g. 30min). It can be interrupted by the Keyboard Interrupt.")
         .toLatin1()
         .data());
 
@@ -310,7 +310,7 @@ ThorlabsElliptec::ThorlabsElliptec() :
         pMand,
         pOpt,
         pOut,
-        tr("Cleans the mechanics by applying forward and backward runs of the full travel range. This operation might take several minutes. It can be interrupted by the Keyboard Interrupt.")
+        tr("Cleans the mechanics by applying forward and backward runs of the full travel range. This operation might take several minutes (e.g. 30min). It can be interrupted by the Keyboard Interrupt.")
         .toLatin1()
         .data());
 
@@ -1333,7 +1333,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
             // 3. maximum timeout of 10min
             // 4. check for interrupts every second
             
-            int timeoutMs = 1000 * 10 * 60; // 10min
+            int timeoutMs = 1000 * 50 * 60; // 50min
             QElapsedTimer elapsed;
             bool timeout = false;
             int getStatusCounter = 10;

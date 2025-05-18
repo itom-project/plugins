@@ -110,7 +110,7 @@ void DialogThorlabsElliptec::on_cmdOptimizeMotors_clicked()
 
     enableDialog(false);
     ui.cmdCancelCleaning->setEnabled(true);
-    ui.lblProgress->setText("Cleaning and optimizing motors is running. Please wait for 5-10 minutes.");
+    ui.lblProgress->setText("Cleaning and optimizing motors is running. Please wait for 20-40 minutes.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
     ui.buttonBox->setDisabled(true);
@@ -142,7 +142,7 @@ void DialogThorlabsElliptec::on_cmdCleanMechanics_clicked()
 
     enableDialog(false);
     ui.cmdCancelCleaning->setEnabled(true);
-    ui.lblProgress->setText("Cleaning mechanics is running. Please wait for 5-10 minutes.");
+    ui.lblProgress->setText("Cleaning mechanics is running. Please wait for 20-40 minutes.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
     ui.buttonBox->setDisabled(true);
