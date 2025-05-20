@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "SerialIO" for itom software
+    Plugin "ThorlabsElliptec" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,46 +20,37 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETSERIALIO_H
-#define DOCKWIDGETSERIALIO_H
+#pragma once
 
-#include "common/sharedStructures.h"
-#include "common/sharedStructuresQt.h"
-#include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
+#include "common/addInInterface.h"
 
-#include "ui_dockWidgetSerialIO.h"
-
-#include <QtGui>
-#include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
-#include <qbytearray.h>
+#include <qwidget.h>
 
-class DockWidgetSerialIO : public ito::AbstractAddInDockWidget
+#include "ui_dockWidgetThorlabsElliptec.h"
+
+class DockWidgetThorlabsElliptec : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
-    public:
-        DockWidgetSerialIO(ito::AddInDataIO *dataIO);
-        ~DockWidgetSerialIO() {};
+public:
+    DockWidgetThorlabsElliptec(int uniqueID, ito::AddInActuator* actuator);
+    ~DockWidgetThorlabsElliptec(){};
 
-    private:
-        Ui::DockWidgetSerialIO ui;
-        bool m_inEditing;
+private:
+    Ui::DockWidgetThorlabsElliptec ui; //! Handle to the ui
 
-    signals:
+    void enableWidget(bool enabled);
 
-    public slots:
-        void parametersChanged(QMap<QString, ito::Param> params);
-//        void valuesChanged(QMap<QString, ito::Param> params);
-//        void uniqueIDChanged(const int uniqueID);
-        void serialLog(QByteArray data, QByteArray endline, bool incomingData);
-        void identifierChanged(const QString &identifier);
+    ito::AddInActuator* m_pActuator;
 
-    private slots:
-        void on_ClrButton_clicked();
-        void on_checkIgnoreEmpty_clicked();
+    bool m_inEditing;
+    bool m_firstRun;
+
+public slots:
+    void parametersChanged(QMap<QString, ito::Param> params);
+    void identifierChanged(const QString& identifier);
+    void dockWidgetVisibilityChanged(bool visible);
 };
-
-#endif

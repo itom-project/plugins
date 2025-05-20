@@ -23,6 +23,8 @@
 #include "dockWidgetSerialIO.h"
 
 #include "math.h"
+#include <qtime>
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 char getHexChar(int i)
 {
@@ -41,12 +43,6 @@ DockWidgetSerialIO::DockWidgetSerialIO(ito::AddInDataIO* dataIO) :
     AbstractAddInDockWidget(dataIO), m_inEditing(false)
 {
     ui.setupUi(this);
-
-    /*    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete
-    it
-    //    ui.lblName->setText(temp);
-        ui.lblID->setText(QString::number(uniqueID));
-        valuesChanged(params);*/
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +64,7 @@ void DockWidgetSerialIO::on_ClrButton_clicked()
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const char InOutChar)
+void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, bool incomingData)
 {
     if (ui.groupBox_3->isEnabled())
     {
@@ -208,7 +204,16 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
 
         if (!(ui.checkIgnoreEmpty->isChecked() && data.isEmpty() && endline.isEmpty()))
         {
-            ui.textTransfer->append(InOutChar + " " + text1 + text2 + text3);
+            QString timestring = QTime::currentTime().toString("hh:mm:ss.zzz");
+
+            if (incomingData)
+            {
+                ui.textTransfer->append(timestring + " << " + text1 + text2 + text3);
+            }
+            else
+            {
+                ui.textTransfer->append(timestring + " >> " + text1 + text2 + text3);
+            }
         }
     }
 }
