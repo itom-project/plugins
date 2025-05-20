@@ -63,11 +63,14 @@ public:
         const QString& unit,
         int numIndexedPositions,
         const QString supportedCmds,
-        int numMotors
+        int numMotors,
+        bool allowCleaning,
+        bool allowOptimization
     ) :
         m_modelId(modelId), m_name(name), m_description(description),
         m_indexed(indexed), m_linear(linear),
-        m_unit(unit), m_numIndexedPositions(numIndexedPositions), m_numMotors(numMotors)
+        m_unit(unit), m_numIndexedPositions(numIndexedPositions), m_numMotors(numMotors),
+        m_allowCleaning(allowCleaning), m_allowOptimization(allowOptimization)
     {
         if (!m_indexed)
         {
@@ -86,6 +89,8 @@ public:
     int m_modelId;
     QStringList m_supportedCmds;
     int m_numMotors;
+    bool m_allowCleaning;
+    bool m_allowOptimization;
 };
 
 //------------------------------------------------------------------------------

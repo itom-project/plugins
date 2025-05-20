@@ -32,7 +32,8 @@
 #include "paramEditorWidget.h"
 
 //------------------------------------------------------------------------------
-DialogThorlabsElliptec::DialogThorlabsElliptec(ito::AddInActuator* actuator) :
+DialogThorlabsElliptec::DialogThorlabsElliptec(
+    ito::AddInActuator* actuator, bool allowCleaning, bool allowOptimization) :
     AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pluginPointer(actuator)
 {
     ui.setupUi(this);
@@ -41,6 +42,8 @@ DialogThorlabsElliptec::DialogThorlabsElliptec(ito::AddInActuator* actuator) :
     ui.cmdCancelCleaning->setEnabled(false);
     ui.progressBar->setVisible(false);
     ui.lblProgress->setVisible(false);
+    ui.cmdCleanMechanics->setVisible(allowCleaning);
+    ui.cmdOptimizeMotors->setVisible(allowOptimization);
 };
 
 //------------------------------------------------------------------------------
@@ -58,19 +61,11 @@ void DialogThorlabsElliptec::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
         enableDialog(true);
 
-        QStringList freqSearchSupportedModels;
-        freqSearchSupportedModels << "ELL14"
-                                  << "ELL17"
-                                  << "ELL18"
-                                  << "ELL20";
-
         QString modelName = params["model"].getVal<const char*>();
+        int numMotors = params["numMotors"].getVal<int>();
 
-        if (!freqSearchSupportedModels.contains(modelName))
-        {
-            ui.btnSearch1->setEnabled(false);
-            ui.btnSearch2->setEnabled(false);
-        }
+        ui.btnSearch1->setVisible(numMotors >= 1);
+        ui.btnSearch2->setVisible(numMotors >= 2);
     }
 }
 
@@ -202,12 +197,16 @@ ito::RetVal DialogThorlabsElliptec::observeInvocation(ItomSharedSemaphore* waitC
     ito::RetVal retval;
     bool timeout = false;
     int aliveCounter = 20; // check alive every 10 seconds
+    bool alive;
 
     while (!timeout && waitCond->waitAndProcessEvents(500) == false)
     {
         aliveCounter--;
 
-        if (aliveCounter <= 0 && m_pluginPointer->isAlive() == false)
+        // alive is interally reset once it is requested. Therefore the or operator...
+        alive |= (m_pluginPointer->isAlive() > 0); 
+        
+        if (aliveCounter <= 0 && alive == false) 
         {
             retval += ito::RetVal(
                 ito::retError,
@@ -218,6 +217,7 @@ ito::RetVal DialogThorlabsElliptec::observeInvocation(ItomSharedSemaphore* waitC
         else if (aliveCounter < 0)
         {
             aliveCounter = 20;
+            alive = false;
         }
     }
 
@@ -286,7 +286,7 @@ void DialogThorlabsElliptec::on_btnResetDefaults_clicked()
     QSharedPointer<QVector<ito::ParamBase>> _dummy;
 
     enableDialog(false);
-    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.lblProgress->setText("Reset motor settings to defaults.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
     ui.buttonBox->setDisabled(true);
@@ -318,7 +318,7 @@ void DialogThorlabsElliptec::on_btnSearch2_clicked()
     mand->append(ito::ParamBase("motorIdx", ito::ParamBase::Int, 1));
 
     enableDialog(false);
-    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.lblProgress->setText("Search optimal motor frequencies for motor stage 2.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
     ui.buttonBox->setDisabled(true);
@@ -350,7 +350,7 @@ void DialogThorlabsElliptec::on_btnSearch1_clicked()
     mand->append(ito::ParamBase("motorIdx", ito::ParamBase::Int, 0));
 
     enableDialog(false);
-    ui.lblProgress->setText("Drive motor to home (zero) position.");
+    ui.lblProgress->setText("Search optimal motor frequencies for motor stage 1.");
     ui.progressBar->setVisible(true);
     ui.lblProgress->setVisible(true);
     ui.buttonBox->setDisabled(true);

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogFaulhaberMCS</name>
+    <name>DialogThorlabsElliptec</name>
     <message>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
@@ -13,7 +13,7 @@
     </message>
 </context>
 <context>
-    <name>DockWidgetFaulhaberMCS</name>
+    <name>DockWidgetThorlabsElliptec</name>
     <message>
         <source>Form</source>
         <translation type="unfinished"></translation>

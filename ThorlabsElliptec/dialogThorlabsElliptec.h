@@ -42,7 +42,7 @@ class DialogThorlabsElliptec : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
 public:
-    DialogThorlabsElliptec(ito::AddInActuator* actuator);
+    DialogThorlabsElliptec(ito::AddInActuator* actuator, bool allowCleaning, bool allowOptimization);
     ~DialogThorlabsElliptec();
 
     ito::RetVal applyParameters();
