@@ -61,7 +61,7 @@ ThorlabsElliptecInterface::ThorlabsElliptecInterface()
 Currently, this plugin supports the following devices: \n\
 ELL6, ELL9, ELL12, ELL14, ELL15, ELL17, ELL18, ELL20\n\
 \n\
-It could only be tested with the rotatory stage ELL14 and metric units. Devices with imperal units are only \n\
+It could only be tested with the rotatory stage ELL18 and metric units (ELL18/M). Devices with imperal units are only \n\
 partially supported.\n\
 \n\
 For properly adjusting the forward and backward frequencies, you can set them via the corresponding parameters \n\
