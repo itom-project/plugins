@@ -76,7 +76,7 @@ endif(BUILD_QTVERSION STREQUAL "Qt5")
 # AvantesAvaSpec
 itom_plugin_option(PLUGIN_AvantesAvaSpec)
 if(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
-        add_subdirectory(AvantesAvaSpec)
+    add_subdirectory(AvantesAvaSpec)
 endif(PLUGIN_AvantesAvaSpec AND PLUGIN_LIBUSB)
 
 # AVTVimba
