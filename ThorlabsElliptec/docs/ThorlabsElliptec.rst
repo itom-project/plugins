@@ -67,10 +67,8 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     *Value range: [0, 1], Default: 0*
 **comPort**: int, read-only
     
-    
     *Value range: [1, inf], Default: 11*
 **description**: str, read-only
-    
     
     *Match: "General", Default: "Rotation Stage"*
 **forwardFrequency1**: int
@@ -83,10 +81,8 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     *Value range: [4, inf], Unit: Hz, Default: 81889*
 **model**: str, read-only
     
-    
     *Match: "General", Default: "ELL18"*
 **name**: str, read-only
-    
     
     *Match: "General", Default: "ThorlabsElliptec"*
 **numMotors**: int, read-only
@@ -103,7 +99,6 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     
     *Value range: [-1, inf], Default: 398*
 **serial**: str, read-only
-    
     
     *Match: "Communication", Default: "11800036"*
 **travelRange**: int, read-only
@@ -146,7 +141,52 @@ Additional functions (exec functions)
 Exemplary usage from Python
 ===========================
 
-...
+.. code-block:: python
+    
+    # initialization of the device at its internal address 0x0.
+    # Address can be in the range 0x0-0xF.
+    serial = dataIO("SerialIO", port=1, baud=9600, endline="\r\n")
+    elliptec = actuator("ThorlabsElliptec", serial, address=0x0)
+
+    # to home the device, call the calib method for axis 0.
+    elliptec.calib(0)
+
+    # get the position (either in ° or mm, depending on the type of device.)
+    print("The current position is", elliptec.getPos(0))
+
+    # move the device relatively or absoluty
+    elliptec.setPosRel(0, 15)
+    elliptec.setPosAbs(0, 42)
+
+    # for tuning the frequencies there are the following parameters:
+    # * forwardFrequency1 in Hz
+    # * backwardFrequency1 in Hz
+    # * for stages with two motors:
+    # * forwardFrequency2 and backwardFrequency2
+    elliptec.setParam("forwardFrequency1", 89000)
+
+    if elliptec.getParam("numMotors") > 1:
+        elliptec.setParam("forwardFrequency2", 89000)
+
+    # the frequency will be adjusted to the next allowed value when it is changed.
+
+    # Depending on the type of stage, several additional methods are available 
+    # as 'exec' functions. They can mainly be used to clean the mechanics or 
+    # automatically tune the frequencies. Cleaning the motor of optimizing the 
+    # frequencies might take very long (20-40min):
+
+    # reset all frequencies to their defaults
+    elliptec.exec("resetDefaults")
+
+    # search a good set of frequency values for motor index 0 or 1:
+    elliptec.exec("searchFrequencies", 0) # or 1
+
+    # cleaning the mechanics or use a cleaning run to finally optimize the frequencies
+    elliptec.exec("cleanMechanics")
+    elliptec.exec("optimizeMotors")
+
+    # interrupting the cleaning and optimization runs can be done by triggering 
+    # the KeyboardInterrupt of Python.
 
 Changelog
 ==========
