@@ -21,6 +21,8 @@
 
 #include "dockWidgetSmarActMCS2.h"
 
+#include "SmarActControl.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
