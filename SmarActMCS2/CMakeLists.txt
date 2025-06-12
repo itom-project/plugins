@@ -34,7 +34,7 @@ if(SMARACT_MCS2_DIR)
     if(WIN32)
         find_path(SMARACT_MCS2_INCLUDE_DIR "SmarActControl.h" PATHS ${SMARACT_MCS2_DIR} PATH_SUFFIXES "SDK/C/include")
         # find_path(SMARACT_MCS2_DIR "SmarActControlConstants.h" PATHS ${SMARACT_MCS2_DIR} PATH_SUFFIXES "SDK/C/include")
-        find_library(SMARACT_MCS2_LIBRARY "SmarActCTL" PATHS ${SMARACT_MCS2_DIR} PATH_SUFFIXES "SDK/C/lib")
+        find_library(SMARACT_MCS2_LIBRARY "SmarActCTL" PATHS ${SMARACT_MCS2_DIR} PATH_SUFFIXES "SDK/C/lib64")
     endif(WIN32)
 endif()
 
