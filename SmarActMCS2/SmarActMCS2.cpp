@@ -21,7 +21,11 @@
 
 #include "dockWidgetSmarActMCS2.h"
 
+#include <iostream>
+
 #include "SmarActControl.h"
+
+QList<QString> SmarActMCS2::openedDevices = QList<QString>();
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
@@ -49,8 +53,15 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_license = QObject::tr("The plugin's license string");
     m_aboutThis = QObject::tr(GITVERSION);
 
-    //add mandatory and optional parameters for the initialization here.
-    //append them to m_initParamsMand or m_initParamsOpt.
+    //optional parameter
+    m_initParamsOpt.append(ito::Param(
+        "serialNo",
+        ito::ParamBase::String,
+        "",
+        tr("Serial number of the device to be loaded. If empty, the first device that can be "
+           "opened will be opened. (e.g.: network:sn:MCS2-00012345")
+            .toLatin1()
+            .data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -92,10 +103,68 @@ ito::RetVal SmarActMCS2Interface::closeThisInst(ito::AddInBase **addInInst)
 */
 SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(3)
 {
+    ito::IntMeta* imeta;
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SmarActMCS2", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_params.insert( "async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+    m_params.insert(
+        "async",
+        ito::Param(
+            "async",
+            ito::ParamBase::Int,
+            0,
+            1,
+            m_async,
+            tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+
+    paramVal = ito::Param(
+        "serialNumber",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Serial number.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "deviceName",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Device Name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "interfaceType",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "unknown",
+        tr("Interface Type.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "noOfBusModules",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        100,
+        0,
+        tr("Number of Bus Modules.")
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device info"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "noOfChannels",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        100,
+        0,
+        tr("Number of Channels.")
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device info"));
+    m_params.insert(paramVal.getName(), paramVal);
 
     //initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0,m_nrOfAxes);
@@ -124,6 +193,136 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    SA_CTL_Result_t result;
+
+    QString serialNo = paramsOpt->at(0).getVal<const char*>();
+
+    if (openedDevices.contains(serialNo))
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            1,
+            QObject::tr("Device at SerialNo %1 is already connected.")
+                .arg(serialNo)
+                .toLatin1()
+                .data());
+    }
+
+    char deviceList[1024];
+    size_t ioDeviceListLen = sizeof(deviceList);
+
+    if (!retValue.containsError())
+        {
+        result = SA_CTL_FindDevices("", deviceList, &ioDeviceListLen);
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue = ito::RetVal(
+                ito::retError,
+                0,
+                tr("MCS2 failed to find devices.")
+                    .toLatin1()
+                    .data());
+        }
+        if (strlen(deviceList) == 0)
+        {
+            retValue =
+                ito::RetVal(ito::retError, 0, tr("MCS2 no devices found.").toLatin1().data());
+        }
+    }
+
+    char* ptr;
+    char* snBuf;
+   
+    if (!retValue.containsError())
+    {
+        snBuf = strtok_s(deviceList, "\n", &ptr);
+
+        if (serialNo != "")
+        {
+            bool matched = false;
+            while (snBuf != nullptr)
+            {
+                if (snBuf == serialNo)
+                {
+                    matched = true;
+                    break;
+                }
+                snBuf = strtok_s(nullptr, "\n", &ptr);
+            }
+
+            if (matched == false)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 could not find given serial-number: \"%1\".\n").arg(serialNo).toLatin1().data());
+            }
+        }
+    }
+
+    if (!retValue.containsError())
+    {        
+        result = SA_CTL_Open(&m_insrumentHdl, snBuf, "");
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("MCS2 failed to open \"%1\".\n").arg(snBuf).toLatin1().data());
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        m_params["serialNumber"].setVal<char*>(snBuf);
+        openedDevices.append(snBuf);
+
+        int32_t type, state, noOfBusModules, noOfChannels, num;
+        char buf[SA_CTL_STRING_MAX_LENGTH + 1];
+        size_t ioStringSize = sizeof(buf);
+        
+        result =
+            SA_CTL_GetProperty_s(m_insrumentHdl, 0, SA_CTL_PKEY_DEVICE_NAME, buf, &ioStringSize);
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+        }
+        m_params["deviceName"].setVal<char*>(buf);
+
+        result = SA_CTL_GetProperty_i32(m_insrumentHdl, 0, SA_CTL_PKEY_INTERFACE_TYPE, &type, 0);
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+        }
+        else
+        {
+            if (type == SA_CTL_INTERFACE_USB)
+                m_params["interfaceType"].setVal<char*>(const_cast<char*>("USB"));
+            else if (type == SA_CTL_INTERFACE_ETHERNET)
+                m_params["interfaceType"].setVal<char*>(const_cast<char*>("ETHERNET"));
+        }
+
+        result = SA_CTL_GetProperty_i32(
+            m_insrumentHdl, 0, SA_CTL_PKEY_NUMBER_OF_BUS_MODULES, &noOfBusModules, 0);
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+        }
+        m_params["noOfBusModules"].setVal<int>(noOfBusModules);
+
+        result = SA_CTL_GetProperty_i32(
+            m_insrumentHdl, 0, SA_CTL_PKEY_NUMBER_OF_CHANNELS, &noOfChannels, 0);
+        if (result != SA_CTL_ERROR_NONE)
+        {
+            retValue += ito::RetVal(
+                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+        }
+        m_params["noOfChannels"].setVal<int>(noOfChannels);
+    }
 
     //steps todo:
     // - get all initialization parameters
@@ -161,6 +360,9 @@ ito::RetVal SmarActMCS2::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+
+    SA_CTL_Close(m_insrumentHdl);
+    openedDevices.removeOne(m_params["serialNumber"].getVal<char*>());
 
     //todo:
     // - disconnect the device if not yet done

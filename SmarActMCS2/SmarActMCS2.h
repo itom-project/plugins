@@ -12,6 +12,8 @@
 #include <qsharedpointer.h>
 #include "dialogSmarActMCS2.h"
 
+#include "SmarActControl.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    SmarActMCS2Interface
@@ -61,6 +63,10 @@ class SmarActMCS2 : public ito::AddInActuator
     private:
         int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
         int m_nrOfAxes;
+
+        SA_CTL_DeviceHandle_t m_insrumentHdl;
+
+        static QList<QString> openedDevices;
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
