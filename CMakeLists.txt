@@ -531,6 +531,12 @@ if(PLUGIN_ThorlabsElliptec)
     add_subdirectory(ThorlabsElliptec)
 endif(PLUGIN_ThorlabsElliptec)
 
+# UhlRegister
+itom_plugin_option(PLUGIN_UhlRegister)
+if(PLUGIN_UhlRegister)
+    add_subdirectory(UhlRegister)
+endif(PLUGIN_UhlRegister)
+
 # UhlText
 itom_plugin_option(PLUGIN_UhlText)
 if(PLUGIN_UhlText)
