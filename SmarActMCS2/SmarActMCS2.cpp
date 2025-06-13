@@ -232,7 +232,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
 
     char* ptr;
-    char* snBuf;
+    char* snBuf = nullptr;
    
     if (!retValue.containsError())
     {
@@ -273,12 +273,13 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
     }
 
+    int32_t type, noOfBusModules, noOfChannels;
+
     if (!retValue.containsError())
     {
         m_params["serialNumber"].setVal<char*>(snBuf);
         openedDevices.append(snBuf);
 
-        int32_t type, state, noOfBusModules, noOfChannels, num;
         char buf[SA_CTL_STRING_MAX_LENGTH + 1];
         size_t ioStringSize = sizeof(buf);
         
@@ -289,8 +290,12 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retValue += ito::RetVal(
                 ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
         }
-        m_params["deviceName"].setVal<char*>(buf);
+        else
+            m_params["deviceName"].setVal<char*>(buf);
+    }
 
+    if (!retValue.containsError())
+    {
         result = SA_CTL_GetProperty_i32(m_insrumentHdl, 0, SA_CTL_PKEY_INTERFACE_TYPE, &type, 0);
         if (result != SA_CTL_ERROR_NONE)
         {
@@ -304,7 +309,10 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             else if (type == SA_CTL_INTERFACE_ETHERNET)
                 m_params["interfaceType"].setVal<char*>(const_cast<char*>("ETHERNET"));
         }
+    }
 
+    if (!retValue.containsError())
+    {
         result = SA_CTL_GetProperty_i32(
             m_insrumentHdl, 0, SA_CTL_PKEY_NUMBER_OF_BUS_MODULES, &noOfBusModules, 0);
         if (result != SA_CTL_ERROR_NONE)
@@ -312,8 +320,12 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retValue += ito::RetVal(
                 ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
         }
-        m_params["noOfBusModules"].setVal<int>(noOfBusModules);
+        else
+            m_params["noOfBusModules"].setVal<int>(noOfBusModules);
+    }
 
+    if (!retValue.containsError())
+    {
         result = SA_CTL_GetProperty_i32(
             m_insrumentHdl, 0, SA_CTL_PKEY_NUMBER_OF_CHANNELS, &noOfChannels, 0);
         if (result != SA_CTL_ERROR_NONE)
@@ -321,19 +333,40 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retValue += ito::RetVal(
                 ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
         }
-        m_params["noOfChannels"].setVal<int>(noOfChannels);
+        else
+        {
+            m_params["noOfChannels"].setVal<int>(noOfChannels);
+            m_nrOfAxes = noOfChannels;
+        }
+            
+
+        setIdentifier(snBuf);
     }
 
-    //steps todo:
-    // - get all initialization parameters
-    // - try to detect your device
-    // - establish a connection to the device
-    // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
-    // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - set m_nrOfAxes to the number of axes
-    // - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding values
-    // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
-    // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
+    // GET BASE UNIT OF CHANNEL:
+    /*int32_t baseUnit;
+    result =
+        SA_CTL_GetProperty_i32(m_insrumentHdl, channel, SA_CTL_PKEY_POS_BASE_UNIT, &baseUnit, 0);
+    if (result != SA_CTL_ERROR_NONE)
+    {
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("MCS2 failed to get base unit of axis \"%1\".\n").arg(axis[i]).toLatin1().data());
+    }*/
+
+    if (!retValue.containsError())
+    {
+        for (int i = 0; i < m_nrOfAxes; i++)
+        {
+            /*QSharedPointer<double> pos;
+            retValue += getPos(i, pos, nullptr);
+            m_currentPos[i] = *pos;
+            m_targetPos[i] = *pos;*/
+            m_currentStatus[i] =
+                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+        }
+    }
 
 
     if (!retValue.containsError())
@@ -363,10 +396,6 @@ ito::RetVal SmarActMCS2::close(ItomSharedSemaphore *waitCond)
 
     SA_CTL_Close(m_insrumentHdl);
     openedDevices.removeOne(m_params["serialNumber"].getVal<char*>());
-
-    //todo:
-    // - disconnect the device if not yet done
-    // - this function is considered to be the "inverse" of init.
 
     if (waitCond)
     {
@@ -500,7 +529,9 @@ ito::RetVal SmarActMCS2::calib(const int axis, ItomSharedSemaphore *waitCond)
 ito::RetVal SmarActMCS2::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("calibration not possible").toLatin1().data());
+    ito::RetVal retValue(ito::retOk);
+
+    SA_CTL_Result_t result;
 
     if(isMotorMoving())
     {
@@ -509,10 +540,116 @@ ito::RetVal SmarActMCS2::calib(const QVector<int> axis, ItomSharedSemaphore *wai
 
     if (!retValue.containsError())
     {
-        //todo:
-        //start calibrating the given axes and don't forget to regularly call setAlive().
-        //this is important if the calibration needs more time than the timeout time of itom (e.g. 5sec).
-        //itom regularly checks the alive flag and only drops to a timeout if setAlive() is not regularly called (at least all 3-4 secs).
+        for (int i = 0; i < axis.size(); i++)
+        {
+            if (i < 0 || i >= m_nrOfAxes)
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            }
+            else
+            {
+                //reference in MCS2 is the calibration function
+
+                result = SA_CTL_SetProperty_i32(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_REFERENCING_OPTIONS, 0);
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to do calibration of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+
+                result = SA_CTL_Reference(m_insrumentHdl, axis[i], 0);
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to do calibration of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+            }
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        bool done = false;
+        bool timeout = false;
+        QElapsedTimer timer;
+        QMutex waitMutex;
+        QWaitCondition waitCondition;
+        long delay = 100; //[ms]
+        const int timeoutMS = 60000; //Reference can take a lot of time
+
+        timer.start();
+
+        while (!done && !timeout)
+        {
+            done = true; // assume all axes at target
+
+            for (int i = 0; i < axis.size(); i++)
+            {
+                SA_CTL_Result_t result;
+                int32_t state;
+                result = SA_CTL_GetProperty_i32(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
+                if (result == SA_CTL_ERROR_NONE)
+                {
+                    // usebitmaskingto determine thechannelsmovement state
+                    if (!((state & SA_CTL_CH_STATE_BIT_REFERENCING) == 0))
+                    {
+                        setStatus(
+                            m_currentStatus[axis[i]],
+                            ito::actuatorMoving,
+                            ito::actSwitchesMask | ito::actStatusMask);
+                        done = false;
+                    }
+                    else
+                    {
+                        setStatus(
+                            m_currentStatus[axis[i]],
+                            ito::actuatorAtTarget,
+                            ito::actSwitchesMask | ito::actStatusMask);
+                    }
+                }
+            }
+
+            // emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
+            sendStatusUpdate(false);
+
+            // short delay
+            waitMutex.lock();
+            waitCondition.wait(&waitMutex, delay);
+            waitMutex.unlock();
+
+            // raise the alive flag again, this is necessary such that itom does not drop into a
+            // timeout if the positioning needs more time than the allowed timeout time.
+            setAlive();
+
+            if (timeoutMS > -1)
+            {
+                if (timer.elapsed() > timeoutMS)
+                    timeout = true;
+            }
+        }
+
+        if (timeout)
+        {
+            // timeout occurred, set the status of all currently moving axes to timeout
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+            retValue += ito::RetVal(ito::retError, 9999, "timeout occurred");
+            sendStatusUpdate(true);
+        }
     }
 
     if (waitCond)
@@ -603,7 +740,7 @@ ito::RetVal SmarActMCS2::getStatus(QSharedPointer<QVector<int> > status, ItomSha
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getPos
 /*!
-    returns the current position (in mm or degree) of the given axis
+    returns the current position in pico meter [pm] for linear positioners or nano degree [ndeg] for rotatory positioners of the given axis
 */
 ito::RetVal SmarActMCS2::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
 {
@@ -624,25 +761,43 @@ ito::RetVal SmarActMCS2::getPos(const int axis, QSharedPointer<double> pos, Itom
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getPos
 /*!
-    returns the current position (in mm or degree) of all given axes
+    returns the current position in pico meter [pm] for linear positioners or nano degree [ndeg] for rotatory positioners of all given axes
 */
 ito::RetVal SmarActMCS2::getPos(QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    foreach (const int i, axis)
+    for (int i = 0; i < axis.size(); i++)
     {
-        if (i >= 0 && i < m_nrOfAxes)
+        if (axis[i] >= 0 && axis[i] < m_nrOfAxes)
         {
-            //obtain current position of axis i
-            //transform tempPos to angle
-            m_currentPos[i] = 0.0; //set m_currentPos[i] to the obtained position
-            (*pos)[i] = m_currentPos[i];
+            SA_CTL_Result_t result;
+
+            int64_t position;
+            result =
+                SA_CTL_GetProperty_i64(m_insrumentHdl, axis[i], SA_CTL_PKEY_POSITION, &position, 0);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 failed to get position of axis \"%1\".\n")
+                        .arg(axis[i])
+                        .toLatin1()
+                        .data());
+            }
+            m_currentPos[axis[i]] = position; 
+            (*pos)[i] = m_currentPos[axis[i]];
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(),i);
+            retValue += ito::RetVal::format(
+                ito::retError,
+                1,
+                tr("axis %i not available. Only axis between 0 and %i").toLatin1().data(),
+                i,
+                m_nrOfAxes - 1);
         }
     }
 
@@ -693,7 +848,7 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
     }
     else
     {
-        foreach(const int i, axis)
+        for (int i = 0; i < axis.size(); i++)
         {
             if (i < 0 || i >= m_nrOfAxes)
             {
@@ -701,7 +856,7 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
             }
             else
             {
-                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree
+                m_targetPos[axis[i]] = pos[i];
             }
         }
 
@@ -710,7 +865,38 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
             //set status of all given axes to moving and keep all flags related to the status and switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
-            //todo: start the movement
+            for (int i = 0; i < axis.size(); i++)
+            {
+                SA_CTL_Result_t result;
+
+                result = SA_CTL_SetProperty_i32(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_MOVE_MODE, SA_CTL_MOVE_MODE_CL_ABSOLUTE);
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to set absolute moving of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+                else
+                {
+                    result = SA_CTL_Move(m_insrumentHdl, axis[i], m_targetPos[axis[i]], 0);
+                }
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to start moving of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+            }
 
             //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
             sendTargetUpdate();
@@ -789,25 +975,57 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
     }
     else
     {
-        foreach(const int i, axis)
+        for (int i = 0; i < axis.size(); i++)
         {
             if (i < 0 || i >= m_nrOfAxes)
             {
-                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                retValue += ito::RetVal::format(
+                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
             }
             else
             {
-                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree
-                                      //(obtain the absolute position with respect to the given relative distances)
+                m_targetPos[axis[i]] = pos[i];
             }
         }
 
         if (!retValue.containsError())
         {
-            //set status of all given axes to moving and keep all flags related to the status and switches
+            // set status of all given axes to moving and keep all flags related to the status and
+            // switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
 
-            //todo: start the movement
+            for (int i = 0; i < axis.size(); i++)
+            {
+                SA_CTL_Result_t result;
+
+                result = SA_CTL_SetProperty_i32(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_MOVE_MODE, SA_CTL_MOVE_MODE_CL_RELATIVE);
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to set absolute moving of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+                else
+                {
+                    result = SA_CTL_Move(m_insrumentHdl, axis[i], m_targetPos[axis[i]], 0);
+                }
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to start moving of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+            }
 
             //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
             sendTargetUpdate();
@@ -878,23 +1096,32 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
 
     while (!done && !timeout)
     {
-        //todo: obtain the current position, status... of all given axes
-
         done = true; //assume all axes at target
-        motor = 0;
-        foreach(const int &i,axis)
-        {
-            m_currentPos[i] = 0.0; //todo: if possible, set the current position if axis i to its current position
 
-            if (1 /*axis i is still moving*/)
+        for (int i = 0; i < _axis.size(); i++)
+        {
+            SA_CTL_Result_t result;
+            int32_t state;
+            result = SA_CTL_GetProperty_i32(
+                m_insrumentHdl, _axis[i], SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
+            if (result == SA_CTL_ERROR_NONE)
             {
-                setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                done = false; //not done yet
-            }
-            else if (1 /*axis i is at target*/)
-            {
-                setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                done = false; //not done yet
+                // usebitmaskingto determine thechannelsmovement state
+                if (!((state & SA_CTL_CH_STATE_BIT_ACTIVELY_MOVING) == 0))
+                {
+                    setStatus(
+                        m_currentStatus[_axis[i]],
+                        ito::actuatorMoving,
+                        ito::actSwitchesMask | ito::actStatusMask);
+                    done = false;
+                }
+                else
+                {
+                    setStatus(
+                        m_currentStatus[_axis[i]],
+                        ito::actuatorAtTarget,
+                        ito::actSwitchesMask | ito::actStatusMask);
+                }
             }
         }
 
