@@ -65,6 +65,7 @@ class SmarActMCS2 : public ito::AddInActuator
         int m_nrOfAxes;
 
         SA_CTL_DeviceHandle_t m_insrumentHdl;
+        QVector<int> m_factor;
 
         static QList<QString> openedDevices;
 
@@ -97,6 +98,13 @@ class SmarActMCS2 : public ito::AddInActuator
 
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+
+        ito::RetVal execFunc(
+            const QString funcName,
+            QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+            QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+            QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+            ItomSharedSemaphore* waitCond = nullptr);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

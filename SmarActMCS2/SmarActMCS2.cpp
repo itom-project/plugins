@@ -19,6 +19,9 @@
 #include <qdatetime.h>
 #include <qwaitcondition.h>
 
+#include "common/helperCommon.h"
+#include "common/paramMeta.h"
+
 #include "dockWidgetSmarActMCS2.h"
 
 #include <iostream>
@@ -101,7 +104,7 @@ ito::RetVal SmarActMCS2Interface::closeThisInst(ito::AddInBase **addInInst)
     \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
     in this constructor or later in the init method
 */
-SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(3)
+SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 {
     ito::IntMeta* imeta;
 
@@ -166,10 +169,64 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(3)
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device info"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "velocity",
+        ito::ParamBase::DoubleArray,
+        NULL,
+        tr("Velocity of each axis, default 10 mm/s.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "acceleration",
+        ito::ParamBase::DoubleArray,
+        NULL,
+        tr("Acceleration of each axis, default 100 mm/s^2.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "baseUnit",
+        ito::ParamBase::IntArray | ito::ParamBase::Readonly,
+        NULL,
+        tr("Baseunit of Channel: (0) for none, (1) for millimeter and (2) for degree.")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "sensorPresent",
+        ito::ParamBase::IntArray | ito::ParamBase::Readonly,
+        NULL,
+        tr("Show if sensor is present (1) or not (0).")
+            .toLatin1()
+            .data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+
+    // register exec functions ------------------------------------
+
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>();
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+
+    // ASSUMING, that pnly 100 channels!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    pOpt << ito::Param("axis",
+                      ito::ParamBase::Int,
+                      0, 100, -1,
+                      tr("axis to perform SmarAct calibration").toLatin1().data());
+
+    registerExecFunc(
+        "SmaractCalibrate", pMand, pOpt, pOut, tr("Perform the SmarAct calibration function."));
+    pMand.clear();
+    pOpt.clear();
+    pOut.clear();
+
+    // end register exec functions --------------------------------
+
     //initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0,m_nrOfAxes);
     m_currentStatus.fill(0,m_nrOfAxes);
     m_targetPos.fill(0.0,m_nrOfAxes);
+    m_factor.fill(1, m_nrOfAxes);
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetSmarActMCS2 *dw = new DockWidgetSmarActMCS2(this);
@@ -337,35 +394,165 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         {
             m_params["noOfChannels"].setVal<int>(noOfChannels);
             m_nrOfAxes = noOfChannels;
+
+            m_currentPos.resize(m_nrOfAxes);
+            m_currentStatus.resize(m_nrOfAxes);
+            m_targetPos.resize(m_nrOfAxes);
+            m_factor.resize(m_nrOfAxes);
+
+            m_params["sensorPresent"].setMeta(
+                new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1), true);
+            int* sensorPresent = new int[m_nrOfAxes];
+
+            for (int i = 0; i < m_currentPos.size(); i++)
+            {
+                SA_CTL_Result_t result;
+
+                uint32_t channelState;
+                result = SA_CTL_GetProperty_i32(
+                    m_insrumentHdl, i, SA_CTL_PKEY_CHANNEL_STATE, (int32_t*)&channelState, 0);
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to get channel state of axis \"%1\".\n")
+                            .arg(i)
+                            .toLatin1()
+                            .data());
+                    break;
+                }
+                else
+                {
+                    sensorPresent[i] = ((channelState & SA_CTL_CH_STATE_BIT_SENSOR_PRESENT) != 0);
+                }
+            }
+            m_params["sensorPresent"].setVal<int*>(sensorPresent, m_nrOfAxes);
         }
-            
+
 
         setIdentifier(snBuf);
     }
 
-    // GET BASE UNIT OF CHANNEL:
-    /*int32_t baseUnit;
-    result =
-        SA_CTL_GetProperty_i32(m_insrumentHdl, channel, SA_CTL_PKEY_POS_BASE_UNIT, &baseUnit, 0);
-    if (result != SA_CTL_ERROR_NONE)
+    // get base unit and factor of each channel:
+    if (!retValue.containsError())
     {
-        retValue += ito::RetVal(
-            ito::retError,
-            0,
-            tr("MCS2 failed to get base unit of axis \"%1\".\n").arg(axis[i]).toLatin1().data());
-    }*/
+        m_params["baseUnit"].setMeta(
+            new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1), true);
+        int32_t buf;
+        int* baseUnit = new int[m_nrOfAxes];
+        for (int i = 0; i < m_nrOfAxes; ++i)
+        {
+            result = SA_CTL_GetProperty_i32(m_insrumentHdl, i, SA_CTL_PKEY_POS_BASE_UNIT, &buf, 0);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 failed to get base unit of axis \"%1\".\n").arg(i).toLatin1().data());
+            }
+            else
+            {
+                switch (buf)
+                {
+                case 0:
+                    baseUnit[i] = 0;
+                    m_factor[i] = 1;
+                    break;
+                case 2: //millimeter to pm
+                    baseUnit[i] = 1;
+                    m_factor[i] = 1e9;
+                    break;
+                case 3: //degree to nano degree
+                    baseUnit[i] = 2;
+                    m_factor[i] = 1e9;
+                    break;
+                default:
+                    baseUnit[i] = 0;
+                    m_factor[i] = 1;
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 got wrong baseUnit: \"%1\".\n")
+                            .arg(buf)
+                            .toLatin1()
+                            .data());
+                    break;
+                }
+                m_params["baseUnit"].setVal<int*>(baseUnit, m_nrOfAxes);
+            }
+        }
+    }
 
     if (!retValue.containsError())
     {
-        for (int i = 0; i < m_nrOfAxes; i++)
+        for (int i = 0; i < m_currentPos.size(); i++)
         {
-            /*QSharedPointer<double> pos;
-            retValue += getPos(i, pos, nullptr);
-            m_currentPos[i] = *pos;
-            m_targetPos[i] = *pos;*/
-            m_currentStatus[i] =
-                ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+            if (m_params["sensorPresent"].getVal<int*>()[i] != 0)
+            {
+                SA_CTL_Result_t result;
+
+                int64_t position;
+                result =
+                    SA_CTL_GetProperty_i64(m_insrumentHdl, i, SA_CTL_PKEY_POSITION, &position, 0);
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to get position of axis \"%1\".\n")
+                            .arg(i)
+                            .toLatin1()
+                            .data());
+                    break;
+                }
+                else
+                {
+                    m_currentPos[i] = static_cast<double>(position) / m_factor[i];
+                    m_currentStatus[i] =
+                        ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable;
+                    m_targetPos[i] = static_cast<double>(position) / m_factor[i];
+                }
+            }
         }
+    }
+
+    if (!retValue.containsError())
+    {
+        m_params["velocity"].setMeta(new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1), true);
+        m_params["acceleration"].setMeta(
+            new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1), true);
+        double* velocity = new double[m_nrOfAxes];
+        double* acceleration = new double[m_nrOfAxes];
+        for (int i = 0; i < m_nrOfAxes; ++i)
+        {
+            //set default value of velocity and acceleration
+            velocity[i] = 10; // default value 10 mm/s (10 degree/s)
+            result = SA_CTL_SetProperty_i64(
+                m_insrumentHdl, i, SA_CTL_PKEY_MOVE_VELOCITY, velocity[i] * m_factor[i]);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 error setting velocity.\n").toLatin1().data());
+                break;
+            }
+
+            acceleration[i] = 100; //default value 100 mm/s^2 (100 degree/s^2)
+            result = SA_CTL_SetProperty_i64(
+                m_insrumentHdl, i, SA_CTL_PKEY_MOVE_ACCELERATION, acceleration[i] * m_factor[i]);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError, 0, tr("MCS2 error setting acceleration.\n").toLatin1().data());
+                break;
+            }
+        }
+        m_params["velocity"].setVal<double*>(velocity, m_nrOfAxes);
+        m_params["acceleration"].setVal<double*>(acceleration, m_nrOfAxes);
+        DELETE_AND_SET_NULL_ARRAY(velocity);
+        DELETE_AND_SET_NULL_ARRAY(acceleration);
     }
 
 
@@ -453,6 +640,7 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     int index;
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
+    SA_CTL_Result_t result;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -481,15 +669,74 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         if(key == "async")
         {
             m_async = val->getVal<int>();
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
         }
-        else if(key == "demoKey2")
+        else if (key == "velocity")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
+            if (val->getLen() == m_nrOfAxes)
+            {
+                double* data = val->getVal<double*>();
+                for (int i = 0; i < m_nrOfAxes; ++i)
+                {
+                    result = SA_CTL_SetProperty_i64(
+                        m_insrumentHdl,
+                        i,
+                        SA_CTL_PKEY_MOVE_VELOCITY, static_cast<int64_t>(data[i] * m_factor[i]));
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 error setting velocity.\n").toLatin1().data());
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("array (%1) must be the same size like the number of axis (%2).\n")
+                        .arg(val->getLen())
+                        .arg(m_nrOfAxes)
+                        .toLatin1()
+                        .data());
+            }
         }
-        else
+        else if (key == "acceleration")
+        {
+            if (val->getLen() == m_nrOfAxes)
+            {
+                double* data = val->getVal<double*>();
+                for (int i = 0; i < m_nrOfAxes; ++i)
+                {
+                    result = SA_CTL_SetProperty_i64(
+                        m_insrumentHdl,
+                        i,
+                        SA_CTL_PKEY_MOVE_ACCELERATION, static_cast<int64_t>(data[i] * m_factor[i]));
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 error setting acceleration.\n").toLatin1().data());
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("array (%1) must be the same size like the number of axis (%2).\n")
+                        .arg(val->getLen())
+                        .arg(m_nrOfAxes)
+                        .toLatin1()
+                        .data());
+            }
+        }
+        if (!retValue.containsError())
         {
             //all parameters that don't need further checks can simply be assigned
             //to the value in m_params (the rest is already checked above)
@@ -542,7 +789,7 @@ ito::RetVal SmarActMCS2::calib(const QVector<int> axis, ItomSharedSemaphore *wai
     {
         for (int i = 0; i < axis.size(); i++)
         {
-            if (i < 0 || i >= m_nrOfAxes)
+            if (axis[i] < 0 || axis[i] >= m_nrOfAxes)
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
@@ -686,26 +933,10 @@ ito::RetVal SmarActMCS2::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitC
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if(isMotorMoving())
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Additional actions are not possible.").toLatin1().data());
-    }
-    else
-    {
-        foreach(const int &i,axis)
-        {
-            if (i >= 0 && i < m_nrOfAxes)
-            {
-                //todo: set axis i to origin (current position is considered to be the 0-position).
-            }
-            else
-            {
-                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
-            }
-        }
-
-        retValue += updateStatus();
-    }
+    retValue += ito::RetVal(
+        ito::retWarning,
+        0,
+        tr("Not needed and not implemented for this actuator.").toLatin1().data());
 
     if (waitCond)
     {
@@ -761,7 +992,7 @@ ito::RetVal SmarActMCS2::getPos(const int axis, QSharedPointer<double> pos, Itom
 //----------------------------------------------------------------------------------------------------------------------------------
 //! getPos
 /*!
-    returns the current position in pico meter [pm] for linear positioners or nano degree [ndeg] for rotatory positioners of all given axes
+    returns the current position in meter for linear positioners or degree for rotatory positioners of all given axes
 */
 ito::RetVal SmarActMCS2::getPos(QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
@@ -770,6 +1001,14 @@ ito::RetVal SmarActMCS2::getPos(QVector<int> axis, QSharedPointer<QVector<double
 
     for (int i = 0; i < axis.size(); i++)
     {
+        if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+        {
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("MCS2 failed to get position of axis \"%1\": Sensor not present\n").arg(axis[i]).toLatin1().data());
+            continue;
+        }
         if (axis[i] >= 0 && axis[i] < m_nrOfAxes)
         {
             SA_CTL_Result_t result;
@@ -787,8 +1026,11 @@ ito::RetVal SmarActMCS2::getPos(QVector<int> axis, QSharedPointer<QVector<double
                         .toLatin1()
                         .data());
             }
-            m_currentPos[axis[i]] = position; 
-            (*pos)[i] = m_currentPos[axis[i]];
+            else
+            {
+                m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[i];
+                (*pos)[i] = m_currentPos[axis[i]];
+            }
         }
         else
         {
@@ -850,13 +1092,13 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
     {
         for (int i = 0; i < axis.size(); i++)
         {
-            if (i < 0 || i >= m_nrOfAxes)
+            if (axis[i] < 0 || axis[i] >= m_nrOfAxes)
             {
-                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
             }
             else
             {
-                m_targetPos[axis[i]] = pos[i];
+                m_targetPos[axis[i]] = pos[i] * m_factor[axis[i]];
             }
         }
 
@@ -977,14 +1219,14 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
     {
         for (int i = 0; i < axis.size(); i++)
         {
-            if (i < 0 || i >= m_nrOfAxes)
+            if (axis[i] < 0 || axis[i] >= m_nrOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
             }
             else
             {
-                m_targetPos[axis[i]] = pos[i];
+                m_targetPos[axis[i]] = pos[i] * m_factor[axis[i]];
             }
         }
 
@@ -1225,6 +1467,165 @@ void SmarActMCS2::dockWidgetVisibilityChanged(bool visible)
             disconnect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
         }
     }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal SmarActMCS2::execFunc(
+    const QString funcName,
+    QSharedPointer<QVector<ito::ParamBase>> paramsMand,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOpt,
+    QSharedPointer<QVector<ito::ParamBase>> paramsOut,
+    ItomSharedSemaphore* waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+
+    ito::ParamBase* param1 = nullptr;
+
+    if (funcName == "SmaractCalibrate")
+    {
+        param1 = ito::getParamByName(&(*paramsOpt), "axis", &retValue);
+
+        int axisVal = param1->getVal<int>();
+
+        QVector<int> axis;
+
+        if (axisVal != -1)
+        {
+            axis.push_back(axisVal);
+        }
+        else
+        {
+            for (int i = 0; i < m_nrOfAxes; ++i)
+            {
+                axis.push_back(i);
+            }
+        }
+
+        
+
+        SA_CTL_Result_t result;
+
+        for (int i = 0; i < axis.size(); i++)
+        {
+            if (axis[i] < 0 || axis[i] > m_nrOfAxes)
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+            }
+            else
+            {
+                // reference in MCS2 is the calibration function
+
+                result = SA_CTL_SetProperty_i32(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_CALIBRATION_OPTIONS, 0);
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to do Smaract calibration of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+
+                result = SA_CTL_Calibrate(m_insrumentHdl, axis[i], 0);
+
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to do Smaract calibration of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+            }
+        }
+        if (!retValue.containsError())
+        {
+            bool done = false;
+            bool timeout = false;
+            QElapsedTimer timer;
+            QMutex waitMutex;
+            QWaitCondition waitCondition;
+            long delay = 100; //[ms]
+            const int timeoutMS = 60000; // Reference can take a lot of time
+
+            timer.start();
+
+            while (!done && !timeout)
+            {
+                done = true; // assume all axes at target
+
+                for (int i = 0; i < axis.size(); i++)
+                {
+                    SA_CTL_Result_t result;
+                    int32_t state;
+                    result = SA_CTL_GetProperty_i32(
+                        m_insrumentHdl, axis[i], SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
+                    if (result == SA_CTL_ERROR_NONE)
+                    {
+                        // usebitmaskingto determine thechannelsmovement state
+                        if (!((state & SA_CTL_CH_STATE_BIT_CALIBRATING) == 0))
+                        {
+                            setStatus(
+                                m_currentStatus[axis[i]],
+                                ito::actuatorMoving,
+                                ito::actSwitchesMask | ito::actStatusMask);
+                            done = false;
+                        }
+                        else
+                        {
+                            setStatus(
+                                m_currentStatus[axis[i]],
+                                ito::actuatorAtTarget,
+                                ito::actSwitchesMask | ito::actStatusMask);
+                        }
+                    }
+                }
+
+                // emit actuatorStatusChanged with both m_currentStatus and m_currentPos as
+                // arguments
+                sendStatusUpdate(false);
+
+                // short delay
+                waitMutex.lock();
+                waitCondition.wait(&waitMutex, delay);
+                waitMutex.unlock();
+
+                // raise the alive flag again, this is necessary such that itom does not drop into a
+                // timeout if the positioning needs more time than the allowed timeout time.
+                setAlive();
+
+                if (timeoutMS > -1)
+                {
+                    if (timer.elapsed() > timeoutMS)
+                        timeout = true;
+                }
+            }
+
+            if (timeout)
+            {
+                // timeout occurred, set the status of all currently moving axes to timeout
+                replaceStatus(axis, ito::actuatorMoving, ito::actuatorTimeout);
+                retValue += ito::RetVal(ito::retError, 9999, "timeout occurred");
+                sendStatusUpdate(true);
+            }
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
