@@ -141,7 +141,7 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
         "interfaceType",
         ito::ParamBase::String | ito::ParamBase::Readonly,
         "unknown",
-        tr("Interface Type.").toLatin1().data());
+        tr("Interface Type (USB or ETHERNET).").toLatin1().data());
     paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -149,25 +149,27 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
         "noOfBusModules",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        100,
+        std::numeric_limits<ito::int32>::max(),
         0,
         tr("Number of Bus Modules.")
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device info"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int32>::max(), 1, "Device info"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "noOfChannels",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        100,
+        std::numeric_limits<ito::int32>::max(),
         0,
         tr("Number of Channels.")
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Device info"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int32>::max(), 1, "Device info"));
     m_params.insert(paramVal.getName(), paramVal);
+
+    // Control Parameters
 
     paramVal = ito::Param(
         "velocity",
@@ -201,26 +203,28 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    // Limits Parameters
 
-    // register exec functions ------------------------------------
+    paramVal = ito::Param(
+        "useLimits",
+        ito::ParamBase::IntArray,
+        NULL,
+        tr("Use axes limits of axis (1) or not (0).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-    QVector<ito::Param> pMand = QVector<ito::Param>();
-    QVector<ito::Param> pOpt = QVector<ito::Param>();
-    QVector<ito::Param> pOut = QVector<ito::Param>();
+    paramVal = ito::Param(
+        "limitUpper",
+        ito::ParamBase::DoubleArray,
+        NULL,
+        tr("Upper limits of axes.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-    // ASSUMING, that pnly 100 channels!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    pOpt << ito::Param("axis",
-                      ito::ParamBase::Int,
-                      0, 100, -1,
-                      tr("axis to perform SmarAct calibration").toLatin1().data());
-
-    registerExecFunc(
-        "SmaractCalibrate", pMand, pOpt, pOut, tr("Perform the SmarAct calibration function."));
-    pMand.clear();
-    pOpt.clear();
-    pOut.clear();
-
-    // end register exec functions --------------------------------
+    paramVal = ito::Param(
+        "limitLower",
+        ito::ParamBase::DoubleArray,
+        NULL,
+        tr("Lower limits of axes.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     //initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0,m_nrOfAxes);
@@ -401,7 +405,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             m_factor.resize(m_nrOfAxes);
 
             m_params["sensorPresent"].setMeta(
-                new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1), true);
+                new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1, "Control"), true);
             int* sensorPresent = new int[m_nrOfAxes];
 
             for (int i = 0; i < m_currentPos.size(); i++)
@@ -438,7 +442,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (!retValue.containsError())
     {
         m_params["baseUnit"].setMeta(
-            new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1), true);
+            new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1, "Control"), true);
         int32_t buf;
         int* baseUnit = new int[m_nrOfAxes];
         for (int i = 0; i < m_nrOfAxes; ++i)
@@ -519,9 +523,10 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retValue.containsError())
     {
-        m_params["velocity"].setMeta(new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1), true);
+        m_params["velocity"].setMeta(
+            new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1, "Control"), true);
         m_params["acceleration"].setMeta(
-            new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1), true);
+            new ito::DoubleArrayMeta(0, 100, 0.001, 0, m_nrOfAxes, 1, "Control"), true);
         double* velocity = new double[m_nrOfAxes];
         double* acceleration = new double[m_nrOfAxes];
         for (int i = 0; i < m_nrOfAxes; ++i)
@@ -553,6 +558,71 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["acceleration"].setVal<double*>(acceleration, m_nrOfAxes);
         DELETE_AND_SET_NULL_ARRAY(velocity);
         DELETE_AND_SET_NULL_ARRAY(acceleration);
+    }
+
+    if (!retValue.containsError())
+    {
+        m_params["useLimits"].setMeta(
+            new ito::IntArrayMeta(0, 1, 1, 0, m_nrOfAxes, 1, "Limits"), true);
+        m_params["limitUpper"].setMeta(
+            new ito::DoubleArrayMeta(
+                -std::numeric_limits<double>::max(),
+                std::numeric_limits<double>::max(),
+                0.001,
+                0,
+                m_nrOfAxes,
+                1,
+                "Limits"),
+            true);
+        m_params["limitLower"].setMeta(
+            new ito::DoubleArrayMeta(
+                -std::numeric_limits<double>::max(),
+                std::numeric_limits<double>::max(),
+                0.001,
+                0,
+                m_nrOfAxes,
+                1,
+                "Limits"),
+            true);
+
+        int* useLimits = new int[m_nrOfAxes]();
+        double* limitUpper = new double[m_nrOfAxes];
+        double* limitLower = new double[m_nrOfAxes];
+
+        for (int i = 0; i < m_nrOfAxes; ++i)
+        {
+            limitUpper[i] = std::numeric_limits<double>::max();
+            limitLower[i] = -std::numeric_limits<double>::max();
+        }
+
+        m_params["useLimits"].setVal<int*>(useLimits, m_nrOfAxes);
+        m_params["limitUpper"].setVal<double*>(limitUpper, m_nrOfAxes);
+        m_params["limitLower"].setVal<double*>(limitLower, m_nrOfAxes);
+    }
+
+    if (!retValue.containsError())
+    {
+        // register exec functions ------------------------------------
+
+        QVector<ito::Param> pMand = QVector<ito::Param>();
+        QVector<ito::Param> pOpt = QVector<ito::Param>();
+        QVector<ito::Param> pOut = QVector<ito::Param>();
+
+        pOpt << ito::Param(
+            "axis",
+            ito::ParamBase::Int,
+            0,
+            m_nrOfAxes - 1,
+            -1,
+            tr("axis to perform SmarAct calibration").toLatin1().data());
+
+        registerExecFunc(
+            "SmaractCalibrate", pMand, pOpt, pOut, tr("Perform the SmarAct calibration function."));
+        pMand.clear();
+        pOpt.clear();
+        pOut.clear();
+
+        // end register exec functions --------------------------------
     }
 
 
@@ -736,6 +806,71 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                         .data());
             }
         }
+        else if (key == "limitLower")
+        {
+            if (val->getLen() == m_nrOfAxes)
+            {
+                double* data = val->getVal<double*>();
+                for (int i = 0; i < m_nrOfAxes; ++i)
+                {
+                    if (data[i] > m_params["limitUpper"].getVal<double*>()[i])
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("Lower limit (%1) cannot be higher than upper limit (%2).\n")
+                                .arg(data[i])
+                                .arg(m_params["limitUpper"].getVal<double*>()[i])
+                                .toLatin1()
+                                .data());
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("array (%1) must be the same size like the number of axis (%2).\n")
+                        .arg(val->getLen())
+                        .arg(m_nrOfAxes)
+                        .toLatin1()
+                        .data());
+            }
+        }
+        else if (key == "limitUpper")
+        {
+            if (val->getLen() == m_nrOfAxes)
+            {
+                double* data = val->getVal<double*>();
+                for (int i = 0; i < m_nrOfAxes; ++i)
+                {
+                    if (data[i] < m_params["limitLower"].getVal<double*>()[i])
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("Upper limit (%1) cannot be lower than upper limit (%2).\n")
+                                .arg(data[i])
+                                .arg(m_params["limitLower"].getVal<double*>()[i])
+                                .toLatin1()
+                                .data());
+                    }
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("array (%1) must be the same size like the number of axis (%2).\n")
+                        .arg(val->getLen())
+                        .arg(m_nrOfAxes)
+                        .toLatin1()
+                        .data());
+            }
+        }
+        
         if (!retValue.containsError())
         {
             //all parameters that don't need further checks can simply be assigned
@@ -1028,7 +1163,7 @@ ito::RetVal SmarActMCS2::getPos(QVector<int> axis, QSharedPointer<QVector<double
             }
             else
             {
-                m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[i];
+                m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[axis[i]];
                 (*pos)[i] = m_currentPos[axis[i]];
             }
         }
@@ -1098,6 +1233,24 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
             }
             else
             {
+                if (m_params["useLimits"].getVal<int*>()[axis[i]] == 1)
+                {
+                    if (pos[i] < m_params["limitLower"].getVal<double*>()[axis[i]] ||
+                        pos[i] > m_params["limitUpper"].getVal<double*>()[axis[i]])
+                    {
+                        retValue += ito::RetVal::format(
+                            ito::retError,
+                            1,
+                            tr("axis %1 out of limit [%2, %3]: %4")
+                                .arg(axis[i])
+                                .arg(m_params["limitLower"].getVal<double*>()[axis[i]])
+                                .arg(m_params["limitUpper"].getVal<double*>()[axis[i]])
+                                .arg(pos[i])
+                                .toLatin1()
+                                .data());
+                        break;
+                    }
+                }
                 m_targetPos[axis[i]] = pos[i] * m_factor[axis[i]];
             }
         }
@@ -1226,7 +1379,41 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
             }
             else
             {
-                m_targetPos[axis[i]] = pos[i] * m_factor[axis[i]];
+                for (int i = 0; i < axis.size(); i++)
+                {
+                    if (axis[i] < 0 || axis[i] >= m_nrOfAxes)
+                    {
+                        retValue += ito::RetVal::format(
+                            ito::retError,
+                            1,
+                            tr("axis %i not available").toLatin1().data(),
+                            axis[i]);
+                    }
+                    else
+                    {
+                        if (m_params["useLimits"].getVal<int*>()[axis[i]] == 1)
+                        {
+                            if (m_currentPos[axis[i]] + pos[i] <
+                                    m_params["limitLower"].getVal<double*>()[axis[i]] ||
+                                m_currentPos[axis[i]] + pos[i] >
+                                    m_params["limitUpper"].getVal<double*>()[axis[i]])
+                            {
+                                retValue += ito::RetVal::format(
+                                    ito::retError,
+                                    1,
+                                    tr("axis %1 out of limit [%2, %3]: %4")
+                                        .arg(axis[i])
+                                        .arg(m_params["limitLower"].getVal<double*>()[axis[i]])
+                                        .arg(m_params["limitUpper"].getVal<double*>()[axis[i]])
+                                        .arg(m_currentPos[axis[i]] + pos[i])
+                                        .toLatin1()
+                                        .data());
+                                break;
+                            }
+                        }
+                        m_targetPos[axis[i]] = (m_currentPos[axis[i]] + pos[i]) * m_factor[axis[i]];
+                    }
+                }
             }
         }
 
@@ -1241,7 +1428,7 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
                 SA_CTL_Result_t result;
 
                 result = SA_CTL_SetProperty_i32(
-                    m_insrumentHdl, axis[i], SA_CTL_PKEY_MOVE_MODE, SA_CTL_MOVE_MODE_CL_RELATIVE);
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_MOVE_MODE, SA_CTL_MOVE_MODE_CL_ABSOLUTE);
                 if (result != SA_CTL_ERROR_NONE)
                 {
                     retValue += ito::RetVal(
@@ -1348,7 +1535,28 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
                 m_insrumentHdl, _axis[i], SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
             if (result == SA_CTL_ERROR_NONE)
             {
-                // usebitmaskingto determine thechannelsmovement state
+                //get current position
+                SA_CTL_Result_t result;
+
+                int64_t position;
+                result = SA_CTL_GetProperty_i64(
+                    m_insrumentHdl, axis[i], SA_CTL_PKEY_POSITION, &position, 0);
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retVal += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to get position of axis \"%1\".\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                }
+                else
+                {
+                    m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[axis[i]];
+                }
+
+                // use bit masking to determine thechannelsmovement state
                 if (!((state & SA_CTL_CH_STATE_BIT_ACTIVELY_MOVING) == 0))
                 {
                     setStatus(
@@ -1364,6 +1572,15 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
                         ito::actuatorAtTarget,
                         ito::actSwitchesMask | ito::actStatusMask);
                 }
+            }
+            else
+            {
+                retVal += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 error occured during check state\n")
+                        .toLatin1()
+                        .data());
             }
         }
 
