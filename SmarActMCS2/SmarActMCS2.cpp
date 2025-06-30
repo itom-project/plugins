@@ -1,8 +1,22 @@
 /* ********************************************************************
-    Template for an actuator plugin for the software itom
+    Plugin "SmarActMCS2" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2025, TRUMPF Lasersystems for Semiconductor Manufacturing SE,´Germany
 
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+    This file is part of a plugin for the measurement software itom.
+
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
@@ -33,7 +47,7 @@ QList<QString> SmarActMCS2::openedDevices = QList<QString>();
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
-    \todo add necessary information about your plugin here.
+
 */
 SmarActMCS2Interface::SmarActMCS2Interface()
 {
@@ -106,8 +120,7 @@ ito::RetVal SmarActMCS2Interface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
 /*!
-    \todo add internal parameters of the plugin to the map m_params. It is allowed to append or remove entries from m_params
-    in this constructor or later in the init method
+
 */
 SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 {
@@ -932,7 +945,12 @@ ito::RetVal SmarActMCS2::calib(const QVector<int> axis, ItomSharedSemaphore *wai
             if (axis[i] < 0 || axis[i] >= m_nrOfAxes)
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 1, tr("axis %i not available").toLatin1().data(), i);
+                    ito::retError, 1, tr("axis %i not available.").toLatin1().data(), axis[i]);
+            }
+            else if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError, 1, tr("no sensor present at axis %i.").toLatin1().data(), axis[i]);
             }
             else
             {
@@ -1007,6 +1025,32 @@ ito::RetVal SmarActMCS2::calib(const QVector<int> axis, ItomSharedSemaphore *wai
                             m_currentStatus[axis[i]],
                             ito::actuatorAtTarget,
                             ito::actSwitchesMask | ito::actStatusMask);
+                    }
+                }
+            }
+
+            if (!retValue.containsError())
+            {
+                for (int i = 0; i < axis.size(); i++)
+                {
+                    SA_CTL_Result_t result;
+
+                    int64_t position;
+                    result = SA_CTL_GetProperty_i64(
+                        m_insrumentHdl, axis[i], SA_CTL_PKEY_POSITION, &position, 0);
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 failed to get position of axis \"%1\".\n")
+                                .arg(axis[i])
+                                .toLatin1()
+                                .data());
+                    }
+                    else
+                    {
+                        m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[axis[i]];
                     }
                 }
             }
@@ -1236,6 +1280,11 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
             {
                 retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
             }
+            else if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError, 1, tr("no sensor present at axis %i.").toLatin1().data(), axis[i]);
+            }
             else
             {
                 if (m_params["useLimits"].getVal<int*>()[axis[i]] == 1)
@@ -1382,6 +1431,14 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
+            }
+            else if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+            {
+                retValue += ito::RetVal::format(
+                    ito::retError,
+                    1,
+                    tr("no sensor present at axis %i.").toLatin1().data(),
+                    axis[i]);
             }
             else
             {
@@ -1538,6 +1595,31 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
         {
             SA_CTL_Result_t result;
             int32_t state;
+
+            if (m_params["sensorPresent"].getVal<int*>()[_axis[i]] == 0)
+            {
+                // if sensor not present but no movement required, no error will emit --> this is the case, when performing all aces movement in dock widget:
+                if (m_currentPos[axis[i]] != m_targetPos[axis[i]])
+                {
+                    retVal += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to set position of axis \"%1\": Sensor not present\n")
+                            .arg(axis[i])
+                            .toLatin1()
+                            .data());
+                    setStatus(
+                        m_currentStatus[_axis[i]],
+                        ito::actuatorError,
+                        ito::actSwitchesMask | ito::actStatusMask);
+                }
+                setStatus(
+                    m_currentStatus[_axis[i]],
+                    ito::actuatorAtTarget,
+                    ito::actSwitchesMask | ito::actStatusMask);
+                continue;
+            }
+
             result = SA_CTL_GetProperty_i32(
                 m_insrumentHdl, _axis[i], SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
             if (result == SA_CTL_ERROR_NONE)
@@ -1547,20 +1629,20 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
 
                 int64_t position;
                 result = SA_CTL_GetProperty_i64(
-                    m_insrumentHdl, axis[i], SA_CTL_PKEY_POSITION, &position, 0);
+                    m_insrumentHdl, _axis[i], SA_CTL_PKEY_POSITION, &position, 0);
                 if (result != SA_CTL_ERROR_NONE)
                 {
                     retVal += ito::RetVal(
                         ito::retError,
                         0,
                         tr("MCS2 failed to get position of axis \"%1\".\n")
-                            .arg(axis[i])
+                            .arg(_axis[i])
                             .toLatin1()
                             .data());
                 }
                 else
                 {
-                    m_currentPos[axis[i]] = static_cast<double>(position) / m_factor[axis[i]];
+                    m_currentPos[_axis[i]] = static_cast<double>(position) / m_factor[_axis[i]];
                 }
 
                 // use bit masking to determine thechannelsmovement state
@@ -1597,8 +1679,23 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
         //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
-            //todo: force all axes to stop
+            SA_CTL_Result_t result;
+            for (int i = 0; i < _axis.size(); i++)
+            {
+                result = SA_CTL_Stop(m_insrumentHdl, _axis[i], 0); // soft stop
+                result = SA_CTL_Stop(m_insrumentHdl, _axis[i], 0); // hard stop
 
+                if (result != SA_CTL_ERROR_NONE)
+                {
+                    retVal += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("MCS2 failed to force axis to stop.\n")
+                            .toLatin1()
+                            .data());
+                }
+            }
+            
             //set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
@@ -1641,25 +1738,59 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
 */
 ito::RetVal SmarActMCS2::updateStatus()
 {
+    ito::RetVal retVal(ito::retOk);
+
     for (int i=0;i<m_nrOfAxes;i++)
     {
-        m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable; //set this if the axis i is available, else use
-        //m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable;
+        if (m_params["sensorPresent"].getVal<int*>()[i] == 0)
+        {
+            m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable;
+        }
+        else
+        {
+            m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable;
 
-        m_currentPos[i] = 0.0; //todo fill in here the current position of axis i in mm or degree
+            SA_CTL_Result_t result;
 
-        //if you know that the axis i is at its target position, change from moving to target if moving has been set, therefore:
-        replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
+            int64_t position;
+            result = SA_CTL_GetProperty_i64(m_insrumentHdl, i, SA_CTL_PKEY_POSITION, &position, 0);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retVal += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 failed to get position of axis \"%1\".\n").arg(i).toLatin1().data());
+            }
+            else
+            {
+                m_currentPos[i] = static_cast<double>(position) / m_factor[i];
+            }
 
-        //if you know that the axis i is still moving, set this bit (all other moving-related bits are unchecked, but the status bits and switches bits
-        //kept unchanged
-        setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            if (!retVal.containsError())
+            {
+                int32_t state;
+
+                result = SA_CTL_GetProperty_i32(
+                    m_insrumentHdl, i, SA_CTL_PKEY_CHANNEL_STATE, &state, 0);
+                if (result == SA_CTL_ERROR_NONE)
+                {
+                    // use bit masking to determine thechannelsmovement state
+                    if (!((state & SA_CTL_CH_STATE_BIT_ACTIVELY_MOVING) == 0))
+                    {
+                        setStatus(
+                            m_currentStatus[i],
+                            ito::actuatorMoving,
+                            ito::actSwitchesMask | ito::actStatusMask);
+                    }
+                }
+            }
+        }
     }
 
     //emit actuatorStatusChanged with m_currentStatus and m_currentPos in order to inform connected slots about the current status and position
     sendStatusUpdate();
 
-    return ito::retOk;
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
