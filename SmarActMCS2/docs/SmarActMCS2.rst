@@ -6,8 +6,8 @@
 **Summary**:    :pluginsummary:`SmarActMCS2`
 **Type**:       :plugintype:`SmarActMCS2`
 **License**:    :pluginlicense:`SmarActMCS2`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
+**Platforms**:  Windows
+**Devices**:    SmarAct MCS2 Controller
 **Author**:     :pluginauthor:`SmarActMCS2`
 =============== ========================================================================================================
 
