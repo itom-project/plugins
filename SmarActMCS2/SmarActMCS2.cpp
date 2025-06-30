@@ -126,7 +126,12 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
 {
     ito::IntMeta* imeta;
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SmarActMCS2", NULL);
+    ito::Param paramVal(
+        "name",
+        ito::ParamBase::String | ito::ParamBase::Readonly,
+        "SmarActMCS2",
+        tr("Plugin Name.").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::String, "", "Device info"), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     m_params.insert(
@@ -216,9 +221,21 @@ SmarActMCS2::SmarActMCS2() : AddInActuator(), m_async(0), m_nrOfAxes(1)
         "sensorPresent",
         ito::ParamBase::IntArray | ito::ParamBase::Readonly,
         NULL,
-        tr("Show if sensor is present (1) or not (0).")
-            .toLatin1()
-            .data());
+        tr("Show if sensor is present (1) or not (0).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "positionerTypeName",
+        ito::ParamBase::StringList | ito::ParamBase::Readonly,
+        NULL,
+        tr("Positionertype name of Channel.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "positionerType",
+        ito::ParamBase::IntArray,
+        NULL,
+        tr("Positionertype number of Channel according to Smaract Manual.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // Limits Parameters
@@ -454,6 +471,55 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
 
         setIdentifier(snBuf);
+    }
+
+    if (!retValue.containsError())
+    {        
+        SA_CTL_Result_t result;
+        char buf[SA_CTL_STRING_MAX_LENGTH + 1];
+        size_t ioStringSize = sizeof(buf);
+        int32_t type;
+        std::vector<ito::ByteArray> positionerType(m_nrOfAxes, ito::ByteArray("none"));
+
+        m_params["positionerType"].setMeta(
+            new ito::IntArrayMeta(0, 10000, 1, 0, m_nrOfAxes, 1, "Control"), true);
+        int* types = new int[m_nrOfAxes];
+
+        for (int i = 0; i < m_nrOfAxes; i++)
+        {
+            ioStringSize = sizeof(buf);
+            result = SA_CTL_GetProperty_s(
+                m_insrumentHdl, i, SA_CTL_PKEY_POSITIONER_TYPE_NAME, buf, &ioStringSize);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 failed to get positioner type of channel \"%1\".\n")
+                        .arg(i)
+                        .toLatin1()
+                        .data());
+                break;
+            }
+            result =
+                SA_CTL_GetProperty_i32(m_insrumentHdl, i, SA_CTL_PKEY_POSITIONER_TYPE, &type, 0);
+            if (result != SA_CTL_ERROR_NONE)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("MCS2 failed to get positioner type number of channel \"%1\".\n")
+                        .arg(i)
+                        .toLatin1()
+                        .data());
+                break;
+            }
+            std::string fullStr = std::string(buf) + " (" + std::to_string(type) + ")";
+            positionerType[i] = ito::ByteArray(fullStr.c_str());
+            types[i] = type;
+        }
+        m_params["positionerTypeName"].setVal<ito::ByteArray*>(positionerType.data(), m_nrOfAxes);
+        m_params["positionerType"].setVal<int*>(types, m_nrOfAxes);
     }
 
     // get base unit and factor of each channel:
@@ -888,6 +954,79 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                         .data());
             }
         }
+        else if (key == "positionerType")
+        {
+            if (val->getLen() == m_nrOfAxes)
+            {
+                int* data = val->getVal<int*>();
+                SA_CTL_Result_t result;
+                char buf[SA_CTL_STRING_MAX_LENGTH + 1];
+                size_t ioStringSize = sizeof(buf);
+                int32_t type;
+                std::vector<ito::ByteArray> positionerType(m_nrOfAxes, ito::ByteArray("none"));
+
+                for (int i = 0; i < m_nrOfAxes; i++)
+                {
+                    result = SA_CTL_SetProperty_i32(
+                        m_insrumentHdl, i, SA_CTL_PKEY_POSITIONER_TYPE, data[i]);
+
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 failed to set positioner type of channel \"%1\". Please make shure that the given positioner type exists (according to the manual)\n")
+                                .arg(i)
+                                .toLatin1()
+                                .data());
+                        break;
+                    }
+
+                    ioStringSize = sizeof(buf);
+                    result = SA_CTL_GetProperty_s(
+                        m_insrumentHdl, i, SA_CTL_PKEY_POSITIONER_TYPE_NAME, buf, &ioStringSize);
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 failed to get positioner type of channel \"%1\".\n")
+                                .arg(i)
+                                .toLatin1()
+                                .data());
+                        break;
+                    }
+                    result = SA_CTL_GetProperty_i32(
+                        m_insrumentHdl, i, SA_CTL_PKEY_POSITIONER_TYPE, &type, 0);
+                    if (result != SA_CTL_ERROR_NONE)
+                    {
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("MCS2 failed to get positioner type number of channel \"%1\".\n")
+                                .arg(i)
+                                .toLatin1()
+                                .data());
+                        break;
+                    }
+                    std::string fullStr = std::string(buf) + " (" + std::to_string(type) + ")";
+                    positionerType[i] = ito::ByteArray(fullStr.c_str());
+                }
+                m_params["positionerTypeName"].setVal<ito::ByteArray*>(
+                    positionerType.data(), m_nrOfAxes);
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("array (%1) must be the same size like the number of axis (%2).\n")
+                        .arg(val->getLen())
+                        .arg(m_nrOfAxes)
+                        .toLatin1()
+                        .data());
+            }
+        }
         
         if (!retValue.containsError())
         {
@@ -1280,7 +1419,9 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
             {
                 retValue += ito::RetVal::format(ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
             }
-            else if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+            else if (
+                m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0 &&
+                pos[i] != m_currentPos[axis[i]])
             {
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("no sensor present at axis %i.").toLatin1().data(), axis[i]);
@@ -1432,7 +1573,9 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
                 retValue += ito::RetVal::format(
                     ito::retError, 1, tr("axis %i not available").toLatin1().data(), axis[i]);
             }
-            else if (m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0)
+            else if (
+                m_params["sensorPresent"].getVal<int*>()[axis[i]] == 0 &&
+                pos[i] != m_currentPos[axis[i]])
             {
                 retValue += ito::RetVal::format(
                     ito::retError,
