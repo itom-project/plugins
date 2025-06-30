@@ -14,55 +14,39 @@
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogSmarActMCS2::DialogSmarActMCS2(ito::AddInBase *grabber) :
-    AbstractAddInConfigDialog(grabber),
-    m_firstRun(true)
+DialogSmarActMCS2::DialogSmarActMCS2(ito::AddInActuator* actuator) :
+    AbstractAddInConfigDialog(actuator), m_firstRun(true), m_pluginPointer(actuator)
 {
     ui.setupUi(this);
 
     //disable dialog, since no parameters are known yet. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
+
+    ui.paramEditor->setPlugin(m_pluginPointer);
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSmarActMCS2::parametersChanged(QMap<QString, ito::Param> params)
 {
-    //save the currently set parameters to m_currentParameters
+    // save the currently set parameters to m_currentParameters
     m_currentParameters = params;
 
     if (m_firstRun)
     {
-        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-
-        //this is the first time that parameters are sent to this dialog,
-        //therefore you can add some initialization work here
+        setWindowTitle(
+            QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         m_firstRun = false;
-
-        //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }
-
-    //set the status of all widgets depending on the values of params
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogSmarActMCS2::applyParameters()
 {
-    ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase> > values;
-    bool success = false;
-
-    //foreach widget, do:
-    //   check if the current value of the widget is different than the corresponding
-    //   parameter in m_currentParameters.
-    //   If so, write something like:
-    //   values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("name",ito::ParamBase::Int, newValue)))
-
-    retValue += setPluginParameters(values, msgLevelWarningAndError);
-
-    return retValue;
+    QVector<QSharedPointer<ito::ParamBase>> values = ui.paramEditor->getAndResetChangedParameters();
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -89,7 +73,5 @@ void DialogSmarActMCS2::on_buttonBox_clicked(QAbstractButton* btn)
 //---------------------------------------------------------------------------------------------------------------------
 void DialogSmarActMCS2::enableDialog(bool enabled)
 {
-    //e.g.
-    ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
+    ui.paramEditor->setEnabled(enabled);
 }

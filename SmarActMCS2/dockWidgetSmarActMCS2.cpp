@@ -6,46 +6,14 @@
 *********************************************************************** */
 
 #include "dockWidgetSmarActMCS2.h"
+#include "motorAxisController.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetSmarActMCS2::DockWidgetSmarActMCS2(ito::AddInActuator* actuator) :
-    AbstractAddInDockWidget(actuator),
-    m_inEditing(false),
+    AbstractAddInDockWidget(actuator), m_inEditing(false), m_pActuator(actuator), 
     m_firstRun(true)
 {
     ui.setupUi(this);
-
-    //in order to simplify the communication with the axis specific
-    //widgets without the need of programming the same thing multiple
-    //times, all relevant widget pointers are now saved in few vectors.
-
-    m_btnRelInc.append(ui.btnXp);
-    m_btnRelInc.append(ui.btnYp);
-    m_btnRelInc.append(ui.btnZp);
-    foreach(QPushButton* btn, m_btnRelInc)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
-    }
-
-    m_btnRelDec.append(ui.btnXm);
-    m_btnRelDec.append(ui.btnYm);
-    m_btnRelDec.append(ui.btnZm);
-    foreach(QPushButton* btn, m_btnRelDec)
-    {
-        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
-    }
-
-    m_spinCurrentPos.append(ui.spinCurrentPosX);
-    m_spinCurrentPos.append(ui.spinCurrentPosY);
-    m_spinCurrentPos.append(ui.spinCurrentPosZ);
-
-    m_spinTargetPos.append(ui.spinTargetPosX);
-    m_spinTargetPos.append(ui.spinTargetPosY);
-    m_spinTargetPos.append(ui.spinTargetPosZ);
-
-    m_labels.append(ui.lblAxisX);
-    m_labels.append(ui.lblAxisY);
-    m_labels.append(ui.lblAxisZ);
 
     enableWidgets(true);
 }
@@ -53,129 +21,56 @@ DockWidgetSmarActMCS2::DockWidgetSmarActMCS2(ito::AddInActuator* actuator) :
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSmarActMCS2::parametersChanged(QMap<QString, ito::Param> params)
 {
+    ui.lblSerialNo->setText(params["serialNumber"].getVal<char*>());
 
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::targetChanged(QVector<double> targetPos)
-{
-    for (int i = 0; i < targetPos.size(); i++)
+    if (m_firstRun)
     {
-        m_spinTargetPos[i]->setValue(targetPos[i]);
-    }
- }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
-{
-    bool running = false;
-    QString style;
-
-    for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
-    {
-        if (status[i] & ito::actuatorMoving)
+        ui.axisController->setNumAxis(params["noOfChannels"].getVal<int>());
+        for (int i = 0; i < params["noOfChannels"].getVal<int>(); i++)
         {
-            style = "background-color: yellow";
-            running = true;
-        }
-        else if (status[i] & ito::actuatorInterrupted)
-        {
-            style = "background-color: red";
-        }
-        /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
-        {
-            style = "background-color: green";
-        }*/
-        else
-        {
-            style = "background-color: ";
-        }
-
-        m_spinCurrentPos[i]->setStyleSheet(style);
-    }
-
-    enableWidgets(!running);
-
-    for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
-    {
-        m_spinCurrentPos[i]->setValue(positions[i]);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
-
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
+            switch (params["baseUnit"].getVal<int*>()[i])
+            {
+                case 1:
+                ui.axisController->setAxisUnit(i, MotorAxisController::AxisUnit::UnitMm);
+                    break;
+                case 2:
+                    ui.axisController->setAxisUnit(i, MotorAxisController::AxisUnit::UnitAU);
+                    ui.axisController->setArbitraryUnit("deg");
+                    break;
+                default:
+                    ui.axisController->setAxisUnit(i, MotorAxisController::AxisUnit::UnitAU);
+                    break;
+            }
         }
     }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-
-    if (qobject_cast<QPushButton*>(sender()))
-    {
-        int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
-
-        if (idx >= 0)
-        {
-            setActuatorPosition(idx, dpos, true);
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::on_btnStop_clicked()
-{
-    setActuatorInterrupt();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::on_btnStart_clicked()
-{
-    QVector<int> axis;
-    QVector<double> dpos;
-
-    for (int i = 0; i < m_btnRelDec.size(); ++i)
-    {
-        axis << i;
-        dpos << m_spinTargetPos[i]->value();
-    }
-
-    setActuatorPosition(axis, dpos, false);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::on_btnRefresh_clicked()
-{
-    requestActuatorStatusAndPositions(true, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSmarActMCS2::enableWidgets(bool enabled)
 {
-    for (int i = 0; i < m_btnRelDec.size(); i++)
-    {
-        m_btnRelDec[i]->setEnabled(enabled);
-        m_btnRelInc[i]->setEnabled(enabled);
-    }
-
-    ui.btnStart->setVisible(enabled);
-    ui.btnStop->setVisible(!enabled);
+    ui.axisController->setEnabled(enabled);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSmarActMCS2::identifierChanged(const QString &identifier)
+void DockWidgetSmarActMCS2::identifierChanged(const QString& identifier)
 {
-    ui.lblIdentifier->setText(identifier);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetSmarActMCS2::dockWidgetVisibilityChanged(bool visible)
+{
+    if (visible)
+    {
+        // to connect the signals
+        QPointer<ito::AddInActuator> actuator(m_pActuator);
+        ui.axisController->setActuator(actuator);
+        ui.axisController->setNumAxis(0);
+        ui.axisController->setDefaultRelativeStepSize(0.001);
+        ui.axisController->setDefaultDecimals(3);
+    }
+    else
+    {
+        ui.axisController->setActuator(QPointer<ito::AddInActuator>());
+    }
 }

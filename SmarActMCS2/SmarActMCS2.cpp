@@ -44,16 +44,21 @@ SmarActMCS2Interface::SmarActMCS2Interface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of actuator plugin \n\
+"This plugin is an actuator plugin to control stages from SmarAct.\n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+It was implemented for ETHERNET communication and tested with:\n\
+\n\
+* SLC Series - Linear Stage: https://www.smaract.com/en/linear-stages/type/slc-series\n\
+* SR-4513 - Rotation Stage: https://www.smaract.com/en/rotation-stages/product/sr-4513-rotation-stage\n\
+* MCS2 Control System: https://www.smaract.com/en/motion/products/control-systems-and-software-working/control-systems/mcs2\n\
+\n";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     //optional parameter
@@ -1251,7 +1256,7 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
                         break;
                     }
                 }
-                m_targetPos[axis[i]] = pos[i] * m_factor[axis[i]];
+                m_targetPos[axis[i]] = pos[i];
             }
         }
 
@@ -1278,7 +1283,8 @@ ito::RetVal SmarActMCS2::setPosAbs(QVector<int> axis, QVector<double> pos, ItomS
                 }
                 else
                 {
-                    result = SA_CTL_Move(m_insrumentHdl, axis[i], m_targetPos[axis[i]], 0);
+                    result = SA_CTL_Move(
+                        m_insrumentHdl, axis[i], m_targetPos[axis[i]] * m_factor[axis[i]], 0);
                 }
 
                 if (result != SA_CTL_ERROR_NONE)
@@ -1411,7 +1417,7 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
                                 break;
                             }
                         }
-                        m_targetPos[axis[i]] = (m_currentPos[axis[i]] + pos[i]) * m_factor[axis[i]];
+                        m_targetPos[axis[i]] = m_currentPos[axis[i]] + pos[i];
                     }
                 }
             }
@@ -1441,7 +1447,8 @@ ito::RetVal SmarActMCS2::setPosRel(QVector<int> axis, QVector<double> pos, ItomS
                 }
                 else
                 {
-                    result = SA_CTL_Move(m_insrumentHdl, axis[i], m_targetPos[axis[i]], 0);
+                    result = SA_CTL_Move(
+                        m_insrumentHdl, axis[i], m_targetPos[axis[i]] * m_factor[axis[i]], 0);
                 }
 
                 if (result != SA_CTL_ERROR_NONE)

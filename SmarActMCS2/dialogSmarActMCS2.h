@@ -12,6 +12,7 @@
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
+#include "common/addInInterface.h"
 #include "ui_dialogSmarActMCS2.h"
 
 #include <qstring.h>
@@ -28,7 +29,7 @@ class DialogSmarActMCS2 : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogSmarActMCS2(ito::AddInBase *grabber);
+    DialogSmarActMCS2(ito::AddInActuator* actuator);
         ~DialogSmarActMCS2() {};
 
         ito::RetVal applyParameters();
@@ -37,6 +38,7 @@ class DialogSmarActMCS2 : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
+        QPointer<ito::AddInBase> m_pluginPointer;
         Ui::DialogSmarActMCS2 ui;
 
     public slots:
