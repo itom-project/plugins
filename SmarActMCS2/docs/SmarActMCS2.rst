@@ -21,7 +21,7 @@ Overview
     Please note that the System is only tested and developed with ETHERNET connection.
 
 .. note::
-    When changing the position of the axes on the controller, itom will not update the position (e.g. in the dock-widget).
+    When changing the position of the axes on the controller, itom will not update the position (e.g. in the dock-widget). If you use ``getPos()``, you will get the correct position.
 
 Initialization
 ==============
