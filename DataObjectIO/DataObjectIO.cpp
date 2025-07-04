@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -3003,7 +3003,7 @@ ito::RetVal DataObjectIO::readDataBlock(
 //! saveTifParams
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString DataObjectIO::saveTiffDoc = QObject::tr(
-    "Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). \n\
+    "Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit as well as rgba supported). \n\
 \n\
 The following conventions hold for saving the image: \n\
 \n\
@@ -4724,7 +4724,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(
     QObject::tr("load the following image formats from a file to a 2D data object: \n\
 \n\
 * png: 8bit/16bit, color available, transparency available \n\
-* tiff/tif: 8bit/16bit, color available \n\
+* tiff/tif: unsigned and signed 8bit/16bit, float32, float64 and rgb (color) \n\
 * jpg: 8bit, color available\n\
 * jp2: 8bit/16bit, color available\n\
 * ras/sr: 8bit, color available \n\
@@ -4739,7 +4739,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(
 The file format only provides color or transparency data if indicated above. \n\
 \n\
 You can choose which channel (colorElement) of the loaded file should be used for the data object. \n\
-`asIs` loads the file as it is: monochrome formats are loaded as uint8 or uint16 data object, while \n\
+`asIs` loads the file as it is: monochrome formats are loaded as (u)int8 or (u)int16, float32 or float64 data object, while \n\
 colored file formats are loaded as rgba32 data object. The color elements `alpha`, `R`, `G`, `B`, `RGB`, \n\
 `RGBA` are only available for colored file formats are only load the selected channels to either a uint8/uint16 data object \n\
 or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it \n\
@@ -4923,8 +4923,20 @@ ito::RetVal DataObjectIO::loadImage(
             case CV_8U:
                 imageType = ito::tUInt8;
                 break;
+            case CV_8S:
+                imageType = ito::tInt8;
+                break;
             case CV_16U:
                 imageType = ito::tUInt16;
+                break;
+            case CV_16S:
+                imageType = ito::tInt16;
+                break;
+            case CV_32FC1:
+                imageType = ito::tFloat32;
+                break;
+            case CV_64FC1:
+                imageType = ito::tFloat64;
                 break;
             case CV_8UC3:
                 if (reduceChannel)
