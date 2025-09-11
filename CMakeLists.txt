@@ -472,10 +472,10 @@ if(PLUGIN_ThorlabsBDCServo)
 endif(PLUGIN_ThorlabsBDCServo)
 
 # ThorlabsFF High-Stroke Deformable Mirrors
-itom_plugin_option(PLUGIN_ThorlabsDHM)
-if(PLUGIN_ThorlabsDHM)
+itom_plugin_option(PLUGIN_ThorlabsDMH)
+if(PLUGIN_ThorlabsDMH)
     add_subdirectory(ThorlabsDMH)
-endif(PLUGIN_ThorlabsDHM)
+endif(PLUGIN_ThorlabsDMH)
 
 # ThorlabsFF filter flipper
 itom_plugin_option(PLUGIN_ThorlabsFF)
