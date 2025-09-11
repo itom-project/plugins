@@ -44,6 +44,8 @@
 #include <iostream>
 #include <qdebug.h>
 
+#include "../DataObject/dataobj.h"
+
 QList<QByteArray> ThorlabsBDCServo::openedDevices = QList<QByteArray>();
 int ThorlabsBDCServo::numberOfKinesisSimulatorConnections = 0;
 
@@ -251,6 +253,13 @@ ThorlabsBDCServo::ThorlabsBDCServo() :
             1,
             m_async,
             tr("asynchronous (1) or synchronous (0) mode").toLatin1().data()));
+    m_params.insert(
+        "DCPID",
+        ito::Param(
+            "DCPID",
+            ito::ParamBase::DObjPtr,
+            nullptr,
+            tr("Parameters of the motor's PID loop for each axis ((P,I,D, IntLim, EnableBitmask), (P,I,D, IntLim, EnableBitmask), ..). (Adjust if motor oscillates or does not reach setpoint").toLatin1().data()));
 
     m_currentPos.fill(0.0, 1);
     m_currentStatus.fill(0, 1);
@@ -518,7 +527,20 @@ ito::RetVal ThorlabsBDCServo::init(
 
         m_params["backlash"].setMeta(
             new ito::DoubleArrayMeta(0.0, 5.0, 0.0, m_numChannels, m_numChannels));
-
+        
+        ito::DataObject PIDValues(m_numChannels, 5, ito::tInt16);
+        for (int i = 0; i < m_numChannels; ++i)
+        {
+            MOT_DC_PIDParameters PID_params;
+            BDC_GetDCPIDParams(m_serialNo, &PID_params, m_channelIndices[i]);
+            PIDValues.at<ito::int16>(i, 0) = PID_params.proportionalGain;
+            PIDValues.at<ito::int16>(i, 1) = PID_params.integralGain;
+            PIDValues.at<ito::int16>(i, 2) = PID_params.differentialGain;
+            PIDValues.at<ito::int16>(i, 3) = PID_params.integralLimit;
+            PIDValues.at<ito::int16>(i, 4) = PID_params.parameterFilter;
+        }
+        m_params["DCPID"].setVal<ito::DataObject*>(&PIDValues);
+        
         m_params["firmwareVersion"].setVal<int>(
             (int)BDC_GetFirmwareVersion(m_serialNo, m_channelIndices[0]));
 
@@ -822,6 +844,32 @@ ito::RetVal ThorlabsBDCServo::setParam(
                     BDC_SetBacklash(m_serialNo, m_channelIndices[i], backlash[i]), "set backlash");
             }
 
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
+            }
+            else
+            {
+                Sleep(160);
+                QSharedPointer<QVector<int>> status(new QVector<int>(m_numChannels, 0));
+                retValue += getStatus(status, NULL);
+            }
+        }
+        else if (key == "DCPID")
+        {
+            ito::DataObject* new_DCPID = val->getVal<ito::DataObject*>();
+            for (int i = 0; i < m_numChannels; ++i)
+            {
+                MOT_DC_PIDParameters pid_params;
+                pid_params.proportionalGain = new_DCPID->at<ito::int16>(i, 0);
+                pid_params.integralGain= new_DCPID->at<ito::int16>(i, 1);
+                pid_params.differentialGain = new_DCPID->at<ito::int16>(i, 2);
+                pid_params.integralLimit = new_DCPID->at<ito::int16>(i, 3);
+                pid_params.parameterFilter = new_DCPID->at<ito::int16>(i, 4);
+                retValue += checkError(
+                    BDC_SetDCPIDParams(m_serialNo, &pid_params, m_channelIndices[i]),
+                    "set PID values");
+            }
             if (!retValue.containsError())
             {
                 it->copyValueFrom(&(*val));
