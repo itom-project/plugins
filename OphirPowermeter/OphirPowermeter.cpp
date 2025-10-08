@@ -114,6 +114,22 @@ Download page: https://www.ophiropt.com/laser--measurement/software/com-object")
            "be printed and the first device that is detected will be opened.")
             .toLatin1()
             .data()));
+    
+    m_initParamsOpt.append(ito::Param(
+        "channelNo",
+        ito::ParamBase::Int,
+        0,
+        new ito::IntMeta(0, 3),
+        tr("Channel to read for multichannel devices. If empty, the fist cahnnel (index 0) will be "
+           "used")
+            .toLatin1()
+            .data()));
+}
+
+OphirPowermeterInterface::~OphirPowermeterInterface()
+{
+    m_initParamsMand.clear();
+    m_initParamsOpt.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -307,6 +323,15 @@ OphirPowermeter::OphirPowermeter() :
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "channelNo",
+        ito::ParamBase::Int,
+        0, // min Val 
+        4, // max Val 
+        0, // Default
+        tr("Channel to read from. (0 based, use 0 for single channel devices").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     if (hasGuiSupport())
     {
         // now create dock widget for this plugin
@@ -345,6 +370,9 @@ ito::RetVal OphirPowermeter::init(
     QByteArray type = paramsMand->at(0).getVal<char*>(); // RS232 or USB
 
     QByteArray serialNoInput = paramsOpt->at(1).getVal<char*>();
+
+    m_channel = paramsOpt->at(2).getVal<int>(); // Get the channel number to read
+    m_params["channelNo"].setVal<int>(m_channel);
 
     if (m_openedDevices.contains(
             serialNoInput)) // exit here if device with serial number already connected
@@ -849,6 +877,7 @@ ito::RetVal OphirPowermeter::init(
         {
             m_connection = connectionType::USB;
             m_params["connection"].setVal<const char*>("USB");
+            
 
             // creates instance of OphirLMMeasurement
             try
@@ -960,147 +989,13 @@ ito::RetVal OphirPowermeter::init(
                     retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
                 }
             }
-
-            // check if sensor exists
             if (!retval.containsError())
             {
-                m_openedDevices.append(wCharToChar(m_serialNo.c_str()));
-                QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
-                m_openedUSBHandlesAndChannels.append(pair);
-
-                bool exists;
-                try
-                {
-                    m_OphirLM->IsSensorExists(m_handle, m_channel, exists);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-
-                if (!exists)
-                {
-                    retval += ito::RetVal(ito::retError, 0, "no sensor connected to the device");
-                }
+                retval += this->getMeasurementHeadInfo(); 
             }
-
-            // get device infos
             if (!retval.containsError())
             {
-                std::wstring deviceName, romVersion, serialNumber;
-                std::wstring info, headSN, headType, headName, version;
-                try
-                {
-                    m_OphirLM->GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-
-                m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
-                m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
-                m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
-
-                try
-                {
-                    m_OphirLM->GetSensorInfo(m_handle, 0, headSN, headType, headName);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-                m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
-                m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
-                m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
-            }
-
-            if (!retval.containsError()) // get wavelengths
-            {
-                bool modifiable;
-                long waveMin;
-                long waveMax;
-                try
-                {
-                    m_OphirLM->GetWavelengthsExtra(
-                        m_handle, m_channel, modifiable, waveMin, waveMax);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-
-                if (modifiable) // continuous
-                {
-                    ito::Param paramVal = ito::Param(
-                        "wavelength",
-                        ito::ParamBase::Int,
-                        0,
-                        new ito::IntMeta(waveMin, waveMax),
-                        tr("Set Wavelengths [nm] continuous between: %1 - %2.")
-                            .arg(waveMin)
-                            .arg(waveMax)
-                            .toLatin1()
-                            .data());
-                    m_params.insert(paramVal.getName(), paramVal);
-
-                    try
-                    {
-                        m_OphirLM->ModifyWavelength(m_handle, m_channel, 0, waveMin);
-                    }
-                    catch (const _com_error& e)
-                    {
-                        retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                    }
-
-
-                    m_params["wavelength"].setVal<int>(waveMin);
-                    m_params["wavelengthSet"].setVal<const char*>("CONTINUOUS");
-                }
-                else // discrete
-                {
-                    LONG index;
-                    std::vector<std::wstring> options;
-                    m_OphirLM->GetWavelengths(m_handle, m_channel, index, options);
-
-                    ito::StringMeta sm(ito::StringMeta::String);
-
-                    QString discreteWavelengths;
-                    for (int idx = 0; idx < options.size(); idx++)
-                    {
-                        m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
-                        discreteWavelengths += " "; // space
-                        sm.addItem(wCharToChar(options[idx].c_str()));
-                        discreteWavelengths += wCharToChar(options[idx].c_str());
-                    }
-
-                    ito::Param paramVal = ito::Param(
-                        "wavelength",
-                        ito::ParamBase::String,
-                        wCharToChar(options.at(0).c_str()),
-                        tr("Available discrete wavelengths:%1.")
-                            .arg(discreteWavelengths)
-                            .toLatin1()
-                            .data());
-                    paramVal.setMeta(&sm, false);
-                    m_params.insert(paramVal.getName(), paramVal);
-
-                    try
-                    {
-                        m_OphirLM->SetWavelength(m_handle, m_channel, 0); // set first wavelength
-                    }
-                    catch (const _com_error& e)
-                    {
-                        retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                    }
-
-
-                    m_params["wavelengthSet"].setVal<const char*>("DISCRETE");
-                }
+                retval += this->getWavelengthInfo();
             }
 
             // get calibration due date
@@ -1123,135 +1018,17 @@ ito::RetVal OphirPowermeter::init(
                     m_params["calibrationDueDate"].setVal<const char*>("not available");
                 }
             }
-
-            // get ranges
+            // Get the measurement mode for the channel
             if (!retval.containsError())
             {
-                long index;
-                std::vector<std::wstring> options;
-                try
-                {
-                    m_OphirLM->GetRanges(m_handle, m_channel, index, options);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-
-                std::wstring docu = L"Measurement range (";
-                std::vector<std::wstring>::iterator it;
-
-                int idx = 0;
-                for (it = options.begin(); it != options.end(); ++it)
-                {
-                    docu += std::to_wstring(idx);
-                    docu += L": ";
-                    docu += *it;
-                    docu += L", ";
-                    idx += 1;
-                }
-                docu.pop_back(); // delete "; " again
-                docu.pop_back();
-
-                docu += L").";
-
-                ito::Param paramVal = ito::Param(
-                    "range",
-                    ito::ParamBase::Int,
-                    0,
-                    idx,
-                    index,
-                    tr(wCharToChar(docu.c_str())).toLatin1().data());
-                m_params.insert(paramVal.getName(), paramVal);
-
-                // there is no OphirLM function to get the unit
-                // here is some workaround
-                QByteArray unit;
-                QByteArray opt = wCharToChar(options[idx - 1].c_str());
-                if (opt.contains("W"))
-                {
-                    unit = "W";
-                }
-                else if (opt.contains("V"))
-                {
-                    unit = "V";
-                }
-                else if (opt.contains("A"))
-                {
-                    unit = "A";
-                }
-                else if (opt.contains("d"))
-                {
-                    unit = "dBm";
-                }
-                else if (opt.contains("l"))
-                {
-                    unit = "Lux";
-                }
-                else if (opt.contains("c"))
-                {
-                    unit = "fc";
-                }
-                else if (opt.contains("J"))
-                {
-                    unit = "J";
-                }
-                else
-                {
-                    retval += ito::RetVal(
-                        ito::retError,
-                        0,
-                        tr("return answer %1 not found.").arg(opt.data()).toLatin1().data());
-                }
-
-                m_params["unit"].setVal<char*>(unit.data());
+                retval += this->getMeasurementMode();
             }
-
-            // get measurement mode
+            // Configure the stream for the channel
             if (!retval.containsError())
             {
-                long index;
-                std::vector<std::wstring> options;
-                try
-                {
-                    m_OphirLM->GetMeasurementMode(m_handle, m_channel, index, options);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-
-
-                for (int idx = 0; idx < options.size(); idx++)
-                {
-                    m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
-                }
-                try
-                {
-                    m_OphirLM->SetMeasurementMode(m_handle, m_channel, 0);
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
+                retval += this->setupStream();
             }
-
-            if (!retval.containsError())
-            {
-                try
-                {
-                    // start measuring on first device
-                    m_OphirLM->RegisterPlugAndPlay(PlugAndPlayCallback);
-                    m_OphirLM->ConfigureStreamMode(m_handle, m_channel, 0, 0); // turbo off
-                    m_OphirLM->ConfigureStreamMode(m_handle, m_channel, 2, 1); // immediate on
-                    m_isgrabbing = false;
-                }
-                catch (const _com_error& e)
-                {
-                    retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
-                }
-            }
+            
 
             if (!retval.containsError()) // set some default values
             {
@@ -1301,6 +1078,150 @@ ito::RetVal OphirPowermeter::init(
 
 
     setInitialized(true); // init method has been finished (independent on retval)
+    return retval;
+}
+
+ito::RetVal OphirPowermeter::setupStream() {
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    if (!retval.containsError())
+    {
+        try
+        {
+            // start measuring on first device
+            m_OphirLM->RegisterPlugAndPlay(PlugAndPlayCallback);
+            m_OphirLM->ConfigureStreamMode(m_handle, m_channel, 0, 0); // turbo off
+            m_OphirLM->ConfigureStreamMode(m_handle, m_channel, 2, 1); // immediate on
+            m_isgrabbing = false;
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+    }
+    return retval;
+}
+
+ito::RetVal OphirPowermeter::getMeasurementMode()
+{
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    // get measurement mode
+    if (!retval.containsError())
+    {
+        long index;
+        std::vector<std::wstring> options;
+        try
+        {
+            m_OphirLM->GetMeasurementMode(m_handle, m_channel, index, options);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+
+        for (int idx = 0; idx < options.size(); idx++)
+        {
+            m_measurementModes.insert(wCharToChar(options[idx].c_str()), idx);
+        }
+        try
+        {
+            m_OphirLM->SetMeasurementMode(m_handle, m_channel, 0);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+    }
+    return retval;
+}
+
+ito::RetVal OphirPowermeter::getWavelengthInfo()
+{   
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    // get wavelengths
+    if (!retval.containsError()) 
+    {
+        bool modifiable;
+        long waveMin;
+        long waveMax;
+        try
+        {
+            m_OphirLM->GetWavelengthsExtra(m_handle, m_channel, modifiable, waveMin, waveMax);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+
+        if (modifiable) // continuous
+        {
+            ito::Param paramVal = ito::Param(
+                "wavelength",
+                ito::ParamBase::Int,
+                0,
+                new ito::IntMeta(waveMin, waveMax),
+                tr("Set Wavelengths [nm] continuous between: %1 - %2.")
+                    .arg(waveMin)
+                    .arg(waveMax)
+                    .toLatin1()
+                    .data());
+            m_params.insert(paramVal.getName(), paramVal);
+
+            try
+            {
+                m_OphirLM->ModifyWavelength(m_handle, m_channel, 0, waveMin);
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+            }
+
+
+            m_params["wavelength"].setVal<int>(waveMin);
+            m_params["wavelengthSet"].setVal<const char*>("CONTINUOUS");
+        }
+        else // discrete
+        {
+            LONG index;
+            std::vector<std::wstring> options;
+            m_OphirLM->GetWavelengths(m_handle, m_channel, index, options);
+
+            ito::StringMeta sm(ito::StringMeta::String);
+
+            QString discreteWavelengths;
+            for (int idx = 0; idx < options.size(); idx++)
+            {
+                m_discreteWavelengths.insert(wCharToChar(options[idx].c_str()), idx);
+                discreteWavelengths += " "; // space
+                sm.addItem(wCharToChar(options[idx].c_str()));
+                discreteWavelengths += wCharToChar(options[idx].c_str());
+            }
+
+            ito::Param paramVal = ito::Param(
+                "wavelength",
+                ito::ParamBase::String,
+                wCharToChar(options.at(0).c_str()),
+                tr("Available discrete wavelengths:%1.")
+                    .arg(discreteWavelengths)
+                    .toLatin1()
+                    .data());
+            paramVal.setMeta(&sm, false);
+            m_params.insert(paramVal.getName(), paramVal);
+
+            try
+            {
+                m_OphirLM->SetWavelength(m_handle, m_channel, 0); // set first wavelength
+            }
+            catch (const _com_error& e)
+            {
+                retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+            }
+
+
+            m_params["wavelengthSet"].setVal<const char*>("DISCRETE");
+        }
+    }
     return retval;
 }
 
@@ -1589,6 +1510,32 @@ ito::RetVal OphirPowermeter::setParam(
                 retValue += it->copyValueFrom(&(*val));
             }
         }
+        else if (key.compare("channelNo") == 0)
+        {
+            // Change the channel to read (only if it changed)
+            if (val->getVal<int>() != this->m_channel)
+            {
+                this->m_channel = val->getVal<int>();
+                retValue += it->copyValueFrom(&(*val));
+                // Update the information on the connected head
+                if (!retValue.containsError())
+                {
+                    retValue += this->getMeasurementHeadInfo();
+                }
+                if (!retValue.containsError())
+                {
+                    retValue += this->getWavelengthInfo();
+                }
+                if (!retValue.containsError())
+                {
+                    retValue += this->getMeasurementMode();
+                }
+                if (!retValue.containsError())
+                {
+                    retValue += this->setupStream();
+                }
+            }
+        }
         else
         {
             // all parameters that don't need further checks can simply be assigned
@@ -1610,6 +1557,151 @@ ito::RetVal OphirPowermeter::setParam(
     }
 
     return retValue;
+}
+
+ito::RetVal OphirPowermeter::getMeasurementHeadInfo()
+{
+    ito::RetVal retval = ito::RetVal(ito::retOk);
+    // Check if an sensor is connected
+    if (!retval.containsError())
+    {
+        m_openedDevices.append(wCharToChar(m_serialNo.c_str()));
+        QPair<long, long> pair = QPair<long, long>(m_handle, m_channel);
+        m_openedUSBHandlesAndChannels.append(pair);
+
+        bool exists;
+        try
+        {
+            m_OphirLM->IsSensorExists(m_handle, m_channel, exists);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+
+        if (!exists)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "no sensor connected to channel %i of the device", m_channel);
+        }
+    }
+
+    // get device infos
+    if (!retval.containsError())
+    {
+        std::wstring deviceName, romVersion, serialNumber;
+        std::wstring info, headSN, headType, headName, version;
+        try
+        {
+            m_OphirLM->GetDeviceInfo(m_handle, deviceName, romVersion, serialNumber);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+
+        m_params["deviceType"].setVal<char*>(wCharToChar(deviceName.c_str()));
+        m_params["ROMVersion"].setVal<char*>(wCharToChar(romVersion.c_str()));
+        m_params["serialNumber"].setVal<char*>(wCharToChar(serialNumber.c_str()));
+
+        try
+        {
+            m_OphirLM->GetSensorInfo(m_handle, 0, headSN, headType, headName);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+        m_params["headSerialNumber"].setVal<char*>(wCharToChar(headSN.c_str()));
+        m_params["headType"].setVal<char*>(wCharToChar(headType.c_str()));
+        m_params["headName"].setVal<char*>(wCharToChar(headName.c_str()));
+    }
+    // Get the measurement ranges
+    if (!retval.containsError())
+    {
+        long index;
+        std::vector<std::wstring> options;
+        try
+        {
+            m_OphirLM->GetRanges(m_handle, m_channel, index, options);
+        }
+        catch (const _com_error& e)
+        {
+            retval += ito::RetVal(ito::retError, 0, TCharToChar(e.ErrorMessage()));
+        }
+
+
+        std::wstring docu = L"Measurement range (";
+        std::vector<std::wstring>::iterator it;
+
+        int idx = 0;
+        for (it = options.begin(); it != options.end(); ++it)
+        {
+            docu += std::to_wstring(idx);
+            docu += L": ";
+            docu += *it;
+            docu += L", ";
+            idx += 1;
+        }
+        docu.pop_back(); // delete "; " again
+        docu.pop_back();
+
+        docu += L").";
+
+        ito::Param paramVal = ito::Param(
+            "range",
+            ito::ParamBase::Int,
+            0,
+            idx,
+            index,
+            tr(wCharToChar(docu.c_str())).toLatin1().data());
+        m_params.insert(paramVal.getName(), paramVal);
+
+        // there is no OphirLM function to get the unit
+        // here is some workaround
+        QByteArray unit;
+        QByteArray opt = wCharToChar(options[idx - 1].c_str());
+        if (opt.contains("W"))
+        {
+            unit = "W";
+        }
+        else if (opt.contains("V"))
+        {
+            unit = "V";
+        }
+        else if (opt.contains("A"))
+        {
+            unit = "A";
+        }
+        else if (opt.contains("d"))
+        {
+            unit = "dBm";
+        }
+        else if (opt.contains("l"))
+        {
+            unit = "Lux";
+        }
+        else if (opt.contains("c"))
+        {
+            unit = "fc";
+        }
+        else if (opt.contains("J"))
+        {
+            unit = "J";
+        }
+        else
+        {
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("return answer %1 not found.").arg(opt.data()).toLatin1().data());
+        }
+
+        m_params["unit"].setVal<char*>(unit.data());
+    }
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
