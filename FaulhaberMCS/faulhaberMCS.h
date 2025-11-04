@@ -117,7 +117,7 @@ private:
         ito::uint8 subindex;
     };
 
-    enum OperationMode : ito::uint8
+    enum OperationMode : ito::int8
     {
         AnalogTorqueControl = -4,
         AnalogVelocityControl = -3,
@@ -172,6 +172,8 @@ private:
     const Register positionLowerLimit_register = {0x607D, 0x01};
     const Register positionUpperLimit_register = {0x607D, 0x02};
     const Register motionProfileType_register = {0x6086, 0x00};
+    const Register positionWindow_register = {0x6067, 0x00};
+    const Register positionWindowTime_register = {0x6068, 0x00};
 
     const Register torqueGainControl_register = {0x2342, 0x01};
     const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
@@ -353,6 +355,12 @@ private:
 
     ito::RetVal getVelocityIntegralPartOption(ito::uint8& option);
     ito::RetVal setVelocityIntegralPartOption(const ito::uint8 option);
+
+    ito::RetVal getPositionWindow(ito::uint32& window);
+    ito::RetVal setPositionWindow(const ito::uint32 window);
+
+    ito::RetVal getPositionWindowTime(ito::uint16& time);
+    ito::RetVal setPositionWindowTime(const ito::uint16 time);
 
     // TEMPERATURES
     ito::RetVal getCPUTemperature(ito::int16& temp);
