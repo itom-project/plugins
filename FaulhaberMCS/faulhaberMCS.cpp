@@ -398,6 +398,26 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::DoubleMeta(0.0, std::numeric_limits<ito::uint32>::max(), 0.1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "positionWindow",
+        ito::ParamBase::Int,
+        0,
+        32,
+        std::numeric_limits<ito::uint32>::max(),
+        tr("Corridor around the target position in user-defined units.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int16>::max(), 1, "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "positionWindowTime",
+        ito::ParamBase::Int,
+        0,
+        48,
+        std::numeric_limits<ito::uint16>::max(),
+        tr("Minimum residence time within the corridor in PP operating mode, until the target position is reported as achieved.").toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------- category control ---------------------------//
     paramVal = ito::Param(
         "torqueGainControl",
@@ -1138,6 +1158,26 @@ ito::RetVal FaulhaberMCS::init(
 
     if (!retValue.containsError())
     {
+        ito::uint32 window;
+        retValue += getPositionWindow(window);
+        if (!retValue.containsError())
+        {
+            m_params["positionWindow"].setVal<int>(window);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
+        ito::uint16 time;
+        retValue += getPositionWindowTime(time);
+        if (!retValue.containsError())
+        {
+            m_params["positionWindowTime"].setVal<int>(time);
+        }
+    }
+
+    if (!retValue.containsError())
+    {
         ito::int8 mode;
         retValue +=
             setOperationMode(static_cast<ito::int8>(m_params["operationMode"].getVal<int>()));
@@ -1506,6 +1546,24 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                     it->setVal<double>(static_cast<double>(std::round(load / 1000.0 * 10) / 10));
             }
         }
+        else if (key == "positionWindow")
+        {
+            ito::uint32 window;
+            retValue += getPositionWindow(window);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(window));
+            }
+        }
+        else if (key == "positionWindowTime")
+        {
+            ito::uint16 time;
+            retValue += getPositionWindowTime(time);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(time));
+            }
+        }
         else if (key == "maxMotorSpeed")
         {
             ito::uint32 speed;
@@ -1846,6 +1904,14 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "loadInertia")
         {
             retValue += setLoadInertia(static_cast<ito::uint32>(val->getVal<double>()*1000));
+        }
+        else if (key == "positionWindow")
+        {
+            retValue += setPositionWindow(static_cast<ito::uint32>(val->getVal<int>()));
+        }
+        else if (key == "positionWindowTime")
+        {
+            retValue += setPositionWindowTime(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "moveTimeout")
         {
@@ -3247,6 +3313,34 @@ ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(const ito::uint8 option)
         velocityIntegralPartOption.subindex,
         option,
         sizeof(option));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositionWindow(ito::uint32& window)
+{
+    return readRegisterWithParsedResponse<ito::uint32>(
+        positionWindow_register.index, positionWindowTime_register.subindex, window);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositionWindow(const ito::uint32 window)
+{
+    return setRegister<ito::uint32>(
+        positionWindow_register.index, positionWindow_register.subindex, window, sizeof(window));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositionWindowTime(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        positionWindowTime_register.index, positionWindowTime_register.subindex, time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositionWindowTime(const ito::uint16 time)
+{
+    return setRegister<ito::uint16>(
+        positionWindowTime_register.index, positionWindowTime_register.subindex, time, sizeof(time));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
