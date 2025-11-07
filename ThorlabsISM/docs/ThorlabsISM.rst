@@ -95,3 +95,4 @@ Changelog
 * itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
 * itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
 * itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.
+* itom setup 5.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.56.

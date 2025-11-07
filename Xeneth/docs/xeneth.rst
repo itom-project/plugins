@@ -44,3 +44,4 @@ Changelog
 ==========
 
 * itom setup 4.3.0: This plugin has been compiled with Xeneth SDK 2.7.1.1173
+* itom setup 5.0.0: This plugin has been compiled with Xeneth SDK 2.8

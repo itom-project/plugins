@@ -100,3 +100,4 @@ Changelog
 * itom setup 4.1.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.2.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.3.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
+* itom setup 5.0.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251

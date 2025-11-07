@@ -149,3 +149,4 @@ Changelog
 * itom 4.0.0: plugin uses the driver PM100x_Instrument_Driver in version 2.2
 * itom 4.1.0: plugin uses the driver in Optical Power Monitor in version 4.0.41
 * itom 4.3.0: plugin uses the driver in Optical Power Monitor in version 5.1.4
+* itom 5.0.0: plugin uses the driver in Optical Power Monitor in version 7.0

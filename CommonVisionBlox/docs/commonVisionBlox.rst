@@ -115,3 +115,4 @@ Changelog
 * itom setup 4.1.0: This plugin has been compiled using the common vision blox 13.01.006
 * itom setup 4.2.0: This plugin has been compiled using the common vision blox 13.01.006
 * itom setup 4.3.0: This plugin has been compiled using the common vision blox 14.00.010
+* itom setup 5.0.0: This plugin has been compiled using the common vision blox 14.00.010

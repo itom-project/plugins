@@ -99,3 +99,4 @@ Changelog
 * itom setup 3.0.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
 * itom setup 3.1.0: This plugin has been compiled using the Thorlabs DCx USB camera driver 4.20
 * itom setup 4.3.0: This plugin has been compiled using the ThorCamlabs Software 3.70
+* itom setup 5.0.0: This plugin has been compiled using the ThorCamlabs Software 1.2.17

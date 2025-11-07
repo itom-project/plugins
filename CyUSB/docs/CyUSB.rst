@@ -102,3 +102,4 @@ Changelog
 * itom setup 4.0.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
 * itom setup 4.1.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
 * itom setup 4.3.0: This plugin has been compiled using the Infineon FX3 SDK 1.3
+* itom setup 5.0.0: This plugin has been compiled using the Infineon FX3 SDK 1.3.5

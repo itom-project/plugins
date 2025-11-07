@@ -104,3 +104,4 @@ Changelog
 * itom setup 4.0.0: This plugin has been compiled using AVT Vimba 3.1.0
 * itom setup 4.1.0: This plugin has been compiled using AVT Vimba 3.1.0
 * itom setup 4.3.0: This plugin has been compiled using AVT Vimba 6.0.0
+* itom setup 5.0.0: This plugin has been compiled using AVT Vimba 6.0.0 (SDK discontinued)
