@@ -537,6 +537,12 @@ if(PLUGIN_ThorlabsElliptec)
     add_subdirectory(ThorlabsElliptec)
 endif(PLUGIN_ThorlabsElliptec)
 
+# Tucsen Cameras
+itom_plugin_option(PLUGIN_Tucsen)
+if(PLUGIN_Tucsen)
+    add_subdirectory(Tucsen)
+endif(PLUGIN_Tucsen)
+
 # UhlRegister
 itom_plugin_option(PLUGIN_UhlRegister)
 if(PLUGIN_UhlRegister)
