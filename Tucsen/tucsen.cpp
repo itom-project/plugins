@@ -34,6 +34,7 @@ along with itom.If not, see <http://www.gnu.org/licenses/>.
 #include <qstringlist.h>
 #include <qplugin.h>
 #include <qmessagebox.h>
+#include <regex>
 
 #include "dockWidgetTucsen.h"
 
@@ -145,14 +146,14 @@ Tucsen::Tucsen() :
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 2.0, tr("timeout for image acquisition in sec").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI").toLatin1().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 684, 5472, 5472, tr("width of ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI").toLatin1().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 456, 3648, 3648, tr("height of ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("camera_number", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 14, 8, tr("Bit depth of sensor").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 16, 16, tr("Bit depth of sensor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 60.0, 0.01, tr("Integrationtime of CCD [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -230,15 +231,16 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    int packetSize = paramsOpt->at(1).getVal<int>();
-
     unsigned int cameraNumber = static_cast<unsigned int>(paramsOpt->at(0).getVal<int>());
 
     m_params["camera_number"].setVal<int>(cameraNumber);
     timeoutMS = sToMs(m_params["timeout"].getVal<double>());
 
-    TUCAM_Api_Init(&m_itApi);
-    if (0 == m_itApi.uiCamCount)
+    m_itApi.uiCamCount = 0;
+    char curPath[4] = "./";
+    m_itApi.pstrConfigPath = curPath;
+    TUCAMRET turet = TUCAM_Api_Init(&m_itApi);
+    if (turet != TUCAMRET_SUCCESS || 0 == m_itApi.uiCamCount)
         return ito::RetVal(ito::retError, 0, tr("No cameras found, check driver and connection!").toLatin1().data());
 
     if (cameraNumber >= m_itApi.uiCamCount)
@@ -250,18 +252,26 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
         return TUCAMRET_OUT_OF_RANGE;
     }
     m_opCam.uiIdxOpen = cameraNumber;
+    turet = TUCAM_Dev_Open(&m_opCam);
+    if (turet != TUCAMRET_SUCCESS)
+        return ito::RetVal(
+            ito::retError,
+            turet,
+            tr("Error opening camera!").toLatin1().data());
 
 	for (int i = (int)TUIDP_GLOBALGAIN; i < (int)TUIDP_ENDPROPERTY; ++i)
     {
+        memset(&(m_props[i - (int)TUIDP_GLOBALGAIN]), 0, sizeof(TUCAM_PROP_ATTR));
         m_props[i - (int)TUIDP_GLOBALGAIN].idProp = i;
 
+        turet = TUCAM_Prop_GetAttr(m_opCam.hIdxTUCam, &m_props[i - (int)TUIDP_GLOBALGAIN]);
         if (TUCAMRET_SUCCESS ==
             TUCAM_Prop_GetAttr(m_opCam.hIdxTUCam, &m_props[i - (int)TUIDP_GLOBALGAIN]))
             m_hasProp[i - (int)TUIDP_GLOBALGAIN] = true;
         else
             m_hasProp[i - (int)TUIDP_GLOBALGAIN] = false;
 
-        if (i == TUIDP_GLOBALGAIN)
+        if ((i == TUIDP_GLOBALGAIN) && m_hasProp[i - (int)TUIDP_GLOBALGAIN])
         {
             m_params["gain"].setMeta(
                 new ito::DoubleMeta(
@@ -273,7 +283,7 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             TUCAM_Prop_GetValue(m_opCam.hIdxTUCam, i, &dVal, 0);
             m_params["gain"].setVal<double>(dVal);
         }
-        else if (i == TUIDP_EXPOSURETM)
+        else if ((i == TUIDP_EXPOSURETM) && m_hasProp[i - (int)TUIDP_GLOBALGAIN])
         {
             m_params["integration_time"].setMeta(
                 new ito::DoubleMeta(
@@ -286,7 +296,7 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             m_params["integration_time"].setVal<double>(dVal);
         }
 
-        else if (i == TUIDP_BLACKLEVEL)
+        else if ((i == TUIDP_BLACKLEVEL) && m_hasProp[i - (int)TUIDP_GLOBALGAIN])
         {
             m_params["offset"].setMeta(
                 new ito::DoubleMeta(
@@ -298,7 +308,7 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             TUCAM_Prop_GetValue(m_opCam.hIdxTUCam, i, &dVal, 0);
             m_params["offset"].setVal<double>(dVal);
         }
-        else if (i == TUIDP_GAMMA)
+        else if ((i == TUIDP_GAMMA) && m_hasProp[i - (int)TUIDP_GLOBALGAIN])
         {
             m_params["gamma"].setMeta(
                 new ito::DoubleMeta(
@@ -310,7 +320,7 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             TUCAM_Prop_GetValue(m_opCam.hIdxTUCam, i, &dVal, 0);
             m_params["gamma"].setVal<double>(dVal);
         }
-        else if (i == TUIDP_FRAME_RATE)
+        else if ((i == TUIDP_FRAME_RATE) && m_hasProp[i - (int)TUIDP_GLOBALGAIN])
         {
             m_params["frame_rate"].setMeta(
                 new ito::DoubleMeta(
@@ -323,6 +333,38 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             m_params["frame_rate"].setVal<double>(dVal);
         }
     }
+
+    TUCAM_CAPA_ATTR capa;
+    TUCAM_VALUE_TEXT valText;
+
+    memset(&capa, 0, sizeof(TUCAM_CAPA_ATTR));
+    memset(&valText, 0, sizeof(TUCAM_VALUE_TEXT));
+    char szRes[64] = {0};
+    valText.pText = szRes;
+    valText.nTextSize = 64;
+    ito::int32 capaVal = 0;
+
+    capa.idCapa = TUIDC_RESOLUTION;
+    turet = TUCAM_Capa_GetAttr(m_opCam.hIdxTUCam, &capa);
+    TUCAM_Capa_GetValue(m_opCam.hIdxTUCam, TUIDC_RESOLUTION, &capaVal);
+    valText.nID = capaVal;
+    TUCAMRET n = TUCAM_Capa_GetValueText(m_opCam.hIdxTUCam, &valText);
+    std::regex rexp(R"(\d+)");
+    std::vector<ito::uint32> numbers;
+    std::string valStr{valText.pText};
+    for (std::sregex_iterator it(valStr.begin(), valStr.end(), rexp), endit; it != endit; it++)
+    {
+        numbers.push_back(atoi(it->str().data()));
+    }
+    m_params["sizex"].setMeta(new ito::IntMeta(numbers[0], numbers[0], 1), true);
+    m_params["sizex"].setVal<ito::int32>(numbers[0]);
+    m_params["sizey"].setMeta(new ito::IntMeta(numbers[1], numbers[1], 1), true);
+    m_params["sizey"].setVal<ito::int32>(numbers[1]);
+
+    TUCAM_Capa_GetValue(m_opCam.hIdxTUCam, TUIDC_BITOFDEPTH, &capaVal);
+    //m_params["bpp"].setMeta(new ito::IntMeta(8, 16, 8), true);
+    m_params["bpp"].setVal<ito::int32>(capaVal);
+    
 
     if (!retValue.containsError())
     {
@@ -721,8 +763,8 @@ ito::RetVal Tucsen::acquire(const int trigger, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
-    TUCAMRET turet;
+    bool RetCode;
+    TUCAMRET turet = TUCAMRET_INVALID_CAMERA;
 
     if (grabberStartedCount() <= 0)
     {
