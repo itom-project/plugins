@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>760</height>
+    <width>612</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -141,16 +141,16 @@
         <item row="4" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderIntegrationTime" native="true">
           <property name="decimals" stdset="0">
-           <number>4</number>
+           <number>0</number>
           </property>
           <property name="singleStep" stdset="0">
-           <double>0.010000000000000</double>
+           <double>1.000000000000000</double>
           </property>
           <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
+           <double>257.000000000000000</double>
           </property>
           <property name="suffix" stdset="0">
-           <string> s</string>
+           <string>ms</string>
           </property>
          </widget>
         </item>
@@ -217,111 +217,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupTrigger">
-       <property name="title">
-        <string>Trigger</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
-        <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkTriggerMode">
-          <property name="text">
-           <string>Enable Trigger (Trigger Mode)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_bpp_4">
-          <property name="text">
-           <string>Trigger Source</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboTriggerSource">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="currentIndex">
-           <number>-1</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_bpp_5">
-          <property name="text">
-           <string>Trigger Activation</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comboTriggerActivation">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="currentIndex">
-           <number>-1</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupGigE">
-       <property name="title">
-        <string>GigE Interface Settings</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lbl_streambps">
-          <property name="text">
-           <string>Streaming Bits per Second</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="spinStreamBpS">
-          <property name="suffix">
-           <string> bps</string>
-          </property>
-          <property name="maximum">
-           <number>124000000</number>
-          </property>
-          <property name="singleStep">
-           <number>1000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_bpp_7">
-          <property name="text">
-           <string>Packet Size</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="spinPacketSize">
-          <property name="maximum">
-           <number>16384</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
       <widget class="QGroupBox" name="groupBoxSize">
        <property name="enabled">
         <bool>true</bool>
@@ -354,7 +249,7 @@
           <item row="0" column="1">
            <widget class="RangeWidget" name="rangeX01" native="true">
             <property name="maximum" stdset="0">
-             <number>2048</number>
+             <number>6000</number>
             </property>
             <property name="maximumValue" stdset="0">
              <number>99</number>
@@ -399,7 +294,7 @@
              <number>2</number>
             </property>
             <property name="maximum" stdset="0">
-             <number>2048</number>
+             <number>4000</number>
             </property>
             <property name="maximumValue" stdset="0">
              <number>99</number>

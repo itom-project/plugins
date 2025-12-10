@@ -124,19 +124,19 @@ Tucsen::Tucsen() :
     m_params.insert(paramVal.getName(), paramVal);
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-    int roi[] = {0, 0, 2048, 2048};
+    int roi[] = {0, 0, 5472, 3648};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
     ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[2]-1), ito::RangeMeta(roi[1], roi[3])); //RangeMeta includes the last value, therefore -1
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 #else
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 5472, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 3647, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 5471, 5471, tr("last pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 3647, 3647, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 #endif
     
@@ -515,6 +515,7 @@ ito::RetVal Tucsen::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     {
         if (key == "integration_time")
         {
+            TUCAM_Capa_SetValue(m_opCam.hIdxTUCam, TUIDC_ATEXPOSURE, 0);
             TUCAMRET tret = TUCAM_Prop_SetValue(m_opCam.hIdxTUCam, TUIDP_EXPOSURETM, val->getVal<double>(), 0);
             if (tret != TUCAMRET_SUCCESS)
                 retValue += ito::RetVal(ito::retError, tret, tr("Error setting integration time").toLatin1().data());
@@ -1035,7 +1036,7 @@ void Tucsen::dockWidgetVisibilityChanged(bool visible)
 */
 const ito::RetVal Tucsen::showConfDialog(void)
 {
-    //return apiShowConfigurationDialog(this, new DialogTucsen(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
+    return apiShowConfigurationDialog(this, new DialogTucsen(this));
     return ito::retOk;
 }
 

@@ -41,7 +41,7 @@ void DockWidgetTucsen::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
-        ui.lblInterface->setText(params["interface"].getVal<char*>());
+        //ui.lblInterface->setText(params["interface"].getVal<char*>());
         ui.groupAcquisition->setEnabled(true);
         m_firstRun = false;
     }
@@ -71,17 +71,17 @@ void DockWidgetTucsen::parametersChanged(QMap<QString, ito::Param> params)
             ui.sW_Gain->setVisible(false);
         }
 
-        it = params.find("gain_auto");
-        if (it != params.end())
-        {
-            ui.check_GainAuto->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-            ui.check_GainAuto->setChecked(it->getVal<int>() > 0);
-            ui.sW_Gain->setEnabled(ui.sW_Gain->isEnabled() && (it->getVal<int>() == 0));
-        }
-        else
-        {
-            ui.check_GainAuto->setVisible(false);
-        }
+        //it = params.find("gain_auto");
+        //if (it != params.end())
+        //{
+        //    ui.check_GainAuto->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+        //    ui.check_GainAuto->setChecked(it->getVal<int>() > 0);
+        //    ui.sW_Gain->setEnabled(ui.sW_Gain->isEnabled() && (it->getVal<int>() == 0));
+        //}
+        //else
+        //{
+        //    ui.check_GainAuto->setVisible(false);
+        //}
 
         it = params.find("offset");
         if (it != params.end())
@@ -159,8 +159,8 @@ void DockWidgetTucsen::on_check_GainAuto_toggled(bool checked)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_auto",ito::ParamBase::Int, checked ? 1 : 0));
-        setPluginParameter(p, msgLevelWarningAndError);
+        //QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_auto",ito::ParamBase::Int, checked ? 1 : 0));
+        //setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }

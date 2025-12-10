@@ -173,19 +173,19 @@
       <item row="4" column="1">
        <widget class="SliderWidget" name="sW_IntTime" native="true">
         <property name="decimals" stdset="0">
-         <number>4</number>
+         <number>0</number>
         </property>
         <property name="singleStep" stdset="0">
-         <double>0.010000000000000</double>
+         <double>1.000000000000000</double>
         </property>
         <property name="maximum" stdset="0">
-         <double>60.000000000000000</double>
+         <double>257.000000000000000</double>
         </property>
         <property name="value" stdset="0">
-         <double>0.010000000000000</double>
+         <double>20.000000000000000</double>
         </property>
         <property name="suffix" stdset="0">
-         <string> s</string>
+         <string>ms</string>
         </property>
         <property name="tracking" stdset="0">
          <bool>false</bool>

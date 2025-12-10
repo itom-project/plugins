@@ -37,10 +37,11 @@ DialogTucsen::DialogTucsen(ito::AddInBase *grabber) : //, const BppEnum *bppEnum
     ui.setupUi(this);
 
     ui.comboBppMode->clear();
-    //if (bppEnum->bppMono8 >= 0) ui.comboBppMode->addItem("8 bit", 8);
+    ui.comboBppMode->addItem("8 bit", 8);
     //if (bppEnum->bppMono10 >= 0) ui.comboBppMode->addItem("10 bit", 10);
     //if (bppEnum->bppMono12 >= 0) ui.comboBppMode->addItem("12 bit", 12);
     //if (bppEnum->bppMono14 >= 0) ui.comboBppMode->addItem("14 bit", 14);
+    ui.comboBppMode->addItem("16 bit", 16);
 
     //disable dialog, since no parameters are known yet. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
@@ -77,9 +78,6 @@ void DialogTucsen::parametersChanged(QMap<QString, ito::Param> params)
         ui.rangeY01->setMaximumValue(im->getMax());
 #endif
 
-        ui.groupGigE->setVisible( QString("GigE") == params["interface"].getVal<char*>());
-        //window()->resize(window()->size());
-
         int binV_min = (int)(params["binning"].getMin()) % 100;
         int binH_min = ((int)(params["binning"].getMin()) - binV_min) / 100;
         int binV_max = (int)(params["binning"].getMax()) % 100;
@@ -95,20 +93,6 @@ void DialogTucsen::parametersChanged(QMap<QString, ito::Param> params)
             ui.comboBinVer->addItem(QString("%1x").arg(i), i);
         }
 
-        ui.comboTriggerActivation->clear();
-        const ito::StringMeta *sm = (const ito::StringMeta*)(params["trigger_activation"].getMeta());
-        for (int i = 0; i < sm->getLen(); ++i)
-        {
-            ui.comboTriggerActivation->addItem(sm->getString(i), sm->getString(i));
-        }
-
-        ui.comboTriggerSource->clear();
-        sm = (const ito::StringMeta*)(params["trigger_source"].getMeta());
-        for (int i = 0; i < sm->getLen(); ++i)
-        {
-            ui.comboTriggerSource->addItem(sm->getString(i), sm->getString(i));
-        }
-
         m_firstRun = false;
 
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -119,6 +103,8 @@ void DialogTucsen::parametersChanged(QMap<QString, ito::Param> params)
     int *roi = params["roi"].getVal<int*>();
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    //ui.rangeX01->setMaximum(params["sizex"].getMax());
+    //ui.rangeY01->setMaximum(params["sizey"].getMax());
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
     ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
 #else
@@ -202,6 +188,7 @@ void DialogTucsen::parametersChanged(QMap<QString, ito::Param> params)
     it = params.find("timeout");
     ui.spinTimeout->setMinimum(it->getMin());
     ui.spinTimeout->setMaximum(it->getMax());
+    ui.spinTimeout->setSingleStep(1);
     ui.spinTimeout->setValue(it->getVal<double>());
 
     it = params.find("bpp");
@@ -218,85 +205,32 @@ void DialogTucsen::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    it = params.find("binning");
-    if (it != params.end())
-    {
-        int binV = it->getVal<int>() % 100;
-        int binH = (it->getVal<int>() - binV) / 100;
+    //it = params.find("binning");
+    //if (it != params.end())
+    //{
+    //    int binV = it->getVal<int>() % 100;
+    //    int binH = (it->getVal<int>() - binV) / 100;
 
-        ui.comboBinHor->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        for (int i = 0; i < ui.comboBinHor->count(); ++i)
-        {
-            if (ui.comboBinHor->itemData(i).toInt() == binH)
-            {
-                ui.comboBinHor->setCurrentIndex(i);
-                break;
-            }
-        }
+    //    ui.comboBinHor->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+    //    for (int i = 0; i < ui.comboBinHor->count(); ++i)
+    //    {
+    //        if (ui.comboBinHor->itemData(i).toInt() == binH)
+    //        {
+    //            ui.comboBinHor->setCurrentIndex(i);
+    //            break;
+    //        }
+    //    }
 
-        ui.comboBinVer->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        for (int i = 0; i < ui.comboBinVer->count(); ++i)
-        {
-            if (ui.comboBinVer->itemData(i).toInt() == binH)
-            {
-                ui.comboBinVer->setCurrentIndex(i);
-                break;
-            }
-        }
-    }
-
-    it = params.find("trigger_mode");
-    if (it != params.end())
-    {
-        ui.checkTriggerMode->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        ui.checkTriggerMode->setChecked(it->getVal<int>() > 0);
-    }
-
-    it = params.find("trigger_source");
-    if (it != params.end())
-    {
-        ui.comboTriggerSource->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        for (int i = 0; i < ui.comboTriggerSource->count(); ++i)
-        {
-            if (ui.comboTriggerSource->itemData(i).toString() == it->getVal<char*>())
-            {
-                ui.comboTriggerSource->setCurrentIndex(i);
-                break;
-            }
-        }
-    }
-
-    it = params.find("trigger_activation");
-    if (it != params.end())
-    {
-        ui.comboTriggerActivation->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        for (int i = 0; i < ui.comboTriggerActivation->count(); ++i)
-        {
-            if (ui.comboTriggerActivation->itemData(i).toString() == it->getVal<char*>())
-            {
-                ui.comboTriggerActivation->setCurrentIndex(i);
-                break;
-            }
-        }
-    }
-
-    it = params.find("stream_bps");
-    if (it != params.end())
-    {
-        ui.spinStreamBpS->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        ui.spinStreamBpS->setMinimum(it->getMin());
-        ui.spinStreamBpS->setMaximum(it->getMax());
-        ui.spinStreamBpS->setValue(it->getVal<int>());
-    }
-
-    it = params.find("packet_size");
-    if (it != params.end())
-    {
-        ui.spinPacketSize->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-        ui.spinPacketSize->setMinimum(it->getMin());
-        ui.spinPacketSize->setMaximum(it->getMax());
-        ui.spinPacketSize->setValue(it->getVal<int>());
-    }
+    //    ui.comboBinVer->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+    //    for (int i = 0; i < ui.comboBinVer->count(); ++i)
+    //    {
+    //        if (ui.comboBinVer->itemData(i).toInt() == binH)
+    //        {
+    //            ui.comboBinVer->setCurrentIndex(i);
+    //            break;
+    //        }
+    //    }
+    //}
 
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
@@ -319,6 +253,7 @@ ito::RetVal DialogTucsen::applyParameters()
     if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
         int x0, x1, y0, y1;
+        ui.rangeX01->maximum();
         ui.rangeX01->values(x0,x1);
         ui.rangeY01->values(y0,y1);
         int roi[] = {0,0,0,0};
@@ -367,29 +302,12 @@ ito::RetVal DialogTucsen::applyParameters()
     }
 #endif
 
-    int newBinH = ui.comboBinHor->isEnabled() ? ui.comboBinHor->itemData(ui.comboBinHor->currentIndex()).toInt() : 1;
-    int newBinV = ui.comboBinHor->isEnabled() ? ui.comboBinVer->itemData(ui.comboBinVer->currentIndex()).toInt() : 1;
-    if ((newBinH*100+newBinV) != m_currentParameters["binning"].getVal<int>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, (newBinH*100+newBinV))));
-    }
-
-    if (m_currentParameters["trigger_mode"].getVal<int>() != (ui.checkTriggerMode->isChecked() ? 1 : 0))
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, (ui.checkTriggerMode->isChecked() ? 1 : 0))));
-    }
-
-    QString newTriggerSource = ui.comboTriggerSource->itemData(ui.comboTriggerSource->currentIndex()).toString();
-    if (newTriggerSource != m_currentParameters["trigger_source"].getVal<char*>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_source", ito::ParamBase::String, newTriggerSource.toLatin1().data())));
-    }
-
-    QString newTriggerActivation = ui.comboTriggerActivation->itemData(ui.comboTriggerActivation->currentIndex()).toString();
-    if (newTriggerActivation != m_currentParameters["trigger_activation"].getVal<char*>())
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_activation", ito::ParamBase::String, newTriggerActivation.toLatin1().data())));
-    }
+    //int newBinH = ui.comboBinHor->isEnabled() ? ui.comboBinHor->itemData(ui.comboBinHor->currentIndex()).toInt() : 1;
+    //int newBinV = ui.comboBinHor->isEnabled() ? ui.comboBinVer->itemData(ui.comboBinVer->currentIndex()).toInt() : 1;
+    //if ((newBinH*100+newBinV) != m_currentParameters["binning"].getVal<int>())
+    //{
+    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, (newBinH*100+newBinV))));
+    //}
 
     if (dblEq(m_currentParameters["offset"].getVal<double>(), ui.sliderOffset->value()) == 0)
     {
@@ -401,10 +319,10 @@ ito::RetVal DialogTucsen::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gamma", ito::ParamBase::Double, ui.sliderGamma->value())));
     }
 
-    if (m_currentParameters["gain_auto"].getVal<int>() != (ui.checkGainAuto->isChecked() ? 1 : 0))
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_auto", ito::ParamBase::Int, (ui.checkGainAuto->isChecked() ? 1 : 0))));
-    }
+    //if (m_currentParameters["gain_auto"].getVal<int>() != (ui.checkGainAuto->isChecked() ? 1 : 0))
+    //{
+    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_auto", ito::ParamBase::Int, (ui.checkGainAuto->isChecked() ? 1 : 0))));
+    //}
 
     if (ui.checkGainAuto->isChecked() == false && dblEq(m_currentParameters["gain"].getVal<double>(), ui.sliderGain->value()) == 0)
     {
@@ -419,19 +337,6 @@ ito::RetVal DialogTucsen::applyParameters()
     if (dblEq(m_currentParameters["timeout"].getVal<double>(), ui.spinTimeout->value()) == 0)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, ui.spinTimeout->value())));
-    }
-
-    if (ui.groupGigE->isVisible() && m_currentParameters.contains("stream_bps") && m_currentParameters.contains("packet_size"))
-    {
-        if (m_currentParameters["stream_bps"].getVal<int>() != ui.spinStreamBpS->value())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stream_bps", ito::ParamBase::Int, ui.spinStreamBpS->value())));
-        }
-
-        if (m_currentParameters["packet_size"].getVal<int>() != ui.spinPacketSize->value())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("packet_size", ito::ParamBase::Int, ui.spinPacketSize->value())));
-        }
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
@@ -466,8 +371,6 @@ void DialogTucsen::enableDialog(bool enabled)
     //e.g.
     ui.groupBoxBinning->setEnabled(enabled);
     ui.groupBoxIntegration->setEnabled(enabled);
-    ui.groupTrigger->setEnabled(enabled);
-    ui.groupGigE->setEnabled(enabled);
     ui.groupBoxSize->setEnabled(enabled);
 }
 
