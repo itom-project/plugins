@@ -46,7 +46,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **acceleration**: int
     Acceleration in 1/s². Register '0x6083.00'.
 
-    *Value range: [1, 30000], Default: 3000*
+    *Value range: [1, 30000], Default: 4250*
 **async**: int, read-only
     Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is
     implemented.
@@ -55,11 +55,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: -24*
+    *Value range: [-32768, 32767], Default: 74*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
-    *Value range: [1, 30000], Default: 3000*
+    *Value range: [1, 30000], Default: 1280*
 **deviceID**: int
     Explicit device ID. Register '0x2400.08'
 
@@ -68,6 +68,14 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Name of device. Register '0x1008.00'.
 
     *Match: "", Default: "MCS 3242 BX4 ET"*
+**deviceSupplyLowerThreshold**: int, read-only
+    Device supply lower threshold in mV. Register '0x2325.01'.
+
+    *Value range: [0, 65535], Default: 1180*
+**deviceSupplyVoltage**: int, read-only
+    Device supply voltage in mV. Register '0x2325.06'.
+
+    *Value range: [0, 65535], Default: 2397*
 **fault**: int, read-only
     1: Error present, 0: No error present (Bit 3).
 
@@ -79,7 +87,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **fluxGainControl**: int
     Flux control gain parameter [mOm]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1834*
+    *Value range: [-1, 0], Default: 1835*
 **fluxIntegralTimeControl**: int
     Flux control integral time control parameter [µs]. Register '0x2342.01'.
 
@@ -105,20 +113,36 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **loadInertia**: float
     Load inertia in [gcm²]. Register '0x2329.0A'.
 
-    *Value range: [0:0.1:4.29497e+09], Default: 30.5*
+    *Value range: [0:0.1:4.29497e+09], Default: 0*
 **maxMotorSpeed**: int
     Max motor speed in 1/min. Register '0x6080.00'.
 
-    *Value range: [1, 32767], Default: 2500*
+    *Value range: [1, 32767], Default: 32767*
 **maxTorqueLimit**: int, read-only
     Maximum torque limit in relative scaling. 1000 = motor rated torque. Register
     '0x6072.00'.
 
-    *Value range: [1, 30000], Default: 5999*
+    *Value range: [1, 30000], Default: 2000*
 **motionProfile**: int
     Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '0x6086.00'.
 
     *Value range: [0, 1], Default: 0*
+**motorSupplyLowerThreshold**: int
+    Motor supply lower threshold in mV. Register '0x2325.02'.
+
+    *Value range: [0, 65535], Default: 800*
+**motorSupplyMaxThreshold**: int, read-only
+    Motor supply max threshold in mV. Register '0x2325.03'.
+
+    *Value range: [0, 65535], Default: 5200*
+**motorSupplyUpperThreshold**: int
+    Motor supply upper threshold in mV. Register '0x2325.04'.
+
+    *Value range: [0, 5200], Default: 5200*
+**motorSupplyVoltage**: int, read-only
+    Motor supply voltage in mV. Register '0x2325.07'.
+
+    *Value range: [0, 65535], Default: 2389*
 **moveTimeout**: int
     Timeout for movement in ms.
 
@@ -141,7 +165,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **operation**: int
     Enable (1) or Disable (0) operation.
 
-    *Value range: [0, 1], Default: 1*
+    *Value range: [0, 1], Default: 0*
 **operationEnabled**: int, read-only
     1: Operation enabled, 0: Operation disabled (Bit 2).
 
@@ -168,7 +192,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Minimum residence time within the corridor in PP operating mode, until the target
     position is reported as achieved.
 
-    *Value range: [0, 65535], Default: 100*
+    *Value range: [0, 65535], Default: 48*
 **power**: int
     Enable (1) or Disable (0) device power.
 
@@ -180,7 +204,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **profileVelocity**: int
     Profile velocity in 1/min. Register '0x6081.00'.
 
-    *Value range: [1, 32767], Default: 1000*
+    *Value range: [1, 32767], Default: 1500*
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
@@ -229,7 +253,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 31*
+    *Value range: [0, 32767], Default: 21*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -237,7 +261,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **torqueGainControl**: int
     Torque control gain parameter [mOm]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1834*
+    *Value range: [-1, 0], Default: 1835*
 **torqueIntegralTimeControl**: int
     Torque control integral time control parameter [µs]. Register '0x2342.01'.
 
@@ -259,7 +283,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **velocityGainControl**: int
     Velocity gain control parameter [As 1e-6]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1834*
+    *Value range: [-1, 0], Default: 1835*
 **velocityIntegralPartOption**: int
     Velocity integral part option. Configuration of the speed control loop. '0': integral
     component active, '1': stopped integral component in the position windoed (in PP mode),
@@ -269,7 +293,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **velocityIntegralTimeControl**: int
     Velocity integral time control parameter [µs]. Register '0x2344.02'.
 
-    *Value range: [0, 65535], Default: 37*
+    *Value range: [0, 65535], Default: 23*
 **velocityWarningThresholdControl**: int
     Velocity warning threshold control parameter. Register '0x2344.05'.
 
@@ -282,6 +306,10 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: Power supply enabled, 0: Power supply disabled (Bit 4).
 
     *Value range: [0, 1], Default: 0*
+**voltageErrorDelayTime**: int
+    Voltage error delay time in ms. Register '0x2325.05'.
+
+    *Value range: [0, 65535], Default: 200*
 **warning**: int, read-only
     1: One of the monitored temperatures has exceeded at least the warning threshold, 0: No
     raised temperatures (Bit 7).

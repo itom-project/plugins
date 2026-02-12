@@ -118,11 +118,13 @@ FaulhaberMCS::FaulhaberMCS() :
     // Clear the buffer initially
     std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
 
-    ito::Param paramVal(
+    ito::Param paramVal = ito::Param(
         "name",
         ito::ParamBase::String | ito::ParamBase::Readonly,
-        tr("FaulhaberMCS").toLatin1().data(),
-        nullptr);
+        "",
+        tr("FaulhaberMCS")
+            .toUtf8()
+            .data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category general device parameter
