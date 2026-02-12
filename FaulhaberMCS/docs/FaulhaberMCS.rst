@@ -34,6 +34,15 @@ Many of them are directly initialized by the parameters of the constructor.
 During the runtime of an instance, the value of these parameters is obtained by
 the method *getParam*, writeable parameters can be changed using *setParam*.
 
+.. attention::
+    It is strongly recommended to set the overvoltage control!
+    Use the plugin parameter "motorSupplyUpperThreshold" to set the overvoltage control.
+    Using the device with ``24V`` supply voltage, the overvoltage control should be set to ``27.5V`` to prevent damage of the device.
+
+.. hint::
+    It is recommended to set the parameter ``loadInertia`` for a better performance of the control loop.
+    The load inertia can be calculated by using the Faulhaber Motion Manager. The load inertia must be set in [gcm²].
+
 **acceleration**: int
     Acceleration in 1/s². Register '0x6083.00'.
 

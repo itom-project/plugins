@@ -199,6 +199,14 @@ private:
 
     const Register nominalVoltage_register = {0x2604, 0x00};
 
+    const Register voltageMonitor_deviceSupplyLowerThreshold_register = {0x2325, 0x01};
+    const Register voltageMonitor_motorSupplyLowerThreshold_register = {0x2325, 0x02};
+    const Register voltageMonitor_motorSupplyMaxThreshold_register = {0x2325, 0x03};
+    const Register voltageMonitor_motorSupplyUpperThreshold_register = {0x2325, 0x04};
+    const Register voltageMonitor_voltageErrorDelayTime_register = {0x2325, 0x05};
+    const Register voltageMonitor_deviceSupplyVoltage_register = {0x2325, 0x06};
+    const Register voltageMonitor_motorSupplyVoltage_register = {0x2325, 0x07};
+
     const ito::uint8 shutDown_register = 0x06;
     const ito::uint8 enableOperation_register = 0x0F;
     const ito::uint8 disable_register = 0x07;
@@ -386,6 +394,18 @@ private:
     ito::RetVal getMotionProfileType(ito::int16& type);
     ito::RetVal setMotionProfileType(const ito::int16& type);
 
+    // VOLTAGE MONITOR
+    ito::RetVal getDeviceSupplyLowerThreshold(ito::uint16& threshold);
+    ito::RetVal getMotorSupplyLowerThreshold(ito::uint16& threshold);
+    ito::RetVal setMotorSupplyLowerThreshold(const ito::uint16& threshold);
+    ito::RetVal getMotorSupplyMaxThreshold(ito::uint16& threshold);
+    ito::RetVal getMotorSupplyUpperThreshold(ito::uint16& threshold);
+    ito::RetVal setMotorSupplyUpperThreshold(const ito::uint16& threshold);
+    ito::RetVal getVoltageErrorDelayTime(ito::uint16& time);
+    ito::RetVal setVoltageErrorDelayTime(const ito::uint16& time);
+    ito::RetVal getDeviceSupplyVoltage(ito::uint16& voltage);
+    ito::RetVal getMotorSupplyVoltage(ito::uint16& voltage);
+
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);
     ito::RetVal setHomingOffset(const ito::int32& offset);
@@ -405,6 +425,7 @@ private:
         const ito::uint16& limitCheckDelayTime,
         const ito::uint16 *torqueLimits,
         const ito::uint16& timeoutTime);
+
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
