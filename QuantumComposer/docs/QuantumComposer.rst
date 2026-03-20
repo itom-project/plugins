@@ -425,3 +425,5 @@ The channel specific parameter are get by the ``getParam`` method, too.
 
 Changelog
 ==========
+
+* itom setup >= 5: Added support of quantum composer firmware version >= 3.0.0. The plugin is now compatible with the new firmware, but it is not compatible with older firmware versions.

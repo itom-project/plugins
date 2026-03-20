@@ -355,7 +355,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"),
-        tr("Number of counts.").toLatin1().data());
+        tr("Number of counts. Plugin Parameter uses the default TCNTS parameter.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // EXEC functions
@@ -957,6 +957,52 @@ ito::RetVal QuantumComposer::init(
             }
         }
 
+        const QString versionStr =
+        QString::fromLatin1(m_params["version"].getVal<char*>()).trimmed();
+
+        // Example supported formats:
+        // "2.4.3-2.0.11" -> major = 2
+        // "3.0.0"        -> major = 3
+        // "10.1"         -> major = 10
+        QRegularExpression re(QStringLiteral(R"(^\s*(\d+))"));
+        QRegularExpressionMatch match = re.match(versionStr);
+
+        if (!match.hasMatch())
+        {
+            m_numChannels = 0;
+            retValue += ito::RetVal(
+                ito::retError,
+                1,
+                tr("Unknown device version '%1', cannot determine the version!")
+                    .arg(versionStr)
+                    .toLatin1()
+                    .data());
+        }
+        else
+        {
+            int majorVersion = match.captured(1).toInt();
+            if (majorVersion >= 3)
+            {
+                m_counter_query = ":PULSE0:COUN:PULSES?";
+            }
+            else if (majorVersion < 3)
+            {
+                m_counter_query = ":PULSE0:COUN:COUN? TCNTS";
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    1,
+                    tr("Unsupported device major version '%1' parsed from '%2', cannot determine "
+                       "number of channels!")
+                        .arg(majorVersion)
+                        .arg(versionStr)
+                        .toLatin1()
+                        .data());
+            }
+        }
+
         if (!retValue.containsError())
         {
             retValue +=
@@ -1018,7 +1064,7 @@ ito::RetVal QuantumComposer::init(
             m_params["counterState"].setVal<int>(answerInt);
 
             retValue +=
-                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
+                SendQuestionWithAnswerInteger(m_counter_query, answerInt, m_requestTimeOutMS);
             m_params["counterCounts"].setVal<int>(answerInt);
         }
 
@@ -1083,8 +1129,8 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
         if (key == "counterCounts")
         {
             retValue +=
-                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
-            val->setVal<int>(answerInt);
+                SendQuestionWithAnswerInteger(m_counter_query, answerInt, m_requestTimeOutMS);
+            it->setVal<int>(answerInt);
         }
         else if (key == "statesList")
         {
@@ -1470,7 +1516,7 @@ ito::RetVal QuantumComposer::setParam(
         else if (key == "counterState")
         {
             retValue += SendCommand(
-                QString(":PULSE0:COUNT:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
+                QString(":PULSE0:COUN:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -1631,8 +1677,16 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
 
     if (_answer.contains("?"))
     {
-        _answer.replace("?", "");
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Answer '%1' contains a question mark, which is removed for conversion to integer. Check manual for error description.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+        return retValue;
     }
+
     answer = _answer.toInt(&ok);
 
     if (!ok)
@@ -1640,7 +1694,7 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
+            tr("Error during SendQuestionWithAnswerInteger, converting %1 to integer value.")
                 .arg(_answer.constData())
                 .toLatin1()
                 .data());
