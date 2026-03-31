@@ -111,6 +111,10 @@ if(ANDOR_SDK3_DIR)
 
     target_link_libraries(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${ANDOR_SDK3_LIBRARY})
 
+    if (MSVC)
+        target_compile_options(${target_name} PRIVATE /Zc:wchar_t)
+    endif()
+
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 

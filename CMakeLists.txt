@@ -66,12 +66,10 @@ if(BUILD_QTVERSION STREQUAL "Qt5")
 endif(BUILD_QTVERSION STREQUAL "Qt5")
 
 # AndorSDK3
-if(BUILD_QTVERSION STREQUAL "Qt5")
-    itom_plugin_option(PLUGIN_andorSDK3)
-    if(PLUGIN_andorSDK3)
-        add_subdirectory(AndorSDK3)
-    endif(PLUGIN_andorSDK3)
-endif(BUILD_QTVERSION STREQUAL "Qt5")
+itom_plugin_option(PLUGIN_andorSDK3)
+if(PLUGIN_andorSDK3)
+    add_subdirectory(AndorSDK3)
+endif(PLUGIN_andorSDK3)
 
 # AvantesAvaSpec
 itom_plugin_option(PLUGIN_AvantesAvaSpec)
