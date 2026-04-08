@@ -117,8 +117,7 @@ Additional functions (exec functions)
 
 .. py:function::  instance.exec('optimizeMotors')
 
-    Fine tunes the frequency search for forward and backward direction. At first applies a search frequency run for coarse optimization, then starts the fine tuning. This operation might take several 
-... minutes (e.g. 30min). It can be interrupted by the Keyboard Interrupt.
+    Fine tunes the frequency search for forward and backward direction. At first applies a search frequency run for coarse optimization, then starts the fine tuning. This operation might take several minutes (e.g. 30min). It can be interrupted by the Keyboard Interrupt.
 
 
 .. py:function::  instance.exec('resetDefaults')

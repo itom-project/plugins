@@ -291,8 +291,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelOffCounterList: List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parame
-... ter channelIndexList.
+    :param channelOffCounterList: List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelOffCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelOutputModes', channelIndexList, outputModesList)
@@ -328,8 +327,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelPulseCounterList: List of pulse counter values to generate during the ON cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the para
-... meter channelIndexList.
+    :param channelPulseCounterList: List of pulse counter values to generate during the ON cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelPulseCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelSyncs', channelIndexList, syncsList)
@@ -347,8 +345,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelPulseWaitCounterList: List of pulse counter values to wait until enabling output of the duty cycle mode for the given channels (0 - 9999999). List must have the same length as the pa
-... rameter channelIndexList.
+    :param channelPulseWaitCounterList: List of pulse counter values to wait until enabling output of the duty cycle mode for the given channels (0 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelPulseWaitCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelWidths', channelIndexList, widthsList)
