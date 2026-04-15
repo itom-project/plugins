@@ -232,6 +232,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
+    int test = params["sensor_cooling"].getVal<int>();
     ui.checkSensorCooling->setDisabled(params["sensor_cooling"].getFlags() & ito::ParamBase::Readonly);
     ui.checkSensorCooling->setChecked( params["sensor_cooling"].getVal<int>() > 0);
 
@@ -344,7 +345,7 @@ ito::RetVal DialogSDK3::applyParameters()
 
     if (ui.checkSensorCooling->isEnabled())
     {
-        if (m_currentParameters["sensor_cooling"].getVal<int>() == (ui.checkSensorCooling->isChecked() ? 1 : 0))
+        if (m_currentParameters["sensor_cooling"].getVal<int>() != (ui.checkSensorCooling->isChecked() ? 1 : 0))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sensor_cooling", ito::ParamBase::Int, (ui.checkSensorCooling->isChecked() ? 1 : 0))));
         }

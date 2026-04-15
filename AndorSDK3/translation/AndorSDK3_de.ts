@@ -162,9 +162,9 @@
 
 - Zyla 5.5 (Dual Camera Link)
 
-The plugin has been compiled using the Andor SDK 3.8
+The plugin has been compiled using the 
 
-In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible
+In order to run your camera, please purchase and install the  or higher and make sure that the necessary libraries are accessible
 by the Windows path environment variable (e.g. append &quot;C:/Program Files/Andor SDK3&quot; to the path variable).</source>
         <translation type="unfinished"></translation>
     </message>

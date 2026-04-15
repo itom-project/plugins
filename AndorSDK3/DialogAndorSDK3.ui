@@ -80,12 +80,12 @@
          <widget class="QComboBox" name="comboShutter">
           <item>
            <property name="text">
-            <string>Rolling Shutter</string>
+            <string>Rolling</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Global Shutter</string>
+            <string>Global</string>
            </property>
           </item>
          </widget>
@@ -98,20 +98,20 @@
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="SliderWidget" name="sliderGain">
-          <property name="decimals">
+         <widget class="SliderWidget" name="sliderGain" native="true">
+          <property name="decimals" stdset="0">
            <number>2</number>
           </property>
-          <property name="singleStep">
+          <property name="singleStep" stdset="0">
            <double>0.100000000000000</double>
           </property>
-          <property name="pageStep">
+          <property name="pageStep" stdset="0">
            <double>0.100000000000000</double>
           </property>
-          <property name="maximum">
+          <property name="maximum" stdset="0">
            <double>1.000000000000000</double>
           </property>
-          <property name="suffix">
+          <property name="suffix" stdset="0">
            <string/>
           </property>
          </widget>
@@ -137,14 +137,14 @@
          </widget>
         </item>
         <item row="2" column="1" colspan="2">
-         <widget class="SliderWidget" name="sliderIntegrationTime">
-          <property name="decimals">
+         <widget class="SliderWidget" name="sliderIntegrationTime" native="true">
+          <property name="decimals" stdset="0">
            <number>5</number>
           </property>
-          <property name="maximum">
+          <property name="maximum" stdset="0">
            <double>100.000000000000000</double>
           </property>
-          <property name="suffix">
+          <property name="suffix" stdset="0">
            <string> s</string>
           </property>
          </widget>
@@ -200,8 +200,14 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkSensorCooling">
+          <property name="disabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Sensor Cooling</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -244,26 +250,26 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="RangeWidget" name="rangeX01">
-            <property name="maximum">
+           <widget class="RangeWidget" name="rangeX01" native="true">
+            <property name="maximum" stdset="0">
              <number>2048</number>
             </property>
-            <property name="maximumValue">
+            <property name="maximumValue" stdset="0">
              <number>99</number>
             </property>
-            <property name="prefix">
+            <property name="prefix" stdset="0">
              <string/>
             </property>
-            <property name="suffix">
+            <property name="suffix" stdset="0">
              <string/>
             </property>
-            <property name="tickInterval">
+            <property name="tickInterval" stdset="0">
              <number>5</number>
             </property>
-            <property name="autoSpinBoxWidth">
+            <property name="autoSpinBoxWidth" stdset="0">
              <bool>true</bool>
             </property>
-            <property name="tracking">
+            <property name="tracking" stdset="0">
              <bool>false</bool>
             </property>
             <property name="decimals" stdset="0">
@@ -286,29 +292,29 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="RangeWidget" name="rangeY01">
-            <property name="singleStep">
+           <widget class="RangeWidget" name="rangeY01" native="true">
+            <property name="singleStep" stdset="0">
              <number>2</number>
             </property>
-            <property name="maximum">
+            <property name="maximum" stdset="0">
              <number>2048</number>
             </property>
-            <property name="maximumValue">
+            <property name="maximumValue" stdset="0">
              <number>99</number>
             </property>
-            <property name="prefix">
+            <property name="prefix" stdset="0">
              <string/>
             </property>
-            <property name="suffix">
+            <property name="suffix" stdset="0">
              <string/>
             </property>
-            <property name="tickInterval">
+            <property name="tickInterval" stdset="0">
              <number>5</number>
             </property>
-            <property name="autoSpinBoxWidth">
+            <property name="autoSpinBoxWidth" stdset="0">
              <bool>true</bool>
             </property>
-            <property name="tracking">
+            <property name="tracking" stdset="0">
              <bool>false</bool>
             </property>
             <property name="decimals" stdset="0">
@@ -343,7 +349,7 @@
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
             </property>
             <property name="keyboardTracking">
              <bool>false</bool>
@@ -375,7 +381,7 @@
              <bool>true</bool>
             </property>
             <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
+             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
             </property>
             <property name="suffix">
              <string> px</string>
@@ -391,7 +397,7 @@
           <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -416,7 +422,7 @@
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -433,10 +439,10 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="standardButtons">
-        <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        <set>QDialogButtonBox::StandardButton::Apply|QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
        </property>
       </widget>
      </item>

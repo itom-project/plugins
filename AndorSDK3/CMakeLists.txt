@@ -130,7 +130,7 @@ if(ANDOR_SDK3_DIR)
 
     if(WIN32)
         itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY)
-        itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY2)
+        #itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY2)
         itom_post_build_copy_files_to_lib_folder(${target_name} ANDOR_SDK3_BINARY3)
     endif(WIN32)
 

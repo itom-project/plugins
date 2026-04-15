@@ -31,7 +31,7 @@ Parameters
 An instance of this plugin has the following internal parameters:
 
 **name**: {str}, read-only
-    AVTVimba
+    AndorSDK3
 **integration_time**: {float}
     Exposure time of chip (in seconds)
 **binning**: {int}
@@ -101,3 +101,4 @@ Changelog
 * itom setup 4.0.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
 * itom setup 4.1.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
 * itom setup 4.3.0: This plugin has been compiled using the Andor SDK 3.15.30092.0
+* itom setup 5.0.0: This plugin has been compiled using the Andor SDK 3.15.30092.0

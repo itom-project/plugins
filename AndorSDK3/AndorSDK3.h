@@ -72,13 +72,13 @@ class AndorSDK3 : public ito::AddInGrabber
         ito::RetVal m_acquisitionRetVal;
 
         struct BufferStruct {
-            BufferStruct() : buffer(NULL), alignedBuffer(NULL) {}
+            BufferStruct() : buffer(NULL) {}//, alignedBuffer(NULL) {}
             AT_64 aoiWidth;
             AT_64 aoiHeight;
             AT_64 aoiStride;
             AT_U8 aoiBitsPerPixel;
             AT_U8 *buffer;
-            AT_U8 *alignedBuffer;
+            //AT_U8 *alignedBuffer;
             AT_64 bufferSize;
             bool imageAvailable;
         };
@@ -150,6 +150,7 @@ class AndorSDK3 : public ito::AddInGrabber
 
         BufferStruct m_buffer;
         bool m_camRestartNecessary;
+        bool cam_Running;
 
         static int andorOpenedIndices[32];
 
