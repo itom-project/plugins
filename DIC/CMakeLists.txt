@@ -33,6 +33,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
 find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector for Windows (memory leak detector, optional)
+find_package(Eigen REQUIRED)
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)
