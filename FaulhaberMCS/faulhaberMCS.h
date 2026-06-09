@@ -405,6 +405,31 @@ private:
         const ito::uint16& limitCheckDelayTime,
         const ito::uint16* torqueLimits,
         const ito::uint16& timeoutTime);
+
+    // ----- init() helpers -----
+    // Read a value from the device with the given member-function getter,
+    // and store it in m_params[name] as an int. No-op if the getter
+    // returns an error.
+    template <typename T>
+    ito::RetVal initIntParam(const char* name, ito::RetVal (FaulhaberMCS::*getter)(T&))
+    {
+        T v{};
+        ito::RetVal rv = (this->*getter)(v);
+        if (!rv.containsError())
+            m_params[name].setVal<int>(static_cast<int>(v));
+        return rv;
+    }
+    // Same as initIntParam but for QString getters; stores via setVal<char*>.
+    ito::RetVal initStringParam(const char* name, ito::RetVal (FaulhaberMCS::*getter)(QString&));
+
+    // ----- operationMode helpers -----
+    // Read the current setpoint (and optionally the target) appropriate
+    // for the active operationMode. For voltage (-1) and torque (10) modes
+    // the 16-bit register is widened to int32. If target is nullptr the
+    // target register read is skipped. Modes other than {-1, 1, 3, 10}
+    // leave current/target unchanged and return retOk.
+    ito::RetVal readPosForCurrentMode(ito::int32& current, ito::int32* target = nullptr);
+
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
