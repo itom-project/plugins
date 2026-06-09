@@ -403,8 +403,9 @@ private:
         const ito::uint32& homingSpeed,
         const ito::uint32& acceleration,
         const ito::uint16& limitCheckDelayTime,
-        const ito::uint16 *torqueLimits,
-        const ito::uint16& timeoutTime);
+        const ito::uint16* torqueLimits,
+        const ito::uint16& timeoutTime,
+        const ito::int32& backoffDistance);
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
 
