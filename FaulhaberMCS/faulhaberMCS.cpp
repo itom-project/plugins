@@ -30,8 +30,6 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
-#include <iostream>
-
 #include <qdatetime.h>
 #include <qelapsedtimer.h>
 #include <qplugin.h>
@@ -919,22 +917,6 @@ FaulhaberMCS::FaulhaberMCS() :
         60000,
         10000,
         tr("Timeout for homing in ms.").toUtf8().data());
-    pOpt.append(paramVal);
-
-    paramVal = ito::Param(
-        "backoffDistance",
-        ito::ParamBase::Int | ito::ParamBase::In,
-        std::numeric_limits<ito::int32>::min(),
-        std::numeric_limits<ito::int32>::max(),
-        500,
-        tr("Pre-homing back-off distance in user-defined units, only used for mechanical-stop "
-           "methods (-4..-1). The rotor is moved by this signed amount in Profile Position Mode "
-           "before the homing trigger to guarantee it is not pre-loaded against the target stop. "
-           "Sign must be OPPOSITE to the homing direction: positive when homing into a negative "
-           "stop (e.g. method -3 on most setups), negative when homing into a positive stop. "
-           "Set to 0 to disable.")
-            .toUtf8()
-            .data());
     pOpt.append(paramVal);
 
     registerExecFunc(
@@ -2221,109 +2203,12 @@ ito::RetVal FaulhaberMCS::performHoming(
     const ito::uint32& acceleration,
     const ito::uint16& limitCheckDelayTime,
     const ito::uint16* torqueLimits,
-    const ito::uint16& timeoutTime,
-    const ito::int32& backoffDistance)
+    const ito::uint16& timeoutTime)
 {
     ito::RetVal retValue(ito::retOk);
 
-    // --- DIAGNOSTIC LOGGING --------------------------------------------------
-    // Static counter so the user can correlate log lines with successive calls.
-    static int callNum = 0;
-    ++callNum;
-
-    // logSW: read 0x6041 fresh (default) and emit a compact line with the
-    // homing-relevant bits decomposed. A fresh read is the default because
-    // setControlWord / setRegister responses (SDO write 0x02) do NOT carry the
-    // statusword, so the cached m_statusWord can be stale after a write.
-    auto logSW = [this](int n, const char* tag, bool refresh = true) {
-        if (refresh)
-        {
-            readRegisterWithParsedResponse<ito::uint16>(
-                statusWord_register.index, statusWord_register.subindex, m_statusWordValue);
-            m_statusWord = static_cast<std::bitset<16>>(m_statusWordValue);
-        }
-        std::cout << QString("[homing #%1] %2  SW=0x%3  b10=%4 b11=%5 b12=%6 b13=%7")
-                         .arg(n)
-                         .arg(QString::fromUtf8(tag).leftJustified(45))
-                         .arg(m_statusWordValue, 4, 16, QChar('0'))
-                         .arg(m_statusWord[10] ? 1 : 0)
-                         .arg(m_statusWord[11] ? 1 : 0)
-                         .arg(m_statusWord[12] ? 1 : 0)
-                         .arg(m_statusWord[13] ? 1 : 0)
-                         .toStdString()
-                  << std::endl;
-    };
-    // logMode: read 0x6060 (mode setpoint) AND 0x6061 (mode display). If they
-    // disagree, the drive has not yet adopted the requested mode.
-    auto logMode = [this](int n, const char* tag) {
-        ito::int8 modeSetpoint = 0;
-        ito::int8 modeDisplay = 0;
-        readRegisterWithParsedResponse<ito::int8>(0x6060, 0x00, modeSetpoint);
-        readRegisterWithParsedResponse<ito::int8>(0x6061, 0x00, modeDisplay);
-        std::cout << "[homing #" << n << "] " << tag
-                  << " mode setpoint(6060)=" << static_cast<int>(modeSetpoint)
-                  << "  display(6061)=" << static_cast<int>(modeDisplay) << std::endl;
-    };
-    // logTQPos: read torqueActualValue (0x6077) and positionActualValue (0x6064).
-    // Used to test the hypothesis that the drive's first-call-after-power-up
-    // "instant homing attained" is caused by a stale torque reading at or
-    // above the configured homing torque limit, OR by the encoder position
-    // already being at the stored home value.
-    auto logTQPos = [this](int n, const char* tag) {
-        ito::int16 tq = 0;
-        ito::int32 pos = 0;
-        readRegisterWithParsedResponse<ito::int16>(0x6077, 0x00, tq);
-        readRegisterWithParsedResponse<ito::int32>(0x6064, 0x00, pos);
-        std::cout << "[homing #" << n << "] " << tag << " torqueActual(6077)=" << tq
-                  << "  positionActual(6064)=" << pos << std::endl;
-    };
-    // logHomingLimitsAndVel: read back the homing torque limit registers
-    // (0x2350 negative, 0x2351 positive) plus velocityActualValue (0x606C).
-    // Purpose:
-    //   * Verify the Step-3 writes actually took effect and the drive sees
-    //     the user-supplied torque limits (and not some smaller default
-    //     left over after factory reset).
-    //   * Confirm or refute real motor motion (positionActual is rewritten
-    //     by the homing offset after completion, but velocityActualValue is
-    //     not, so it's a reliable witness for "did the rotor actually turn").
-    auto logHomingLimitsAndVel = [this](int n, const char* tag) {
-        ito::uint16 negLim = 0;
-        ito::uint16 posLim = 0;
-        ito::int32 vel = 0;
-        readRegisterWithParsedResponse<ito::uint16>(0x2350, 0x00, negLim);
-        readRegisterWithParsedResponse<ito::uint16>(0x2351, 0x00, posLim);
-        readRegisterWithParsedResponse<ito::int32>(0x606C, 0x00, vel);
-        std::cout << "[homing #" << n << "] " << tag << " homingNegLim(2350)=" << negLim
-                  << "  homingPosLim(2351)=" << posLim << "  velocityActual(606C)=" << vel
-                  << std::endl;
-    };
-    // logSoftLimits: read the software position limits 0x607D.01 (min) and
-    // 0x607D.02 (max). Hypothesis under test: factory-default position
-    // limits make the motor's current position lie outside the allowed range
-    // on the first homing call, so method -3 sees "blocked at limit"
-    // immediately. On the second call the position has been rewritten to
-    // ~0 (inside the range) so the motor is free to move.
-    auto logSoftLimits = [this](int n, const char* tag) {
-        ito::int32 minLim = 0;
-        ito::int32 maxLim = 0;
-        readRegisterWithParsedResponse<ito::int32>(0x607D, 0x01, minLim);
-        readRegisterWithParsedResponse<ito::int32>(0x607D, 0x02, maxLim);
-        std::cout << "[homing #" << n << "] " << tag << " posLowerLim(607D.01)=" << minLim
-                  << "  posUpperLim(607D.02)=" << maxLim << std::endl;
-    };
-
-    std::cout << "[homing #" << callNum
-              << "] ============ START ============ method=" << static_cast<int>(method)
-              << " offset=" << offset << " seekVel=" << switchSeekVelocity
-              << " homingSpeed=" << homingSpeed << " accel=" << acceleration
-              << " limitCheckDelay=" << limitCheckDelayTime << " torqueLim=[" << torqueLimits[0]
-              << "," << torqueLimits[1] << "]"
-              << " timeout=" << timeoutTime << " backoff=" << backoffDistance << std::endl;
-    // -------------------------------------------------------------------------
-
     if (isMotorMoving())
     {
-        std::cout << "[homing #" << callNum << "] ABORT: isMotorMoving()==true" << std::endl;
         retValue +=
             ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
     }
@@ -2339,27 +2224,19 @@ ito::RetVal FaulhaberMCS::performHoming(
 
         ito::int8 currentOperation;
         retValue += getOperationMode(currentOperation);
-        std::cout << "[homing #" << callNum
-                  << "] previous operationMode=" << static_cast<int>(currentOperation) << std::endl;
-        logSW(callNum, "ENTRY (before any writes)");
 
         // --- Step 0a: Configure 0x233F "Operation mode options" for homing.
-        // Per Faulhaber documentation §5.1, this 16-bit bitfield controls
-        // several aspects of how operating modes behave. Two bits are
+        // Per Faulhaber documentation §5.1, two bits in this bitfield are
         // critical for homing:
         //   * Bit 5 "Use homing torque limits during homing": when 0, the
-        //     drive uses the regular torque limits (0x60E0/0x60E1) during
-        //     homing and IGNORES the values we wrote to 0x2350/0x2351.
-        //     Without this bit, setHomingTorqueLimits() is effectively a
-        //     no-op on the drive's actual behavior during the reference run.
-        //   * Bit 4 "Ignore Position Limits during homing": defensive — if
-        //     the user has narrowed the software position limits (0x607D),
-        //     they will be ignored during the homing run, which is what we
-        //     want because the reference run may need to traverse past the
-        //     last known limit.
-        // We OR-in mask 0x30 (bits 4|5) and preserve all other bits exactly
-        // as the user has them. The original value is restored at the end
-        // of performHoming so nothing changes for subsequent operations.
+        //     drive ignores the values we wrote to 0x2350/0x2351 and uses
+        //     the regular torque limits (0x60E0/0x60E1) instead.
+        //   * Bit 4 "Ignore Position Limits during homing": defensive —
+        //     prevents narrow software position limits from blocking the
+        //     reference run.
+        // We OR-in mask 0x30 and preserve all other bits exactly as the
+        // user has them. The original value is restored at the end so
+        // nothing changes for subsequent operations.
         ito::uint16 originalModeOptions = 0;
         bool modeOptionsChanged = false;
         if (!retValue.containsError())
@@ -2369,130 +2246,21 @@ ito::RetVal FaulhaberMCS::performHoming(
             if (!retValue.containsError())
             {
                 ito::uint16 homingModeOptions = originalModeOptions | 0x0030;
-                std::cout
-                    << "[homing #" << callNum << "] Step 0a: 0x233F current=0x"
-                    << QString::number(originalModeOptions, 16).rightJustified(4, '0').toStdString()
-                    << " -> homing=0x"
-                    << QString::number(homingModeOptions, 16).rightJustified(4, '0').toStdString()
-                    << " (set bits 4=ignorePosLimits, 5=useHomingTorqueLimits)" << std::endl;
                 if (homingModeOptions != originalModeOptions)
                 {
                     retValue += setRegister<ito::uint16>(
                         0x233F, 0x00, homingModeOptions, sizeof(homingModeOptions));
                     modeOptionsChanged = !retValue.containsError();
                 }
-                else
-                {
-                    std::cout << "[homing #" << callNum
-                              << "] Step 0a: bits 4|5 already set, no write needed" << std::endl;
-                }
             }
         }
 
-        // --- Step 0: Pre-homing back-off for mechanical-stop methods (-4..-1).
-        // Background: methods -4..-1 detect a mechanical end-stop via block
-        // detection (no motion + applied torque -> "block found"). If the
-        // rotor happens to already be pressed against the target stop (e.g.,
-        // because the drive remembers its position in EEPROM across power
-        // cycles and a previous session left it at that stop), the very
-        // first call after init would declare "complete" within ~100 ms
-        // without the motor ever moving. We avoid this by doing a small
-        // relative PPM move in the opposite direction first, guaranteeing
-        // the rotor has room to travel when the homing torque is applied.
-        //
-        // The sign of backoffDistance must be OPPOSITE to the expected
-        // homing direction:
-        //   * Methods that home into a NEGATIVE stop -> positive backoff
-        //   * Methods that home into a POSITIVE stop -> negative backoff
-        // The default 500 is positive (suits the most common configuration
-        // observed on this hardware: method -3 homing into the negative
-        // mechanical stop). Users with the opposite convention should pass
-        // a negative value. Setting backoffDistance=0 disables this step.
-        //
-        // The back-off is only performed for methods -4..-1 because the
-        // switch/edge-based methods (1..34) and method 37 (set-current-pos)
-        // either don't need it or don't involve motion in the first place.
-        if (!retValue.containsError() && backoffDistance != 0 && method >= -4 && method <= -1)
-        {
-            std::cout << "[homing #" << callNum << "] Step 0: pre-homing back-off "
-                      << backoffDistance << " counts (method " << static_cast<int>(method)
-                      << " homes into a mechanical stop; backing off first)" << std::endl;
-
-            // The back-off uses Profile Position Mode. Switch to it if we are
-            // not already there. We do NOT update m_params here: the existing
-            // mode-restore at the end of performHoming will put us back into
-            // currentOperation, which is what the user expects.
-            if (currentOperation != static_cast<ito::int8>(OperationMode::ProfilePositionMode))
-            {
-                std::cout << "[homing #" << callNum
-                          << "] Step 0: temporarily switching to PPM for back-off" << std::endl;
-                retValue += setOperationMode(OperationMode::ProfilePositionMode);
-            }
-
-            if (!retValue.containsError())
-            {
-                // Issue the relative move. setPosRelMCS already takes care
-                // of the controlword toggle that latches the new setpoint.
-                retValue += setPosRelMCS(backoffDistance);
-            }
-
-            // Poll until the move completes or a short timeout expires.
-            // We expect this move to be small and fast (a few hundred counts
-            // at the configured profileVelocity), so m_waitForMCSTimeout
-            // (3 s) is more than generous.
-            if (!retValue.containsError())
-            {
-                QElapsedTimer backoffTimer;
-                QMutex backoffMutex;
-                QWaitCondition backoffCondition;
-                backoffTimer.start();
-                bool backoffDone = false;
-                while (!backoffTimer.hasExpired(m_waitForMCSTimeout))
-                {
-                    retValue += updateStatus();
-                    if (retValue.containsError())
-                        break;
-                    if (m_statusWord[10]) // target reached
-                    {
-                        backoffDone = true;
-                        break;
-                    }
-                    if (m_statusWord[13]) // following error
-                    {
-                        retValue += ito::RetVal(
-                            ito::retError,
-                            0,
-                            tr("Following error during pre-homing back-off.").toLatin1().data());
-                        break;
-                    }
-                    backoffMutex.lock();
-                    backoffCondition.wait(&backoffMutex, m_delayAfterSendCommandMS);
-                    backoffMutex.unlock();
-                    setAlive();
-                }
-                if (!retValue.containsError() && !backoffDone)
-                {
-                    retValue += ito::RetVal(
-                        ito::retError,
-                        0,
-                        tr("Timeout waiting for pre-homing back-off to complete.")
-                            .toLatin1()
-                            .data());
-                }
-                std::cout << "[homing #" << callNum << "] Step 0: back-off done=" << backoffDone
-                          << " elapsed=" << backoffTimer.elapsed() << "ms" << std::endl;
-                logTQPos(callNum, "after Step 0 back-off");
-            }
-        }
-
-        // --- Step 1: Ensure the drive is in Operation Enabled (precondition per
-        // Faulhaber documentation §5.4.4). startupSequence() is a no-op when the
-        // drive is already enabled, and re-walks the CiA 402 state machine
-        // (Shutdown -> Switch-On + Enable-Operation) otherwise.
+        // --- Step 1: Ensure the drive is in Operation Enabled (precondition
+        // per Faulhaber documentation §5.4.4). startupSequence() is a no-op
+        // when the drive is already enabled.
         if (!retValue.containsError())
         {
             retValue += startupSequence();
-            logSW(callNum, "after Step 1 startupSequence");
         }
 
         // --- Step 1b: Clear controlword bit 4 BEFORE the mode switch.
@@ -2503,18 +2271,16 @@ ito::RetVal FaulhaberMCS::performHoming(
         if (!retValue.containsError())
         {
             setControlWord(0x000F); // bits 0..3 = Enable Operation, bit 4 = 0
-            logSW(callNum, "after Step 1b setControlWord(0x000F)");
         }
 
-        // --- Step 2: Switch operation mode to Homing (0x6060 = 6) ---
+        // --- Step 2: Switch operation mode to Homing (0x6060 = 6) and wait
+        // for the device to confirm the switch via 0x6061 (Modes of
+        // Operation Display).
         if (!retValue.containsError())
         {
             retValue += setOperationMode(OperationMode::Homing);
-            logMode(callNum, "after Step 2 setOperationMode(Homing) request");
-            logSW(callNum, "after Step 2 setOperationMode(Homing)");
         }
 
-        // Wait until the device confirms the mode switch via 0x6061 (Modes of Operation Display)
         if (!retValue.containsError())
         {
             QElapsedTimer modeTimer;
@@ -2533,9 +2299,6 @@ ito::RetVal FaulhaberMCS::performHoming(
                 modeMutex.unlock();
                 setAlive();
             }
-            std::cout << "[homing #" << callNum << "] mode confirmation loop exit; activeMode="
-                      << static_cast<int>(activeMode) << " elapsed=" << modeTimer.elapsed() << "ms"
-                      << std::endl;
             if (!retValue.containsError() &&
                 activeMode != static_cast<ito::int8>(OperationMode::Homing))
             {
@@ -2544,8 +2307,6 @@ ito::RetVal FaulhaberMCS::performHoming(
                     0,
                     tr("Timeout waiting for device to switch to Homing mode.").toLatin1().data());
             }
-            logMode(callNum, "after mode confirmation loop");
-            logSW(callNum, "after mode confirmation loop");
         }
 
         // --- Step 3: Set homing parameters ---
@@ -2558,16 +2319,106 @@ ito::RetVal FaulhaberMCS::performHoming(
             retValue += setHomingSpeed(homingSpeed);
             retValue += setHomingAcceleration(acceleration);
             retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
-            logSW(callNum, "after Step 3 param writes");
-            logHomingLimitsAndVel(callNum, "after Step 3 param writes (readback)");
+        }
+
+        // --- Step 3c: Reset the drive's controller state by walking the CiA
+        // 402 state machine down to "Ready to switch on" (controlword 0x06)
+        // and back up to "Operation enabled" (controlword 0x0F). This is the
+        // same mechanism Faulhaber's own Motion Manager uses before each
+        // homing trigger.
+        //
+        // Why this is needed: when we enter performHoming the drive has been
+        // actively HOLDING the rotor at its last setpoint with full torque.
+        // The position/velocity/torque controller integrators are wound up
+        // against the load. Triggering homing in that state means the new
+        // torque setpoint adds onto an already saturated controller, so the
+        // rotor may not actually move within limitCheckDelayTime and the
+        // drive declares an instant (false) "block detected" — particularly
+        // problematic for methods -4..-1 (mechanical-stop detection).
+        //
+        // Dropping to "Ready to switch on" de-energises the motor briefly
+        // (~200 ms), resetting the controller integrators. Re-enabling
+        // walks back through "Switched on" to "Operation enabled" with a
+        // fresh controller, so the trigger sees torque ramp from zero.
+        //
+        // Safety note: this briefly removes holding torque. For non-self-
+        // locking axes (e.g. vertical loads without a mechanical brake) the
+        // load may drift during this window.
+        if (!retValue.containsError())
+        {
+            shutDown(); // controlword 0x06 -> Ready to switch on (no torque)
+
+            QElapsedTimer downTimer;
+            QMutex downMutex;
+            QWaitCondition downCondition;
+            downTimer.start();
+            bool downConfirmed = false;
+            while (!downTimer.hasExpired(m_waitForMCSTimeout))
+            {
+                retValue += updateStatus();
+                if (retValue.containsError())
+                    break;
+                if (!m_statusWord[2]) // OperationEnabled cleared
+                {
+                    downConfirmed = true;
+                    break;
+                }
+                downMutex.lock();
+                downCondition.wait(&downMutex, m_delayAfterSendCommandMS);
+                downMutex.unlock();
+                setAlive();
+            }
+            if (!retValue.containsError() && !downConfirmed)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Timeout waiting for drive to reach Ready-to-switch-on state.")
+                        .toLatin1()
+                        .data());
+            }
+
+            if (!retValue.containsError())
+            {
+                enableOperation(); // controlword 0x0F -> Operation enabled
+
+                QElapsedTimer upTimer;
+                QMutex upMutex;
+                QWaitCondition upCondition;
+                upTimer.start();
+                bool upConfirmed = false;
+                while (!upTimer.hasExpired(m_waitForMCSTimeout))
+                {
+                    retValue += updateStatus();
+                    if (retValue.containsError())
+                        break;
+                    if (m_statusWord[2]) // OperationEnabled set
+                    {
+                        upConfirmed = true;
+                        break;
+                    }
+                    upMutex.lock();
+                    upCondition.wait(&upMutex, m_delayAfterSendCommandMS);
+                    upMutex.unlock();
+                    setAlive();
+                }
+                if (!retValue.containsError() && !upConfirmed)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Timeout waiting for drive to return to Operation-enabled "
+                           "state after controller reset.")
+                            .toLatin1()
+                            .data());
+                }
+            }
         }
 
         // --- Step 3b: Snapshot the homing-relevant statusword bits (10/12/13)
-        // BEFORE triggering. The completion-polling loop below treats
-        // (bit12 && bit10) as "homing complete" — but that pattern can also
-        // be the stale state inherited from PPM ("target reached" + "setpoint
-        // acknowledged"). By comparing later against this snapshot we can
-        // tell the drive's true response from leftover values.
+        // BEFORE triggering. Used in Step 4a to detect whether the drive
+        // actually processed the trigger (any bit change vs. snapshot
+        // proves the drive responded).
         bool snapBit10 = false;
         bool snapBit12 = false;
         bool snapBit13 = false;
@@ -2577,14 +2428,6 @@ ito::RetVal FaulhaberMCS::performHoming(
             snapBit10 = m_statusWord[10];
             snapBit12 = m_statusWord[12];
             snapBit13 = m_statusWord[13];
-            std::cout << "[homing #" << callNum
-                      << "] SNAPSHOT (pre-trigger): b10=" << (snapBit10 ? 1 : 0)
-                      << " b12=" << (snapBit12 ? 1 : 0) << " b13=" << (snapBit13 ? 1 : 0)
-                      << "  full SW=0x"
-                      << QString::number(m_statusWordValue, 16).rightJustified(4, '0').toStdString()
-                      << std::endl;
-            logTQPos(callNum, "SNAPSHOT (pre-trigger)");
-            logSoftLimits(callNum, "SNAPSHOT (pre-trigger)");
         }
 
         // --- Step 4: Trigger homing via a rising edge on controlword bit 4 ---
@@ -2593,18 +2436,13 @@ ito::RetVal FaulhaberMCS::performHoming(
         // "start homing operation".
         if (!retValue.containsError())
         {
-            std::cout << "[homing #" << callNum << "] >>> TRIGGER: setControlWord(0x001F) <<<"
-                      << std::endl;
-            setControlWord(0x001F); // rising edge on bit 4 -> start homing
-            logSW(callNum, "immediately after trigger");
-            logTQPos(callNum, "immediately after trigger");
-            logHomingLimitsAndVel(callNum, "immediately after trigger");
+            setControlWord(0x001F);
         }
 
         // --- Step 4a: Wait until the drive has acknowledged the trigger by
-        // changing any of the homing-relevant statusword bits relative to the
-        // snapshot taken in Step 3b. Any change vs. the snapshot proves the
-        // drive processed our trigger and is not just showing stale bits.
+        // changing any of the homing-relevant statusword bits relative to
+        // the snapshot taken in Step 3b. Catches cases where the trigger
+        // SDO didn't take effect.
         if (!retValue.containsError())
         {
             QElapsedTimer ackTimer;
@@ -2612,31 +2450,15 @@ ito::RetVal FaulhaberMCS::performHoming(
             QWaitCondition ackCondition;
             ackTimer.start();
             bool homingAcknowledged = false;
-            int ackIter = 0;
             while (!ackTimer.hasExpired(m_waitForMCSTimeout))
             {
                 retValue += updateStatus();
                 if (retValue.containsError())
                     break;
-                ++ackIter;
-                std::cout << QString(
-                                 "[homing #%1] ack iter %2 (t=%3ms)  SW=0x%4  b10=%5 b12=%6 b13=%7")
-                                 .arg(callNum)
-                                 .arg(ackIter)
-                                 .arg(ackTimer.elapsed())
-                                 .arg(m_statusWordValue, 4, 16, QChar('0'))
-                                 .arg(m_statusWord[10] ? 1 : 0)
-                                 .arg(m_statusWord[12] ? 1 : 0)
-                                 .arg(m_statusWord[13] ? 1 : 0)
-                                 .toStdString()
-                          << std::endl;
                 if (m_statusWord[10] != snapBit10 || m_statusWord[12] != snapBit12 ||
                     m_statusWord[13] != snapBit13)
                 {
                     homingAcknowledged = true;
-                    std::cout << "[homing #" << callNum
-                              << "] ack: bits changed vs snapshot at iter " << ackIter
-                              << " (t=" << ackTimer.elapsed() << "ms)" << std::endl;
                     break;
                 }
                 ackMutex.lock();
@@ -2646,8 +2468,6 @@ ito::RetVal FaulhaberMCS::performHoming(
             }
             if (!retValue.containsError() && !homingAcknowledged)
             {
-                std::cout << "[homing #" << callNum
-                          << "] ack: TIMEOUT, bits 10/12/13 never changed vs snapshot" << std::endl;
                 retValue += ito::RetVal(
                     ito::retError,
                     0,
@@ -2659,6 +2479,7 @@ ito::RetVal FaulhaberMCS::performHoming(
             }
         }
 
+        // --- Step 5: Poll until homing completes, errors out, or times out ---
         if (!retValue.containsError())
         {
             for (int i = 0; i < m_numOfAxes; i++)
@@ -2669,11 +2490,8 @@ ito::RetVal FaulhaberMCS::performHoming(
                     ito::actSwitchesMask | ito::actStatusMask);
             }
             sendStatusUpdate();
-            std::cout << "[homing #" << callNum << "] entering main completion-polling loop"
-                      << std::endl;
 
             timer.start();
-            int mainIter = 0;
             while (!retValue.containsError() && !homingComplete && !timeout)
             {
                 if (isInterrupted())
@@ -2689,59 +2507,30 @@ ito::RetVal FaulhaberMCS::performHoming(
                 retValue += updateStatus();
                 if (retValue.containsError())
                 {
-                    std::cout << "[homing #" << callNum
-                              << "] main loop: updateStatus error, breaking" << std::endl;
                     break;
-                }
-
-                ++mainIter;
-                // Log first 5 iterations always, then every 20th, plus any iteration
-                // that hits an interesting bit pattern.
-                if (mainIter <= 5 || mainIter % 20 == 0 || m_statusWord[13] ||
-                    (m_statusWord[12] && m_statusWord[10]))
-                {
-                    std::cout << QString(
-                                     "[homing #%1] main iter %2 (t=%3ms)  SW=0x%4  "
-                                     "b10=%5 b12=%6 b13=%7")
-                                     .arg(callNum)
-                                     .arg(mainIter)
-                                     .arg(timer.elapsed())
-                                     .arg(m_statusWordValue, 4, 16, QChar('0'))
-                                     .arg(m_statusWord[10] ? 1 : 0)
-                                     .arg(m_statusWord[12] ? 1 : 0)
-                                     .arg(m_statusWord[13] ? 1 : 0)
-                                     .toStdString()
-                              << std::endl;
                 }
 
                 if (m_statusWord[13])
                 {
-                    std::cout << "[homing #" << callNum
-                              << "] main loop EXIT: bit13 set -> ERROR at iter " << mainIter
-                              << std::endl;
                     retValue += ito::RetVal(
                         ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
                     break;
                 }
-                // Per Faulhaber §5.4.4, the drive sets both bit 12 (Homing Attained)
-                // and bit 10 (Target Reached) of the statusword once the reference run
-                // is complete. Require both for stricter compliance.
+                // Per Faulhaber §5.4.4, the drive sets both bit 12 (Homing
+                // Attained) and bit 10 (Target Reached) of the statusword
+                // once the reference run is complete. Require both.
                 if (m_statusWord[12] && m_statusWord[10])
                 {
-                    std::cout << "[homing #" << callNum
-                              << "] main loop EXIT: bit12 && bit10 -> COMPLETE at iter " << mainIter
-                              << " (t=" << timer.elapsed() << "ms)" << std::endl;
                     homingComplete = true;
                     m_params["homed"].setVal<int>(1);
                     break;
                 }
-                // short delay of 10ms
                 waitMutex.lock();
                 waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
                 waitMutex.unlock();
                 setAlive();
 
-                if (timer.hasExpired(timeoutTime)) // timeout during movement
+                if (timer.hasExpired(timeoutTime))
                 {
                     timeout = true;
                     retValue += ito::RetVal(
@@ -2778,10 +2567,10 @@ ito::RetVal FaulhaberMCS::performHoming(
 
             if (!retValue.containsError() && homingComplete)
             {
-                // Clear bit 4 cleanly to end the homing operation while keeping the
-                // drive in Operation Enabled (CiA 402 controlword: bits 0..3 = Enable
-                // Operation, bit 4 = 0). Required so that subsequent operation-mode
-                // changes are not triggered by a leftover edge.
+                // Clear bit 4 cleanly to end the homing operation while
+                // keeping the drive in Operation Enabled. Required so that
+                // subsequent operation-mode changes are not triggered by a
+                // leftover edge.
                 setControlWord(0x000F);
 
                 ito::int32 pos;
@@ -2796,29 +2585,16 @@ ito::RetVal FaulhaberMCS::performHoming(
             }
         }
 
-        std::cout << "[homing #" << callNum << "] restoring operationMode to "
-                  << static_cast<int>(currentOperation) << std::endl;
+        // Restore the previous operation mode and the pre-homing value of
+        // 0x233F so nothing changes for the user's subsequent operations.
         retValue += setOperationMode(currentOperation);
 
-        // Restore 0x233F to its pre-homing value (see Step 0a). We do this
-        // unconditionally if we ever wrote it, so any error path leaves the
-        // drive's mode-options bitfield in the state the user expects.
         if (modeOptionsChanged)
         {
-            std::cout
-                << "[homing #" << callNum << "] restoring 0x233F to 0x"
-                << QString::number(originalModeOptions, 16).rightJustified(4, '0').toStdString()
-                << std::endl;
             retValue += setRegister<ito::uint16>(
                 0x233F, 0x00, originalModeOptions, sizeof(originalModeOptions));
         }
-
-        logSW(callNum, "FINAL (before return)");
     }
-
-    std::cout << "[homing #" << callNum
-              << "] ============ END ============ hasError=" << retValue.containsError()
-              << " hasWarning=" << retValue.containsWarning() << std::endl;
 
     sendStatusUpdate();
 
@@ -3201,7 +2977,6 @@ ito::RetVal FaulhaberMCS::execFunc(
             ito::uint16 negativeLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[0]);
             ito::uint16 positiveLimit = static_cast<ito::uint16>((*paramsOpt)[5].getVal<int*>()[1]);
             ito::uint16 timeout = static_cast<ito::uint16>((*paramsOpt)[6].getVal<int>());
-            ito::int32 backoffDistance = static_cast<ito::int32>((*paramsOpt)[7].getVal<int>());
             ito::uint16 torqueLimits[] = {negativeLimit, positiveLimit};
 
             retValue += performHoming(
@@ -3212,8 +2987,7 @@ ito::RetVal FaulhaberMCS::execFunc(
                 acceleration,
                 limitCheckDelayTime,
                 torqueLimits,
-                timeout,
-                backoffDistance);
+                timeout);
         }
     }
 
