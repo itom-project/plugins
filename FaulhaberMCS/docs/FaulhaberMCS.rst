@@ -34,15 +34,6 @@ Many of them are directly initialized by the parameters of the constructor.
 During the runtime of an instance, the value of these parameters is obtained by
 the method *getParam*, writeable parameters can be changed using *setParam*.
 
-.. attention::
-    It is strongly recommended to set the overvoltage control!
-    Use the plugin parameter "motorSupplyUpperThreshold" to set the overvoltage control.
-    Using the device with ``24V`` supply voltage, the overvoltage control should be set to ``27.5V`` to prevent damage of the device.
-
-.. hint::
-    It is recommended to set the parameter ``loadInertia`` for a better performance of the control loop.
-    The load inertia can be calculated by using the Faulhaber Motion Manager. The load inertia must be set in [gcm²].
-
 **acceleration**: int
     Acceleration in 1/s². Register '0x6083.00'.
 
@@ -55,7 +46,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: 74*
+    *Value range: [-32768, 32767], Default: -159*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
@@ -68,14 +59,6 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Name of device. Register '0x1008.00'.
 
     *Match: "", Default: "MCS 3242 BX4 ET"*
-**deviceSupplyLowerThreshold**: int, read-only
-    Device supply lower threshold in mV. Register '0x2325.01'.
-
-    *Value range: [0, 65535], Default: 1180*
-**deviceSupplyVoltage**: int, read-only
-    Device supply voltage in mV. Register '0x2325.06'.
-
-    *Value range: [0, 65535], Default: 2397*
 **fault**: int, read-only
     1: Error present, 0: No error present (Bit 3).
 
@@ -127,28 +110,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Motion profile type (0: Linear ramp, 1: Sin2 ramp). Register '0x6086.00'.
 
     *Value range: [0, 1], Default: 0*
-**motorSupplyLowerThreshold**: int
-    Motor supply lower threshold in mV. Register '0x2325.02'.
-
-    *Value range: [0, 65535], Default: 800*
-**motorSupplyMaxThreshold**: int, read-only
-    Motor supply max threshold in mV. Register '0x2325.03'.
-
-    *Value range: [0, 65535], Default: 5200*
-**motorSupplyUpperThreshold**: int
-    Motor supply upper threshold in mV. Register '0x2325.04'.
-
-    *Value range: [0, 5200], Default: 5200*
-**motorSupplyVoltage**: int, read-only
-    Motor supply voltage in mV. Register '0x2325.07'.
-
-    *Value range: [0, 65535], Default: 2389*
 **moveTimeout**: int
     Timeout for movement in ms.
 
     *Value range: [0, inf], Default: 60000*
 **name**: str, read-only
-    FaulhaberMCS
 
 **netMode**: int
     RS232 net mode. Register '0x2400.05'.
@@ -165,7 +131,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **operation**: int
     Enable (1) or Disable (0) operation.
 
-    *Value range: [0, 1], Default: 0*
+    *Value range: [0, 1], Default: 1*
 **operationEnabled**: int, read-only
     1: Operation enabled, 0: Operation disabled (Bit 2).
 
@@ -204,7 +170,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **profileVelocity**: int
     Profile velocity in 1/min. Register '0x6081.00'.
 
-    *Value range: [1, 32767], Default: 1500*
+    *Value range: [1, 32767], Default: 4000*
 **quickStop**: int, read-only
     1: Quick stop enabled, Quick stop disabled (Bit 5).
 
@@ -249,11 +215,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 32*
+    *Value range: [0, 32767], Default: 33*
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 21*
+    *Value range: [0, 32767], Default: 31*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -306,10 +272,6 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: Power supply enabled, 0: Power supply disabled (Bit 4).
 
     *Value range: [0, 1], Default: 0*
-**voltageErrorDelayTime**: int
-    Voltage error delay time in ms. Register '0x2325.05'.
-
-    *Value range: [0, 65535], Default: 200*
 **warning**: int, read-only
     1: One of the monitored temperatures has exceeded at least the warning threshold, 0: No
     raised temperatures (Bit 7).
@@ -325,7 +287,8 @@ By using the following execFunctions you execute homing according the homing met
 
     In most of the cases before position control is to be used, the drive must perform a reference run to align the position used by the drive to the mechanic setup.
 
-    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mechanical limit stop is set as reference. Register '0x6098.00'.
+    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mecha
+... nical limit stop is set as reference. Register '0x6098.00'.
     :type method: int
     :param offset: Offset of the zero position relative to the position of the reference switch in userdefined units. Register '0x607C.00'.
     :type offset: int - optional
@@ -335,7 +298,8 @@ By using the following execFunctions you execute homing according the homing met
     :type homingSpeed: int - optional
     :param acceleration: Speed during search for zero. Register '0x609A.00'.
     :type acceleration: int - optional
-    :param limitCheckDelayTime: Delay time until blockage detection [ms]. Register '0x2324.02'.
+    :param limitCheckDelayTime: Delay time until blockage detection [ms]. Should be longer than the velocity ramp time to avoid spurious blockage detection during the initial acceleration. Register '0
+... x2324.02'.
     :type limitCheckDelayTime: int - optional
     :param torqueLimits: Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. Register negative limit '0x2350.00', positive limit '0x2351.00'.
     :type torqueLimits: Sequence[int] - optional

@@ -199,14 +199,6 @@ private:
 
     const Register nominalVoltage_register = {0x2604, 0x00};
 
-    const Register voltageMonitor_deviceSupplyLowerThreshold_register = {0x2325, 0x01};
-    const Register voltageMonitor_motorSupplyLowerThreshold_register = {0x2325, 0x02};
-    const Register voltageMonitor_motorSupplyMaxThreshold_register = {0x2325, 0x03};
-    const Register voltageMonitor_motorSupplyUpperThreshold_register = {0x2325, 0x04};
-    const Register voltageMonitor_voltageErrorDelayTime_register = {0x2325, 0x05};
-    const Register voltageMonitor_deviceSupplyVoltage_register = {0x2325, 0x06};
-    const Register voltageMonitor_motorSupplyVoltage_register = {0x2325, 0x07};
-
     const ito::uint8 shutDown_register = 0x06;
     const ito::uint8 enableOperation_register = 0x0F;
     const ito::uint8 disable_register = 0x07;
@@ -394,18 +386,6 @@ private:
     ito::RetVal getMotionProfileType(ito::int16& type);
     ito::RetVal setMotionProfileType(const ito::int16& type);
 
-    // VOLTAGE MONITOR
-    ito::RetVal getDeviceSupplyLowerThreshold(ito::uint16& threshold);
-    ito::RetVal getMotorSupplyLowerThreshold(ito::uint16& threshold);
-    ito::RetVal setMotorSupplyLowerThreshold(const ito::uint16& threshold);
-    ito::RetVal getMotorSupplyMaxThreshold(ito::uint16& threshold);
-    ito::RetVal getMotorSupplyUpperThreshold(ito::uint16& threshold);
-    ito::RetVal setMotorSupplyUpperThreshold(const ito::uint16& threshold);
-    ito::RetVal getVoltageErrorDelayTime(ito::uint16& time);
-    ito::RetVal setVoltageErrorDelayTime(const ito::uint16& time);
-    ito::RetVal getDeviceSupplyVoltage(ito::uint16& voltage);
-    ito::RetVal getMotorSupplyVoltage(ito::uint16& voltage);
-
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);
     ito::RetVal setHomingOffset(const ito::int32& offset);
@@ -423,8 +403,32 @@ private:
         const ito::uint32& homingSpeed,
         const ito::uint32& acceleration,
         const ito::uint16& limitCheckDelayTime,
-        const ito::uint16 *torqueLimits,
+        const ito::uint16* torqueLimits,
         const ito::uint16& timeoutTime);
+
+    // ----- init() helpers -----
+    // Read a value from the device with the given member-function getter,
+    // and store it in m_params[name] as an int. No-op if the getter
+    // returns an error.
+    template <typename T>
+    ito::RetVal initIntParam(const char* name, ito::RetVal (FaulhaberMCS::*getter)(T&))
+    {
+        T v{};
+        ito::RetVal rv = (this->*getter)(v);
+        if (!rv.containsError())
+            m_params[name].setVal<int>(static_cast<int>(v));
+        return rv;
+    }
+    // Same as initIntParam but for QString getters; stores via setVal<char*>.
+    ito::RetVal initStringParam(const char* name, ito::RetVal (FaulhaberMCS::*getter)(QString&));
+
+    // ----- operationMode helpers -----
+    // Read the current setpoint (and optionally the target) appropriate
+    // for the active operationMode. For voltage (-1) and torque (10) modes
+    // the 16-bit register is widened to int32. If target is nullptr the
+    // target register read is skipped. Modes other than {-1, 1, 3, 10}
+    // leave current/target unchanged and return retOk.
+    ito::RetVal readPosForCurrentMode(ito::int32& current, ito::int32* target = nullptr);
 
 public slots:
     ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond);
