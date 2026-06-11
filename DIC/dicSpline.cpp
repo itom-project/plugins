@@ -146,9 +146,9 @@ ito::RetVal DIC::DICSplineCoeffs(QVector<ito::ParamBase> *paramsMand, QVector<it
 /*
     Eigen::Spline<double, 1> sf = Eigen::SplineFitting<Eigen::Spline<double, 1> >::InterpolateWithDerivatives(
         eigenYVals.transpose(), // No more than cubic spline, but accept short vectors.
-        const PointArrayType &  	derivatives,
-        const IndexArray &  	derivativeIndices,
-        const unsigned int  	degree
+        const PointArrayType &      derivatives,
+        const IndexArray &      derivativeIndices,
+        const unsigned int      degree
         );
 */
     Eigen::VectorXd knots, ctrlPts;

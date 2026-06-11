@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ThorlabsISM" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -64,7 +64,7 @@ class DialogThorlabsISM : public ito::AbstractAddInConfigDialog
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_btnCalib_clicked();
-		void on_btnCalibInterrupt_clicked();
+        void on_btnCalibInterrupt_clicked();
 
 };
 

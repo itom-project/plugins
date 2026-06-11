@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport ST8SMC4USB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -73,11 +73,11 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.";
 \n\
 It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
 
-    m_author = "H. Bieger, M. Gronle, J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.append(ito::Param("unitsPerStep", ito::ParamBase::Double, 0.01, new ito::DoubleMeta(0.0,100000.0), tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));

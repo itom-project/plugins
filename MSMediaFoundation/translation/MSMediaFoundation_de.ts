@@ -320,7 +320,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+10"/>
+        <source>No frame could be acquired from device %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+449"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -385,12 +390,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+381"/>
-        <source>No frame could be aquired from device %i</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+91"/>
+        <location line="+472"/>
         <source>Parameter not available or useless range</source>
         <translation type="unfinished"></translation>
     </message>
@@ -485,7 +485,7 @@
         <source>This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras).
 Cameras must provide the UVC 1.1 interface for USB devices.
 
-This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next
+This driver detects an internal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next
 not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped
 to the gray output.
 
@@ -500,11 +500,6 @@ Affiliation
 ------------
 This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under
 http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

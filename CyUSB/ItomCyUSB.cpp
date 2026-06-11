@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ItomCyUSB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -77,23 +77,23 @@ The setVal and getVal functions will write and read on the specified endpoint.\n
 \n\
 !Only the setVal function could be tested!");
 
-    m_author = "J Krauter, ITO University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices") + GITVERSION;
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
-	ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x04B4, tr("The vendor ID of the device to connect to").toLatin1().data()); //default denselight device
+    ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x04B4, tr("The vendor ID of the device to connect to").toLatin1().data()); //default denselight device
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0xF100, tr("The product ID of the device to connect to").toLatin1().data()); //default denselight device
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("printInfoAboutAllDevices", ito::ParamBase::Int, 0, 1, 0, tr("If true, all information about connected devices is printed to the console.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all communication commands are printed to the dockWidget.").toLatin1().data());
-	m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s].").toLatin1().data());
-	m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all communication commands are printed to the dockWidget.").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s].").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 
     return;
 }
@@ -125,16 +125,16 @@ const ito::RetVal ItomCyUSB::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ItomCyUSB::ItomCyUSB() : AddInDataIO(),
-	cyHandle(NULL),
-	m_cyDevices(NULL),
-	m_endPoints(NULL),
-	m_isocInEndPoint(NULL),
-	m_isocOutEndPoint(NULL),
-	m_bulkInEndPoint(NULL),
-	m_bulkOutEndPoint(NULL),
-	m_interruptInEndPoint(NULL),
-	m_interruptOutEndPoint(NULL),
-	m_controlEndPoint(NULL)
+    cyHandle(NULL),
+    m_cyDevices(NULL),
+    m_endPoints(NULL),
+    m_isocInEndPoint(NULL),
+    m_isocOutEndPoint(NULL),
+    m_bulkInEndPoint(NULL),
+    m_bulkOutEndPoint(NULL),
+    m_interruptInEndPoint(NULL),
+    m_interruptOutEndPoint(NULL),
+    m_controlEndPoint(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave | ito::ParamBase::Readonly, "ItomCyUSB", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
@@ -146,8 +146,8 @@ ItomCyUSB::ItomCyUSB() : AddInDataIO(),
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. (default: first detected output endpoint.)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("number_of_devices", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("maximum number of detected devices").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("number_of_devices", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("maximum number of detected devices").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
     {
@@ -254,14 +254,14 @@ ito::RetVal ItomCyUSB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
 
-			if (!retValue.containsError())
-			{
-				int countEndPoint = m_cyDevices->EndPointCount() - 1;
-				for (int cnt = 0; cnt < countEndPoint; cnt++)
-				{
-					m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
-				}
-			}
+            if (!retValue.containsError())
+            {
+                int countEndPoint = m_cyDevices->EndPointCount() - 1;
+                for (int cnt = 0; cnt < countEndPoint; cnt++)
+                {
+                    m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
+                }
+            }
 
         }
         else if (key == "debug")
@@ -311,212 +311,212 @@ ito::RetVal ItomCyUSB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     ito::RetVal retval(ito::retOk);
 
-	bool printInfo = paramsOpt->at(0).getVal<int>() > 0; //if printInfoAboutAllDevices is checked, all connected Devices/Parameter are printed in itom command box
-	retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[1]));
-	retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[2]));
+    bool printInfo = paramsOpt->at(0).getVal<int>() > 0; //if printInfoAboutAllDevices is checked, all connected Devices/Parameter are printed in itom command box
+    retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[1]));
+    retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[2]));
 
 
-	uint16_t vendorID = paramsMand->at(0).getVal<int>() & 0x0000FFFF;
-	uint16_t productID = paramsMand->at(1).getVal<int>() & 0x0000FFFF;
-	m_cyDevices = new CCyUSBDevice(cyHandle, CYUSBDRV_GUID, true);
-	//m_cyDevices = new CCyUSBDevice(NULL);
+    uint16_t vendorID = paramsMand->at(0).getVal<int>() & 0x0000FFFF;
+    uint16_t productID = paramsMand->at(1).getVal<int>() & 0x0000FFFF;
+    m_cyDevices = new CCyUSBDevice(cyHandle, CYUSBDRV_GUID, true);
+    //m_cyDevices = new CCyUSBDevice(NULL);
 
-	//m_cyDevices->BulkInEndPt->TimeOut = m_params["timeout"].getVal<int>();
-	//m_cyDevices->BulkOutEndPt->TimeOut = m_params["timeout"].getVal<int>();
+    //m_cyDevices->BulkInEndPt->TimeOut = m_params["timeout"].getVal<int>();
+    //m_cyDevices->BulkOutEndPt->TimeOut = m_params["timeout"].getVal<int>();
 
-	int numDevices = m_cyDevices->DeviceCount();
-	m_params["number_of_devices"].setVal<int>(numDevices);
+    int numDevices = m_cyDevices->DeviceCount();
+    m_params["number_of_devices"].setVal<int>(numDevices);
 
-	for (int cnt = 0; cnt < numDevices; cnt++)
-	{
+    for (int cnt = 0; cnt < numDevices; cnt++)
+    {
 
-		//if ((USBDevice->VendorID == VENDOR_ID) && (USBDevice->ProductID == PRODUCT_ID))
-		//    break;
-		if (printInfo)
-		{
-			m_cyDevices->Open(cnt);
+        //if ((USBDevice->VendorID == VENDOR_ID) && (USBDevice->ProductID == PRODUCT_ID))
+        //    break;
+        if (printInfo)
+        {
+            m_cyDevices->Open(cnt);
 
-			//usb device descriptor
-			for (int c = 0; c<m_cyDevices->ConfigCount(); c++)
-			{
-				CCyUSBConfig cfg = m_cyDevices->GetUSBConfig(c);
+            //usb device descriptor
+            for (int c = 0; c<m_cyDevices->ConfigCount(); c++)
+            {
+                CCyUSBConfig cfg = m_cyDevices->GetUSBConfig(c);
 
-				std::cout << "-----------------------------\n"
-					<< "USB DESCRIPTOR:\n"
-					<< "USBDevice Name: " << m_cyDevices->FriendlyName << " \n"
-					<< "USBDevice Vendor ID: " << m_cyDevices->VendorID << " \n"
-					<< "USBDevice Product ID: " << m_cyDevices->ProductID << " \n"
-					<< "USBDevice Serial number: " << m_cyDevices->SerialNumber << " \n"
-					<< "USBDevice Driver version: " << m_cyDevices->DriverVersion << " \n"
-					<< "USBDevice USB address: " << (int)m_cyDevices->USBAddress << " \n"
-					<< "\n-----------------------------\n" << std::endl;
+                std::cout << "-----------------------------\n"
+                    << "USB DESCRIPTOR:\n"
+                    << "USBDevice Name: " << m_cyDevices->FriendlyName << " \n"
+                    << "USBDevice Vendor ID: " << m_cyDevices->VendorID << " \n"
+                    << "USBDevice Product ID: " << m_cyDevices->ProductID << " \n"
+                    << "USBDevice Serial number: " << m_cyDevices->SerialNumber << " \n"
+                    << "USBDevice Driver version: " << m_cyDevices->DriverVersion << " \n"
+                    << "USBDevice USB address: " << (int)m_cyDevices->USBAddress << " \n"
+                    << "\n-----------------------------\n" << std::endl;
 
-				//interface descriptor
-				for (int i = 0; i<cfg.AltInterfaces; ++i)
-				{
-					m_cyDevices->SetAltIntfc(i);
-					CCyUSBInterface *ifc = cfg.Interfaces[i];
+                //interface descriptor
+                for (int i = 0; i<cfg.AltInterfaces; ++i)
+                {
+                    m_cyDevices->SetAltIntfc(i);
+                    CCyUSBInterface *ifc = cfg.Interfaces[i];
 
-					std::cout << "-----------------------------\n"
-						<< "INTERFACE DESCRIPTOR:\n"
-						<< "Interface bLength: " << (int)ifc->bLength << " \n"
-						<< "Interface bDescriptorType: " << (int)ifc->bDescriptorType << " \n"
-						<< "Interface bInterfaceNumber: " << (int)ifc->bInterfaceNumber << " \n"
-						<< "Interface bAlternateSetting: " << (int)ifc->bAlternateSetting << " \n"
-						<< "Interface bNumEndpoints: " << (int)ifc->bNumEndpoints << " \n"
-						<< "Interface bInterfaceClass: " << (int)ifc->bInterfaceClass << " \n"
-						<< "Interface wTotalLength: " << ifc->wTotalLength << " \n"
-						<< "\n-----------------------------\n" << std::endl;
+                    std::cout << "-----------------------------\n"
+                        << "INTERFACE DESCRIPTOR:\n"
+                        << "Interface bLength: " << (int)ifc->bLength << " \n"
+                        << "Interface bDescriptorType: " << (int)ifc->bDescriptorType << " \n"
+                        << "Interface bInterfaceNumber: " << (int)ifc->bInterfaceNumber << " \n"
+                        << "Interface bAlternateSetting: " << (int)ifc->bAlternateSetting << " \n"
+                        << "Interface bNumEndpoints: " << (int)ifc->bNumEndpoints << " \n"
+                        << "Interface bInterfaceClass: " << (int)ifc->bInterfaceClass << " \n"
+                        << "Interface wTotalLength: " << ifc->wTotalLength << " \n"
+                        << "\n-----------------------------\n" << std::endl;
 
-					//endpoint descriptor
-					std::cout << "number of endpoints: " << (int)ifc->bNumEndpoints << " \n" << std::endl;
+                    //endpoint descriptor
+                    std::cout << "number of endpoints: " << (int)ifc->bNumEndpoints << " \n" << std::endl;
 
-					for (int e = 0; e < ifc->bNumEndpoints; ++e)
-					{
+                    for (int e = 0; e < ifc->bNumEndpoints; ++e)
+                    {
 
-						CCyUSBEndPoint *ept = ifc->EndPoints[e + 1];
+                        CCyUSBEndPoint *ept = ifc->EndPoints[e + 1];
 
-						std::cout << "-----------------------------\n"
-							<< "ENDPOINT DESCRIPTOR:\n"
-							<< "Endpoint bLength: " << (int)ept->DscLen << " \n"
-							<< "Endpoint bDescriptorType: " << (int)ept->DscType << " \n"
-							<< "Endpoint bEndpointAddress: " << (int)ept->Address << " \n"
-							<< "Endpoint bmAttributes: " << (int)ept->Attributes << " \n"
-							<< "Endpoint wMaxPacketSize: " << ept->MaxPktSize << " \n"
-							<< "Endpoint bInterval: " << (int)ept->Interval << " \n"
-							<< "Endpoint Direction: " << (ept->bIn ? "In " : "Out ") << " \n"
-							<< "\n-----------------------------\n" << std::endl;
+                        std::cout << "-----------------------------\n"
+                            << "ENDPOINT DESCRIPTOR:\n"
+                            << "Endpoint bLength: " << (int)ept->DscLen << " \n"
+                            << "Endpoint bDescriptorType: " << (int)ept->DscType << " \n"
+                            << "Endpoint bEndpointAddress: " << (int)ept->Address << " \n"
+                            << "Endpoint bmAttributes: " << (int)ept->Attributes << " \n"
+                            << "Endpoint wMaxPacketSize: " << ept->MaxPktSize << " \n"
+                            << "Endpoint bInterval: " << (int)ept->Interval << " \n"
+                            << "Endpoint Direction: " << (ept->bIn ? "In " : "Out ") << " \n"
+                            << "\n-----------------------------\n" << std::endl;
 
-					}
-				}
-			}
+                    }
+                }
+            }
 
-			m_cyDevices->Close();
-		}
+            m_cyDevices->Close();
+        }
 
-	}
+    }
 
-	if (!retval.containsError())
-	{
+    if (!retval.containsError())
+    {
 
-		for (int cnt = 0; cnt < numDevices; cnt++)
-		{
-			m_cyDevices->Open(cnt);
-			int vendorIDDevice = m_cyDevices->VendorID;
-			int productIDDevice = m_cyDevices->ProductID;
+        for (int cnt = 0; cnt < numDevices; cnt++)
+        {
+            m_cyDevices->Open(cnt);
+            int vendorIDDevice = m_cyDevices->VendorID;
+            int productIDDevice = m_cyDevices->ProductID;
 
-			if ((vendorID = vendorIDDevice) && (productID = productIDDevice))
-			{
-				m_endPoints = m_cyDevices->EndPoints;
-				m_endPoints[0] = m_cyDevices->ControlEndPt;
+            if ((vendorID = vendorIDDevice) && (productID = productIDDevice))
+            {
+                m_endPoints = m_cyDevices->EndPoints;
+                m_endPoints[0] = m_cyDevices->ControlEndPt;
 
-				int countEndPoint = m_cyDevices->EndPointCount() - 1;
+                int countEndPoint = m_cyDevices->EndPointCount() - 1;
 
-				//CCyUSBConfig config = m_cyDevices->GetUSBConfig(cnt);
-				//m_controlEndPoint = m_cyDevices->ControlEndPt; //endpoint at 0 is Control Endpoint
-				UCHAR bIn;
-				UCHAR attrib;
+                //CCyUSBConfig config = m_cyDevices->GetUSBConfig(cnt);
+                //m_controlEndPoint = m_cyDevices->ControlEndPt; //endpoint at 0 is Control Endpoint
+                UCHAR bIn;
+                UCHAR attrib;
 
-				int sizeMin_write = 0;
-				int sizeMax_write = 0;
-				int sizeMin_read = 0;
-				int sizeMax_read = 0;
+                int sizeMin_write = 0;
+                int sizeMax_write = 0;
+                int sizeMin_read = 0;
+                int sizeMax_read = 0;
 
-				bool endpoint_read_detected = false;
-				bool endpoint_write_detected = false;
-
-
-				for (int cnt = 0; cnt < countEndPoint; cnt++)
-				{
-					bIn = m_endPoints[cnt + 1]->Address & 0x80;
-					attrib = m_endPoints[cnt + 1]->Attributes;
-
-					m_endPoints[cnt + 1]->XferMode = XMODE_DIRECT;
-					m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
-					//get read endpoints
-					if (bIn)
-					{
-						if (!endpoint_read_detected)
-						{
-							sizeMin_read = cnt + 1;
-							m_params["endpoint_read"].setVal<int>(cnt + 1);
-							endpoint_read_detected = true;
-							/*
-							//get read endpoints
-							if ((m_isocInEndPoint == NULL) && (attrib == 1) && bIn)
-							{
-								m_isocInEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Input endPoint ist: CCyIsocEndPoint\n" << std::endl;
-							}
-							if ((m_bulkInEndPoint == NULL) && (attrib == 2) && bIn)
-							{
-								m_bulkInEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Input endPoint ist: CCyBulkEndPoint\n" << std::endl;
-							}
-							if ((m_interruptInEndPoint == NULL) && (attrib == 3) && bIn)
-							{
-								m_interruptInEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Input endPoint ist: CCyInterruptEndPoint\n" << std::endl;
-							}
-							*/
-						}
-
-						sizeMax_read = cnt + 1;
-					}
-
-					//get write endpoints
-					if (!bIn)
-					{
-						if (!endpoint_write_detected)
-						{
-							sizeMin_write = cnt + 1;
-							m_params["endpoint_write"].setVal<int>(cnt + 1);
-							endpoint_write_detected = true;
-
-							/*
-							//get write entpoints
-							if ((m_isocOutEndPoint == NULL) && (attrib == 1) && !bIn)
-							{
-								m_isocOutEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Output endPoint ist: CCyIsocEndPoint\n" << std::endl;
-							}
-							if ((m_bulkOutEndPoint == NULL) && (attrib == 2) && !bIn)
-							{
-								m_bulkOutEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Output endPoint ist: CCyBulkEndPoint\n" << std::endl;
-							}
-							if ((m_interruptOutEndPoint == NULL) && (attrib == 3) && !bIn)
-							{
-								m_interruptOutEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
-								std::cout << "-----------------------------\n"
-									<< "Output endPoint ist: CCyInterruptEndPoint\n" << std::endl;
-							}
-							*/
-						}
-
-						sizeMax_write = cnt + 1;
-
-					}
-
-				}
-
-				m_params["endpoint_write"].setMeta(new ito::IntMeta(sizeMin_write, sizeMax_write, 1), true);
-				m_params["endpoint_read"].setMeta(new ito::IntMeta(sizeMin_read, sizeMax_read, 1), true);
-
-			}
-			else
-			{
-				retval += ito::RetVal(ito::retError, 0, tr("given vendor- or product-ID not detected").toLatin1().data());
-			}
-		}
+                bool endpoint_read_detected = false;
+                bool endpoint_write_detected = false;
 
 
-	}
+                for (int cnt = 0; cnt < countEndPoint; cnt++)
+                {
+                    bIn = m_endPoints[cnt + 1]->Address & 0x80;
+                    attrib = m_endPoints[cnt + 1]->Attributes;
+
+                    m_endPoints[cnt + 1]->XferMode = XMODE_DIRECT;
+                    m_endPoints[cnt + 1]->TimeOut = m_params["timeout"].getVal<int>() * 1000;
+                    //get read endpoints
+                    if (bIn)
+                    {
+                        if (!endpoint_read_detected)
+                        {
+                            sizeMin_read = cnt + 1;
+                            m_params["endpoint_read"].setVal<int>(cnt + 1);
+                            endpoint_read_detected = true;
+                            /*
+                            //get read endpoints
+                            if ((m_isocInEndPoint == NULL) && (attrib == 1) && bIn)
+                            {
+                                m_isocInEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Input endPoint : CCyIsocEndPoint\n" << std::endl;
+                            }
+                            if ((m_bulkInEndPoint == NULL) && (attrib == 2) && bIn)
+                            {
+                                m_bulkInEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Input endPoint is: CCyBulkEndPoint\n" << std::endl;
+                            }
+                            if ((m_interruptInEndPoint == NULL) && (attrib == 3) && bIn)
+                            {
+                                m_interruptInEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Input endPoint is: CCyInterruptEndPoint\n" << std::endl;
+                            }
+                            */
+                        }
+
+                        sizeMax_read = cnt + 1;
+                    }
+
+                    //get write endpoints
+                    if (!bIn)
+                    {
+                        if (!endpoint_write_detected)
+                        {
+                            sizeMin_write = cnt + 1;
+                            m_params["endpoint_write"].setVal<int>(cnt + 1);
+                            endpoint_write_detected = true;
+
+                            /*
+                            //get write entpoints
+                            if ((m_isocOutEndPoint == NULL) && (attrib == 1) && !bIn)
+                            {
+                                m_isocOutEndPoint = (CCyIsocEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Output endPoint is: CCyIsocEndPoint\n" << std::endl;
+                            }
+                            if ((m_bulkOutEndPoint == NULL) && (attrib == 2) && !bIn)
+                            {
+                                m_bulkOutEndPoint = (CCyBulkEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Output endPoint is: CCyBulkEndPoint\n" << std::endl;
+                            }
+                            if ((m_interruptOutEndPoint == NULL) && (attrib == 3) && !bIn)
+                            {
+                                m_interruptOutEndPoint = (CCyInterruptEndPoint *)m_endPoints[cnt + 1];
+                                std::cout << "-----------------------------\n"
+                                    << "Output endPoint is: CCyInterruptEndPoint\n" << std::endl;
+                            }
+                            */
+                        }
+
+                        sizeMax_write = cnt + 1;
+
+                    }
+
+                }
+
+                m_params["endpoint_write"].setMeta(new ito::IntMeta(sizeMin_write, sizeMax_write, 1), true);
+                m_params["endpoint_read"].setMeta(new ito::IntMeta(sizeMin_read, sizeMax_read, 1), true);
+
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("given vendor- or product-ID not detected").toLatin1().data());
+            }
+        }
+
+
+    }
 
     if (!retval.containsError()) /* We need to claim the first interface */
     {
@@ -539,11 +539,11 @@ ito::RetVal ItomCyUSB::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-	if (m_cyDevices)
-	{
-		m_cyDevices->Close();
-		m_cyDevices = NULL;
-	}
+    if (m_cyDevices)
+    {
+        m_cyDevices->Close();
+        m_cyDevices = NULL;
+    }
 
 
     if (waitCond)
@@ -605,108 +605,108 @@ ito::RetVal ItomCyUSB::getVal(QSharedPointer<char> data, QSharedPointer<int> len
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-	if (m_cyDevices->IsOpen() && m_endPoints != NULL)
-	{
-		CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_read"].getVal<int>()];
-		UCHAR bIn = endPoint->Address & 0x80;
-		UCHAR attrib = endPoint->Attributes;
+    if (m_cyDevices->IsOpen() && m_endPoints != NULL)
+    {
+        CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_read"].getVal<int>()];
+        UCHAR bIn = endPoint->Address & 0x80;
+        UCHAR attrib = endPoint->Attributes;
 
-		if (bIn && attrib == 1) //Incoming, isocronous endpoint
-		{
-			long len = *length;
-			PUCHAR buffer = (PUCHAR)data.data();
-			int pkts;
-			// Allocate the IsoPktInfo objects, and find-out how many were allocated
-			CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
+        if (bIn && attrib == 1) //Incoming, isocronous endpoint
+        {
+            long len = *length;
+            PUCHAR buffer = (PUCHAR)data.data();
+            int pkts;
+            // Allocate the IsoPktInfo objects, and find-out how many were allocated
+            CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
 
-			bool status = endPoint->XferData(buffer, len, isoPktInfos);
+            bool status = endPoint->XferData(buffer, len, isoPktInfos);
 
-			if (!status)
-			{
-				*length = 0;
-				//ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc input endpoint).").toLatin1().data());
-			}
-			else
-			{
-				*length = 0;
-				for (int i = 0; i < pkts; ++i)
-				{
-					if (isoPktInfos[i].Status == 0)
-					{
-						*length += isoPktInfos[i].Length;
-					}
-				}
-			}
+            if (!status)
+            {
+                *length = 0;
+                //ULONG errCode = endPoint->NtStatus;
+                retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc input endpoint).").toLatin1().data());
+            }
+            else
+            {
+                *length = 0;
+                for (int i = 0; i < pkts; ++i)
+                {
+                    if (isoPktInfos[i].Status == 0)
+                    {
+                        *length += isoPktInfos[i].Length;
+                    }
+                }
+            }
 
-			delete[] isoPktInfos;
-		}
-		else if (bIn) //bulk or interrupt endpoint
-		{
-			long len = *length;
-			PUCHAR buffer = (PUCHAR)data.data();
-			bool status = endPoint->XferData(buffer, len, NULL);
+            delete[] isoPktInfos;
+        }
+        else if (bIn) //bulk or interrupt endpoint
+        {
+            long len = *length;
+            PUCHAR buffer = (PUCHAR)data.data();
+            bool status = endPoint->XferData(buffer, len, NULL);
 
-			if (!status)
-			{
-				*length = 0;
-				ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (bulk or interrupt input endpoint).").toLatin1().data());
-			}
-			else
-			{
-				*length = len;
-			}
-		}
-		else
-		{
-			retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming tranfer.");
-		}
+            if (!status)
+            {
+                *length = 0;
+                ULONG errCode = endPoint->NtStatus;
+                retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (bulk or interrupt input endpoint).").toLatin1().data());
+            }
+            else
+            {
+                *length = len;
+            }
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming transfer.");
+        }
 
-		/*bool status = false;
-		OVERLAPPED inOvLap;
-		inOvLap.hEvent = CreateEvent(NULL, false, false, L"CYUSB_IN");
+        /*bool status = false;
+        OVERLAPPED inOvLap;
+        inOvLap.hEvent = CreateEvent(NULL, false, false, L"CYUSB_IN");
 
-		unsigned char inBuf[128];
+        unsigned char inBuf[128];
 
-		ZeroMemory(inBuf, 128);
+        ZeroMemory(inBuf, 128);
 
-		LONG length = sizeof(inBuf);
-		int endpointNum = m_params["endpoint_read"].getVal<int>();
-		UCHAR *inContext = m_endPoints[endpointNum]->BeginDataXfer(inBuf, length, &inOvLap);
+        LONG length = sizeof(inBuf);
+        int endpointNum = m_params["endpoint_read"].getVal<int>();
+        UCHAR *inContext = m_endPoints[endpointNum]->BeginDataXfer(inBuf, length, &inOvLap);
 
-		if (!m_endPoints[endpointNum]->WaitForXfer(&inOvLap, 100) && !retval.containsError())
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("setVal error during WaitForXFer").toLatin1().data());
-		}
+        if (!m_endPoints[endpointNum]->WaitForXfer(&inOvLap, 100) && !retval.containsError())
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setVal error during WaitForXFer").toLatin1().data());
+        }
 
-		if (!m_endPoints[endpointNum]->FinishDataXfer(inBuf, length, &inOvLap, inContext) && !retval.containsError())
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("setVal error during FinishDataXfer").toLatin1().data());
-		}
+        if (!m_endPoints[endpointNum]->FinishDataXfer(inBuf, length, &inOvLap, inContext) && !retval.containsError())
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setVal error during FinishDataXfer").toLatin1().data());
+        }
 
-		if (!retval.containsError())
-		{
-			*data = inBuf[0];
-		}
+        if (!retval.containsError())
+        {
+            *data = inBuf[0];
+        }
 
-		if (!CloseHandle(inOvLap.hEvent) && !retval.containsError())
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("setVal error during CloseHandle").toLatin1().data());
-		}
+        if (!CloseHandle(inOvLap.hEvent) && !retval.containsError())
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("setVal error during CloseHandle").toLatin1().data());
+        }
 
-		if (retval.containsError())
-		{
-			CloseHandle(inOvLap.hEvent);
-		}*/
+        if (retval.containsError())
+        {
+            CloseHandle(inOvLap.hEvent);
+        }*/
 
-	}
-	else
-	{
-		retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint Poiter is NULL.").toLatin1().data());
-	}
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint pointer is NULL.").toLatin1().data());
+    }
 
-	if (m_params["debug"].getVal<int>() == 1)
+    if (m_params["debug"].getVal<int>() == 1)
     {
         emit serialLog(QByteArray(data.data(),*length), '<');
     }
@@ -726,60 +726,60 @@ ito::RetVal ItomCyUSB::setVal(const char *data, const int datalength, ItomShared
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
-	if (m_cyDevices->IsOpen() && m_endPoints != NULL)
-	{
-		CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_write"].getVal<int>()];
-		UCHAR bIn = endPoint->Address & 0x80;
-		UCHAR attrib = endPoint->Attributes;
+    if (m_cyDevices->IsOpen() && m_endPoints != NULL)
+    {
+        CCyUSBEndPoint *endPoint = m_endPoints[m_params["endpoint_write"].getVal<int>()];
+        UCHAR bIn = endPoint->Address & 0x80;
+        UCHAR attrib = endPoint->Attributes;
 
-		if (!bIn && attrib == 1) //Incoming, isocronous endpoint
-		{
-			long len = datalength;
-			PUCHAR buffer = (PUCHAR)data[0];
-			int pkts;
-			// Allocate the IsoPktInfo objects, and find-out how many were allocated
-			CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
+        if (!bIn && attrib == 1) //Incoming, isocronous endpoint
+        {
+            long len = datalength;
+            PUCHAR buffer = (PUCHAR)data[0];
+            int pkts;
+            // Allocate the IsoPktInfo objects, and find-out how many were allocated
+            CCyIsoPktInfo *isoPktInfos = ((CCyIsocEndPoint *)endPoint)->CreatePktInfos(len, pkts);
 
-			bool status = endPoint->XferData(buffer, len, isoPktInfos);
+            bool status = endPoint->XferData(buffer, len, isoPktInfos);
 
-			if (!status)
-			{
-				ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc output endpoint).").toLatin1().data());
-			}
-
-
-			delete[] isoPktInfos;
-		}
-		else if (!bIn) //bulk or interrupt endpoint
-		{
-			long len = datalength;
-			PUCHAR buffer = (PUCHAR)data;
-			bool status = endPoint->XferData(buffer, len, NULL);
-
-			if (!status)
-			{
-				//ULONG errCode = endPoint->NtStatus;
-				retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data (bulk or interrupt output endpoint).").toLatin1().data());
-			}
-
-		}
-		else
-		{
-			retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming tranfer.");
-		}
+            if (!status)
+            {
+                ULONG errCode = endPoint->NtStatus;
+                retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data. (isoc output endpoint).").toLatin1().data());
+            }
 
 
-	}
-	else
-	{
-		retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint Poiter is NULL.").toLatin1().data());
-	}
+            delete[] isoPktInfos;
+        }
+        else if (!bIn) //bulk or interrupt endpoint
+        {
+            long len = datalength;
+            PUCHAR buffer = (PUCHAR)data;
+            bool status = endPoint->XferData(buffer, len, NULL);
 
-	if (m_params["debug"].getVal<int>() == 1)
-	{
-		emit serialLog(QByteArray(data, datalength), '>');
-	}
+            if (!status)
+            {
+                //ULONG errCode = endPoint->NtStatus;
+                retval += ito::RetVal(ito::retError, 0, tr("error while obtaining data (bulk or interrupt output endpoint).").toLatin1().data());
+            }
+
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "endpoint does not handle incoming transfer.");
+        }
+
+
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("devices is not open or endpoint pointer is NULL.").toLatin1().data());
+    }
+
+    if (m_params["debug"].getVal<int>() == 1)
+    {
+        emit serialLog(QByteArray(data, datalength), '>');
+    }
 
     if (waitCond)
     {

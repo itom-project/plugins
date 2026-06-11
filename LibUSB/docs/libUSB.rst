@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`LibUSB`
 **Type**:       :plugintype:`LibUSB`
 **License**:    :pluginlicense:`LibUSB`
-**Platforms**:  Windows (Vista, 7, 8)
+**Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
 **Devices**:    Any generic USB devices
 **Author**:     :pluginauthor:`LibUSB`
 =============== ========================================================================================================
@@ -77,7 +77,7 @@ Compilation
 In order to compile LibUSB, get the sources or binaries from LibUSB from http://www.libusb.info. Then set LibUSB_DIR to the base
 directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
 
-Hint: prebuilt versions of libusb for Visual Studio 2015 can also be found here: https://sourceforge.net/projects/itom/files/all-in-one-build-setup/Optional-3rdParty
+Hint: prebuilt versions of libusb for Visual Studio 2015 can also be found here: https://libusb.info/
 
 Possible linker problems with Visual Studio
 --------------------------------------------------
@@ -89,7 +89,7 @@ In this case you have to compile LibUSB by yourself using your version of Visual
 
 1. Download and unpack the sources of **libusb** (https://github.com/libusb/libusb/releases) to any folder
 2. Open the project **msvc/libusb_static_XXXX.vcxproj** with your Visual Studio, where XXXX corresponds to the correct version number.
-3. Compile the project (libusb-1.0 static) as **Release** in x86 and / or x64.
+3. Compile the project (libusb-1.0 static) as **Release** in x86 and / or x64.W
 4. Create a new folder (e.g. libusb_1.0.23_MSVC2015) and copy the following files to that folder ({sources} is the unpacked source folder):
 
     libusb_1.0.23_MSVC2015
@@ -98,7 +98,8 @@ In this case you have to compile LibUSB by yourself using your version of Visual
         /MS32/static --> this must contain the **libusb-1.0.lib** from {sources}/Win32/static (if 32bit build)
         /MS64/static --> this must contain the newly built **libusb-1.0.lib** from {sources}/Win64/static (if 64bit build)
 
-5. Set the CMake variable LibUSB_DIR to this new folder or define a windows environment variable LibUSB_ROOT.
+5. Set the CMake variable **LibUSB_DIR** to this new folder or define a windows environment variable **LIBUSB_ROOT**.
+
 
 Changelog
 =========
@@ -110,4 +111,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the libusb 1.0.22
 * itom setup 4.0.0: This plugin has been compiled using the libusb 1.0.23
 * itom setup 4.1.0: This plugin has been compiled using the libusb 1.0.24
-* itom setup 4.3.0: This plugin has been compiled using the libusb 1.0.26
+* itom setup 4.3.0: This plugin has been compiled using the libusb 1.27.0

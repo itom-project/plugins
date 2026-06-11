@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "ThorlabsBP" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -159,7 +159,7 @@ void DialogThorlabsBP::on_btnCalib_clicked()
         ui.buttonBox->setEnabled(false);
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pAia, "calib", Q_ARG(int, m_currentAxis), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-		ui.btnCalib->setEnabled(false);
+        ui.btnCalib->setEnabled(false);
         observeInvocation(locker.getSemaphore(), ito::AbstractAddInConfigDialog::msgLevelWarningAndError);
         enableDialog(true);
         ui.buttonBox->setEnabled(true);
@@ -208,7 +208,7 @@ void DialogThorlabsBP::currentAxisChanged(int newAxis)
         ui.comboMaximumVoltage->setCurrentIndex(2);
         break;
     }
-    ui.lblTravelRange->setText(QString(QLatin1String("%1 �m")).arg(temporaryParams["maximumTravelRange"].getVal<double*>()[newAxis] * 1000.0));
+    ui.lblTravelRange->setText(QString(QLatin1String("%1 µm")).arg(temporaryParams["maximumTravelRange"].getVal<double*>()[newAxis] * 1000.0));
 
     if (temporaryParams["zeroed"].getVal<int*>()[newAxis])
     {

@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-	URL: http://lccv.ufal.br/
+    URL: http://lccv.ufal.br/
     Copyright (C) 2016, Universidade Federal de Alagoas (UFAL), Brazil
 
     You can use this template, use it in your plugins, modify it,

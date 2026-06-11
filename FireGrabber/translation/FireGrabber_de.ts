@@ -96,7 +96,7 @@
 <context>
     <name>FireGrabber</name>
     <message>
-        <location filename="../FireGrabber.cpp" line="+146"/>
+        <location filename="../FireGrabber.cpp" line="+139"/>
         <source>vendor ID of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -244,7 +244,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1535"/>
+        <location line="+143"/>
+        <source>No frame to catch. Frame needs to be acquired before retrieving.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1678"/>
         <source>Unknown Error Code</source>
         <translation type="unfinished"></translation>
     </message>
@@ -287,12 +292,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+114"/>
-        <source>No frame to catch. Frame needs to be aquired before retrieving.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+50"/>
+        <location line="+164"/>
         <source>Framebuffer of FireWire-DLL invalid during retrieveImage</source>
         <translation type="unfinished"></translation>
     </message>
@@ -333,7 +333,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-40"/>
+        <location line="-33"/>
         <source>FireForLinux (Firewire)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -347,16 +347,6 @@
         <source>Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to communicate with corresponding cameras. The cameras are connected to the computer via firewire.
 
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>LGPL; you need an installed fireForLinux driver, which requires further licenses if you are not using any AVT camera (see fireForLinux documentation).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

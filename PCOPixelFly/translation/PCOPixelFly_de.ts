@@ -481,7 +481,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+65"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,24 +504,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1737"/>
+        <location line="-1736"/>
         <source>PCO Pixelfly cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>This plugin connects the grabber family Pixelfly from PCO to itom. It has mainly been tested with the camera &apos;pixelfly qe&apos;, that is connected to the computer by the PCO PCI interface board 540.
-
-Please install first the necessary drivers for the camera and grabber board from www.pco.de. This plugin supports two families of drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates on 64bit Windows systems.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+444"/>
+        <location line="+465"/>
         <source>no Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -619,8 +607,15 @@ Please install first the necessary drivers for the camera and grabber board from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>read configuratuion registers failed</source>
+        <location line="-475"/>
+        <source>This plugin connects the grabber family Pixelfly from PCO to itom. It has mainly been tested with the camera &apos;pixelfly qe&apos;, that is connected to the computer by the PCO PCI interface board 540.
+
+Please install first the necessary drivers for the camera and grabber board from www.pco.de. This plugin supports two families of drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates on 64bit Windows systems.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+476"/>
+        <source>read configuration registers failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -786,21 +781,21 @@ Please install first the necessary drivers for the camera and grabber board from
     </message>
     <message>
         <location line="+1"/>
-        <source>DMA buffersize to smal</source>
+        <source>DMA buffersize to small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>DMA is running, command not allowed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1"/>
         <source>PCI-Bus error in DMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>DMA is runnig, command not allowed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>get processor failed</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name Ximea)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -58,7 +57,7 @@ if(XIMEA_SDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -73,7 +72,7 @@ if(XIMEA_SDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
     )
 
-    set(PLUGIN_RCC	)
+    set(PLUGIN_RCC    )
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -83,6 +82,9 @@ if(XIMEA_SDK_FOUND)
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     set(TRANSLATION_OUTPUT_FILES)
     set(TRANSLATIONS_FILES)
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 
@@ -110,5 +112,5 @@ if(WIN32)
 endif(WIN32)
 
 else(XIMEA_SDK_FOUND)
-    message(SEND_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
+    message(FATAL_ERROR "${target_name}-API directory could not be found. ${target_name} will not be build")
 endif(XIMEA_SDK_FOUND)

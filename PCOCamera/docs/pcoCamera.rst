@@ -50,13 +50,13 @@ parameters can be changed using *setParam*.
 **bpp**: {int}
     bit depth, bits per pixel (usually not adjustable)
 **temperatures**: {double}, read-only
-    list containing the current CCD, camera and power supply temperatures in degree celcius
+    list containing the current CCD, camera and power supply temperatures in degree celsius
 **coolingSetPointTemperature**: {int}
-    set point for the CCD cooling control in degree celcius (only available if supported with this camera)
+    set point for the CCD cooling control in degree celsius (only available if supported with this camera)
 **IRSensitivity**: {bool} [0,1]
     enables (True, 1) or disables (False, 0) the IR sensitivity of the image sensor, parameter is set to read-only if not available for the specific camera
 **pixelrate**: {int}
-    Transer pixelrate for data from the camera in MHz.
+    Transfer pixelrate for data from the camera in MHz.
 **conversionFactor**: {double}
     conversion factor in electrons/count
 **binning**: {int}
@@ -75,8 +75,9 @@ Most parameters not only have a minimum and maximum value but also a step size.
 Compilation
 ============
 
-For compiling this plugin, download the latest pco.sdk (pco Software-Development-Toolkit) from http://www.pco.de and install it on your computer.
-Then set the CMake variable **PCO_SDK_DIR** or environment variable **PCO_SDK_ROOT** the to the base directory of the pco.sdk.
+For compiling this plugin, download the latest pco.sdk (pco Software-Development-Toolkit) from https://www.excelitas.com/product/pco-software-development-kits
+and choose **General SDK** tp download the latest pco.sdk and install it on your computer.
+Then set the CMake variable **PCO_SDK_DIR** or environment variable **PCO_SDK_ROOT** the to the base directory of the pco.sdk. (eg. C:\Program Files\PCO Digital Camera Toolbox\pco.sdk)
 In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board, the GigE connection etc.
 If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
 For GigE cameras you also need to install the PCO GigE driver and make sure that the connection is properly configured.
@@ -95,4 +96,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using pco.sdk 1.24.0
 * itom setup 4.0.0: This plugin has been compiled using pco.sdk 1.25.0
 * itom setup 4.1.0: This plugin has been compiled using pco.sdk 1.25.0
-* itom setup 4.3.0: This plugin has been compiled using pco.sdk 1.27.0
+* itom setup 4.3.0: This plugin has been compiled using pco.sdk 1.30.0

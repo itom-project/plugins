@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name LibModBus)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
@@ -53,9 +52,9 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/LibModBus.h
     #${CMAKE_CURRENT_SOURCE_DIR}/dialogLibModBus.h
     #${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibModBus.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-    #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(PLUGIN_SOURCES
@@ -64,6 +63,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/LibModBus.cpp
     #add further source files here
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -75,7 +77,7 @@ set(PLUGIN_UI
 )
 
 set(PLUGIN_RCC
-    #add absolute pathes to any *.qrc resource files here
+    #add absolute paths to any *.qrc resource files here
 )
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})

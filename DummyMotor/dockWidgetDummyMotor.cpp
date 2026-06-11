@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -37,7 +37,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
-*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containing the parameters of the DummyMotor
 *\param[in] uniqueID    The unique Id of the DummyMotor-Instance connected to this dialog
 *
 *\sa DummyMotor
@@ -69,7 +69,7 @@ DockWidgetDummyMotor::DockWidgetDummyMotor(int uniqueID, ito::AddInActuator * my
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail This Slot checks all parameters, checks the axis-numbers and enables the corresponding GUI-elements
 *
-*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containing the parameters of the DummyMotor
 *
 */
 void DockWidgetDummyMotor::parametersChanged(QMap<QString, ito::Param> params)

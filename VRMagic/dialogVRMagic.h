@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -45,25 +45,25 @@ class DialogVRMagic : public ito::AbstractAddInConfigDialog
     public:
         DialogVRMagic(ito::AddInBase *grabber);
         ~DialogVRMagic() {};
-		ito::RetVal applyParameters();
+        ito::RetVal applyParameters();
 
     private:
         Ui::dialogVRMagic ui;
         QMap<QString, ito::Param> m_paramsVals;
-		bool m_firstRun;
-		bool m_inEditing;
-		void enableDialog(bool enabled);
+        bool m_firstRun;
+        bool m_inEditing;
+        void enableDialog(bool enabled);
 
         inline double msecToSec(double musec) { return (double)musec * 1.0e-3; }
-		inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
+        inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
         bool timing_mode_changed;
 
     public slots:
-		void parametersChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-		void on_buttonBox_clicked(QAbstractButton* btn);
-		void on_rangeX_valuesChanged(int minValue, int maxValue);
+        void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_rangeX_valuesChanged(int minValue, int maxValue);
         void on_rangeY_valuesChanged(int minValue, int maxValue);
         void on_checkTimingMode_clicked(bool checked);
         void on_btnFullROI_clicked();

@@ -131,3 +131,9 @@ supported by Qt's QImage)::
 
     projector.exec("grabFramebuffer", "D:/test.pgm") #or
     projector.exec("grabFramebuffer", "D:/test.jpg")
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

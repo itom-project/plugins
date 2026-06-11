@@ -115,7 +115,7 @@
         <translation type="obsolete">Kein Gerät zum Öffnen vorhanden</translation>
     </message>
     <message>
-        <location filename="../ItomCyUSB.cpp" line="+143"/>
+        <location filename="../ItomCyUSB.cpp" line="+141"/>
         <source>Timeout for reading commands in [s].</source>
         <translation type="unfinished"></translation>
     </message>
@@ -172,7 +172,7 @@
     <message>
         <location line="+52"/>
         <location line="+70"/>
-        <source>devices is not open or endpoint Poiter is NULL.</source>
+        <source>devices is not open or endpoint pointer is NULL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -225,7 +225,7 @@
         <translation type="obsolete">Initialisiert den &apos;Debug&apos;-Parameter mit dem übergebenen Wert. Ist dieser &apos;True&apos;, wird die gesammte Ein- und Ausgabekommunikation im DockWidget protokolliert</translation>
     </message>
     <message>
-        <location line="-698"/>
+        <location line="-696"/>
         <source>itom-plugin for a USB port communication with Cypress Semiconductor USB chips.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -271,16 +271,6 @@ The setVal and getVal functions will write and read on the specified endpoint.
 <context>
     <name>QObject</name>
     <message>
-        <location line="-11"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This plugin can be used for raw / lowlevel communication with USB-devices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
         <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>
     </message>
@@ -289,7 +279,7 @@ The setVal and getVal functions will write and read on the specified endpoint.
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

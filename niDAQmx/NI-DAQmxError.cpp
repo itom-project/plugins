@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -39,19 +39,19 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
 
 
-	    if (!DAQmxFailed(error))
-	    {
-	        if (prefix != "")
-	        {
-		        retValue += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
-	        }
-	        else
-	        {
-		        retValue += ito::RetVal::format(ito::retWarning, 0, "%s", buffer);
-	        }
-	    }
-	    else
-	    {
+        if (!DAQmxFailed(error))
+        {
+            if (prefix != "")
+            {
+                retValue += ito::RetVal::format(ito::retWarning, 0, "%s: %s", prefix.toLatin1().constData(), buffer);
+            }
+            else
+            {
+                retValue += ito::RetVal::format(ito::retWarning, 0, "%s", buffer);
+            }
+        }
+        else
+        {
             int buffer_size_extended = DAQmxGetExtendedErrorInfo(0, 0);
             char *buffer_extended = new char[buffer_size_extended + 1];
 
@@ -60,19 +60,19 @@ ito::RetVal niDAQmxError::checkError(int error, const QString &prefix = "")
 
             char *buffer_final = buffer_size_extended > 0 ? buffer_extended : buffer;
 
-	        if (prefix != "")
-	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s: %s", prefix.toLatin1().constData(), buffer_final);
-	        }
-	        else
-	        {
-		        retValue += ito::RetVal::format(ito::retError, 0, "%s", buffer_final);
-	        }
+            if (prefix != "")
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "%s: %s", prefix.toLatin1().constData(), buffer_final);
+            }
+            else
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "%s", buffer_final);
+            }
 
             delete[] buffer_extended;
-	    }
+        }
 
-	    delete[] buffer;
+        delete[] buffer;
     }
 
     return retValue;

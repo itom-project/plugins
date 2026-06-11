@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 set(target_name NewportConexLDS)
 
@@ -38,7 +38,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/NewportConexLDS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogNewportConexLDS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewportConexLDS.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -46,8 +46,10 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogNewportConexLDS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNewportConexLDS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/NewportConexLDS.cpp
-
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if(MSVC)
     list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)

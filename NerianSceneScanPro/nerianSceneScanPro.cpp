@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "NerianSceneScanPro" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2019, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2019, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -33,8 +33,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qplugin.h>
 #include <qmessagebox.h>
 #include <visiontransfer/deviceenumeration.h>
-#include <visiontransfer/scenescanparameters.h>
-//include all 3rd Party which come with openCV funktions if CV_MAJOR_VERSION is defined. We wont use those functions since this would force the same openCV version of visiontransfer and itom
+#include <visiontransfer/deviceparameters.h>
+//include all 3rd Party which come with openCV functions if CV_MAJOR_VERSION is defined. We won't use those functions since this would force the same openCV version of visiontransfer and itom
 #include<visiontransfer/imagetransfer.h>
 #include <visiontransfer/imagepair.h>
 
@@ -68,12 +68,12 @@ The device has a web interface which allows access to further parameters.The int
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Lesser General Public License (LGPL)");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    m_initParamsOpt.append(ito::Param("device", ito::ParamBase::String, "", tr("device name (IP adress) that should be opened, an empty string opens the first device that is found (default). Pass '<scan>' for displaying all detected devices.").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("device", ito::ParamBase::String, "", tr("device name (IP address) that should be opened, an empty string opens the first device that is found (default). Pass '<scan>' for displaying all detected devices.").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ NerianSceneScanPro::NerianSceneScanPro() : AddInGrabber(), m_isgrabbing(false), 
     m_params.insert(paramVal.getName(), paramVal);
     m_params["bpp"].setMeta(new ito::IntMeta(8, 16, 8, "ImageFormatControl"), true);
 
-    paramVal = ito::Param("operationMode", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("0: Pass trhough, 1: rectify, 2: stereo matching").toLatin1().data());
+    paramVal = ito::Param("operationMode", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("0: Pass through, 1: rectify, 2: stereo matching").toLatin1().data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("ProcessingControl");
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -347,7 +347,7 @@ ito::RetVal NerianSceneScanPro::init(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     if (!retValue.containsError())
     {
-        m_pParamsObj = new SceneScanParameters(devices[deviceIdx]);
+        m_pParamsObj = new DeviceParameters(devices[deviceIdx]);
         m_pImageTransferObj = new ImageTransfer(devices[deviceIdx]);
         m_pImagePair = new ImagePair();
 
@@ -417,7 +417,7 @@ ito::RetVal NerianSceneScanPro::close(ItomSharedSemaphore *waitCond)
 
     //todo:
     // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+    // - this function is considered to be the "inverse" of init.
     delete m_pParamsObj, m_pImageTransferObj, m_pImagePair;
     m_pParamsObj, m_pImageTransferObj, m_pImagePair = NULL;
 
@@ -499,7 +499,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
     {
         if (key == "operationMode")
         {
-            SceneScanParameters::OperationMode mode =(SceneScanParameters::OperationMode) val->getVal<int>();
+            DeviceParameters::OperationMode mode =(DeviceParameters::OperationMode) val->getVal<int>();
             try {
                 m_pParamsObj->setOperationMode(mode);
             }
@@ -711,7 +711,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         }
         else if (key == "exposureGainMode")
         {
-            SceneScanParameters::AutoMode mode = (SceneScanParameters::AutoMode) val->getVal<int>();
+            DeviceParameters::AutoMode mode = (DeviceParameters::AutoMode) val->getVal<int>();
             try
             {
                 m_pParamsObj->setAutoMode(mode);
@@ -748,7 +748,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         }
         else if (key == "autoTargetFrame")
         {
-            SceneScanParameters::TargetFrame frame = (SceneScanParameters::TargetFrame) val->getVal<int>();
+            DeviceParameters::TargetFrame frame = (DeviceParameters::TargetFrame) val->getVal<int>();
             try {
                 m_pParamsObj->setAutoTargetFrame(frame);
             }
@@ -947,7 +947,7 @@ ito::RetVal NerianSceneScanPro::setParam(QSharedPointer<ito::ParamBase> val, Ito
         {
             int enable = val->getVal<int>();
             try {
-                m_pParamsObj->setSaveAutoReclabration(enable == 0 ? false : true);
+                m_pParamsObj->setSaveAutoRecalibration(enable == 0 ? false : true);
             }
             catch (const std::exception& ex)
             {
@@ -1410,7 +1410,7 @@ void NerianSceneScanPro::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
@@ -1996,14 +1996,14 @@ ito::RetVal NerianSceneScanPro::syncParams(SyncParams what /*=sAll*/)
                 }
                 else
                 {
-					if (format1 == ImagePair::FORMAT_8_BIT_MONO)
-					{
-						m_params["bpp"].setVal(8);
-					}
-					else
-					{
-						m_params["bpp"].setVal(16);
-					}
+                    if (format1 == ImagePair::FORMAT_8_BIT_MONO)
+                    {
+                        m_params["bpp"].setVal(8);
+                    }
+                    else
+                    {
+                        m_params["bpp"].setVal(16);
+                    }
 
                 }
 

@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite analog output task for single value output.
 
 Demo script for sending single values to different

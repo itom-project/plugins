@@ -59,7 +59,7 @@ Install the Thorlabs Kinesis software and USB Drivers.
 Usage
 ============
 
-This example shows how to initalized the device in **itom** and change the position:
+This example shows how to initialized the device in **itom** and change the position:
 
     .. code-block:: python
 
@@ -85,4 +85,7 @@ Kinesis 1.7.0 requires the Microsoft C++ Redistributable 2012.
 Changelog
 =========
 
-* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* itom setup 4.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.23;
+* itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.

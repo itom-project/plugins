@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 '''
 By twipOS 2016.
 '''
@@ -230,7 +229,7 @@ class dicGui(ItomUi):
     def loadConfig(self):
         #try to open file and overwrite default values with json values
         try:
-            jfile = open(self.modulePath + 'systemConfig.json', mode ='r')
+            jfile = open(self.modulePath + 'systemConfig.json')
             jsonFile = json.load(jfile)
             jfile.close()
         except:
@@ -612,7 +611,7 @@ class dicGui(ItomUi):
                 return
 
         if (self.hbm != None and self.GUI.gui.cbEnableSpider["checked"] == True):
-            # if there are alreay measurement values available measurement was probably
+            # if there are already measurement values available measurement was probably
             # only paused. so just restart device
             if self.numMeas == 0:
                 self.hbm.stopDevice()
@@ -671,19 +670,19 @@ class dicGui(ItomUi):
                     / self.cfg["samples"] * self.cfg["scales"][self.cfg["channels"][nc] - 4])
 
             if tmpObj.size(0) >= 1:
-                self.GUI.gui.leLastValue4["text"] = "{0:.5g}".format(self.resultObj[1, self.numMeas])
+                self.GUI.gui.leLastValue4["text"] = f"{self.resultObj[1, self.numMeas]:.5g}"
             else:
                 self.GUI.gui.leLastValue4["text"] =  ""
             if tmpObj.size(0) >= 2:
-                self.GUI.gui.leLastValue5["text"] = "{0:.5g}".format(self.resultObj[2, self.numMeas])
+                self.GUI.gui.leLastValue5["text"] = f"{self.resultObj[2, self.numMeas]:.5g}"
             else:
                 self.GUI.gui.leLastValue5["text"] =  ""
             if tmpObj.size(0) >= 3:
-                self.GUI.gui.leLastValue6["text"] = "{0:.5g}".format(self.resultObj[3, self.numMeas])
+                self.GUI.gui.leLastValue6["text"] = f"{self.resultObj[3, self.numMeas]:.5g}"
             else:
                 self.GUI.gui.leLastValue6["text"] = ""
             if tmpObj.size(0) >= 4:
-                self.GUI.gui.leLastValue7["text"] = "{0:.5g}".format(self.resultObj[4, self.numMeas])
+                self.GUI.gui.leLastValue7["text"] = f"{self.resultObj[4, self.numMeas]:.5g}"
             else:
                 self.GUI.gui.leLastValue7["text"] =  ""
             self.GUI.plotAutoScale()
@@ -723,8 +722,8 @@ class dicGui(ItomUi):
                 self.tmpImg.setTag("measTime", time.clock())
                 self.GUI.gui.plotCamImage["source"] = self.tmpImg
                 incr = 0
-                if (os.path.isfile("{0}\\img{1}.idc".format(self.imgsPathMeas, self.numImg))):
-                    while (os.path.isfile("{0}\\img{1}_{2}.idc".format(self.imgsPathMeas, self.numImg, incr))):
+                if (os.path.isfile(f"{self.imgsPathMeas}\\img{self.numImg}.idc")):
+                    while (os.path.isfile(f"{self.imgsPathMeas}\\img{self.numImg}_{incr}.idc")):
                         incr += 1
                 if (incr == 0):
                     exec("img{1}=self.tmpImg.copy()\nsaveIDC(\"{0}\\Img{1}.idc\", {{{1}:img{1}}})".format(self.imgsPathMeas, self.numImg))

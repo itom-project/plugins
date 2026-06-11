@@ -24,7 +24,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+3"/>
+        <source>Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output
+dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values.
+Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software
+AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -44,15 +52,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Some detectors have dark pixels, that can be used for a dark detection. If enabled, the output
-dataObject will always be float32. Static (1) subtracts the mean value of all dark pixels from all values.
-Dynamic (2) is only available for some devices (see if dyn. dark correction is enabled in the software
-AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): default.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+20"/>
         <source>Serial number of spectrometer. Same as identifier.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -168,11 +168,6 @@ AvaSpec) and subtracts different mean values for odd and even pixels. Off (0): d
     <message>
         <location line="+1"/>
         <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itom. It uses a low-level libusb connection to communicate with the devices and has been tested with the following spectrometers: * AvaSpec 3468 USB-Spectrometer * AvaSpec 2048 USB-Spectrometer * AvaSpec-ULS2048CL-EVO USB3-Spectrometer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

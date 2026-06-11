@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Standa ST8SMC4USB" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -71,14 +71,14 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
         if (params["unit"].getVal<int>() > 0)
         {
             ui.sb_speed->setSuffix(" mm/s");
-            ui.sb_accel->setSuffix(" mm/s²");
-            ui.sb_decel->setSuffix(" mm/s²");
+            ui.sb_accel->setSuffix(" mm/sÂ²");
+            ui.sb_decel->setSuffix(" mm/sÂ²");
         }
         else
         {
-            ui.sb_speed->setSuffix(" °/s");
-            ui.sb_accel->setSuffix(" °/s²");
-            ui.sb_decel->setSuffix(" °/s²");
+            ui.sb_speed->setSuffix(" Â°/s");
+            ui.sb_accel->setSuffix(" Â°/sÂ²");
+            ui.sb_decel->setSuffix(" Â°/sÂ²");
         }
     }
 

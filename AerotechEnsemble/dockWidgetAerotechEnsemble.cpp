@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechEnsemble" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -35,7 +35,7 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
-*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containing the parameters of the DummyMotor
 *\param[in] uniqueID    The unique Id of the DummyMotor-Instance connected to this dialog
 *
 *\sa DummyMotor
@@ -73,7 +73,7 @@ void DockWidgetAerotechEnsemble::CheckAxisNums(QMap<QString, ito::Param> params)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail This Slot checks all parameters, currently only calling CheckAxisNums
 *
-*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containing the parameters of the DummyMotor
 *
 */
 void DockWidgetAerotechEnsemble::valuesChanged(QMap<QString, ito::Param> params)

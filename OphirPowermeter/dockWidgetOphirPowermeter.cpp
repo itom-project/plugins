@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "OphirPowermeter" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -61,45 +61,45 @@ DockWidgetOphirPowermeter::~DockWidgetOphirPowermeter()
         ui.lblHeadSerialNumber->setText(params["headSerialNumber"].getVal<char*>());
         ui.lblCalibrationDueDate->setText(params["calibrationDueDate"].getVal<char*>());
 
-		ito::IntMeta *intmeta = static_cast<ito::IntMeta*>(params["range"].getMeta());
-		ui.comboBoxRange->clear();
-		int count = 0;
-		for (int i = intmeta->getMin(); i <= intmeta->getMax(); i += intmeta->getStepSize())
-		{
-			ui.comboBoxRange->addItem(QString::number(i));
-		}
-		int index = ui.comboBoxRange->findText(QString::number(params["range"].getVal<int>()));
+        ito::IntMeta *intmeta = static_cast<ito::IntMeta*>(params["range"].getMeta());
+        ui.comboBoxRange->clear();
+        int count = 0;
+        for (int i = intmeta->getMin(); i <= intmeta->getMax(); i += intmeta->getStepSize())
+        {
+            ui.comboBoxRange->addItem(QString::number(i));
+        }
+        int index = ui.comboBoxRange->findText(QString::number(params["range"].getVal<int>()));
 
-		ito::StringMeta* sm = (ito::StringMeta*)(params["measurementType"].getMeta());
-		for (int x = 0; x < sm->getLen(); x++)
-		{
-			ui.comboBoxMeasurementType->addItem(sm->getString(x));
-			int index = ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>());
-		}
+        ito::StringMeta* sm = (ito::StringMeta*)(params["measurementType"].getMeta());
+        for (int x = 0; x < sm->getLen(); x++)
+        {
+            ui.comboBoxMeasurementType->addItem(sm->getString(x));
+            int index = ui.comboBoxMeasurementType->findText(params["measurementType"].getVal<char*>());
+        }
 
-		char* set = params["wavelengthSet"].getVal<char*>();
+        char* set = params["wavelengthSet"].getVal<char*>();
 
-		if (QString::fromLatin1(set).compare("CONTINUOUS") == 0)
-		{
+        if (QString::fromLatin1(set).compare("CONTINUOUS") == 0)
+        {
             ito::IntMeta *im;
             im = static_cast<ito::IntMeta*>(params["wavelength"].getMeta());
             ui.spinBoxWavelength->setSingleStep(im->getStepSize());
             ui.spinBoxWavelength->setMinimum(im->getMin());
             ui.spinBoxWavelength->setMaximum(im->getMax());
-		}
-		else
-		{
-			ui.stackedWidgetWavelengthSet->setCurrentIndex(1);
+        }
+        else
+        {
+            ui.stackedWidgetWavelengthSet->setCurrentIndex(1);
 
-			ito::StringMeta* sm = (ito::StringMeta*)(params["wavelength"].getMeta());
-			for (int x = 0; x < sm->getLen(); x++)
-			{
-				ui.comboBoxWavelength->addItem(sm->getString(x));
-			}
-			int index = ui.comboBoxWavelength->findText(params["wavelength"].getVal<char*>());
-		}
+            ito::StringMeta* sm = (ito::StringMeta*)(params["wavelength"].getMeta());
+            for (int x = 0; x < sm->getLen(); x++)
+            {
+                ui.comboBoxWavelength->addItem(sm->getString(x));
+            }
+            int index = ui.comboBoxWavelength->findText(params["wavelength"].getVal<char*>());
+        }
 
-		ui.lblUnit->setText(params["unit"].getVal<char*>());
+        ui.lblUnit->setText(params["unit"].getVal<char*>());
 
         m_firstRun = false;
         m_inEditing = false;

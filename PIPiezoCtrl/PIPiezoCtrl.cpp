@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -69,7 +69,7 @@ const ito::RetVal PIPiezoCtrl::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIPiezoCtrl::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIPiezoCtrl::init. The widget window is created at this position.
 */
 PIPiezoCtrl::PIPiezoCtrl() :
     AddInActuator(),
@@ -91,7 +91,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
 #endif
     m_params.insert(paramVal.getName(), paramVal);
 
-    m_scale = 1e3; // PI is programmed in mu m, this evil Programm sents in mm
+    m_scale = 1e3; // PI is programmed in mu m, this evil Program sents in mm
     m_async = 0;
     m_delayProp = 4; //s
     m_delayOffset = 0.08; //s
@@ -103,7 +103,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
 
     paramVal = ito::Param("ctrlType", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Current type of controller, e.g. E-662, E-665, E-753...").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
+    paramVal = ito::Param("ctrlName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("device information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -117,7 +117,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 0, tr("defines whether system is in local (1) or remote (0) mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("Number of axes (here always 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -163,12 +163,12 @@ PIPiezoCtrl::PIPiezoCtrl() :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -320,14 +320,14 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, PIPiezoCtrl::PISwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -584,7 +584,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("for RS232 connections, you need to indiciate a valid baudrate").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("for RS232 connections, you need to indicate a valid baudrate").toLatin1().data());
         }
     }
     else if (connectionType == "TCPIP")
@@ -711,7 +711,7 @@ ito::RetVal PIPiezoCtrl::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -724,7 +724,7 @@ ito::RetVal PIPiezoCtrl::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -770,7 +770,7 @@ ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of a single axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of a single axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -783,7 +783,7 @@ ito::RetVal PIPiezoCtrl::setOrigin(const int axis, ItomSharedSemaphore * /*waitC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of various axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function sets the zero position of various axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector with numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -827,7 +827,7 @@ ito::RetVal PIPiezoCtrl::getStatus(QSharedPointer<QVector<int> > status, ItomSha
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -879,7 +879,7 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -913,7 +913,7 @@ ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -931,7 +931,7 @@ ito::RetVal PIPiezoCtrl::setPosAbs(const int axis, const double pos, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -965,7 +965,7 @@ ito::RetVal PIPiezoCtrl::setPosAbs(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -982,7 +982,7 @@ ito::RetVal PIPiezoCtrl::setPosRel(const int axis, const double pos, ItomSharedS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -1015,8 +1015,8 @@ ito::RetVal PIPiezoCtrl::setPosRel(const QVector<int> axis, QVector<double> pos,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa PISetPos
     \return retOk
@@ -1459,10 +1459,10 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questi
     ito::RetVal retValue = PISendCommand(questionCommand);
     retValue += PIReadString(_answer, readSigns, timeoutMS);
 
-		if (_answer[0] == ' ')
-		{
-			_answer.remove(0, 1);
-		}
+        if (_answer[0] == ' ')
+        {
+            _answer.remove(0, 1);
+        }
     answer = _answer.toDouble(&ok);
 
     if (retValue.containsError() && retValue.errorCode() != PI_READTIMEOUT)
@@ -1633,7 +1633,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     }
 #endif
 
-    //1. try to read *idn? in order to indentify device
+    //1. try to read *idn? in order to identify device
     retval += PISendQuestionWithAnswerString("*idn?", answer, 500);
     if (retval.containsError() || answer.length() < 5)
     {
@@ -1644,7 +1644,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval = ito::retOk;
     }
 
-    //2. try to read *idn? in order to indentify device
+    //2. try to read *idn? in order to identify device
     retval += PISendQuestionWithAnswerString("*idn?", answer, 500);
     if (retval.containsError() || answer.length() < 5)
     {
@@ -1903,7 +1903,7 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -2159,13 +2159,13 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     if (m_getPosInScan)
     {
         retVal += getPos(0, actPos, NULL);
-		m_currentPos[0] = *actPos;
-		sendStatusUpdate(false);
+        m_currentPos[0] = *actPos;
+        sendStatusUpdate(false);
     }
-	else
-	{
-		sendStatusUpdate(true);
-	}
+    else
+    {
+        sendStatusUpdate(true);
+    }
 
 
 

@@ -1,8 +1,8 @@
 /*# ********************************************************************
     Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -69,6 +69,8 @@ private:
     int m_delayAfterSendCommandMS;
     int m_requestTimeOutMS;
     int m_numChannels = 8;
+
+    const char* m_counter_query = ":PULSE0:COUN:COUN?";
 
     ito::RetVal SendCommand(const QByteArray& command);
     ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);

@@ -4,7 +4,7 @@
 <context>
     <name>DialogDummyMotor</name>
     <message>
-        <location filename="../dialogDummyMotor.cpp" line="+65"/>
+        <location filename="../dialogDummyMotor.cpp" line="+66"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
@@ -85,7 +85,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+160"/>
+        <location filename="../DummyMotor.cpp" line="+161"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -95,16 +95,15 @@
         <translation type="unfinished">Motorname hinzufügen</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Print the current positions of the specified axis to the consol</source>
-        <translation type="unfinished">Schreibt die aktuelle Position der spezifischen Achse in die Konsole</translation>
+        <translation type="obsolete">Schreibt die aktuelle Position der spezifischen Achse in die Konsole</translation>
     </message>
     <message>
         <source>Number of Axis attached to this stage</source>
         <translation type="obsolete">Anzahl Achsen entsprechend des Geräts</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+29"/>
         <source>Speed of the axis between 0.1 and 100000 mm/s</source>
         <translation type="unfinished">Geschwindigkeit der Achse zwischen 0,1 und 100000 mm/s</translation>
     </message>
@@ -119,7 +118,7 @@
         <translation type="unfinished">Schalter um zu warten bis die Fahrt beendet wurde (0:sync) oder nicht (1:async)</translation>
     </message>
     <message>
-        <location line="+525"/>
+        <location line="+560"/>
         <location line="+97"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
@@ -135,13 +134,18 @@
         <translation type="unfinished">Eine Joystick-Bewegung schlug fehl.</translation>
     </message>
     <message>
-        <location line="-615"/>
-        <location line="+197"/>
+        <location line="-639"/>
+        <location line="+221"/>
         <source>axis index is out of bound</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-496"/>
+        <location line="-537"/>
+        <source>Print the current positions of the specified axis to the console</source>
+        <translation type="unfinished">Schreibt die aktuelle Position der spezifischen Achse in die Konsole</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Axis number for jogging</source>
         <translation type="unfinished">Die Anzahl Achsen für das Rütteln</translation>
     </message>
@@ -181,12 +185,18 @@
         <translation type="unfinished">Negative Obergrenzen der Achsen</translation>
     </message>
     <message>
-        <location line="+288"/>
+        <location line="+8"/>
+        <source>If 0, the axis is not homed. 1: homed.</source>
+        <translation type="unfinished">Bei 0 ist die Achse nicht referenziert. 1: ist referenziert (homed).</translation>
+    </message>
+    <message>
+        <location line="+291"/>
         <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Der Funktionsname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+42"/>
+        <location line="+218"/>
         <location line="+97"/>
         <source>axis number is out of boundary</source>
         <translation type="unfinished">Die Anzahl der Achsen liegt außerhalb des Gültigkeitsbereichs</translation>
@@ -208,18 +218,18 @@
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-507"/>
-        <location line="+59"/>
+        <location line="-519"/>
+        <location line="+71"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-335"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Parameter können nicht gesetzt werden</translation>
     </message>
     <message>
-        <location line="+317"/>
+        <location line="+349"/>
         <source>axis number exceeds number of axis</source>
         <translation type="unfinished">Die Achsennummer überschreitet die Anzahl Achsen</translation>
     </message>
@@ -236,7 +246,7 @@
         <translation type="obsolete">Nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-583"/>
+        <location line="-618"/>
         <source>Number of axis for this motor</source>
         <translation type="unfinished">Anzahl der Achsen des Motors</translation>
     </message>
@@ -264,7 +274,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-31"/>
+        <location line="-32"/>
         <source>A virtual motor to test real actuators.</source>
         <translation type="unfinished">Ein virtueller Motor um echte Aktuatoren zu testen.</translation>
     </message>
@@ -273,30 +283,28 @@
         <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes.
 
 The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
-        <translation type="unfinished">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.
-
-Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Licensed under LPGL.</source>
-        <translation></translation>
+        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes.
+        The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
+        <translation type="obsolete">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.
+        Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.
+        </translation>
     </message>
 </context>
 <context>
     <name>dialogDummyMotor</name>
     <message>
-        <location filename="../dialogDummyMotor.ui" line="+77"/>
         <source>Speed</source>
-        <translation>Geschwindigkeit</translation>
+        <translation type="vanished">Geschwindigkeit</translation>
     </message>
     <message>
-        <location line="-12"/>
         <source>Acceleration</source>
-        <translation>Beschleunigung</translation>
+        <translation type="vanished">Beschleunigung</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location filename="../dialogDummyMotor.ui" line="+97"/>
         <source>Enable B</source>
         <translation>B Aktiv</translation>
     </message>
@@ -316,12 +324,11 @@ Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung m
         <translation>Z Aktiv</translation>
     </message>
     <message>
-        <location line="-59"/>
         <source>Asynchronous mode</source>
-        <translation>Asynchroner Modus</translation>
+        <translation type="vanished">Asynchroner Modus</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="-40"/>
         <source>Enable X</source>
         <translation>X Aktiv</translation>
     </message>
@@ -336,28 +343,18 @@ Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung m
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location line="-138"/>
+        <location line="-102"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+24"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>
     <message>
-        <location line="-80"/>
+        <location line="-32"/>
         <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source> mm/s</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source> mm/s²</source>
         <translation></translation>
     </message>
 </context>

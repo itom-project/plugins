@@ -73,7 +73,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1243"/>
+        <location line="+70"/>
+        <source>Subtracted plane with A = %1, B = %2, C = %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+544"/>
+        <source>Calculated polynomial coeffs along z-direction with order Z = %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+629"/>
         <source>LeastSquaresPlane (default), LMedSPlane (Least median of squares), Median, Mean</source>
         <translation type="unfinished"></translation>
     </message>
@@ -138,12 +148,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+220"/>
-        <source>Calculated polynomical coeffs along z-direction with order Z = %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+268"/>
+        <location line="+488"/>
         <source>Subtracted polynomial of %1th order along axis %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -185,17 +190,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+60"/>
-        <source>Substracted plane with A = %1, B = %2, C = %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../polyfit2d.cpp" line="+49"/>
-        <source>2D polynomical fit with order x = %1 and y = %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-101"/>
+        <location line="-52"/>
         <source>destination data object with fitted values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -220,7 +215,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+89"/>
+        <source>2D polynomial fit with order x = %1 and y = %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+71"/>
         <source>2:  polynomial orders must not be below 1, aborted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -257,7 +257,7 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-290"/>
+        <location filename="../fittingfilters.cpp" line="-230"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -269,12 +269,22 @@ Furthermore this plugin also contains methods to finally subtract or reconstruct
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>licensed under LPGL</source>
+        <location line="+38"/>
+        <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy)
+
+This fit can be executed by different fit strategies:
+- leastSquareFit minimizes the sum of  the squared distances of all valid points to the plane (direct solution)
+- leastSquareFitSVD does the same using a svd algorithm
+- leastMedianFit minimizes the median of the absolute distances of all valid points to the plane
+
+The probability values are only important for the least median fit and determine the number of iterations for the
+a random search using the equation
+
+.. math:: iterations &gt;= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+142"/>
         <source>subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy)
 
 If the destinationImage is not the same than the sourceImage, the destinationImage finally is a new data object with the same size and type than the sourceImage and contains the data of the sourceImage subtracted by the given plane. If both are the same, the subtraction is executed in-place.
@@ -290,22 +300,7 @@ This method firstly executes the filter *fitPlane* followed by *subtractPlane*.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-257"/>
-        <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy)
-
-This fit can be executed by different fit strategies:
-- leastSquareFit minimizes the sum of  the squared distances of all valid points to the plane (direct solution)
-- leastSquareFitSVD does the same using a svd algorithm
-- leastMedianFit minimizes the median of the absolute distances of all valid points to the plane
-
-The probability values are only important for the least median fit and determine the number of iterations for the
-a random search using the equation
-
-.. math:: iterations &gt;= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+315"/>
+        <location line="+58"/>
         <source>This method fits a two-dimensional polynomial of given order in x- and y-direction to the data &apos;inputData&apos;.
 
 For the fit, the optional scale and offset values of the input data object are considered. The fit is executed in double precision, such that the input is converted to float64 (if not yet done). NaN values in the input data object are ignored. Optionally, you can give a weighting data object (needs to have the same dimension and size than inputData) such that the values are weighted with the values of the data object &apos;weights&apos;. Values with corresponding weights &lt;= 0 are ignored as well.
@@ -398,7 +393,7 @@ If no &apos;xVals&apos; are assigned, the x-values for each plane are calculated
 
 You can additionally give a weight data object (same dimension than &apos;data&apos;) for weighting the values. NaN values in &apos;data&apos; and weights &lt;= 0 are ignored. If a fit cannot be done due to too less or degenerated values, NaN is returned in &apos;polynoms&apos; at this pixel.
 
-For a first order fit, a direct least squares solution is used which is very fast, for the other orders a system of linear equations is solved (using a SVD decomposition) which can be slower. On a multi-core processor you can assign a number of threads that are used to parallely compute the approximations for each pixel.</source>
+For a first order fit, a direct least squares solution is used which is very fast, for the other orders a system of linear equations is solved (using a SVD decomposition) which can be slower. On a multi-core processor you can assign a number of threads that are used to parallelly compute the approximations for each pixel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -458,7 +453,7 @@ Currently, the filter does not work inplace such that the output object is alway
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../polyfit2d.cpp" line="-484"/>
+        <location filename="../polyfit2d.cpp" line="-478"/>
         <source>Fit a polynomial p(x,y) of order (orderX, orderY) in x- and y-direction.
 
 The fit function always looks like this:

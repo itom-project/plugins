@@ -98,32 +98,32 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput voltage; the unit: V</source>
+        <source>Output voltage; the unit: V</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput current; the unit: A</source>
+        <source>Output current; the unit: A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput load; the unit: W</source>
+        <source>Output load; the unit: W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput voltage limit; the unit: V</source>
+        <source>Output voltage limit; the unit: V</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput current limit; the unit: A</source>
+        <source>Output current limit; the unit: A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Ouput load limit; the unit: W</source>
+        <source>Output load limit; the unit: W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -252,11 +252,6 @@
     <message>
         <location line="+8"/>
         <source>This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. Therefore an opened connected via the serial port (using the plugin &apos;SerialIO&apos;) is required. You need to give a valid handle to this instance when initializing this plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

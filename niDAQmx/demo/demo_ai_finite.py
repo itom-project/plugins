@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite analog input task.
 
 Demo script for acquiring a finite set of analog

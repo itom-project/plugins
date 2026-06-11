@@ -125,7 +125,7 @@
     </message>
     <message>
         <location line="+11"/>
-        <source>Number of images to aquire</source>
+        <source>Number of images to acquire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -170,11 +170,6 @@
         <location line="+2"/>
         <source>The DemoAlgorithms-DLL contains some basic filter function to show a plugin developer how to use a motor or program an own plugin widget</source>
         <translation type="unfinished">Die DemoAlgorithms-DLL beinhaltet einige grundlegende Filterfunktionen um einem Plugin-Entwickler zu zeigen wie ein Motor-Widget eingesetzt oder selbst programmiert wird</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>LGPL</source>
-        <translation></translation>
     </message>
 </context>
 </TS>

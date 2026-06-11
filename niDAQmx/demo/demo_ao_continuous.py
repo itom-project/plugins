@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Continuous analog output task.
 
 Demo script for sending a series of number to different

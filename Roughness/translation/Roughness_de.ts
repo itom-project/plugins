@@ -23,12 +23,7 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>LPGL licensed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+67"/>
         <source>the chosen sampling length for five sections differs from the intended length (cut-off wavelength)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -110,7 +105,7 @@ Some algorithms the plugin &apos;fittingFilters&apos; for a valid execution.</so
         <source>calculate the roughness and waviness profile based in a given real input data object.
 
 The roughness and waviness profile is determined row-by-row from the given input object that is filtered using
-one or two gaussian convolution operations. The gaussian filters are choosen such that a transmission of 50% is
+one or two gaussian convolution operations. The gaussian filters are chosen such that a transmission of 50% is
 obtained at the given cut-off wavelength levels.
 
 The waviness is a lowpass of the input data cut at the cut-off wavelength Lc.
@@ -129,7 +124,48 @@ This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+245"/>
+        <source>Evaluates given roughness or waviness profiles for a specific roughness profile parameter.
+
+The given roughness data is evaluated line by line. If only one line is evaluated, &apos;result&apos; contains:
+
+(mean-value-over-all-samples, min-value-over-all-samples, max-value-over-all-samples)
+
+The result values are always in _m. In case of Rt (or Wt), the evaluation is not separated to various samples, therefore mean, min and max contain the same values.
+
+If multiple lines are evaluated, the result contains the
+
+(mean-value-over-all-lines, min-value, max-value, std-dev),
+where min-value, max-value and std-dev are calculated over the mean-values of all lines.
+
+The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
+
+Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile
+the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+316"/>
+        <source>Calculate a profile roughness parameter for each line in the given input object.
+
+The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
+
+This filter is a thre-step filter, based on the single filters &apos;subtract1DRegression&apos; from the plugin &apos;FittingFilters&apos;
+and &apos;calcRoughnessProfile&apos; as well as &apos;evalRoughnessProfile&apos;. The first is an optional filter to remove the form of the raw signal.
+The second filter splits the raw signal into the waviness and roughness signal (given by the cut-off wavelengths Lc and Ls).
+The last filter evaluates the given roughness parameter and returns the result. For more information see the description of the single filters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+139"/>
+        <source>This filter calculates the Abbott firestone curve (as well as an optional histogram) of
+a roughness or waviness profile, e.g. obtained from the filter &apos;calcRoughnessProfile&apos;.
+
+The evaluation is done based on DIN EN ISO 4287:2010.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-670"/>
         <location line="+547"/>
         <source>real input object (1D or 2D). The roughness is determined row-by-row. The axis units must be set to &apos;mm&apos;, &apos;_m&apos; or &apos;nm&apos;.</source>
         <translation type="unfinished"></translation>
@@ -213,28 +249,7 @@ This filter is implemented based on DIN EN ISO 16610-21:2013.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Evaluates given roughness or waviness profiles for a specific roughness profile parameter.
-
-The given roughness data is evaluated line by line. If only one line is evaluated, &apos;result&apos; contains:
-
-(mean-value-over-all-samples, min-value-over-all-samples, max-value-over-all-samples)
-
-The result values are always in _m. In case of Rt (or Wt), the evaluation is not separated to various samples, therefore mean, min and max contain the same values.
-
-If multiple lines are evaluated, the result contains the
-
-(mean-value-over-all-lines, min-value, max-value, std-dev),
-where min-value, max-value and std-dev are calculated over the mean-values of all lines.
-
-The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
-
-Possible roughness parameters are Rp, Rv, Rz, Rt, Ra, Rq, Rsk, Rku, Rdq, Rda, Rdc. If you pass the waviness profile instead of the roughness profile
-the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
+        <location line="+46"/>
         <location line="+442"/>
         <source>real input object (1D or 2D, no unsigned data types) - must be either the output argument &apos;roughness&apos; or &apos;waviness&apos; from filter &apos;calcRoughnessProfile&apos;. The roughness is determined row-by-row. The axis units must be set to &apos;mm&apos;, &apos;_m&apos; or &apos;nm&apos;.</source>
         <translation type="unfinished"></translation>
@@ -289,19 +304,7 @@ the parameters are then Wp, Wv, Wz, Wt, Wa, Wq, Wsk, Wku, Wdq, Wda, Wdc.</source
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+137"/>
-        <source>Calculate a profile roughness parameter for each line in the given input object.
-
-The evaluation is done based on DIN EN ISO 4287:2010, the separation of different sample lengths is based on DIN EN ISO 4288:1997.
-
-This filter is a thre-step filter, based on the single filters &apos;subtract1DRegression&apos; from the plugin &apos;FittingFilters&apos;
-and &apos;calcRoughnessProfile&apos; as well as &apos;evalRoughnessProfile&apos;. The first is an optional filter to remove the form of the raw signal.
-The second filter splits the raw signal into the waviness and roughness signal (given by the cut-off wavelengths Lc and Ls).
-The last filter evaluates the given roughness parameter and returns the result. For more information see the description of the single filters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
+        <location line="+155"/>
         <source>roughness parameter to determine</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,15 +314,7 @@ The last filter evaluates the given roughness parameter and returns the result. 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
-        <source>This filter calculates the Abbott firestone curve (as well as an optional histogram) of
-a roughness or waviness profile, e.g. obtained from the filter &apos;calcRoughnessProfile&apos;.
-
-The evaluation is done based on DIN EN ISO 4287:2010.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location line="+106"/>
         <source>abbott firestone curve with a horizontal step width of 1% (float64, size: Mx100 for M rows in the input object.</source>
         <translation type="unfinished"></translation>
     </message>

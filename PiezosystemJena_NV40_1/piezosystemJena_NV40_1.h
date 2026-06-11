@@ -73,13 +73,13 @@ class PiezosystemJena_NV40_1 : public ito::AddInActuator
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
         //! Get the position of a all axis -> calls single axis version
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
         ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
         //! Emits status and position if triggered. Used form the dockingwidget

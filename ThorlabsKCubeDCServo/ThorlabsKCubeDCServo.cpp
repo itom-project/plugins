@@ -97,11 +97,11 @@ Please install the Kinesis driver package in advance with the same bit-version (
 \n\
 This plugin has been tested with the motorized translation stage MTS25-Z8.");
 
-    m_author = "M. Gronle, TRUMPF Laser- und Systemtechnik GmbH";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsOpt.append(ito::Param("serialNo", ito::ParamBase::String, "", tr("Serial number of the device to be loaded, if empty, the first device that can be opened will be opened").toLatin1().data()));
@@ -113,7 +113,7 @@ This plugin has been tested with the motorized translation stage MTS25-Z8.");
 /*! \detail defines the name and sets the plugins parameters (m_parans).
     The plugin is initialized (e.g. by a Python call) with mandatory or optional
     parameters (m_initParamsMand and m_initParamsOpt) by
-    ThorlabsKCubeDCServo::init. The widged window is created at this position.
+    ThorlabsKCubeDCServo::init. The widget window is created at this position.
 */
 ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
     AddInActuator(),
@@ -132,7 +132,7 @@ ThorlabsKCubeDCServo::ThorlabsKCubeDCServo() :
     m_params.insert("acceleration", ito::Param("acceleration", ito::ParamBase::Double, 0.0, 10000.0, 1.0, tr("acceleration in real world units (e.g. mm/s^2)").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, 10000.0, 1.0, tr("speed in real world units (e.g. mm/s)").toLatin1().data()));
 
-    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asychronous (1) mode").toLatin1().data()));
+    m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("synchronous (0, default) or asynchronous (1) mode").toLatin1().data()));
     m_params.insert("timeout", ito::Param("timeout", ito::ParamBase::Double, 0.0, 200.0, 100.0, tr("timeout for move operations in sec").toLatin1().data()));
 
     m_params.insert("lockFrontPanel", ito::Param("lockFrontPanel", ito::ParamBase::Int, 0, 1, 0, tr("1 to lock the front panel, else 0 (default)").toLatin1().data()));
@@ -442,12 +442,12 @@ ito::RetVal ThorlabsKCubeDCServo::close(ItomSharedSemaphore *waitCond)
 
 //-------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread,
 
     \return retOk
 */
@@ -484,14 +484,14 @@ ito::RetVal ThorlabsKCubeDCServo::getParam(QSharedPointer<ito::Param> val, ItomS
 
 //-------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, ThorlabsISM::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -1040,8 +1040,8 @@ ito::RetVal ThorlabsKCubeDCServo::setPosRel(QVector<int> axis, QVector<double> p
     return retValue;
 }
 //-------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa SMCSetPos
     \return retOk
@@ -1199,7 +1199,7 @@ ito::RetVal ThorlabsKCubeDCServo::waitForDone(const int timeoutMS, const QVector
 
     if (timeout)
     {
-        //timeout occured, set the status of all currently moving axes to timeout
+        //timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError, 9999, "timeout occurred");
         sendStatusUpdate(true);

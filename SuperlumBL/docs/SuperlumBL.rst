@@ -20,19 +20,19 @@ Overview
 Applications:
 
 -   Optical coherence tomography
--	Characterization of optical components
--	Optical fiber metrology
--	Optical measurement
+-    Characterization of optical components
+-    Optical fiber metrology
+-    Optical measurement
 
 
 Features(S840-B-I-20):
 
--	50nm Bandwidth
--	840nm Center wavelength
--	15mW ex fiber (single-mode)
--	Built-in optical isolator
--  	Powered directly from a wall outlet.
--  	RS-232 remote control capability.
+-    50nm Bandwidth
+-    840nm Center wavelength
+-    15mW ex fiber (single-mode)
+-    Built-in optical isolator
+-      Powered directly from a wall outlet.
+-      RS-232 remote control capability.
 
 
 Description (from www.superlumdiodes.com):
@@ -84,7 +84,7 @@ parameters can be changed using *setParam*.
 **name**: {str}, read-only
     Name of plugin.
 **optical_output**: {int}
-    ( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.
+    ( 0 ) optical output is disabled, ( 1 ) optical output is enabled.
 **power_mode**: {int}
     ( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.
 **serial_number**: {str}, read-only
@@ -121,6 +121,6 @@ The parameters can be queried by using the function **getParam**.
 
 .. code-block:: python
 
-	>>bs.getParam("optical_output")
-	1
-	>>
+    >>bs.getParam("optical_output")
+    1
+    >>

@@ -51,7 +51,7 @@
 	  added more comments, introduced ptp_get_datatype_name(),
 	  added couple of NIKON properties
 	* src/ptpcam.c, src/ptpcam.h: introduced --show-all-properties and
-	  --show-unknown-properties (both usefull for debuging)
+	  --show-unknown-properties (both useful for debuging)
 
 2005-10-26 Mariusz Woloszyn
 	* configure.in: added --with-libusbdir

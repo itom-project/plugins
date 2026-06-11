@@ -1,9 +1,8 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name ThorlabsDCxCam)
 
 #################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
+# Input elements for CMake GUI (Checkboxes, Paths, Strings...)
 #################################################################
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
@@ -22,7 +21,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY "" CACHE PATH "path to develop directory of Thorlabs / Scientific Imaging / DCx Camera Support")
 
 if(NOT THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
-	set(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY $ENV{THORLABS_DCXCAM_ROOT})
+    set(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY $ENV{THORLABS_DCXCAM_ROOT})
 endif(NOT THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
 
 if(THORLABS_DCxCAMERASUPPORT_DEVELOP_DIRECTORY)
@@ -67,9 +66,9 @@ if(THORLABS_DCxCAMERA_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsDCxCam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsDCxCam.h
         ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsDCxCamInterface.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -90,8 +89,11 @@ if(THORLABS_DCxCAMERA_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

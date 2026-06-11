@@ -3,8 +3,8 @@
 
     The fftw-plugin for itom is a wrapper for the FFTW package.
     The FFTW package was developed at MIT by Matteo Frigo and Steven G.
-    Johnson. It was published unter GNU General Public License and
-    can be downloaded unter http://www.fftw.org/.
+    Johnson. It was published under GNU General Public License and
+    can be downloaded under http://www.fftw.org/.
 
     The fftw-plugin is a free software: you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@
 ************************************************************************ */
 
 /*! \file FFTWfilters.h
-   \brief   This is the main file for the M++Filter libary, which contains the interface definition.
+   \brief   This is the main file for the M++Filter library, which contains the interface definition.
 
    The algorithms in this dll are mostly copied from the filter.h and filter.cpp. The filters are grouped in different sub .cpp-files.
 
@@ -106,7 +106,7 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class FFTWFilters
-*   @brief Algorithms used to process images and dataobjects with filters develped at ITO
+*   @brief Algorithms used to process images and dataobjects with filters developed at ITO
 *
 *   In this class the algorithms used for the processing of measurement data are implemented.
 *

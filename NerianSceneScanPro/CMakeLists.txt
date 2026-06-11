@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name NerianSceneScanPro)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -19,7 +18,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(NERIAN_VISION_SOFTWARE_DIR "" CACHE PATH "path to the install directory of Nerian Vision Software (e.g. C:/Program Files (x86)/Nerian Vision Software 7.0.0)" )
 
 if(NOT NERIAN_VISION_SOFTWARE_DIR)
-	set(NERIAN_VISION_SOFTWARE_DIR $ENV{NERIAN_ROOT})
+    set(NERIAN_VISION_SOFTWARE_DIR $ENV{NERIAN_ROOT})
 endif(NOT NERIAN_VISION_SOFTWARE_DIR)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -38,11 +37,11 @@ if(NERIAN_VISION_SOFTWARE_DIR)
     find_path(NERIAN_VISION_INCLUDE_DIR "imagetransfer.h" PATHS ${NERIAN_VISION_SOFTWARE_DIR}/visiontransfer/include ${NERIAN_VISION_SOFTWARE_DIR}/cpp/include PATH_SUFFIXES "visiontransfer" DOC "path to the folder containing all headers")
 
     if(BUILD_TARGET64)
-		find_library(NERIAN_VISION_LIB_DEBUG visiontransfer visiontransfer-debug HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES /visiontransfer/lib64/Debug /cpp/lib64/Debug)
-		find_library(NERIAN_VISION_LIB_RELEASE visiontransfer HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES visiontransfer/lib64/Release cpp/lib64/Release)
+        find_library(NERIAN_VISION_LIB_DEBUG visiontransfer visiontransfer-debug HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES /visiontransfer/lib64/Debug /cpp/lib64/Debug)
+        find_library(NERIAN_VISION_LIB_RELEASE visiontransfer HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES visiontransfer/lib64/Release cpp/lib64/Release)
     else(BUILD_TARGET64)
         find_library(NERIAN_VISION_LIB_DEBUG visiontransfer visiontransfer-debug HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES /visiontransfer/lib64/Debug /cpp/lib32/Debug)
-		find_library(NERIAN_VISION_LIB_RELEASE visiontransfer HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES visiontransfer/lib64/Release cpp/lib32/Release)
+        find_library(NERIAN_VISION_LIB_RELEASE visiontransfer HINTS ${NERIAN_VISION_SOFTWARE_DIR} PATH_SUFFIXES visiontransfer/lib64/Release cpp/lib32/Release)
     endif(BUILD_TARGET64)
 
     include_directories(
@@ -60,9 +59,9 @@ if(NERIAN_VISION_SOFTWARE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/nerianSceneScanPro.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogNerianSceneScanPro.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetNerianSceneScanPro.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -71,6 +70,9 @@ if(NERIAN_VISION_SOFTWARE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/nerianSceneScanPro.cpp
         #add further source files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -82,7 +84,7 @@ if(NERIAN_VISION_SOFTWARE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

@@ -6,8 +6,8 @@
 **Summary**:    :pluginsummary:`QuantumComposer`
 **Type**:       :plugintype:`QuantumComposer`
 **License**:    :pluginlicense:`QuantumComposer`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    Some words about supported devices
+**Platforms**:  Windows (Vista, 7, 8, 10, 11), Linux, Mac
+**Devices**:    Any generic USB devices controlled remotely Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`QuantumComposer`
 =============== ========================================================================================================
 
@@ -107,7 +107,7 @@ These parameters are available and can be used to configure the **QuantumCompose
 
     *Match: ["LOW", "HIGH"], Default: "LOW"*
 **gateMode**: str
-    Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: output
+    Global gate mode of the system output. (DIS: disabled, PULS: pulse inhibit, OUTP: output
     inhibit, CHAN: channel).cycle).
 
     *Match: ["DIS", "PULS", "OUTP", "CHAN"], Default: "DIS"*
@@ -183,7 +183,7 @@ These parameters are available and can be used to configure the **QuantumCompose
 
     *Value range: [0, 1], Default: 1*
 **statesList**: Sequence[int]
-    List of states to enalbe/disable channels listed in the parameter channelIndexList. List
+    List of states to enable/disable channels listed in the parameter channelIndexList. List
     must have the same length as the parameter channelIndexList.
 
     *Allowed number of values: 1 - 8, Value range: [0, 1], Default: [0, 0, 1, 1, 1, 1, 1, 1]*
@@ -291,8 +291,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelOffCounterList: List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parame
-... ter channelIndexList.
+    :param channelOffCounterList: List of pulse counter values to inhibit during the OFF cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelOffCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelOutputModes', channelIndexList, outputModesList)
@@ -310,7 +309,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param statesList: List of states to enalbe/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.
+    :param statesList: List of states to enable/disable channels listed in the parameter channelIndexList. List must have the same length as the parameter channelIndexList.
     :type statesList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelPolarities', channelIndexList, polaritiesList)
@@ -328,8 +327,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelPulseCounterList: List of pulse counter values to generate during the ON cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the para
-... meter channelIndexList.
+    :param channelPulseCounterList: List of pulse counter values to generate during the ON cycle of the duty cycle mode for the given channels (1 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelPulseCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelSyncs', channelIndexList, syncsList)
@@ -347,8 +345,7 @@ The plugin execFunctions are:
 
     :param channelIndexList: List of channel indices which output should be enabled/disabled (ChA = 1, ChB = 2, ...).
     :type channelIndexList: Sequence[int]
-    :param channelPulseWaitCounterList: List of pulse counter values to wait until enabling output of the duty cycle mode for the given channels (0 - 9999999). List must have the same length as the pa
-... rameter channelIndexList.
+    :param channelPulseWaitCounterList: List of pulse counter values to wait until enabling output of the duty cycle mode for the given channels (0 - 9999999). List must have the same length as the parameter channelIndexList.
     :type channelPulseWaitCounterList: Sequence[int]
 
 .. py:function::  instance.exec('setChannelWidths', channelIndexList, widthsList)
@@ -425,3 +422,5 @@ The channel specific parameter are get by the ``getParam`` method, too.
 
 Changelog
 ==========
+
+* itom setup >= 5: Added support of quantum composer firmware version >= 3.0.0. The plugin is now compatible with the new firmware, but it is not compatible with older firmware versions.

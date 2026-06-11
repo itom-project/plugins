@@ -32,10 +32,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>return answer %1 for rquest $HT not found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Available discrete wavelengths:%1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -160,15 +156,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cound not read instrument serial number.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No USB device was found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>More like one device was found. Initialization only possible with the corresponding serial number for the plugin input parameter *serialNo*.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>return answer %1 for request $HT not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read instrument serial number.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -185,10 +185,6 @@
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Plugin for Ophir Powermeter.</source>
         <translation type="unfinished"></translation>

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "cmu1394" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -22,7 +22,7 @@
 
 /*! \file cmu1394.h
    \brief   main header file for a generic firewire support based on the CMU-driver
-   \detailed This is the main header file for the generic firewire suppoert based on the free CMU-driver.
+   \detailed This is the main header file for the generic firewire support based on the free CMU-driver.
    This driver can be downloaded from http://www.cs.cmu.edu/~iwan/1394/. Current version is 6.4.6.
 
    \author ITO
@@ -59,7 +59,7 @@
   *\brief    class to use firewire-Cameras with the generic CMU-Driver
   *
   *         This class can be used to get firewire cameras running with the generic CMU firewire DLL.
-  *            The gerneric camera driver must be installed.
+  *            The generic camera driver must be installed.
   *
   *    \sa    AddInDataIO, Dummy1394
   *    \date    11.10.2010
@@ -83,13 +83,13 @@ class CMU1394 : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+//        ito::RetVal checkData(void);    /*!< Check if object has to be reallocated */
 
     private:
         ito::RetVal copyObjBytesSwapped(ito::DataObject *extDObj, uchar *inpBuffer, int sizeX, int sizeY);
         ito::RetVal copyObjBytesSwapped(ito::DataObject *extDObj, uchar *inpBuffer, int sizeX, int sizeY, int maxSizeX, int x0, int y0);
 
-        BOOL m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
+        BOOL m_saveParamsOnClose; /*!< Check if the parameters should be saved on close */
         BOOL m_isgrabbing; /*!< Check if acquire was called */
 
         int m_iCamNumber;

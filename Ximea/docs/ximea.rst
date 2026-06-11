@@ -79,7 +79,7 @@ Parameters
 **integration_time**: {float}
     Exposure time (in seconds).
 **lensAvialable**: {int}
-    Toggle if lens settings are avialable.
+    Toggle if lens settings are available.
 **max_sensor_bitdepth**: {int}, read-only
     maximum bitdepth of the sensor.
 **name**: {str}, read-only
@@ -173,7 +173,7 @@ The tags are:
 * roi_y0: top offset of ROI (only for Ximea API > 4.0.0.5)
 
 If you change *trigger_mode* to anything else than *Off* and set *trigger_selector* to *frame_burst_start (2)*, it is possible
-to acquire a serie of frames after the software or hardware trigger impulse. This can be adjusted using the parameter *frame_burst_count*.
+to acquire a series of frames after the software or hardware trigger impulse. This can be adjusted using the parameter *frame_burst_count*.
 
 If this is set, the acquired data object is not two-dimensional but three-dimensional, where the first (z-) dimension
 corresponds to the number of acquired frames. If this is the case, the tags are:
@@ -191,12 +191,12 @@ your camera runs with the internal XiViewer from XIMEA. Please make sure that yo
 which is needed to determine the SDK version number and binary file location.
 Alternatively you can manually set the CMAKE **XIMEA_SDK_VERSION**.
 
-To finde the SDK either set the CMAKE variable **XIMEA_APIDIR** or the evironment variable **XIMEA_SDK_ROOT**
+To find the SDK either set the CMAKE variable **XIMEA_APIDIR** or the environment variable **XIMEA_SDK_ROOT**
 to the API directory (e.g. C:\XIMEA\API\xiAPI).
 
 *Linux:*
 
-Install the XIMEA driver from the ximea website and use the commands described there, too, in oder to install the driver.
+Install the XIMEA driver from the ximea website and use the commands described there, too, in order to install the driver.
 Then point the CMAKE variable XIMEA_APIDIR to the include directory of the Ximea package. This must contain the file m3api.h.
 Like under Windows, the library itself is dynamically loaded at runtime. It is usually loaded from /usr/lib.
 

@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite analog input task for single value acquisitions.
 
 Demo script for acquiring exactly one analog value

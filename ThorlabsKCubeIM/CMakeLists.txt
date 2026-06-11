@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name ThorlabsKCubeIM)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -19,7 +18,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
 if(NOT THORLABS_KINESIS_DIRECTORY)
-	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+    set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
 endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(THORLABS_KINESIS_KCUBEIM_LIBNAME "Thorlabs.MotionControl.KCube.InertialMotor")
@@ -55,7 +54,7 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsKCubeIM.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsKCubeIM.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsKCubeIM.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -71,13 +70,16 @@ if(THORLABS_KINESIS_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
-    #Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll under MSVC
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

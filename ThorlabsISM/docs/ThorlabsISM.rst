@@ -37,7 +37,7 @@ parameters can be changed using *setParam*.
 **accel**: {float}
     Target acceleration in °/s^2 (travelMode == 2) or mm/s^2 (travelMode == 1)
 **async**: {int}
-    asychronous (1) or synchronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **deviceName**: {str}, read-only
     Description of the device
 **enabled**: {int}
@@ -93,4 +93,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled with Thorlabs Kinesis 1.14.15; it requires the Microsoft C++ Redistributable 2012
 * itom setup 4.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.23;
 * itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
-* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.

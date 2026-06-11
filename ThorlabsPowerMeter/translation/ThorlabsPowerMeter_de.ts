@@ -77,10 +77,6 @@
         <source>ThorlabsPowerMeter</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ThorlabsPowerMeter</name>
@@ -197,7 +193,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> shows if the auto power range is wether on (1) or off(2) </source>
+        <source> shows if the auto power range is whether on (1) or off(2) </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

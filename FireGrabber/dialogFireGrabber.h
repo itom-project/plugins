@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FireGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -35,35 +35,35 @@
 
 namespace ito
 {
-	class AddInBase; //forward declaration
+    class AddInBase; //forward declaration
 }
 
 class DialogFireGrabber : public ito::AbstractAddInConfigDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	DialogFireGrabber(ito::AddInBase *grabber);
-	~DialogFireGrabber() {};
+    DialogFireGrabber(ito::AddInBase *grabber);
+    ~DialogFireGrabber() {};
 
-	ito::RetVal applyParameters();
+    ito::RetVal applyParameters();
 
 private:
-	void enableDialog(bool enabled);
-	bool m_firstRun;
+    void enableDialog(bool enabled);
+    bool m_firstRun;
 
-	inline bool dblEq(double v1, double v2) { return qAbs(v1 - v2) <= std::numeric_limits<double>::epsilon(); }
+    inline bool dblEq(double v1, double v2) { return qAbs(v1 - v2) <= std::numeric_limits<double>::epsilon(); }
 
-	Ui::dialogFireGrabber ui;
+    Ui::dialogFireGrabber ui;
 
 public slots:
-	void parametersChanged(QMap<QString, ito::Param> params);
+    void parametersChanged(QMap<QString, ito::Param> params);
 
 private slots:
-	void on_buttonBox_clicked(QAbstractButton* btn);
-	void on_rangeX01_valuesChanged(int minValue, int maxValue);
-	void on_rangeY01_valuesChanged(int minValue, int maxValue);
-	void on_btnFullROI_clicked();
+    void on_buttonBox_clicked(QAbstractButton* btn);
+    void on_rangeX01_valuesChanged(int minValue, int maxValue);
+    void on_rangeY01_valuesChanged(int minValue, int maxValue);
+    void on_btnFullROI_clicked();
 };
 
 #endif

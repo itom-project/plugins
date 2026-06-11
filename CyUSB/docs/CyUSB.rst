@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`CyUSB`
 **License**:    :pluginlicense:`CyUSB`
 **Platforms**:  Windows
-**Devices**:    Any generic USB devices
+**Devices**:    Any generic USB devices remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`CyUSB`
 =============== ========================================================================================================
 
@@ -24,6 +24,11 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: CyUSB
+
+Dependencies
+============
+
+CyUSB plugin depends on LibUSB.
 
 Parameters
 ===========
@@ -96,4 +101,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the Cypress CyAPI 1.3.3
 * itom setup 4.0.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
 * itom setup 4.1.0: This plugin has been compiled using the Cypress CyAPI 1.3.4
-* itom setup 4.3.0: This plugin has been compiled using the Infineon FX3 SDK 1.3.4
+* itom setup 4.3.0: This plugin has been compiled using the Infineon FX3 SDK 1.3

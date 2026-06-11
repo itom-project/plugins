@@ -74,7 +74,7 @@ Parameters
 Installation
 =============
 
-The VRMagic software is deprectated and will not be supported beyond version 4.5.0 and is not
+The VRMagic software is deprecated and will not be supported beyond version 4.5.0 and is not
 officially available via the webpage https://www.vrmagic.com/ and granted on demand solely.
 
 Download the software and run the installation. Please note that the SDK library is not
@@ -95,3 +95,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the VRmagic SDK 4.5.0
 * itom setup 4.0.0: This plugin has been compiled using the VRmagic SDK 4.5.0
 * itom setup 4.1.0: This plugin has been compiled using the VRmagic SDK 4.5.0
+* itom setup 4.2.0: This plugin has been compiled using the VRmagic SDK 4.5.0
+* itom setup 4.3.0: This plugin has been compiled using the VRmagic SDK 4.5.0

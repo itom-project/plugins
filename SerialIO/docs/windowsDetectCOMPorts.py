@@ -10,7 +10,7 @@ def DetectCOMPorts():
         values_list = []
         for i in range( values_count ):
             values_list.append( wreg.EnumValue( key, i ) )
-    except ( WindowsError, EnvironmentError ):
+    except OSError:
         print( "Unable to Connect to the Window Registry and read keys" )
     finally:
         key.Close()

@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "NITWidySWIR" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -62,15 +62,15 @@ NITWidySWIRInterface::NITWidySWIRInterface()
         In this itom plugin a bad pixel correction is not implemented, because for optical measurement applications it is not necessary. \n\
         \n\
         **WARNING**: Some parameters do no work with the current tested camera!\n\
-        	NITLibrary defines the parameter **\"offset, gain, histogram threshold, pixel clock\"** as changable, but with the current version is does not! \n\
-            	The parameter **pixel_clock** is set to *Readonly*, because the camera acquisition crash. This problem should be tested with the next NITLibrary version.\n";
+            NITLibrary defines the parameter **\"offset, gain, histogram threshold, pixel clock\"** as changeable, but with the current version is does not! \n\
+                The parameter **pixel_clock** is set to *Readonly*, because the camera acquisition crash. This problem should be tested with the next NITLibrary version.\n";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("printManual", ito::ParamBase::Int, 0, 1, 0, tr("If printManual is set to 1, the parameters of the camera are printed into the itom shelf.").toLatin1().data());
@@ -249,7 +249,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 cout << "Manual: " << m_camDevice->manual() << "\n" << endl;
             }
 
-            if (printParameterValues) //paramsOpt->at(0) is printParameterValues. Parameters with all avaiable values will be printed in the itom shelf.
+            if (printParameterValues) //paramsOpt->at(0) is printParameterValues. Parameters with all available values will be printed in the itom shelf.
             {
                 for (NITParamIterator paramIt = m_camDevice->begin(); paramIt != m_camDevice->end(); ++paramIt)
                 {
@@ -350,7 +350,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     {
                         m_params["gain"].setFlags(ito::ParamBase::Readonly);
                     }
-                    //m_params["integration_time"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changable with different NITLibrary version > 1.5
+                    //m_params["integration_time"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changeable with different NITLibrary version > 1.5
 
                     double gain = (double)atof(m_camDevice->paramStrValueOf("Gain").c_str());
 
@@ -405,7 +405,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     {
                         m_params["pixel_clock"].setFlags(ito::ParamBase::Readonly);
                     }
-                    m_params["pixel_clock"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changable with different NITLibrary version > 1.5
+                    m_params["pixel_clock"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changeable with different NITLibrary version > 1.5
 
                     double clock = (double)atof(m_camDevice->paramStrValueOf("Pixel Clock").c_str());
 
@@ -501,7 +501,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     {
                         m_params["offset"].setFlags(ito::ParamBase::Readonly);
                     }
-                    //m_params["offset"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changable with different NITLibrary version > 1.5
+                    //m_params["offset"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changeable with different NITLibrary version > 1.5
 
                     double offset = (double)atof(m_camDevice->paramStrValueOf("Offset").c_str());
 
@@ -529,7 +529,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     {
                         m_params["histogram_threshold"].setFlags(ito::ParamBase::Readonly);
                     }
-                    //m_params["histogram_threshold"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changable with different NITLibrary version > 1.5
+                    //m_params["histogram_threshold"].setFlags(ito::ParamBase::Readonly);// delete if parameter is changeable with different NITLibrary version > 1.5
 
                     double offset = (double)atof(m_camDevice->paramStrValueOf("Histogram Threshold").c_str());
 
@@ -563,7 +563,7 @@ ito::RetVal NITWidySWIR::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             int roi[] = { 0, 0, sizexMeta->getMax(), sizeyMeta->getMax() };
             m_params["roi"].setVal<int*>(roi, 4);
 
-            m_params["roi"].setFlags(ito::ParamBase::Readonly); // delete if parameter is changable with different NITLibrary version > 1.5
+            m_params["roi"].setFlags(ito::ParamBase::Readonly); // delete if parameter is changeable with different NITLibrary version > 1.5
 
             retValue += checkData(); //update m_data
         }
@@ -956,7 +956,7 @@ ito::RetVal NITWidySWIR::startDevice(ItomSharedSemaphore *waitCond)
             m_frameObserver->connectTo(*m_camDevice);
 
             /**** Start Capture!!! ****/
-            m_camDevice->start();						// Start Capture
+            m_camDevice->start();                        // Start Capture
             m_isgrabbing = true;
         }
         catch (NITException& e)
@@ -1256,7 +1256,7 @@ ito::RetVal NITWidySWIR::loadNUCFile(const QString &filePath, double integration
             m_GainMap = gain;
 
             nucFile.release();
-            //cout << "loaded NUC file name: " << absPath << " for the interation time of: " << integrationTime << "mikroseconds \n" << endl;
+            //cout << "loaded NUC file name: " << absPath << " for the interaction time of: " << integrationTime << "microseconds \n" << endl;
         }
         else
         {

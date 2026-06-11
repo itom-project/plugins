@@ -73,7 +73,7 @@ Parameters
 **noiseReduction**: {int}
     1 if the noise reduction filter is enabled
 **operationMode**: {int}
-    0: Pass trhough, 1: rectify, 2: stereo matching
+    0: Pass through, 1: rectify, 2: stereo matching
 **roi**: {int rect [x0,y0,width,height]}, read-only
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
 **saveAutoRecalibration**: {int}
@@ -126,18 +126,19 @@ Installation
 NerianSceneScanPro is currently only build with Version 7.0 of the SDK.
 Install the visiontransfer software on your computer from https://nerian.de/support/downloadarchiv/
 and add the visiontransfer.dll directory to your path variables.
+(eg. "setx / M PATH "%PATH;C:\Program Files\Nerian Vision Software 10.6.0\cpp\lib64\Release").
 
 In visiontransfer 7.0 there is unfortunately a bug in the DLL, so the application can only be used in release (to be fixed in later versions).
 
 Since both debug and release dll have the same name and are not compatible, the dll must be added to the paths depending on the compilation mode.
 
-* itom setup >4.3.0: This plugin has been compiled using the NerianSceneScanPro API 7.0.0
 
-Set the Windows Environment Variable NERIAN_ROOT to the installation directory (e.g. C:\Program Files (x86)\Nerian Vision Software 7.0.0\)
+Set the Windows Environment Variable NERIAN_ROOT to the installation directory (e.g. C:\Program Files\Nerian Vision Software 10.6.0)
 
 
 Changelog
 =========
 
 * itom setup 3.2.1: This plugin has been compiled using the NerianSceneScanPro API 7.0
-* itom setup >4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 4.1.0: This plugin has been compiled using the NerianSceneScanPro API 7.0
+* itom setup 4.3.0: This plugin has been compiled using the NerianSceneScanPro API 10.6.0

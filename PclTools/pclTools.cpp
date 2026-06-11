@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -66,7 +66,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/crop_box.h>
-#include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
+#include "random_sample_corrected.h" //corrected version for erroneous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
 #if PCL_VERSION_COMPARE(>, 1, 7, 0) && PCL_VERSION_COMPARE(<, 1, 10, 0)
@@ -168,13 +168,12 @@ meshes to common formats like pcd, ply, stl, obj... Once the plugin is loaded \n
 itom in general is also able to load and save such structures using the methods provided \n\
 by this plugin.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
-
     PclTools::nthreads  = QThread::idealThreadCount();
 }
 
@@ -679,7 +678,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
                     }
                     else
                     {
-                        retval += ito::RetVal(ito::retError, 0, tr("The loaded point cloud has an uncompatible format.").toLatin1().data());
+                        retval += ito::RetVal(ito::retError, 0, tr("The loaded point cloud has an incompatible format.").toLatin1().data());
                         pc = ito::PCLPointCloud(ito::pclInvalid);
                     }
                 }
@@ -1991,7 +1990,7 @@ const QString PclTools::pclPassThroughDOC = QObject::tr("\n\
 //------------------------------------------------------------------------------------------------------------------------------
 const QString PclTools::pclCropBoxDOC = QObject::tr("pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
 \n\
-Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to \n\
+Indicate the minimum and maximum values in x,y and z direction for the box and optionally translate and rotate the box to \n\
 adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.");
 
 //----------------------------------------------------------------------------------------------------------------------------------

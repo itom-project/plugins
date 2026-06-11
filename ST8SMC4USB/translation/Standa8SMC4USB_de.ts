@@ -167,7 +167,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -199,10 +199,6 @@
     <name>QObject</name>
     <message>
         <source>Standa8SMC4USB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -271,10 +267,6 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
     </message>
     <message>
         <source>micro steps for motor [1,2,4,8,16,32,64,128,256]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>asychronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -363,6 +355,10 @@ It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.</s
     </message>
     <message>
         <source>Error home zeroing: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

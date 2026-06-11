@@ -7,13 +7,12 @@
 **Type**:       :plugintype:`OceanOpticsSpec`
 **License**:    :pluginlicense:`OceanOpticsSpec`
 **Platforms**:  Windows, Linux ready but not tested
-**Devices**:    Ocean Optics Spectrometers
+**Devices**:    Ocean Optics Spectrometers remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`OceanOpticsSpec`
 =============== ========================================================================================================
 
 Overview
 ========
-
 
 .. pluginsummaryextended::
     :plugin: OceanOpticsSpec
@@ -25,6 +24,11 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: OceanOpticsSpec
+
+Dependencies
+============
+
+OceanOptics Spectrometers plugin depends on LibUSB.
 
 Parameters
 ===========
@@ -69,4 +73,6 @@ Changelog
 =========
 
 * itom setup 4.1.0: This plugin has been compiled using the libUSB Plugin
+* itom setup 4.2.0: This plugin has been compiled using the libUSB Plugin
+* itom setup 4.3.0: This plugin has been compiled using the libUSB Plugin
 * ONLY fully implemented for STS series, other spectrometers using OBP won't fully work.

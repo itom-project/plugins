@@ -476,6 +476,7 @@ typedef enum PfncFormat_
   BayerRG12Packed                          = 0x010C002B, /* GigE Vision specific format, Bayer Red-Green 12-bit packed */
   RGB10V1Packed                            = 0x0220001C, /* GigE Vision specific format, Red-Green-Blue 10-bit packed - variant 1 */
   RGB12V1Packed                            = 0x02240034, /* GigE Vision specific format, Red-Green-Blue 12-bit packed - variant 1 */
+  PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS = 0x40000001, /* temporarily added. IDS specific */
   InvalidPixelFormat                       = 0
 } PfncFormat;
 
@@ -753,6 +754,7 @@ static PFNC_INLINE const char* GetPixelFormatName (PfncFormat format)
     case BayerRG12Packed:                         return "BayerRG12Packed";
     case RGB10V1Packed:                           return "RGB10V1Packed";
     case RGB12V1Packed:                           return "RGB12V1Packed";
+    case PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS: return "BayerRG10G40"; /* temporarily added, IDS specific */
 
     case InvalidPixelFormat: return "InvalidPixelFormat";
 

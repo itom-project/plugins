@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
     URL: https://github.com/itom-project/plugins
-    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -78,10 +78,10 @@ CVBInterface::CVBInterface(QObject *parent)
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = tr("Licensed under LGPL, Stemmer Common Vision Blox under its own license.");
-    m_aboutThis = tr(GITVERSION);
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
+    m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param("scanForCameras", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 scan for new cameras, else take the last opened camera (default). If you scan for new cameras, the configuration file (ini) created in CommonVisionBlox for GenICam or other cameras will be reset to the default values.").toLatin1().data());
     m_initParamsOpt.append(param);

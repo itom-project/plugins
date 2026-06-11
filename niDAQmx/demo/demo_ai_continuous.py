@@ -1,5 +1,3 @@
-# coding=utf8
-
 import time
 import numpy as np
 
@@ -33,7 +31,7 @@ Hint: It depends on the NI DAQ devices, if they allow
 integrating different devices into the same measurement
 task or not. Many devices do not allow this.
 
-Data from a continuous task can be obtained by regularily
+Data from a continuous task can be obtained by regularly
 calling getVal / copyVal or by enabling the TDMS file logging
 technique.
 
@@ -139,7 +137,7 @@ plot1(total)
 #    during a running task will be written into the TDMS file. It is
 #    also possible to get the values to python during logging (depending
 #    on the configuration). However, it is not necessary to continuously
-#    getVal/copyVal values in order to not raise a timeout / unsufficient
+#    getVal/copyVal values in order to not raise a timeout / insufficient
 #    buffer size error.
 #
 #    The logging is enabled via the parameters 'loggingMode',

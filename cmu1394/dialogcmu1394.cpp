@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "cmu1394" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -105,7 +105,7 @@ int dialogCMU1394::setVals(QMap<QString, ito::Param> *paramVals)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
- * \detail This function writes back the value of the different GUI-Elements to the 1394 before the dialog is deleted. Only the grab depth and the binning will be seperated, because they need a realloc of memory.
+ * \detail This function writes back the value of the different GUI-Elements to the 1394 before the dialog is deleted. Only the grab depth and the binning will be separated, because they need a realloc of memory.
  *
  * \sa RetVal CMU1394::showConfDialog(void)
  * \date    Oct.2011

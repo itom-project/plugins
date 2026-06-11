@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "SuperlumBL" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -59,7 +59,7 @@ void DialogSuperlumBL::parametersChanged(QMap<QString, ito::Param> params)
     if (m_firstRun)
     {
         enableDialog(true);
-		//use params (identical to m_params of the plugin)
+        //use params (identical to m_params of the plugin)
         //__________________________________________________________________________________________________________ General Information
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
         ui.label_Device->setText(params["serial_number"].getVal<char*>());

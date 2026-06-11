@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "HidApi" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -66,11 +66,11 @@ To connect to a device you need the vendor id and the product id.\n\
 \n\
 The setVal and getVal functions will write and read on the output or on the feature.");
 
-    m_author = "M. Gronle, ITO, University of Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal("vendor_id", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0, tr("The vendor id of the device to connect to (0 will return a list of all devices if 'print_info_about_all_devices' is 1).").toLatin1().data());
@@ -175,7 +175,7 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     }
 
     // Open the device using the VID, PID,
-	// and optionally the Serial number.
+    // and optionally the Serial number.
     wchar_t *serial = NULL;
     if (serialNumber)
     {
@@ -183,7 +183,7 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         memset(serial, 0, sizeof(wchar_t) * (strlen(serialNumber) + 4));
         QString(serialNumber).toWCharArray(serial);
     }
-	m_pDevice = hid_open(vendorId, productId, serial);
+    m_pDevice = hid_open(vendorId, productId, serial);
     delete serial;
     serial = NULL;
 
@@ -195,20 +195,20 @@ ito::RetVal ItomHidApi::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     {
         #define MAX_STR 255
         wchar_t wstr[MAX_STR];
-	    // Read the Manufacturer String
-	    if (hid_get_manufacturer_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Manufacturer String
+        if (hid_get_manufacturer_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["manufacturer"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }
 
-	    // Read the Product String
-	    if (hid_get_product_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Product String
+        if (hid_get_product_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["product"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }
 
-	    // Read the Serial Number String
-	    if (hid_get_serial_number_string(m_pDevice, wstr, MAX_STR) >= 0)
+        // Read the Serial Number String
+        if (hid_get_serial_number_string(m_pDevice, wstr, MAX_STR) >= 0)
         {
             m_params["serial_number"].setVal<char*>(QString::fromWCharArray(wstr).toLatin1().data());
         }

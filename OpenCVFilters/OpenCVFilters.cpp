@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "OpenCV-Filter" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2021, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -85,7 +85,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
     //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-        "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
+"This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
 \n\
 * morphological filters (dilation, erosion) \n\
 * image filtering (blur, median blur...) \n\
@@ -102,11 +102,11 @@ methods via the cv2 python package. The wrapped methods within this plugin can s
 In addition to the cv2 methods, they can sometimes operate on multi-plane dataObjects, preserve \n\
 the tags and meta information and save protocol data.");
 
-    m_author = "W. Lyda, M. Gronle, J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     NTHREADS = QThread::idealThreadCount();
@@ -146,7 +146,7 @@ OpenCVFilters::~OpenCVFilters()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
-   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[in|out]   paramsOpt   Optional parameters for the filter function
    \param[out]   outVals   Outputvalues, not implemented for this function
    \author ITO
    \date
@@ -462,7 +462,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(
     int planes = dObjSrc->calcNumMats();
 
     // dObjDst is either equal to dObjSrc or must have the same size and type than dObjSrc (if not
-    // is created such it fullfills these requirements)
+    // is created such it fulfills these requirements)
     if (dObjDst != dObjSrc)
     {
         int dstDim = dObjDst->getDims();
@@ -682,7 +682,7 @@ ito::RetVal OpenCVFilters::cvMorphologyExParams(
             "borderType",
             ito::ParamBase::String | ito::ParamBase::In,
             "CONSTANT",
-            tr("This string defines how the filter should hande pixels at the border of the "
+            tr("This string defines how the filter should handle pixels at the border of the "
                "matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In "
                "case of a constant border, only pixels inside of the element mask are considered "
                "(morphologyDefaultBorderValue)")
@@ -824,7 +824,7 @@ ito::RetVal OpenCVFilters::cvMorphologyEx(
     int planes = dObjSrc->calcNumMats();
 
     // dObjDst is either equal to dObjSrc or must have the same size and type than dObjSrc (if not
-    // is created such it fullfills these requirements)
+    // is created such it fulfills these requirements)
     if (dObjDst != dObjSrc)
     {
         int dstDim = dObjDst->getDims();
@@ -960,11 +960,11 @@ const QString OpenCVFilters::cvBlurDoc = QObject::tr("Planewise median blur filt
 This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. The\
 result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. \n\
 \n\
-The cv::blur interally calls the cv::boxfilter()-method.\n\
+The cv::blur internally calls the cv::boxfilter()-method.\n\
 \n\
 The itom-wrapping does not work inplace currently. A new dataObject is allocated.\n\
 \n\
-borderType: This string defines how the filter should hande pixels at the border of the matrix.\
+borderType: This string defines how the filter should handle pixels at the border of the matrix.\
 Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)\
 \n\
 Warning: NaN-handling for floats not verified.");
@@ -1600,7 +1600,7 @@ end:
 //    else
 //    {
 //        retval += ito::RetVal(ito::retError, 0, tr("Unknown or unexpected CV-Datatype
-//        recived.").toLatin1().data());
+//        received.").toLatin1().data());
 //    }
 //
 // end:
@@ -1811,7 +1811,7 @@ ito::RetVal OpenCVFilters::cvFlip(
             dObjImages->copyTagMapTo(*dObjDst);
         }
 
-        QString msg = colsIfTrue ? tr("Flipped left/rigth with cvFlip-Filter")
+        QString msg = colsIfTrue ? tr("Flipped left/right with cvFlip-Filter")
                                  : tr("Flipped upside/down with cvFlip-Filter");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
@@ -1821,7 +1821,7 @@ ito::RetVal OpenCVFilters::cvFlip(
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvRotP90Doc =
-    QObject::tr("This filter rotates the image by 90� count clock wise. \n\
+    QObject::tr("This filter rotates the image by 90° count clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
@@ -1831,7 +1831,7 @@ if it fits to the size and type of the source data object and if not a new one i
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvRotM90Doc =
-    QObject::tr("This filter rotates the image by 90� clock wise. \n\
+    QObject::tr("This filter rotates the image by 90° clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
@@ -2038,8 +2038,8 @@ ito::RetVal OpenCVFilters::cvRotate(
         }
 
         QString msg = rotClw
-            ? tr("Rotated object by 90� clockwise with cvRotateM90-Filter")
-            : tr("Rotated object by 90� counter clockwise with cvRotateP90-Filter");
+            ? tr("Rotated object by 90° clockwise with cvRotateM90-Filter")
+            : tr("Rotated object by 90° counter clockwise with cvRotateP90-Filter");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
@@ -2047,7 +2047,7 @@ ito::RetVal OpenCVFilters::cvRotate(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString OpenCVFilters::cvRot180Doc = QObject::tr("This filter rotates the image by 180�. \n\
+const QString OpenCVFilters::cvRot180Doc = QObject::tr("This filter rotates the image by 180°. \n\
 \n\
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The \
 result is contained in the destination object\n\
@@ -2206,7 +2206,7 @@ ito::RetVal OpenCVFilters::cvRot180(
             dObjImages->copyTagMapTo(*dObjDst);
         }
 
-        QString msg = tr("Rotated object by 180� using cvRotate180-Filter");
+        QString msg = tr("Rotated object by 180° using cvRotate180-Filter");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
@@ -2340,7 +2340,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(
     ito::float64 newVal = (*paramsOpt)[3].getVal<ito::float64>();
 
     // dObjDst is either equal to dObjSrc or must have the same size and type than dObjSrc (if not
-    // is created such it fullfills these requirements)
+    // is created such it fulfills these requirements)
     if (dObjDst != dObjSrc)
     {
         int dstDim = dObjDst->getDims();

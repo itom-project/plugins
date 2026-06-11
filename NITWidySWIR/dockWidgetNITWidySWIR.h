@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "NITWidySWIR" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -37,11 +37,11 @@ class dockWidgetNITWidySWIR : public ito::AbstractAddInDockWidget
     Q_OBJECT
 
     public:
-		dockWidgetNITWidySWIR(ito::AddInDataIO *grabber);
-		~dockWidgetNITWidySWIR() {};
+        dockWidgetNITWidySWIR(ito::AddInDataIO *grabber);
+        ~dockWidgetNITWidySWIR() {};
 
     private:
-		Ui::dockWidgetNITWidySWIR ui;
+        Ui::dockWidgetNITWidySWIR ui;
         bool m_inEditing;
         bool m_firstRun;
 
@@ -53,9 +53,9 @@ class dockWidgetNITWidySWIR : public ito::AbstractAddInDockWidget
         //add here slots connected to changes of any widget
         //example:
         //void on_contrast_valueChanged(int i);
-		void on_sliderWidget_offset_valueChanged(double value);
-		void on_sliderWidget_gain_valueChanged(double value);
-		void on_sliderWidget_integrationTime_valueChanged(double value);
+        void on_sliderWidget_offset_valueChanged(double value);
+        void on_sliderWidget_gain_valueChanged(double value);
+        void on_sliderWidget_integrationTime_valueChanged(double value);
 
 };
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -141,7 +141,7 @@ ito::RetVal DummyGrabberInterface::closeThisInst(ito::AddInBase** addInInst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for interace
+//! constructor for interface
 /*!
     defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real
    plugin (here: DummyGrabber) should or must be initialized (e.g. by a Python call) with mandatory

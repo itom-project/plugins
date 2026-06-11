@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCOCamera" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -26,7 +26,7 @@
 #include "PCOCamera.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 #include <qstring.h>
@@ -123,11 +123,11 @@ Download the SDK and install it at any location. Additionally you need to instal
 \n\
 For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.");
 
-    m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_initParamsMand.clear();
@@ -148,7 +148,7 @@ PCOCameraInterface::~PCOCameraInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PCOCameraInterface with the name PCOCamerainterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class PCOCameraInterface with the name PCOCamerainterface as plugin for the Qt-System (see Qt-DOC)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -233,7 +233,7 @@ PCOCamera::PCOCamera() :
     m_params.insert(paramVal.getName(), paramVal);
     //paramVal = ito::Param("time_out", ito::ParamBase::Double , 0.1, 60.0, 2.0, tr("Timeout for acquiring images").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("temperatures", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("CCD, camera and power supply temperatures in degree celcius").toLatin1().data());
+    paramVal = ito::Param("temperatures", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("CCD, camera and power supply temperatures in degree celsius").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("coolingSetPointTemperature", ito::ParamBase::Int, 0, 1000, 0, tr("Desired set point temperature for cooling").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -920,7 +920,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (!retVal.containsError())
         {
             m_params["binning"].setVal<int>(hbin*100 + vbin);
-            setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, hbin * 100 + vbin)), NULL); //do this is order to recheck the dependent parameters binning, roi and format, else errors might stop the initialization in the arm method
+            setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, hbin * 100 + vbin)), NULL); //do this is order to recheck the available parameters binning, roi and format, else errors might stop the initialization in the arm method
         }
     }
 
@@ -1004,7 +1004,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     /***********************************************************
     Cam Ram can be partitioned and set active.
-    by deafult, it is a single piece. An ID is returned
+    by default, it is a single piece. An ID is returned
     *************************************************************/
     /*if (!retVal.containsError())
     {
@@ -1096,12 +1096,12 @@ ito::RetVal PCOCamera::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the PCOCamera, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the PCOCamera, this method does nothing. In general, the hardware camera should be initialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
+    \return retOk if starting was successful, retWarning if startDevice has been calling at least twice.
 */
 ito::RetVal PCOCamera::startDevice(ItomSharedSemaphore *waitCond)
 {

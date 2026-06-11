@@ -149,10 +149,6 @@
         <source>Plugin for cameras from NEW IMAGING TECHNOLOGIES (NIT).</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>LPGL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>dialogNITWidySWIR</name>

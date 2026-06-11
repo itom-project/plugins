@@ -173,12 +173,7 @@
 <context>
     <name>PIHexapodCtrl</name>
     <message>
-        <location filename="../PIHexapodCtrl.cpp" line="+183"/>
-        <source>asychronous (1.0) or sychronous (0.0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PIHexapodCtrl.cpp" line="+186"/>
         <source>Number of axes (here always 1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,12 +315,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>F-361 communications error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>MOV! command motion in progress</source>
         <translation type="unfinished"></translation>
     </message>
@@ -481,7 +471,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>asynchronous (1.0) or synchronous (0.0) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>speed of every axis in physical units / s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -555,7 +550,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+734"/>
+        <location line="+569"/>
+        <source>F-361 communication error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+165"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,7 +568,7 @@
 <context>
     <name>PIHexapodCtrlInterface</name>
     <message>
-        <location line="-1576"/>
+        <location line="-1577"/>
         <source>PI Hexapods H810, H824, H840, H850</source>
         <translation type="unfinished"></translation>
     </message>
@@ -579,7 +579,7 @@ Different PI-Hexapod Controller (E-816, E-621, E-625, E-665 or E662) are impleme
 It is used to work with Piefocs and Hexapod-Stages. The ITO-Controllers have only one axis with axis number 0.
 This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.
 It is initialized by actuator(&quot;PIHexapodCtrl&quot;, SerialIO, Controller Type (e.g. &apos;E662&apos;)).
-Stageparamters can be set directly by setParam(&quot;STAGEPARAMETER&quot;, value).
+Stage parameters can be set directly by setParam(&quot;STAGEPARAMETER&quot;, value).
 WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.
 Hence, stages should not be mixed up.
 
@@ -588,12 +588,7 @@ to initialize the x,y,z,u,v and w axis, respectively.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+19"/>
         <source>An opened serial port (If connected via Serial-Port).</source>
         <translation type="unfinished"></translation>
     </message>

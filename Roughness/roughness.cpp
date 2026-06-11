@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "Roughness" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -69,11 +69,12 @@ The contained algorithms are: \n\
 * calcAbbottCurve: determination of the abbott curve based on the roughness or waviness \n\
 \n\
 Some algorithms the plugin 'fittingFilters' for a valid execution.");
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL licensed");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 }
 
@@ -1157,7 +1158,7 @@ ito::RetVal Roughness::getGaussianFilterKernel(QVector<ito::ParamBase> *paramsMa
     size_t val_size = values.size();
 
     ito::DataObject kernel(1, val_size*2-1, ito::tFloat64);
-    kernel.setAxisUnit(1, "�m");
+    kernel.setAxisUnit(1, "µm");
     kernel.setAxisScale(1, spacing);
     kernel.setAxisOffset(1, values.size());
 
@@ -1182,7 +1183,7 @@ ito::RetVal Roughness::getGaussianFilterKernel(QVector<ito::ParamBase> *paramsMa
 const QString Roughness::calcRoughnessProfileDoc = QObject::tr("calculate the roughness and waviness profile based in a given real input data object. \n\
 \n\
 The roughness and waviness profile is determined row-by-row from the given input object that is filtered using \n\
-one or two gaussian convolution operations. The gaussian filters are choosen such that a transmission of 50% is \n\
+one or two gaussian convolution operations. The gaussian filters are chosen such that a transmission of 50% is \n\
 obtained at the given cut-off wavelength levels. \n\
 \n\
 The waviness is a lowpass of the input data cut at the cut-off wavelength Lc. \n\
@@ -1962,7 +1963,7 @@ ito::RetVal Roughness::calcAbbottCurve(QVector<ito::ParamBase> *paramsMand, QVec
 *   contain valid values.
 *
 *   In addition to the standard, the kernel is normalized. In the continuous domain the integral of the gaussian kernel
-*   has to be 1.0 in order to guarantee the desired amplitude transfer factor of 1.0. This is usually achieved if the disrete values
+*   has to be 1.0 in order to guarantee the desired amplitude transfer factor of 1.0. This is usually achieved if the discrete values
 *   of the discrete gaussian kernel are summed up. However if the sampling rate is very low (close to the cut-off frequency), the discrete
 *   integral is over-estimated, which leads to bad results. Of course, one has to think if it is allowed to filter under-sampled profiles
 *   with a short cut-off frequency, nevertheless, if this happens, it is not desired to get magnified results. Therefore, we decided

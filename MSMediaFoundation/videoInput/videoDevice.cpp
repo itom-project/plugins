@@ -279,7 +279,7 @@ long VideoDevice::checkDevice(IMFAttributes *pAttributes, IMFActivate **pDevice)
             }
             else
             {
-                m_debugPrintOut->printOut("VideoDevice %i: Number of devices more than corrent number of the device \n", m_currentNumber);
+                m_debugPrintOut->printOut("VideoDevice %i: Number of devices more than current number of the device \n", m_currentNumber);
 
                 hr = -1;
             }

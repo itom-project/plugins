@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FirgelliLAC" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -95,8 +95,8 @@ class FirgelliLAC : public ito::AddInActuator
     private:
         ito::AddInDataIO *m_pSer;
 
-	    HANDLE LACOutpipe;
-	    HANDLE LACInpipe;
+        HANDLE LACOutpipe;
+        HANDLE LACInpipe;
         int m_async;
         double m_pos;  // actually position in mm
         int m_targetSteps;  // only for waitForDone
@@ -132,13 +132,13 @@ class FirgelliLAC : public ito::AddInActuator
         ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
         //! Get the position of a all axis -> calls single axis version
         ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
         ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set an absolute position and go there. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls SMCSetPos of axis=0 else ito::retError
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
+        //! Set a relative offset of current position and go there. Waits if m_async=0. Calls SMCSetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
         //! Emits status and position if triggered. Used form the dockingwidget

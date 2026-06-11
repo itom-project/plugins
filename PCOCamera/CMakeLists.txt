@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name PCOCamera)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
@@ -23,7 +22,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(PCO_SDK_DIR "" CACHE PATH "path of the pco.sdk. Must contain subfolders like bin,bin64,include,lib,lib64")
 
 if(NOT PCO_SDK_DIR)
-	set(PCO_SDK_DIR $ENV{PCO_SDK_ROOT})
+    set(PCO_SDK_DIR $ENV{PCO_SDK_ROOT})
 endif(NOT PCO_SDK_DIR)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
@@ -71,9 +70,9 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPCOCamera.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPCOCamera.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOCamera.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -82,6 +81,9 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/PCOCamera.cpp
         #add further source files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #Append rc file to the source files for adding information about the plugin
     # to the properties of the DLL under Visual Studio.
@@ -95,7 +97,7 @@ if(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

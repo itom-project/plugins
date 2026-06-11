@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -45,12 +45,22 @@
 #define CVMATREF_2DREAL(mat,m,n)  *( (MATTYPE*)(mat->data + mat->step[0]*(m) + mat->step[1]*(n)) )
 
 #if defined LAPACKE
-    #include "lapacke.h"
+#define LAPACK_COMPLEX_CUSTOM
+#include <complex>
+#define lapack_complex_float std::complex<float>
+#define lapack_complex_double std::complex<double>
+#include <lapacke.h>
 
-    #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; int NAME ## __rows;
-    #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);
-    #define DELETE_REALMAT(NAME) delete[] NAME; NAME = NULL;
-    #define REALMAT_REF(MAT,M,N)  MAT[(N) * MAT ##__rows + (M)]
+#define DEF_REALMAT(NAME)                                                                      \
+        MATTYPE* NAME = NULL;                                                                      \
+        int NAME##__rows;
+#define ALLOC_REALMAT(NAME, ROWS, COLS)                                                        \
+        NAME = new (std::nothrow) MATTYPE[(ROWS) * (COLS)];                                        \
+        NAME##__rows = (ROWS);
+#define DELETE_REALMAT(NAME)                                                                   \
+        delete[] NAME;                                                                             \
+        NAME = NULL;
+#define REALMAT_REF(MAT, M, N) MAT[(N) * MAT##__rows + (M)]
 #else
     #define DEF_REALMAT(NAME) cv::Mat *NAME = NULL;
     #define ALLOC_REALMAT(NAME, ROWS, COLS)  NAME = new (std::nothrow) cv::Mat((ROWS), (COLS), CVTYPEID);

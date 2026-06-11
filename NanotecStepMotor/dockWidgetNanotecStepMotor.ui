@@ -71,7 +71,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Contoller</string>
+           <string>Controller</string>
           </property>
          </widget>
         </item>

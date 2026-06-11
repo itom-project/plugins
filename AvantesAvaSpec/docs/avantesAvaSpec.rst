@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`AvantesAvaSpec`
 **License**:    :pluginlicense:`AvantesAvaSpec`
 **Platforms**:  Windows, Linux ready but not tested
-**Devices**:    Avantes AvaSpec Spectrometer
+**Devices**:    Avantes AvaSpec Spectrometer remotely controlled via the Itom LibUSB Plugin.
 **Author**:     :pluginauthor:`AvantesAvaSpec`
 =============== ========================================================================================================
 
@@ -24,6 +24,11 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: AvantesAvaSpec
+
+Dependencies
+============
+
+Itom AvaSpec Plugin depends on LibUSB.
 
 Parameters
 ===========
@@ -84,3 +89,6 @@ Changelog
 
 * itom setup 3.1.0: This plugin has been compiled using the libUSB Plugin
 * itom setup 4.1.0: This plugin has been compiled using the libUSB Plugin
+* itom setup 4.3.0: This plugin has been compiled using the libUSB Plugin
+* ONLY fully implemented for the AvaSpec 3468 USB-Spectrometer, 2048 USB-Spectrometer
+  & AvaSpec-ULS2048CL-EVO USB3-Spectrometer, other spectrometers using OBP won't fully work.

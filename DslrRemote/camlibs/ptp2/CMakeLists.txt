@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name ptp2)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -95,6 +94,9 @@ set(LIBGPHOTO2 optimized ../../libgphoto2/$(Configuration)/libgphoto2 debug ../.
 set(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_port debug ../../libgphoto2_port/$(Configuration)/libgphoto2_portd)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
+
+add_dependencies(${target_name} libltdl)
+add_dependencies(${target_name} libgphoto2)
 
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}

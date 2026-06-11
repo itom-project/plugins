@@ -12,13 +12,13 @@ if (POLICY CMP0043)
 ENDIF (POLICY CMP0043)
 
 #################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
+# Input elements for CMake GUI (Checkboxes, Paths, Strings...)
 #################################################################
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
-OPTION(USE_CUDA "Use CUDA computation capabilites if CUDA toolkit / drivers are found.")
+OPTION(USE_CUDA "Use CUDA computation capabilities if CUDA toolkit / drivers are found.")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
@@ -63,7 +63,7 @@ if (USE_CUDA)
         MESSAGE(STATUS "Have not found Cuda Toolkit, CUDA disabled")
     endif (CUDA_FOUND)
 else (USE_CUDA)
-	SET(CUDA_FOUND FALSE)
+    SET(CUDA_FOUND FALSE)
 endif (USE_CUDA)
 ADD_DEFINITIONS(-DNO_ITOM_BUILD)
 
@@ -95,11 +95,11 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 #  via the find_package macro above
 #################################################################
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
-	${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
+    ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
+    ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
     ${CMAKE_CURRENT_SOURCE_DIR}/../ #source directory of this plugin (recommended)
-	${OpenCV_DIR}/include       #include directory of OpenCV
-	#add further include directories here
+    ${OpenCV_DIR}/include       #include directory of OpenCV
+    #add further include directories here
 )
 
 #if (CUDA_FOUND)
@@ -118,12 +118,12 @@ INCLUDE_DIRECTORIES(
 # Hint: libraries detected using find_package usually provide
 #  all necessary libraries in a specific variable (e.g.
 #  ${OpenCV_LIBS} or ${ITOM_SDK_LIBRARIES}). These variables
-#  already contain absolute pathes, therefore no link directory
+#  already contain absolute paths, therefore no link directory
 #  needs to be set for them. Simply add these variables to
 #  the link target command below.
 #################################################################
 LINK_DIRECTORIES(
-	#add all linker directories
+    #add all linker directories
 )
 
 #################################################################
@@ -133,7 +133,7 @@ LINK_DIRECTORIES(
 # Add all source (cpp,...) files to the plugin_SOURCES list.
 # Add all ui-files (Qt-Designer layouts) to the plugin_UI list.
 #
-# Use absolute pathes, e.g. using one of the following variables:
+# Use absolute paths, e.g. using one of the following variables:
 #
 # ${ITOM_SDK_INCLUDE_DIR} is the include directory of itom SDK
 # ${CMAKE_CURRENT_SOURCE_DIR} is the source directory of this plugin
@@ -141,21 +141,24 @@ LINK_DIRECTORIES(
 #
 #################################################################
 set(plugin_HEADERS
-	${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolationMats.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolationMats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dicMatlab.h
-	#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dicMatlab.cpp
-	#add further source files here
+    #add further source files here
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 if (CUDA_FOUND)
     list(APPEND plugin_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../dicInterpolation.hu)
@@ -165,12 +168,12 @@ endif (CUDA_FOUND)
 #Append rc file to the source files for adding information about the plugin
 # to the properties of the DLL under Visual Studio.
 if(MSVC)
-#	list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+#    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 set(plugin_RCC
-	#add absolute pathes to any *.qrc resource files here
-#	${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
+    #add absolute paths to any *.qrc resource files here
+#    ${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
 )
 
 #################################################################

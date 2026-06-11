@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 /*! \file BasicFilters.h
-   \brief   This is the main file for the M++Filter libary, which contains the interface definition.
+   \brief   This is the main file for the M++Filter library, which contains the interface definition.
 
    The algorithms in this dll are mostly copied from the filter.h and filter.cpp. The filters are grouped in different sub .cpp-files.
 
@@ -74,7 +74,7 @@ class BasicFiltersInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class BasicFilters
-*   @brief Algorithms used to process images and dataobjects with filters develped at ITO
+*   @brief Algorithms used to process images and dataobjects with filters developed at ITO
 *
 *   In this class the algorithms used for the processing of measurement data are implemented.
 *
@@ -119,7 +119,7 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    /** Simply swap current byte order */
 
         static ito::RetVal calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                      /**< Get the standard IO-Parameters histogramm-filter */
-        static ito::RetVal calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);/**< This function calucaltes a histogramm for every cvMat int the input dataObject  */
+        static ito::RetVal calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);     /**< This function calculates a histogramm for every cvMat int the input dataObject  */
 
         static ito::RetVal clipValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
         static ito::RetVal clipValueFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
@@ -206,7 +206,7 @@ class BasicFilters : public ito::AddInAlgo
 
 \detail This generic filter engine class can be used to perform different linear and nonlinear filters.
 E.g. LowPassFilter or SobelEdge-Detection. The code was inspired from former M++ generic filter engine.
-The GenericFilterEngine-Class is inherited by each filter-Class, which contains filterspecific aditional components and a filterFunc-Function, which is executed by the runFilter-function.
+The GenericFilterEngine-Class is inherited by each filter-Class, which contains filterspecific additional components and a filterFunc-Function, which is executed by the runFilter-function.
 To test the different filters, a python based testsuit will be implemented.
 \author Christian Kohler, Wolfram Lyda
 \date 12.2013

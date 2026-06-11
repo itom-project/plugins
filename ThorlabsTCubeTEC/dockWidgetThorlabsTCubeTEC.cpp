@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "ThorlabsTCubeTEC" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2022, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -43,7 +43,7 @@ void DockWidgetThorlabsTCubeTEC::parametersChanged(QMap<QString, ito::Param> par
 
         if (sensorType == "Transducer")
         {
-            m_unitSuffix = QLatin1String(" \u00B0C"); // degree Celcius
+            m_unitSuffix = QLatin1String(" \u00B0C"); // degree Celsius
         }
         else if (sensorType == "TH20kOhm")
         {

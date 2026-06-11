@@ -104,3 +104,9 @@ If the given data object is 3D and has more than one plane, the following textur
 .. code-block:: python
 
     gl.exec("editTextures",dataObject.randN([100,100]), firstTextureIndex=0)
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

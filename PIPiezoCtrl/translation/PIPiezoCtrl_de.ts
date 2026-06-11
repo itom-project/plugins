@@ -205,7 +205,7 @@
     </message>
     <message>
         <location line="+15"/>
-        <source>Absolut Positioning</source>
+        <source>Absolute Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -299,7 +299,7 @@
     </message>
     <message>
         <location line="+16"/>
-        <source>asychronous (1) or synchronous (0) mode</source>
+        <source>asynchronous (1) or synchronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -355,12 +355,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>for RS232 connections, you need to indiciate a valid baudrate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
+        <location line="+17"/>
         <source>initialization breaked since list of TCP/IP devices has been printed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -549,7 +544,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1345"/>
+        <location line="+455"/>
+        <source>for RS232 connections, you need to indicate a valid baudrate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+890"/>
         <location line="+40"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
@@ -589,7 +589,7 @@
     <name>PIPiezoCtrlInterface</name>
     <message>
         <location filename="../PIPiezoCtrlInterface.cpp" line="+96"/>
-        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <source>An opened serial port (the right communication parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -613,12 +613,7 @@ It has been tested with different Piefocs and Piezo-stages. This system needs a 
 
 WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination.
 
-WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum avaiable position.In the case of a higher maximum position, set the plugin parameter &quot;posLimitHigh&quot;. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>licensed under LGPL</source>
+WARNING: The maximum position for PI controller typ E815/E625 is set to 100 micrometer. It is not possible to ask the hardware for the maximum available position.In the case of a higher maximum position, set the plugin parameter &quot;posLimitHigh&quot;. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

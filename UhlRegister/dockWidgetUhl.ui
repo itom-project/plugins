@@ -336,7 +336,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Absolut Positioning</string>
+      <string>Absolute Positioning</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <property name="leftMargin">

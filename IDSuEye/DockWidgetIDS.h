@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -61,7 +61,7 @@ class DockWidgetIDS : public ito::AbstractAddInDockWidget
         void on_sliderGainGreen_valueChanged(double value);
         void on_sliderGainBlue_valueChanged(double value);
         void on_sliderOffset_valueChanged(double value);
-		void on_comboExposureUnit_currentIndexChanged(int index);
+        void on_comboExposureUnit_currentIndexChanged(int index);
 };
 
 #endif

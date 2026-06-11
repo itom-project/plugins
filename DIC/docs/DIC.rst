@@ -24,3 +24,9 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: DIC
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release

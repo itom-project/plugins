@@ -36,7 +36,7 @@ parameters can be changed using *setParam*.
 **PI_CMD**: {str}
     use this parameter followed by :YourCommand in order to read/write value from/to device (e.g. PI_CMD:ERR?)
 **async**: {int}
-    asychronous (1.0) or sychronous (0.0) mode
+    asynchronous (1.0) or synchronous (0.0) mode
 **axesNames**: {str}, read-only
     semicolon-separated list of the names of all connected axes
 **identifier**: {str}, read-only
@@ -121,3 +121,4 @@ Changelog
 ===========
 
 * itom > 3.0.0: PIHexapodCtrl published for the first time
+* itom setup 4.3.0

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FireGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -130,7 +130,7 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
 #endif
 
         bool m_isgrabbing; /*!< Check if camera is started */
-        bool m_acquireReady; /*!< Check if frame was aquired */
+        bool m_acquireReady; /*!< Check if frame was acquired */
         //bool saturation_on; /*!< Check if saturation is controlled manually */
 
         ito::RetVal AlliedChkError(int errornumber); /*!< Map Allied-Error-Number to ITOM-Errortype and Message */

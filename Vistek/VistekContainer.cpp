@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Vistek" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -56,7 +56,7 @@
 //! Initializes the camera container, if it is not initialized
 /*!
     If the camera container is not initialized, this is done here. Additionally the SDK dll for the Vistek will be loaded and version-checked.
-    The connected cameras are dicovered. Some of their parameters are read from the cams.
+    The connected cameras are discovered. Some of their parameters are read from the cams.
 */
 ito::RetVal VistekContainer::initCameraContainer()
 {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -77,11 +77,11 @@ weighted values, such that more precise fitting results are achievable. \n\
 \n\
 Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.");
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LPGL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 }
 
@@ -358,7 +358,7 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
     }
 
     QString msg;
-    msg = tr("Substracted plane with A = %1, B = %2, C = %3").arg(A).arg(B).arg(C);
+    msg = tr("Subtracted plane with A = %1, B = %2, C = %3").arg(A).arg(B).arg(C);
     dObjDst.addToProtocol(std::string(msg.toLatin1().data()));
 
     return retOk;
@@ -706,7 +706,7 @@ weights <= 0 are ignored. If a fit cannot be done due to too less or degenerated
 \n\
 For a first order fit, a direct least squares solution is used which is very fast, for the other orders a system of linear equations \
 is solved (using a SVD decomposition) which can be slower. On a multi-core processor you can assign a number of threads that are used \
-to parallely compute the approximations for each pixel.");
+to parallelly compute the approximations for each pixel.");
 
 /*static*/ ito::RetVal FittingFilters::fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -902,7 +902,7 @@ to parallely compute the approximations for each pixel.");
     if (!retval.containsError())
     {
         QString msg;
-        msg = tr("Calculated polynomical coeffs along z-direction with order Z = %1").arg(order);
+        msg = tr("Calculated polynomial coeffs along z-direction with order Z = %1").arg(order);
         output->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
@@ -2116,13 +2116,13 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
     {
         syy = 1.0;
         denom = sx*sx - n*sxx;
-        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for 1xN objects.");
+        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomial fit or 1D-Linefitting for 1xN objects.");
     }
     else if (mat->rows == 1 && mat->cols != 1)
     {
         sxx = 1.0;
         denom = sy*sy - n*syy;
-        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for Mx1 objects.");
+        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomial fit or 1D-Linefitting for Mx1 objects.");
     }
 
     if (std::abs(denom) < std::numeric_limits<double>::epsilon())

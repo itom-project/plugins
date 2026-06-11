@@ -90,7 +90,7 @@ Register as a user and Download the ANDOR SDK3.
 Enter your product details comprising the Product Model and Serial Number to request access to the SDK:
 
 The Andor SDK should be found via the default installation path (e.g. C:/Program Files/Andor SDK3).
-If not, pease the environmental variable **ANDOR_SDK_ROOT** accordingly.
+If not, set the environmental variable **ANDOR_SDK_ROOT** accordingly.
 
 
 Changelog
@@ -100,4 +100,4 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the Andor SDK 3.08.30007.0
 * itom setup 4.0.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
 * itom setup 4.1.0: This plugin has been compiled using the Andor SDK 3.08.30007.0
-* itom setup 4.3.0: This plugin has been compiled using the Andor SDK 3.15.30084.0
+* itom setup 4.3.0: This plugin has been compiled using the Andor SDK 3.15.30092.0

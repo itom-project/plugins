@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name libgphoto2_port_ptpip)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -93,6 +92,8 @@ set(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool
 set(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
+
+add_dependencies(${target_name} libltdl)
 
 target_link_libraries(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
     ${LTDLLIB}

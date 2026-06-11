@@ -134,16 +134,11 @@ Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA director
 subdirectories like include or bin are contained.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+16"/>
-        <source>LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ThorlabsCCS</name>
     <message>
-        <location line="+49"/>
+        <location line="+60"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>

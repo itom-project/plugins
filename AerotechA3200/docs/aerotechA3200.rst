@@ -20,7 +20,7 @@ Overview
 Parameters
 ==========
 
-These paramaters are available and can be used to configure the **AerotechA3200** instance.
+These parameters are available and can be used to configure the **AerotechA3200** instance.
 
 **name**: {str}, read-only
     name of the plugin (*AerotechA3200*)
@@ -56,3 +56,5 @@ Changelog
 
 * itom setup 3.1.0: This plugin has been compiled
 * itom setup 4.1.0: This plugin has been compiled
+* itom setup 4.2.0: This plugin has been compiled
+* itom setup 4.3.0: This plugin has been compiled

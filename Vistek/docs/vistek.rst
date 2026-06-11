@@ -41,7 +41,7 @@ An instance of this plugin has the following internal parameters:
 **cameraSerialNo**: {str}, read-only
     Serial number of the camera (see camera housing)
 **cameraIP**: {str}, read-only
-    IP adress of the camera
+    IP address of the camera
 **camnum**: {int}
     Camera Number
 **exposure**: {float}
@@ -72,10 +72,17 @@ An instance of this plugin has the following internal parameters:
 Please consider, that 12bit images have been delivered in a range between 16 and 65535 with an increment of 16 for Vistek library version <= 1.0.0.
 From version 1.1.0, this range has been adapted to the default range [0,4096).
 
+
 Disclaimer
 ==========
 
 The company *Vistek* is not responsible for this plugin and therefore does not provide any support.
+
+Download
+==========
+
+The **SVCam GigE SDK** software is available at the Vistek download load center archive:
+https://www.svs-vistek.com/de/support/svs-support-download-center.php
 
 Changelog
 ==========
@@ -91,4 +98,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.0.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.1.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
+* itom setup 4.2.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251
 * itom setup 4.3.0: This plugin has been compiled using the SVCam GigE SDK 1.5.2.251

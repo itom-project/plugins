@@ -43,3 +43,9 @@ The following parameters are mandatory or optional for initializing an instance 
 
     .. plugininitparams::
         :plugin: LeicaMotorFocus
+
+
+Changelog
+==========
+
+* itom setup 2.1.0: Release

@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: https://github.com/itom-project/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2017, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2017, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -84,34 +84,34 @@ void DockWidgetIDS::parametersChanged(QMap<QString, ito::Param> params)
     {
         ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
 
-		if (ui.comboExposureUnit->currentIndex() == 0) //s
-		{
-			ui.sliderExposure->setMinimum(dm->getMin());
-			ui.sliderExposure->setMaximum(dm->getMax());
-			if (dm->getStepSize() != 0)
-			{
-				ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.001)); //0.001 is the minimal step of the spin box (1ms)
-			}
-			else
-			{
-				ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
-			}
-			ui.sliderExposure->setValue(params["integration_time"].getVal<double>());
-		}
-		else //ms
-		{
-			ui.sliderExposure->setMinimum(dm->getMin() * 1000.0);
-			ui.sliderExposure->setMaximum(dm->getMax() * 1000.0);
-			if (dm->getStepSize() != 0)
-			{
-				ui.sliderExposure->setSingleStep(std::max(dm->getStepSize() * 1000.0, 0.001)); //0.001 is the minimal step of the spin box (0.001ms)
-			}
-			else
-			{
-				ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) * 10.0);
-			}
-			ui.sliderExposure->setValue(params["integration_time"].getVal<double>() * 1000.0);
-		}
+        if (ui.comboExposureUnit->currentIndex() == 0) //s
+        {
+            ui.sliderExposure->setMinimum(dm->getMin());
+            ui.sliderExposure->setMaximum(dm->getMax());
+            if (dm->getStepSize() != 0)
+            {
+                ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.001)); //0.001 is the minimal step of the spin box (1ms)
+            }
+            else
+            {
+                ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
+            }
+            ui.sliderExposure->setValue(params["integration_time"].getVal<double>());
+        }
+        else //ms
+        {
+            ui.sliderExposure->setMinimum(dm->getMin() * 1000.0);
+            ui.sliderExposure->setMaximum(dm->getMax() * 1000.0);
+            if (dm->getStepSize() != 0)
+            {
+                ui.sliderExposure->setSingleStep(std::max(dm->getStepSize() * 1000.0, 0.001)); //0.001 is the minimal step of the spin box (0.001ms)
+            }
+            else
+            {
+                ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) * 10.0);
+            }
+            ui.sliderExposure->setValue(params["integration_time"].getVal<double>() * 1000.0);
+        }
     }
 
     if (params.contains("gain"))
@@ -140,44 +140,44 @@ void DockWidgetIDS::parametersChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetIDS::on_comboExposureUnit_currentIndexChanged(int index)
 {
-	if (!m_inEditing)
-	{
-		m_inEditing = true;
-		if (m_currentParams.contains("integration_time"))
-		{
-			ito::DoubleMeta *dm = (ito::DoubleMeta*)(m_currentParams["integration_time"].getMeta());
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        if (m_currentParams.contains("integration_time"))
+        {
+            ito::DoubleMeta *dm = (ito::DoubleMeta*)(m_currentParams["integration_time"].getMeta());
 
-			if (ui.comboExposureUnit->currentIndex() == 0) //s
-			{
-				ui.sliderExposure->setMinimum(dm->getMin());
-				ui.sliderExposure->setMaximum(dm->getMax());
-				if (dm->getStepSize() != 0)
-				{
-					ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.001)); //0.001 is the minimal step of the spin box (1ms)
-				}
-				else
-				{
-					ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
-				}
-				ui.sliderExposure->setValue(m_currentParams["integration_time"].getVal<double>());
-			}
-			else //ms
-			{
-				ui.sliderExposure->setMinimum(dm->getMin() * 1000.0);
-				ui.sliderExposure->setMaximum(dm->getMax() * 1000.0);
-				if (dm->getStepSize() != 0)
-				{
-					ui.sliderExposure->setSingleStep(std::max(dm->getStepSize() * 1000.0, 0.001)); //0.001 is the minimal step of the spin box (0.001ms)
-				}
-				else
-				{
-					ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) * 10.0);
-				}
-				ui.sliderExposure->setValue(m_currentParams["integration_time"].getVal<double>() * 1000.0);
-			}
-		}
-		m_inEditing = false;
-	}
+            if (ui.comboExposureUnit->currentIndex() == 0) //s
+            {
+                ui.sliderExposure->setMinimum(dm->getMin());
+                ui.sliderExposure->setMaximum(dm->getMax());
+                if (dm->getStepSize() != 0)
+                {
+                    ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.001)); //0.001 is the minimal step of the spin box (1ms)
+                }
+                else
+                {
+                    ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
+                }
+                ui.sliderExposure->setValue(m_currentParams["integration_time"].getVal<double>());
+            }
+            else //ms
+            {
+                ui.sliderExposure->setMinimum(dm->getMin() * 1000.0);
+                ui.sliderExposure->setMaximum(dm->getMax() * 1000.0);
+                if (dm->getStepSize() != 0)
+                {
+                    ui.sliderExposure->setSingleStep(std::max(dm->getStepSize() * 1000.0, 0.001)); //0.001 is the minimal step of the spin box (0.001ms)
+                }
+                else
+                {
+                    ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) * 10.0);
+                }
+                ui.sliderExposure->setValue(m_currentParams["integration_time"].getVal<double>() * 1000.0);
+            }
+        }
+        m_inEditing = false;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,10 +187,10 @@ void DockWidgetIDS::on_sliderExposure_valueChanged(double value)
     {
         m_inEditing = true;
 
-		if (ui.comboExposureUnit->currentIndex() > 0) //ms
-		{
-			value /= 1000.0; //convert to sec
-		}
+        if (ui.comboExposureUnit->currentIndex() > 0) //ms
+        {
+            value /= 1000.0; //convert to sec
+        }
 
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);

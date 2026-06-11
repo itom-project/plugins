@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "SuperlumBL" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -46,7 +46,7 @@ DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO)
     if (m_firstRun)
     {
         enableWidget(true);
-		//use params (identical to m_params of the plugin)
+        //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
         //__________________________________________________________________________________________________________ General Information
         ui.label_Device->setText(params["serial_number"].getVal<char*>());

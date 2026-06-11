@@ -1,8 +1,8 @@
 /*# ********************************************************************
     Plugin "QuantumComposer" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -51,7 +51,7 @@ QuantumComposerInterface::QuantumComposerInterface()
     // for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = "";
     m_detaildescription = QObject::tr(
-        "QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
+"QuantumComposer is an itom-plugin to communicate with the pulse generator 9520 series. \n\
 \n\
 This plugin has been developed for the 9520 series via a RS232 interface. So you first have to create an instance of the SerialIO plugin \n\
 which is a mandatory input argument of the QuantumComposer plugin. \n\
@@ -73,9 +73,9 @@ endline    \\r\\n\n\
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal(
@@ -232,7 +232,7 @@ QuantumComposer::QuantumComposer() :
         "gateMode",
         ito::ParamBase::String,
         "",
-        tr("Global gate mode of the system output. (DIS: diabled, PULS: pulse inhibit, OUTP: "
+        tr("Global gate mode of the system output. (DIS: disabled, PULS: pulse inhibit, OUTP: "
            "output inhibit, CHAN: channel)."
            "cycle).")
             .toLatin1()
@@ -355,7 +355,7 @@ QuantumComposer::QuantumComposer() :
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
         new ito::IntMeta(0, std::numeric_limits<int>::max(), 1, "Device parameter"),
-        tr("Number of counts.").toLatin1().data());
+        tr("Number of counts. Plugin Parameter uses the default TCNTS parameter.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // EXEC functions
@@ -391,7 +391,7 @@ QuantumComposer::QuantumComposer() :
         8,
         states,
         new ito::IntArrayMeta(0, 1, 1, 1, 8, 1, "Channel parameter"),
-        tr("List of states to enalbe/disable channels listed in the parameter channelIndexList. "
+        tr("List of states to enable/disable channels listed in the parameter channelIndexList. "
            "List must have the same length as the parameter channelIndexList.")
             .toLatin1()
             .data());
@@ -891,7 +891,7 @@ ito::RetVal QuantumComposer::init(
         retValue += ito::RetVal(
             ito::retError,
             1,
-            tr("Input parameter is not a dataIO instance of ther SerialIO Plugin!")
+            tr("Input parameter is not a dataIO instance of the SerialIO Plugin!")
                 .toLatin1()
                 .data());
     }
@@ -957,6 +957,52 @@ ito::RetVal QuantumComposer::init(
             }
         }
 
+        const QString versionStr =
+        QString::fromLatin1(m_params["version"].getVal<char*>()).trimmed();
+
+        // Example supported formats:
+        // "2.4.3-2.0.11" -> major = 2
+        // "3.0.0"        -> major = 3
+        // "10.1"         -> major = 10
+        QRegularExpression re(QStringLiteral(R"(^\s*(\d+))"));
+        QRegularExpressionMatch match = re.match(versionStr);
+
+        if (!match.hasMatch())
+        {
+            m_numChannels = 0;
+            retValue += ito::RetVal(
+                ito::retError,
+                1,
+                tr("Unknown device version '%1', cannot determine the version!")
+                    .arg(versionStr)
+                    .toLatin1()
+                    .data());
+        }
+        else
+        {
+            int majorVersion = match.captured(1).toInt();
+            if (majorVersion >= 3)
+            {
+                m_counter_query = ":PULSE0:COUN:PULSES?";
+            }
+            else if (majorVersion < 3)
+            {
+                m_counter_query = ":PULSE0:COUN:COUN? TCNTS";
+            }
+            else
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    1,
+                    tr("Unsupported device major version '%1' parsed from '%2', cannot determine "
+                       "number of channels!")
+                        .arg(majorVersion)
+                        .arg(versionStr)
+                        .toLatin1()
+                        .data());
+            }
+        }
+
         if (!retValue.containsError())
         {
             retValue +=
@@ -1018,7 +1064,7 @@ ito::RetVal QuantumComposer::init(
             m_params["counterState"].setVal<int>(answerInt);
 
             retValue +=
-                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
+                SendQuestionWithAnswerInteger(m_counter_query, answerInt, m_requestTimeOutMS);
             m_params["counterCounts"].setVal<int>(answerInt);
         }
 
@@ -1083,8 +1129,8 @@ ito::RetVal QuantumComposer::getParam(QSharedPointer<ito::Param> val, ItomShared
         if (key == "counterCounts")
         {
             retValue +=
-                SendQuestionWithAnswerInteger(":PULSE0:COUN:COUN?", answerInt, m_requestTimeOutMS);
-            val->setVal<int>(answerInt);
+                SendQuestionWithAnswerInteger(m_counter_query, answerInt, m_requestTimeOutMS);
+            it->setVal<int>(answerInt);
         }
         else if (key == "statesList")
         {
@@ -1470,7 +1516,7 @@ ito::RetVal QuantumComposer::setParam(
         else if (key == "counterState")
         {
             retValue += SendCommand(
-                QString(":PULSE0:COUNT:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
+                QString(":PULSE0:COUN:STAT %1").arg(val->getVal<int>()).toStdString().c_str());
             retValue += it->copyValueFrom(&(*val));
         }
         else
@@ -1631,8 +1677,16 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
 
     if (_answer.contains("?"))
     {
-        _answer.replace("?", "");
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("Answer '%1' contains a question mark, which is removed for conversion to integer. Check manual for error description.")
+                .arg(_answer.constData())
+                .toLatin1()
+                .data());
+        return retValue;
     }
+
     answer = _answer.toInt(&ok);
 
     if (!ok)
@@ -1640,7 +1694,7 @@ ito::RetVal QuantumComposer::SendQuestionWithAnswerInteger(
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("Error during SendQuestionWithAnswerInteger, converting %1 to double value.")
+            tr("Error during SendQuestionWithAnswerInteger, converting %1 to integer value.")
                 .arg(_answer.constData())
                 .toLatin1()
                 .data());

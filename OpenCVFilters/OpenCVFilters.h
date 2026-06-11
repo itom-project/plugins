@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "OpenCV-Filter" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2021, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -63,7 +63,7 @@ public slots:
  *   @brief Algorithms used to process images and dataobjects with filters provided by openCV
  *
  *   In this class the algorithms used for the processing of images are implemented.
- *   The filters wrapp openCV-Filters to python interface. Handling of 3D-Objects differs depending
+ *   The filters wrap openCV-Filters to python interface. Handling of 3D-Objects differs depending
  * on the filter.
  *
  */
@@ -491,19 +491,19 @@ public:
     static ito::RetVal cvRotP90(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats cclw for 90� by
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats cclw for 90° by
                                                 executing cvRot(..., false)*/
     static ito::RetVal cvRotM90(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats clw for 90� by
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats clw for 90° by
                                                 executing cvRot(..., false)*/
 
     static const QString cvRot180Doc;
     static ito::RetVal cvRot180(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
-        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats for 180�*/
+        QVector<ito::ParamBase>* paramsOut); /*! Function rotates openCV-Mats for 180° */
 
     static ito::RetVal stdParams2Objects(
         QVector<ito::Param>* paramsMand,
@@ -521,7 +521,7 @@ private:
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut,
-        bool rotClw); /*! Rotate +90� (rotClw == false) or -90� (rotClw == true) by transpose +
+        bool rotClw); /*! Rotate +90° (rotClw == false) or -90° (rotClw == true) by transpose +
                          flip*/
 
     static ito::RetVal checkInputOutputEqual(

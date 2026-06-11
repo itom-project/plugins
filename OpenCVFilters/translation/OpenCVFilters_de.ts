@@ -116,12 +116,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>This string defines how the filter should hande pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-332"/>
+        <location line="-324"/>
         <location line="+362"/>
         <location line="+3108"/>
         <source>source and destination object must not be NULL</source>
@@ -129,11 +124,12 @@
     </message>
     <message>
         <location line="-3499"/>
+        <location line="+361"/>
         <source>This string defines how the filter should handle pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="-262"/>
         <location line="+362"/>
         <location line="+3099"/>
         <location line="+36"/>
@@ -223,18 +219,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-52"/>
-        <source>Rotated object by 90� clockwise with cvRotateM90-Filter</source>
+        <location line="-279"/>
+        <source>Flipped left/right with cvFlip-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+227"/>
+        <source>Rotated object by 90° clockwise with cvRotateM90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Rotated object by 90� counter clockwise with cvRotateP90-Filter</source>
+        <source>Rotated object by 90° counter clockwise with cvRotateP90-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+167"/>
-        <source>Rotated object by 180� using cvRotate180-Filter</source>
+        <source>Rotated object by 180° using cvRotate180-Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -395,14 +396,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+120"/>
-        <source>OR Combination of various flags:
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+65"/>
+        <location line="+185"/>
         <source>rgba32 input and destination image (must be of type ito::rgba32).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -668,14 +662,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT (%1), it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function.
-The following values are possible:
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+303"/>
+        <location line="+310"/>
         <source>Interpolation method. The following values are possible: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -685,7 +672,21 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="-742"/>
+        <source>OR Combination of various flags:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+731"/>
+        <source>Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT (%1), it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function.
+The following values are possible:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+80"/>
         <source>coordinates of the points in the original plane, a matrix of type [Nx2], float32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -746,7 +747,7 @@ The following values are possible:
     </message>
     <message>
         <location line="+1"/>
-        <source>Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1�s. If not given, no status information is returned.</source>
+        <source>Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1&apos;s. If not given, no status information is returned.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -884,12 +885,7 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-696"/>
-        <source>Flipped left/rigth with cvFlip-Filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="-695"/>
         <source>Flipped upside/down with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -983,7 +979,16 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+114"/>
+        <source>flags for drawing features (bit-combination):
+- 0: DEFAULT: Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused.      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be      drawn (without a circle around the keypoint with the keypoint size and orientation).
+- 1: DRAW_OVER_OUTIMG: Output image matrix will not be created (using Mat::create). Matches will be drawn      on existing content of output image.
+- 2: NOT_DRAW_SINGLE_POINTS: Single keypoints will not be drawn.
+- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
         <source>Input parameter - first image to draw the matching points</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1023,16 +1028,7 @@ The following values are possible:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>flags for drawing features (bit-combination):
-- 0: DEFAULT: Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused.      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be      drawn (without a circle around the keypoint with the keypoint size and orientation).
-- 1: DRAW_OVER_OUTIMG: Output image matrix will not be created (using Mat::create). Matches will be drawn      on existing content of output image.
-- 2: NOT_DRAW_SINGLE_POINTS: Single keypoints will not be drawn.
-- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
+        <location line="+14"/>
         <source>max match distance that should be drawn. If 0, every match is drawn [default]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1064,12 +1060,7 @@ the tags and meta information and save protocol data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+457"/>
+        <location line="+479"/>
         <source>Dilates every plane of a data object by using a specific structuring element.
 
 This filter applies the dialation method cvDilate of OpenCV to every plane in the source data object. The result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only.
@@ -1111,11 +1102,11 @@ Performs advanced morphological transformations.The function cv::morphologyEx ca
 
 This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. Theresult is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only.
 
-The cv::blur interally calls the cv::boxfilter()-method.
+The cv::blur internally calls the cv::boxfilter()-method.
 
 The itom-wrapping does not work inplace currently. A new dataObject is allocated.
 
-borderType: This string defines how the filter should hande pixels at the border of the matrix.Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)
+borderType: This string defines how the filter should handle pixels at the border of the matrix.Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)
 Warning: NaN-handling for floats not verified.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1192,7 +1183,7 @@ It is allowed to let the filter work inplace if you give the same input than des
     </message>
     <message>
         <location line="+200"/>
-        <source>This filter rotates the image by 90� count clock wise.
+        <source>This filter rotates the image by 90° count clock wise.
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
 
@@ -1202,7 +1193,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
     </message>
     <message>
         <location line="+10"/>
-        <source>This filter rotates the image by 90� clock wise.
+        <source>This filter rotates the image by 90° clock wise.
 
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The result is contained in the destination object
 
@@ -1212,7 +1203,7 @@ It is allowed to let the filter work pseudo inplace if you give the same input t
     </message>
     <message>
         <location line="+216"/>
-        <source>This filter rotates the image by 180�.
+        <source>This filter rotates the image by 180°.
 
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The result is contained in the destination object
 
@@ -1259,39 +1250,7 @@ The axisScale properties of the x- and y-axes of the outputObject are divided by
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+134"/>
-        <source>Canny Edge detector using cv::DFT.
-
-It&apos;s just Canny&apos;s edge filter
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+212"/>
-        <source>Converts an image from one color space to another.
-In case of linear transformations, the range does not matter. But in case of a non-linear transformation,
-an input RGB image should be normalized to the proper value range to get the correct results, for example,
-for RGB -&gt; L*u*v* transformation. For example, if you have a 32-bit floating-point image directly
-converted from an 8-bit image without any scaling, then it will have the 0..255 value range instead of 0..1
-assumed by the function. So, before calling cvtColor , you need first to scale the image down
-
-The parameter code defines the conversion:
-
-* RGB &lt;-&gt; GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)
-* RGB &lt;-&gt; CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)
-* RGB &lt;-&gt; YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)
-* RGB &lt;-&gt; HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )
-* RGB &lt;-&gt; HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)
-* RGB &lt;-&gt; CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)
-* RGB &lt;-&gt; CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)
-* Bayer &lt;-&gt; RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...
-    CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)
-
-For more details see OpenCV documentation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+270"/>
+        <location line="+616"/>
         <source>Applies a fixed-level threshold to each array element..
 
 The function applies fixed-level thresholding to a multiple-channel array.
@@ -1343,6 +1302,38 @@ of the target object differ from each other depending on the algorithm parameter
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-725"/>
+        <source>Canny Edge detector using cv::DFT.
+
+It&apos;s just Canny&apos;s edge filter
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+212"/>
+        <source>Converts an image from one color space to another.
+In case of linear transformations, the range does not matter. But in case of a non-linear transformation,
+an input RGB image should be normalized to the proper value range to get the correct results, for example,
+for RGB -&gt; L*u*v* transformation. For example, if you have a 32-bit floating-point image directly
+converted from an 8-bit image without any scaling, then it will have the 0..255 value range instead of 0..1
+assumed by the function. So, before calling cvtColor , you need first to scale the image down
+
+The parameter code defines the conversion:
+
+* RGB &lt;-&gt; GRAY ( CV_BGR2GRAY = 6, CV_RGB2GRAY = 7 , CV_GRAY2BGR = 8, CV_GRAY2RGB = 8)
+* RGB &lt;-&gt; CIE XYZ.Rec 709 with D65 white point ( CV_BGR2XYZ = 32, CV_RGB2XYZ = 33, CV_XYZ2BGR = 34, CV_XYZ2RGB = 35)
+* RGB &lt;-&gt; YCrCb JPEG (or YCC) ( CV_BGR2YCrCb = 36, CV_RGB2YCrCb = 37, CV_YCrCb2BGR = 38, CV_YCrCb2RGB = 39)
+* RGB &lt;-&gt; HSV ( CV_BGR2HSV = 40, CV_RGB2HSV = 41, CV_HSV2BGR = 54, CV_HSV2RGB = 55 )
+* RGB &lt;-&gt; HLS ( CV_BGR2HLS = 52, CV_RGB2HLS = 53, CV_HLS2BGR = 60, CV_HLS2RGB = 61)
+* RGB &lt;-&gt; CIE L*a*b* ( CV_BGR2Lab = 44, CV_RGB2Lab = 45, CV_Lab2BGR = 56, CV_Lab2RGB = 57)
+* RGB &lt;-&gt; CIE L*u*v* ( CV_BGR2Luv = 50, CV_RGB2Luv = 51, CV_Luv2BGR = 58, CV_Luv2RGB = 59)
+* Bayer &lt;-&gt; RGB ( CV_BayerBG2BGR = 46, CV_BayerGB2BGR = 47, CV_BayerRG2BGR = 48, CV_BayerGR2BGR = 49, ...
+    CV_BayerBG2RGB = 48, CV_BayerGB2RGB = 49, CV_BayerRG2RGB = 46, CV_BayerGR2RGB = 47)
+
+For more details see OpenCV documentation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../features2d.cpp" line="-294"/>
         <source>This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher.
 This includes some nearest neighbour algorithms to calculate the distance between two points.
@@ -1381,7 +1372,7 @@ Remark 1: This function gives only a rough estimation of the positions. For a hi
 
 Remark 2: The outer frame of the dataObject / the image should not be white but have approximately the same gray value than the bright field.
 
-Remark 3: The bright fields should be free of darker dirt or dust and you should apply a corse shading correction to improve the results.
+Remark 3: The bright fields should be free of darker dirt or dust and you should apply a coarse shading correction to improve the results.
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1415,7 +1406,7 @@ The algorithm performs the following steps:
 2. Estimate the initial camera pose as if the intrinsic parameters have been already known. This is done using solvePnP() .
 3. Run the global Levenberg-Marquardt optimization algorithm to minimize the reprojection error, that is, the total sum of squared distances between the observed feature points imagePoints and the projected (using the current estimates for camera parameters and the poses) object points objectPoints. See projectPoints() for details.
 
-If the reprojectionError is NaN, one or both of the matrices objectPoints or imagePoints probabily contains any NaN-value after truncation. Remember that this algorithm truncates objectPoints and imagePoints
+If the reprojectionError is NaN, one or both of the matrices objectPoints or imagePoints probability contains any NaN-value after truncation. Remember that this algorithm truncates objectPoints and imagePoints
 before using it in the way that for each view, the last rows are cut where either the value in the first column of objectPoints or imagePoints is non-finite.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1447,12 +1438,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+81"/>
-        <source>Computes the undistortion and rectification transformation map.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+73"/>
+        <location line="+154"/>
         <source>Applies a generic geometrical transformation to an image.
 
 The function remap transforms the source image using the specified map:
@@ -1524,7 +1510,12 @@ The function warpPerspective transforms the source image using the specified mat
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="-389"/>
+        <source>Computes the undistortion and rectification transformation map.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+452"/>
         <source>Project points from object into image space using the given calibration matrices,
 distortion coefficients rotation and tralsation vector.</source>
         <translation type="unfinished"></translation>

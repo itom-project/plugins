@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -83,7 +83,7 @@ class DockWidgetAerotechA3200 : public QWidget
 
     public slots:
         void init(QMap<QString, ito::Param> params, QStringList axisNames);
-        void valuesChanged(QMap<QString, ito::Param> params);    //!< Slot to recive the valuesChanged signal
+        void valuesChanged(QMap<QString, ito::Param> params);    //!< Slot to receive the valuesChanged signal
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition); //!< slot to receive information about status and position changes.
         void targetChanged(QVector<double> targetPositions);
 
@@ -93,6 +93,6 @@ class DockWidgetAerotechA3200 : public QWidget
         void on_pb_Refresh_clicked();
 
         void checkEnabledClicked(const int &index);  //!< This button disables the current GUI-Elements for the specified axis
-        void posIncrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void posDecrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
+        void posIncrementClicked(const int &index);  //!< If the Button is clicked a MoveRelative()-Signal is emitted
+        void posDecrementClicked(const int &index);  //!< If the Button is clicked a MoveRelative()-Signal is emitted
 };

@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "NerianSceneScanPro" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2019, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2019, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -34,7 +34,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 namespace visiontransfer
 {
-    class SceneScanParameters;
+    class DeviceParameters;
     class ImageTransfer;
     class ImagePair;
 }
@@ -122,7 +122,7 @@ class NerianSceneScanPro : public ito::AddInGrabber
         bool m_isgrabbing; /*!< Check if acquire was executed */
         ito::RetVal syncParams(SyncParams what = sAll);
         template<typename _Tp>ito::RetVal getParamInfo(_Tp &min, _Tp &max, _Tp &inc,_Tp &value, const char* name);
-        visiontransfer::SceneScanParameters *m_pParamsObj;
+        visiontransfer::DeviceParameters *m_pParamsObj;
         visiontransfer::ImageTransfer* m_pImageTransferObj;
         visiontransfer::ImagePair* m_pImagePair;
 

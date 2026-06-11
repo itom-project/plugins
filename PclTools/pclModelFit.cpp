@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -507,7 +507,7 @@ const QString PclTools::pclFitCircle3DDOC = QObject::tr("fits a 3D-circle model 
     paramsOpt->clear();
 #if CIRCLE3D_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model orientation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -550,7 +550,7 @@ const QString PclTools::pclFitPlaneDOC = QObject::tr("fits a plane model to the 
     paramsOpt->clear();
 #if PLANE_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model orientation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -592,7 +592,7 @@ const QString PclTools::pclFitLineDOC = QObject::tr("fits a line model to the gi
     paramsOpt->clear();
 #if PLANE_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model orientation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -602,7 +602,7 @@ const QString PclTools::pclFitLineDOC = QObject::tr("fits a line model to the gi
 
     paramsOut->clear();
     paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
-    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting orientation vector").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
 
     return retval;
@@ -635,7 +635,7 @@ const QString PclTools::pclFitConeDOC = QObject::tr("fits a conical model to the
     paramsOpt->clear();
 #if CONE_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model orientation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -645,7 +645,7 @@ const QString PclTools::pclFitConeDOC = QObject::tr("fits a conical model to the
 
     paramsOut->clear();
     paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
-    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting orientation vector").toLatin1().data()));
     paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
 

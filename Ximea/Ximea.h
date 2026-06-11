@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2018, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -72,7 +72,7 @@ struct SoftwareShading
   *\class    Ximea
   *\brief    class to use a Ximea camera as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
-  *         This class can be used to work with a Ximea USB3 camera. It grabbes datas with 8 or ?? Bit.
+  *         This class can be used to work with a Ximea USB3 camera. It grabbes data with 8 or ?? Bit.
   *            The "m3api.dll" has to be in a subfolder .\Ximea in the plugin directory
   *
   *    \sa    AddInDataIO, DummyGrabber
@@ -118,47 +118,47 @@ class Ximea : public ito::AddInGrabber
             familyUnknown
         };
 
-		enum SyncParams {
+        enum SyncParams {
             sExposure = 0x0001,
             sBinning = 0x0002,
             sRoi = 0x0004,
             sGain = 0x0008,
             sOffset = 0x0010,
             sTriggerMode = 0x0020,
-			sTriggerSelector = 0x0040,
-			sBpp = 0x0080,
-			sFrameRate = 0x0100,
-			sGamma = 0x0200,
-			sSharpness = 0x0400,
+            sTriggerSelector = 0x0040,
+            sBpp = 0x0080,
+            sFrameRate = 0x0100,
+            sGamma = 0x0200,
+            sSharpness = 0x0400,
             sGpiGpo = 0x0800,
-			sLens = 0x1000,
+            sLens = 0x1000,
             sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo | sLens
         };
 
-		struct RoiMeta
-		{
-			int offsetXMin;
-			int offsetXMax;
-			int offsetXStep;
-			int offsetYMin;
-			int offsetYMax;
-			int offsetYStep;
-			int widthMin;
-			int widthMax;
-			int widthStep;
-			int heightMin;
-			int heightMax;
-			int heightStep;
-		};
+        struct RoiMeta
+        {
+            int offsetXMin;
+            int offsetXMax;
+            int offsetXStep;
+            int offsetYMin;
+            int offsetYMax;
+            int offsetYStep;
+            int widthMin;
+            int widthMax;
+            int widthStep;
+            int heightMin;
+            int heightMax;
+            int heightStep;
+        };
 
-		ito::RetVal synchronizeCameraSettings(int what = sAll);
+        ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
         ito::RetVal readCameraFloatParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
 
-		inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
-		inline double secToMusec(double sec) { return (double)(sec * 1.0e6); }
+        inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
+        inline double secToMusec(double sec) { return (double)(sec * 1.0e6); }
 
-		RoiMeta m_roiMeta;
+        RoiMeta m_roiMeta;
         DeviceFamily m_family;
         int m_numGPIPins;
         int m_numGPOPins;
@@ -226,10 +226,10 @@ class Ximea : public ito::AddInGrabber
         //! Slot to update the lightsource and integrationtime depended shading correction
         void updateShadingCorrection(int value);
 
-        //! Slot to eanble the lightsource and integrationtime depended shading correction
+        //! Slot to enable the lightsource and integrationtime depended shading correction
         void activateShadingCorrection(bool enable);
 
-	private slots:
+    private slots:
 
 };
 

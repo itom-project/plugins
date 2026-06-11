@@ -30,14 +30,14 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 DialogThorlabsKCubePA::DialogThorlabsKCubePA(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
-	m_pluginPointer(grabber)
+    m_pluginPointer(grabber)
 {
     ui.setupUi(this);
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
 
-	ui.paramEditorWidget->setPlugin(m_pluginPointer);
+    ui.paramEditorWidget->setPlugin(m_pluginPointer);
 };
 
 
@@ -59,9 +59,9 @@ void DialogThorlabsKCubePA::parametersChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogThorlabsKCubePA::applyParameters()
 {
-	QVector<QSharedPointer<ito::ParamBase> > values = ui.paramEditorWidget->getAndResetChangedParameters();
+    QVector<QSharedPointer<ito::ParamBase> > values = ui.paramEditorWidget->getAndResetChangedParameters();
 
-	return setPluginParameters(values, msgLevelWarningAndError);
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

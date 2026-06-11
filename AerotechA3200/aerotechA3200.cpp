@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -38,7 +38,7 @@
 #include "errno.h"
 
 #include "dialogAerotechA3200.h"    //! This is the configuration dialog
-#include "dockWidgetAerotechA3200.h"    //! This is the controll dialog
+#include "dockWidgetAerotechA3200.h"    //! This is the control dialog
 
 using namespace ito;
 
@@ -72,11 +72,12 @@ For details please check C:\\A3200\\MANUAL.";*/
     m_detaildescription = QObject::tr(
 "This plugin allows communicating with controllers of type A3200 of company Aerotech. \n\
 For details please check C:\\A3200\\MANUAL.");
-    m_author = "Simon Chen, Christof Pruss, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     m_autoLoadPolicy = ito::autoLoadNever;
@@ -118,7 +119,7 @@ AerotechA3200::AerotechA3200() :
     m_pAerotechA3200Wid(NULL),
     hAerCtrl(NULL)
 {
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the program to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
     //ito::tParam;    // Set up the parameter list
@@ -153,7 +154,7 @@ AerotechA3200::AerotechA3200() :
 
 //#?#drunter zu modifizieren######
 
-    // // This is for the docking widged
+    // // This is for the docking widget
     // //now create dock widget for this plugin
     m_pAerotechA3200Wid = new DockWidgetAerotechA3200(m_params, getID(), this);    // Create a new non-modal dialog
 //    m_pAerotechEnsembleWid = new DockWidgetAerotechEnsemble(this);    // Create a new non-modal dialog
@@ -315,7 +316,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         AXISMASK availableMask;
 
-        //es ist natuerlich besser, eine Funktion bezueglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.
+        //It is naturally better to call a function regarding the A3200, but three 'available' axes are sufficient.
         availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
 
         if (!retValue.containsError())
@@ -416,18 +417,18 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             _axes[i] = i;
         }
 
-        double faktor;
-        ito::RetVal retTemp =  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
+        double factor;
+        ito::RetVal retTemp =  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &factor));
         if (retTemp.containsError())
         {
             retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
-            retValue +=  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
+            retValue +=  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &factor));
         }
         else
         {
             retValue += retTemp;
         }
-        m_params["scaleFactor"].setVal<double>(faktor);
+        m_params["scaleFactor"].setVal<double>(factor);
 
         ito::RetVal retValTemp =  doUpdatePosAndState(_axes);
         if (retValTemp.containsError())
@@ -730,7 +731,7 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
             sendStatusUpdate();
 
-            //starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the alive thread such that itom do not run into
+            //starts a small worker thread with a timer that regularly calls doAliveTimer to trigger the alive thread such that itom do not run into
             //a timeout if the homing needs lots of time
             QThread *awakeThread = new QThread(this);
             QTimer* timer = new QTimer(NULL); // _not_ this!
@@ -947,7 +948,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
             double posArray[10];
             double speedArray[10];
             double *paramSpeed = m_params["speed"].getVal<double*>(); //mm/s
-            double faktor = m_params["scaleFactor"].getVal<double>();
+            double factor = m_params["scaleFactor"].getVal<double>();
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
@@ -963,8 +964,8 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                 DWORD _speedArray[1];
                 for(int i = 0; i < axis.size(); ++i)
                 {
-                    _posArray[0]=(LONG) ((posArray[i] - m_offset[axis[i]])  * faktor);
-                    _speedArray[0]=(DWORD) (speedArray[i] * faktor);
+                    _posArray[0]=(LONG) ((posArray[i] - m_offset[axis[i]])  * factor);
+                    _speedArray[0]=(DWORD) (speedArray[i] * factor);
                     //test = m_enabledAxes[axis[i]];
                     //retValue += getAxisMask2(axis[i], mask);
                     switch(m_enabledAxes[axis[i]])
@@ -1058,7 +1059,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
             double posArray[10];
             double speedArray[10];
             double *paramSpeed = m_params["speed"].getVal<double*>(); //mm/s
-            double faktor = m_params["scaleFactor"].getVal<double>();
+            double factor = m_params["scaleFactor"].getVal<double>();
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
@@ -1073,8 +1074,8 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
                 DWORD _speedArray[1];
                 for(int i = 0; i < axis.size(); ++i)
                 {
-                    _posArray[0]=(LONG) (posArray[i] * faktor);
-                    _speedArray[0]=(DWORD) (speedArray[i] * faktor);
+                    _posArray[0]=(LONG) (posArray[i] * factor);
+                    _speedArray[0]=(DWORD) (speedArray[i] * factor);
                     switch(m_enabledAxes[axis[i]])
                     {
                         case 0:
@@ -1219,9 +1220,9 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
         //bool bMove = FALSE;
         double pDouble[3];//0: pos, 1: status, 2: fault
         //AXISMASK mAxis;
-        double faktor;
+        double factor;
 
-        faktor = m_params["scaleFactor"].getVal<double>();//counts per metric units
+        factor = m_params["scaleFactor"].getVal<double>();//counts per metric units
         foreach(const int &axis, axes)
         {
             AXISINDEX axisIndex = (AXISINDEX)(AXISINDEX_1 + m_enabledAxes[axis]);
@@ -1253,7 +1254,7 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
 
             if (!retval.containsError())
             {
-                m_currentPos[axis] = m_offset[axis] + pDouble[0]/faktor;
+                m_currentPos[axis] = m_offset[axis] + pDouble[0]/factor;
                 DWORD State = (DWORD)(pDouble[1]);
 
                 if (State & MAXS_STATUS_MOVEDONE)

@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4727"/>
+        <location filename="../pclTools.cpp" line="+4726"/>
         <source>Point Cloud (*.pcd *.ply *.vtk *.xyz)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,12 +188,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-448"/>
-        <source>The loaded point cloud has an uncompatible format.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="-441"/>
         <source>The loaded point cloud does not contain x,y,z-fields.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,11 +458,15 @@
     </message>
     <message>
         <location line="-376"/>
+        <location line="+334"/>
+        <location line="+43"/>
+        <location line="+42"/>
+        <location line="+43"/>
         <source>maximum divergence between (normal-)axis and model orientation in radiant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-458"/>
         <source>if 1: A nonlinear optimization over all 7 parameters is applied (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -502,15 +501,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+108"/>
-        <location line="+43"/>
-        <location line="+42"/>
-        <location line="+43"/>
-        <source>maximum divergence between (normal-)axis and model oriantation in radiant</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-461"/>
+        <location line="-225"/>
         <location line="+216"/>
         <location line="+39"/>
         <location line="+38"/>
@@ -670,7 +661,7 @@
     <message>
         <location line="-42"/>
         <location line="+43"/>
-        <source>resulting oriantation vector</source>
+        <source>resulting orientation vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1249,25 +1240,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Set the depth at which a block iso-surface extractor should be used to extract the iso-surface.
-This parameter must be &gt;= minTreeDepth.
-
-Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time.
-(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation.
-This parameter must be &gt;= minTreeDepth.
-
-Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time.
-(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
+        <location line="+25"/>
         <location line="+152"/>
         <source>Only tested / implemented for PCL &gt;= 1.7.0</source>
         <translation type="unfinished"></translation>
@@ -1315,16 +1288,7 @@ Using this parameter helps reduce the memory overhead at the cost of a small inc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Method that sets the distance for ignoring voxels which are far from point cloud.
-If the distance is negative, then the distance functions would be calculated in all voxels;
-otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube.
-Default value is - 1.0. Set to negative if all voxels are to be involved.
-Only used for algorithmType = MarchingCubesHoppe (0).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Set the off - surface points displacement value. Only used for algorithmType = MarchingCubesRBF (1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1381,7 +1345,12 @@ Only used for algorithmType = MarchingCubesHoppe (0).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+579"/>
+        <location line="+137"/>
+        <source>The loaded point cloud has an incompatible format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+442"/>
         <source>file &apos;%s&apos; does not contain valid polygon mesh data.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1475,7 +1444,34 @@ Only used for algorithmType = MarchingCubesHoppe (0).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+456"/>
+        <location line="+63"/>
+        <source>Set the depth at which a block iso-surface extractor should be used to extract the iso-surface.
+This parameter must be &gt;= minTreeDepth.
+
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time.
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Get the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation.
+This parameter must be &gt;= minTreeDepth.
+
+Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction time.
+(In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly reduce the memory usage.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+150"/>
+        <source>Method that sets the distance for ignoring voxels which are far from point cloud.
+If the distance is negative, then the distance functions would be calculated in all voxels;
+otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube.
+Default value is - 1.0. Set to negative if all voxels are to be involved.
+Only used for algorithmType = MarchingCubesHoppe (0).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+236"/>
         <source>Projects points onto a given model.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1488,7 +1484,7 @@ Only used for algorithmType = MarchingCubesHoppe (0).</source>
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4677"/>
+        <location line="-4676"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1513,44 +1509,7 @@ by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1236"/>
-        <location line="+296"/>
-        <location line="+119"/>
-        <location line="+386"/>
-        <location line="+191"/>
-        <location line="+152"/>
-        <location line="+132"/>
-        <location line="+135"/>
-        <location line="+198"/>
-        <location line="+245"/>
-        <location line="+129"/>
-        <location line="+212"/>
-        <location line="+141"/>
-        <location line="+51"/>
-        <location line="+311"/>
-        <location line="+194"/>
-        <source>
-
-
-
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-3593"/>
-        <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
-
-This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-516"/>
+        <location line="+36"/>
         <source>save an itom.pointCloud object to a file
 
 The supported file formats are:
@@ -1617,20 +1576,40 @@ The transformed points are saved in &apos;meshOut&apos; (inplace possible). The 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+735"/>
+        <location line="+154"/>
+        <location line="+296"/>
+        <location line="+119"/>
+        <location line="+386"/>
+        <location line="+191"/>
+        <location line="+152"/>
+        <location line="+132"/>
+        <location line="+135"/>
+        <location line="+198"/>
+        <location line="+245"/>
+        <location line="+129"/>
+        <location line="+212"/>
+        <location line="+141"/>
+        <location line="+51"/>
+        <location line="+311"/>
+        <location line="+194"/>
+        <source>
+
+
+
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2311"/>
         <source>pclCropBox is a filter that allows the user to filter all the data inside of a given box.
 
-Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to
+Indicate the minimum and maximum values in x,y and z direction for the box and optionally translate and rotate the box to
 adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2375"/>
-        <source>Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+130"/>
+        <location line="+2505"/>
         <source>The marching cubes surface reconstruction algorithm.
 
 There are two algorithms implemented:
@@ -1658,41 +1637,15 @@ polygonal mesh centered at the center of gravity of the triangle. Use indices to
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclProjectInliers.cpp" line="-79"/>
-        <source>
+        <location line="-3950"/>
+        <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
 
-
-Possible types are:
---------------------
-SACMODEL_PLANE = 0,
-SACMODEL_LINE = 1,
-SACMODEL_CIRCLE2D = 2,
-SACMODEL_CIRCLE3D = 3,
-SACMODEL_SPHERE = 4,
-SACMODEL_CYLINDER = 5,
-SACMODEL_CONE = 6,
-SACMODEL_TORUS = 7,
-SACMODEL_PARALLEL_LINE = 8,
-SACMODEL_PERPENDICULAR_PLANE = 9,
-SACMODEL_PARALLEL_LINES = 10,
-SACMODEL_NORMAL_PLANE = 11,
-SACMODEL_NORMAL_SPHERE = 12,
-SACMODEL_REGISTRATION = 13,
-SACMODEL_REGISTRATION_2D = 14,
-SACMODEL_PARALLEL_PLANE = 15,
-SACMODEL_NORMAL_PARALLEL_PLANE = 16,
-SACMODEL_STICK = 17
-
-</source>
+This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclNurbs.cpp" line="-35"/>
-        <source>This filter fits a trimmed B-spline to a point cloud.
-This filter is mainly derived from the example at http://pointclouds.org/documentation/tutorials/bspline_fitting.php.
-
-After the fit, you can either obtain the result as a polygonMesh that is discretized from the resulting B-spline or
-the fitted B-spline can be saved in the OpenNURBS format (3dm) to the harddrive.</source>
+        <location line="+3657"/>
+        <source>Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1907,6 +1860,44 @@ SACMODEL_STICK = 17
     <message>
         <location line="+781"/>
         <source>calculates the distance from points in a given data object to a model.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclProjectInliers.cpp" line="-79"/>
+        <source>
+
+
+Possible types are:
+--------------------
+SACMODEL_PLANE = 0,
+SACMODEL_LINE = 1,
+SACMODEL_CIRCLE2D = 2,
+SACMODEL_CIRCLE3D = 3,
+SACMODEL_SPHERE = 4,
+SACMODEL_CYLINDER = 5,
+SACMODEL_CONE = 6,
+SACMODEL_TORUS = 7,
+SACMODEL_PARALLEL_LINE = 8,
+SACMODEL_PERPENDICULAR_PLANE = 9,
+SACMODEL_PARALLEL_LINES = 10,
+SACMODEL_NORMAL_PLANE = 11,
+SACMODEL_NORMAL_SPHERE = 12,
+SACMODEL_REGISTRATION = 13,
+SACMODEL_REGISTRATION_2D = 14,
+SACMODEL_PARALLEL_PLANE = 15,
+SACMODEL_NORMAL_PARALLEL_PLANE = 16,
+SACMODEL_STICK = 17
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclNurbs.cpp" line="-35"/>
+        <source>This filter fits a trimmed B-spline to a point cloud.
+This filter is mainly derived from the example at http://pointclouds.org/documentation/tutorials/bspline_fitting.php.
+
+After the fit, you can either obtain the result as a polygonMesh that is discretized from the resulting B-spline or
+the fitted B-spline can be saved in the OpenNURBS format (3dm) to the harddrive.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

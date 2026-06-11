@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),setT
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),setT
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -75,7 +75,7 @@ NiAnalogInputChannel::~NiAnalogInputChannel()
     QRegularExpressionMatch match = regExp.match(configString);
     if (!match.hasMatch())
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minInputVoltage,maxInputVoltage",
+        retValue += ito::RetVal::format(ito::retError, 0, "Erroneous digital input channel format '%s'. Required format: device/channel,terminalMode [0-%i],minInputVoltage,maxInputVoltage",
             configString.toLatin1().data(), NiAnalogInputChannel::NiTerminalConfEndValue - 1);
         return NULL;
     }
@@ -187,7 +187,7 @@ NiAnalogOutputChannel::~NiAnalogOutputChannel()
     QRegularExpressionMatch match = regExp.match(configString);
     if (!match.hasMatch())
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous analog output channel format '%s'. Required format: device/channel,minOutputVoltage,maxOutputVoltage", configString.toLatin1().data());
+        retValue += ito::RetVal::format(ito::retError, 0, "Erroneous analog output channel format '%s'. Required format: device/channel,minOutputVoltage,maxOutputVoltage", configString.toLatin1().data());
         return NULL;
     }
     else
@@ -218,7 +218,7 @@ ito::RetVal NiAnalogOutputChannel::addChannelToTask(TaskHandle taskHandle)
     // TODO: Check if parameters are in Range and min is smaller than max
     QByteArray name = physicalName().toLatin1();
     int err = DAQmxCreateAOVoltageChan(taskHandle, name.constData(), "", m_minOutputLim, m_maxOutputLim, DAQmx_Val_Volts, NULL);
-    retValue += checkError(err, "NiAnalogOutputChannel::addChannelToTask: NI function returend create channel abnormality");
+    retValue += checkError(err, "NiAnalogOutputChannel::addChannelToTask: NI function returned create channel abnormality");
 
     return retValue;
 }
@@ -254,7 +254,7 @@ NiDigitalInputChannel::~NiDigitalInputChannel()
     // (dev-channel)
     if (configString == "" || configString.contains(","))
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital input channel format '%s'. Required format: device/channel", configString.toLatin1().data());
+        retValue += ito::RetVal::format(ito::retError, 0, "Erroneous digital input channel format '%s'. Required format: device/channel", configString.toLatin1().data());
         return NULL;
     }
     else
@@ -313,7 +313,7 @@ NiDigitalOutputChannel::~NiDigitalOutputChannel()
     // (dev-channel)
     if (configString == "" || configString.contains(","))
     {
-        retValue += ito::RetVal::format(ito::retError, 0, "Errorneous digital output channel format '%s'. Required format: device/channel", configString.toLatin1().data());
+        retValue += ito::RetVal::format(ito::retError, 0, "Erroneous digital output channel format '%s'. Required format: device/channel", configString.toLatin1().data());
         return NULL;
     }
     else

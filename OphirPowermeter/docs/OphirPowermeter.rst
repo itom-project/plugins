@@ -29,7 +29,7 @@ Instruction
 ===========
 
 Download the Starlab SDK from Ophir: https://www.ophiropt.com/laser--measurement/de/software/starlab-for-usb.
-Set the Windows Environment Variable OPHIR_STARLAB_ROOT to the installation directory (e.g. C:\Program Files\Ophir Optronics\StarLab 3.80).
+Set the Windows Environment Variable **OPHIR_STARLAB_ROOT** to the installation directory (e.g. C:\Program Files\Ophir Optronics\StarLab 3.80).
 
 Parameters
 ==========
@@ -45,8 +45,7 @@ Parameters
 **connection**: {str}, read-only
     type of the connection ('RS232', 'USB').
 **deviceType**: {str}, read-only
-    Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-
-    II).
+    Device type (NOVA, VEGA, LASERSTAR-S (single channel), LASERSTAR-D (dual channel), Nova-II).
 **headName**: {str}, read-only
     Head name connected to the device.
 **headSerialNumber**: {str}, read-only
@@ -124,3 +123,5 @@ Changelog
 =========
 
 * itom setup 4.1.0: This plugin has been compiled using the StarLab 3.60.0
+* itom setup 4.2.0: This plugin has been compiled using the StarLab 3.80.0
+* itom setup 4.3.0: This plugin has been compiled using the StarLab 3.90.0

@@ -16,208 +16,208 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+147"/>
+        <location filename="../DataObjectIO.cpp" line="+171"/>
         <source>Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+10"/>
         <source>ASCII Surface Data File (*.sdf)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>ASCII or binary Surface Data File (*.sdf)</source>
         <translation type="unfinished">ASCII oder binäres Surface Data File (*.sdf)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.tif *.tiff)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.jpg *.jpeg *.jp2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+18"/>
         <source>Images (*.bmp *.dib)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.sr *.ras)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.ppm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Images (*.pgm *.pbm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+6"/>
+        <location line="+9"/>
+        <location line="+18"/>
         <source>Raw-XML (*.ido *.idh)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-3"/>
-        <location line="+6"/>
+        <location line="-9"/>
+        <location line="+18"/>
         <source>ASCII Data (*.txt *.csv *.tsv)</source>
         <translation type="unfinished">ASCII-Daten (*.txt *.csv *.tsv)</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+18"/>
         <source>Veeco Nanoscope III (*.001 *.002 *.003 *.004)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Avantes (*.raw8 *.rwd8 *.abs8 *.trm8 *.irr8 *.rfl8 *.rir8)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Zygo MetroPro Data File (*.dat)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
-        <location line="+818"/>
+        <location line="+59"/>
+        <location line="+1003"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
         <translation type="unfinished">Beliebiges 2D-dataObject oder dataObject mit 3 Ebenen vom Typ uint8</translation>
     </message>
     <message>
-        <location line="-816"/>
-        <location line="+818"/>
-        <location line="+1395"/>
-        <location line="+73"/>
-        <location line="+76"/>
-        <location line="+77"/>
-        <location line="+72"/>
-        <location line="+72"/>
-        <location line="+65"/>
-        <location line="+74"/>
-        <location line="+1305"/>
-        <location line="+1120"/>
+        <location line="-997"/>
+        <location line="+1003"/>
+        <location line="+1659"/>
+        <location line="+91"/>
+        <location line="+103"/>
+        <location line="+112"/>
+        <location line="+92"/>
+        <location line="+92"/>
+        <location line="+89"/>
+        <location line="+98"/>
+        <location line="+1570"/>
+        <location line="+1543"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5145"/>
+        <location line="-6446"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+12"/>
         <source>Toggle bit-scaling, 0 = off, 1 = autoscale (default), 2 = userdefined ranges</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+10"/>
         <source>Lowest limit. Will become 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>Lowest limit. Will become max&lt;bitdepth&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>When DataObject of type float32, their format should be --&gt;Gray&lt;-- or --&gt;RGB&lt;--</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+55"/>
         <source>Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+145"/>
         <location line="+158"/>
-        <location line="+66"/>
-        <location line="+63"/>
-        <location line="+35"/>
-        <location line="+62"/>
-        <location line="+35"/>
+        <location line="+173"/>
+        <location line="+79"/>
+        <location line="+76"/>
+        <location line="+48"/>
+        <location line="+75"/>
+        <location line="+48"/>
         <source>Save to image failed: DataObjectType is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-414"/>
+        <location line="-491"/>
         <source>Save to image failed: Only 2D DataObject is supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+158"/>
-        <location line="+66"/>
-        <location line="+98"/>
-        <location line="+101"/>
+        <location line="+171"/>
+        <location line="+79"/>
+        <location line="+124"/>
+        <location line="+128"/>
         <source>Only 2D DataObject is supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <location line="+2553"/>
+        <location line="+6"/>
+        <location line="+3127"/>
         <source>Entered Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2528"/>
+        <location line="-3095"/>
         <source>Empty dataObjet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <location line="+2924"/>
-        <location line="+411"/>
-        <location line="+529"/>
+        <location line="+6"/>
+        <location line="+3568"/>
+        <location line="+490"/>
+        <location line="+776"/>
         <source>Source file name</source>
         <translation type="unfinished">Quelldateiname</translation>
     </message>
     <message>
-        <location line="-3826"/>
-        <location line="+713"/>
-        <location line="+2267"/>
-        <location line="+901"/>
+        <location line="-4784"/>
+        <location line="+890"/>
+        <location line="+2742"/>
+        <location line="+1256"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3877"/>
+        <location line="-4881"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+99"/>
         <source>Image does not have supported format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+57"/>
         <source>Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+22"/>
         <source>New value for invalid substitution. Default is 0.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
-        <location line="+4287"/>
+        <location line="+105"/>
+        <location line="+5378"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -238,396 +238,406 @@
     </message>
     <message>
         <location line="+18"/>
-        <location filename="../DataObjectIO.cpp" line="-3780"/>
+        <location filename="../DataObjectIO.cpp" line="-4783"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+8"/>
-        <location line="+2985"/>
-        <location line="+183"/>
+        <location filename="../DataObjectIO.cpp" line="+10"/>
+        <location line="+3677"/>
+        <location line="+321"/>
         <source>The file &apos;%s&apos; is no readable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1863"/>
+        <location line="-2419"/>
         <source>2D-DataObject of anytype</source>
         <translation type="unfinished">Beliebiges 2D-dataObject</translation>
     </message>
     <message>
-        <location line="-505"/>
+        <location line="-665"/>
         <source>Color palette name [gray, gray16, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+103"/>
         <source>Compression rate, 0: high, 100: low</source>
         <translation type="unfinished">Komprimierungsrate (0: hoch, 100: niedrig)</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+102"/>
         <source>Compression rate, 0: high, 9: low</source>
         <translation type="unfinished">Komprimierungsrate (0: hoch, 9: niedrig)</translation>
     </message>
     <message>
-        <location line="+357"/>
+        <location line="+472"/>
         <source>Color palette name [gray, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-137"/>
-        <location line="+65"/>
+        <location line="-179"/>
+        <location line="+89"/>
         <source>Enable binary coding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2729"/>
+        <location line="-3428"/>
         <source>Images (*.xpm *.xbm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+81"/>
         <source>MicroProf FRT (*.frt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+36"/>
         <source>Keyence vk4 profilometry images (*.vk4)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>PR Line Profile (*.pr)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+706"/>
-        <location line="+2924"/>
+        <location line="+871"/>
+        <location line="+3568"/>
         <source>Color element: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY; &apos;asIs&apos; ignores alpha channel from supported file types (use rgba instead).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2771"/>
+        <location line="-3359"/>
         <source>Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Skip Value, 2: Substitute by InvalidValue, 3: Substitute by BAD for MountainsMaps.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+17"/>
         <source>File format version: &apos;aNIST-1.0&apos; or &apos;aISO-1.0&apos; for DIN EN ISO 25178-71</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+517"/>
+        <location line="+584"/>
         <source>data object where the file data is loaded to. The type of destinationObject corresponds to the type of the data block in the sdf file (uint8, uint16, uint32, int8, int16, int32, float32, float64) or always float64 if the header value Zscale is != 1.0 or the valueUnit is != &apos;m&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+4043"/>
+        <location line="+21"/>
+        <location line="+5102"/>
         <source>Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4034"/>
-        <location line="+4043"/>
+        <location line="-5084"/>
+        <location line="+5102"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3879"/>
+        <location line="-4896"/>
         <source>The file &apos;%s&apos; does not contain an &apos;aNIST-1.0&apos;, &apos;aISO-1.0&apos; or &apos;aBCR-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+635"/>
+        <location line="+715"/>
         <source>number of values in data block does not correspond to NumPoints * NumProfiles of header block</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+52"/>
-        <location line="+73"/>
-        <location line="+76"/>
-        <location line="+77"/>
-        <location line="+72"/>
-        <location line="+72"/>
-        <location line="+65"/>
+        <location line="+62"/>
+        <location line="+91"/>
+        <location line="+103"/>
+        <location line="+112"/>
+        <location line="+92"/>
+        <location line="+92"/>
+        <location line="+89"/>
         <source>Real, 2D data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-358"/>
+        <location line="-476"/>
         <source>Color palette name [gray, gray16, rgb, rgba, &lt;any-name-of-a-color-palette&gt;]. &apos;gray16&apos; supported for &apos;.jp2&apos; only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+103"/>
         <source>Color palette name [gray, gray16, rgba, rgb, &lt;any-name-of-a-color-palette&gt;].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+19"/>
         <source>If enabled and in case of floating point values, invalid values will we transparent (alpha=0), else full opacity.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+93"/>
         <source>Color palette name [gray, rgba, rgb, &lt;any-name-of-a-color-palette&gt;].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+92"/>
         <source>Color palette name [gray, rgb, &lt;any-name-of-a-color-palette&gt;, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+92"/>
         <source>Color palette name [gray, &lt;any-name-of-a-color-palette&gt;, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+89"/>
         <source>Color palette name [gray, gray16]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+145"/>
-        <location line="+435"/>
+        <location line="+185"/>
+        <location line="+518"/>
         <source>File name empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-431"/>
-        <location line="+435"/>
+        <location line="-514"/>
+        <location line="+518"/>
         <source>Palette name empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-429"/>
-        <location line="+435"/>
+        <location line="-509"/>
+        <location line="+518"/>
         <source>The given dataObject must have exactly one plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-431"/>
-        <location line="+435"/>
+        <location line="-513"/>
+        <location line="+518"/>
         <source>Complex data types not supported</source>
         <translation type="unfinished">Daten vom Typ Complex werden nicht unterstützt</translation>
     </message>
     <message>
-        <location line="-419"/>
-        <location line="+435"/>
+        <location line="-501"/>
+        <location line="+517"/>
         <source>Filename not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-430"/>
-        <location line="+435"/>
+        <location line="-512"/>
+        <location line="+517"/>
         <source>File is not writeable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-357"/>
-        <location line="+380"/>
+        <location line="-509"/>
+        <source>The target directory &apos;%1&apos; does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+81"/>
+        <location line="+451"/>
         <source>Image format not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-272"/>
+        <location line="-332"/>
         <source>Image format does not support 16-Bit gray values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <location line="+330"/>
-        <location line="+32"/>
+        <location line="+21"/>
+        <location line="+395"/>
+        <location line="+40"/>
         <source>DataObject must be of type rgba32 in order to save it to the rgba color format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-337"/>
+        <location line="-402"/>
         <source>DataObject must be of type rgba32 in order to save it to the rgb color format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
-        <location line="+48"/>
-        <location line="+289"/>
-        <location line="+48"/>
+        <location line="+84"/>
+        <location line="+62"/>
+        <location line="+340"/>
+        <location line="+62"/>
         <source>Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+17"/>
         <source>Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>error saving the image file (%1)!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
-        <location line="+411"/>
+        <location line="+60"/>
+        <location line="+490"/>
         <source>DataObject that will be filled with the loaded file content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-253"/>
+        <location line="-300"/>
         <source>The loaded image has multiple channels with a bitdepth of uint16 each. This is currently unsupported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+290"/>
+        <location line="+357"/>
         <source>If 0 the complete dataObject is saved (data + metadata) [default], else the filter saves only metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+11"/>
         <source>If 0 meta information are saved as clear text, else double tags are saved as binary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+295"/>
+        <location line="+366"/>
         <source>dataObject holding data to save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>Destination file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+17"/>
         <source>(1) save values as list of points (x, y, z).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>(1) ignore scale and offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+7"/>
         <source>Uses this as the separator between elements. Default is space &quot; &quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Uses this as the separator between lines of a matrix. Default is \r\n.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Uses this as the separator between matrix planes. Default is \r\n.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Uses this as the sign for decimal numbers. If &lt;guess&gt;, default is system default.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <location line="+181"/>
+        <location line="+25"/>
+        <location line="+318"/>
         <source>encoding of text file, e.g. UTF-8, UTF-16, ISO 8859-1... Default: empty string -&gt; the encoding is guessed due to a auto-detection of the first 64 bytes in the text file (using the BOM (Byte Order Mark)).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-59"/>
+        <location line="-109"/>
         <source>data format not supported</source>
         <translation type="unfinished">Dieses Datenformat wird nicht unterstützt</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+42"/>
         <source>Empty dataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+24"/>
+        <source>(1) Try to interpret list elements with 3 elements per row as a matrix or (0) load as written.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Uses this as the separator between elements. If NULL, try to guess.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Uses this as the sign for decimal numbers. If &lt;guess&gt;, try to guess if the decimal sign is a dot (.) or comma (,).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-176"/>
-        <location line="+183"/>
+        <location line="-306"/>
+        <location line="+320"/>
         <source>Sometimes numbers are wrapped by a sign (.e.g &apos;2.3&apos; or &quot;4.5&quot;). If so, indicate the character(s) that wrap the numbers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-147"/>
-        <location line="+179"/>
+        <location line="-268"/>
+        <location line="+316"/>
         <source>DataObject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+130"/>
+        <location line="+168"/>
         <source>The decimal sign must be &apos;&lt;guess&gt;&apos;, &apos;.&apos; or &apos;,&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>The decimal sign and the separator must differ.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+12"/>
+        <location line="+50"/>
+        <location line="+23"/>
         <source>No separator could be guessed. Maybe, there is only one value per row. The separator is set to a space character.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+88"/>
         <source>The separator was specified as (.) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+13"/>
         <source>The separator was specified as (,) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+13"/>
         <source>The separator was specified as (tab) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+13"/>
         <source>The separator was specified as (space) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+13"/>
         <source>The separator was specified as (;) but other separator signs are also possible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+23"/>
         <source>The file is no list with 3 columns and N rows or contains invalid separators.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+98"/>
         <source>Line %i contains more elements than the first analyzed line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="+193"/>
         <source>1D data object of any real data type. No invalid values are allowed.</source>
         <translation type="unfinished">1D-dataObjekt eines beliebigen realen Datentyps. Keine ungültigen Werte erlaubt.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+16"/>
         <source>Number of decimal signs (default: 6).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+8"/>
         <source>unit of ordinate (0: nm [default], 1: _m)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -635,7 +645,7 @@
         <location filename="../keyence.cpp" line="+372"/>
         <location filename="../zygo.cpp" line="+301"/>
         <location filename="../avantes.cpp" line="+122"/>
-        <location filename="../DataObjectIO.cpp" line="+238"/>
+        <location filename="../DataObjectIO.cpp" line="+276"/>
         <source>Destination dataObject</source>
         <translation type="unfinished"></translation>
     </message>
@@ -643,7 +653,7 @@
         <location line="+3"/>
         <location filename="../zygo.cpp" line="+2"/>
         <location filename="../avantes.cpp" line="+2"/>
-        <location filename="../DataObjectIO.cpp" line="+2"/>
+        <location filename="../DataObjectIO.cpp" line="+6"/>
         <source>Source filename</source>
         <translation type="unfinished">Quelldateiname</translation>
     </message>
@@ -678,119 +688,114 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+21"/>
+        <location filename="../DataObjectIO.cpp" line="+44"/>
         <source>some files contain more than one dataset. Then pass the bufferType here (its mask is 0x0000ffdf), if 0 is given, the default buffer type is used.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+12"/>
         <source>some files contain more than one dataset. Its type is selected by &apos;bufferType&apos;. Sometimes the result can come from different sensors, then select the sensor index here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+13"/>
         <source>If 1 and different buffer types are available, they are printed to the command line.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2459"/>
-        <location line="+379"/>
+        <location line="-3205"/>
+        <location line="+450"/>
         <source>DataObject-Type could not be converted to unsigned int 8-bit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1990"/>
+        <location line="-2418"/>
         <source>filename of the sdf file (aISO-1.0, aNIST-1.0, aBCR-1.0 or bISO-1.0 format)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+44"/>
         <source>If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If &apos;&lt;minrange&gt;&apos; or &lt;maxrange&gt; the minimum or maximum value of the data type in the data block is assumed (e.g. &lt;maxrange&gt; is used by Zygo to describe NaN values). MountainsMap writes &apos;BAD&apos; as invalid value (following ISO25178-71). This value is ignored for binary input since invalid values are directly encoded in floating point values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+87"/>
         <source>No version tag could be found in file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1574"/>
+        <location line="+1893"/>
         <source>DataObject-Type could not be converted to unsigned int 16-bit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
-        <location line="+25"/>
-        <location line="+116"/>
-        <location line="+189"/>
-        <location line="+32"/>
-        <location line="+116"/>
+        <location line="+42"/>
+        <location line="+33"/>
+        <location line="+147"/>
+        <location line="+215"/>
+        <location line="+40"/>
+        <location line="+147"/>
         <source>Image format does not support color values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-322"/>
+        <location line="-384"/>
         <source>cv::imwrite exited with false!</source>
         <translation type="unfinished">cv::imwrite wurd mit &apos;Flase&apos; beendet!</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location line="+487"/>
+        <location line="+587"/>
         <source>%1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-55"/>
-        <location line="+324"/>
-        <location line="+105"/>
+        <location line="-62"/>
+        <location line="+379"/>
+        <location line="+149"/>
         <source>Destination dataObject is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-318"/>
+        <location line="-397"/>
         <source>Format of the image is currently not supported by itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
-        <location line="+40"/>
+        <location line="+33"/>
+        <location line="+45"/>
         <source>Color import of channels with uint16 bitdepth not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+34"/>
         <source>Color format of the file is currently not compatible with itom. Wait for next itom version.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+93"/>
         <source>No coloured data object with 3 or 4 color channels has been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+127"/>
         <source>Any type of dataObject</source>
         <translation type="unfinished">Beliebiger dataObject-Typ</translation>
     </message>
     <message>
-        <location line="+502"/>
+        <location line="+749"/>
         <source>Ignore the first n-lines.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+153"/>
+        <location line="+233"/>
         <location line="+10"/>
-        <location line="+259"/>
+        <location line="+344"/>
         <source>Unexpected end of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4132"/>
+        <location line="-5228"/>
         <source>Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5</source>
         <translation type="unfinished"></translation>
     </message>
@@ -814,18 +819,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-987"/>
+        <location filename="../DataObjectIO.cpp" line="-1330"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+290"/>
+        <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-262"/>
         <source>This filter contains two different export- / import-functionalities for dataObjects, image or raw.
 
 Image-export functions converts dataObjects to image data and saves them as common image-formats.
 
 * uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.
-* float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.
+* float32 or float64 are saved as gray-values (8bit or if supported as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.
   Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.
 * rgba32 can be saved as &apos;rgb&apos; (full opacity), &apos;rgba&apos; (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray.
   if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette.
@@ -837,33 +847,23 @@ Raw-export functions write/read the data to/from txt-based or binary file format
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Licensed under LPGL.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+113"/>
-        <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+658"/>
+        <location line="+1071"/>
         <source>loads a 2D data object from image formats via QImage (*.gif *.xbm *.xpm).
 This filter is deprecated and can also be directly used via the filter &apos;loadAnyImage&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+160"/>
+        <location line="+195"/>
         <source>saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0 (no official standard) or aISO-1.0 (in compliance with ISO 25178-71).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+529"/>
+        <location line="+636"/>
         <source>loads an ascii or binary-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0, bISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+838"/>
+        <location line="+995"/>
         <source>Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported).
 
 The following conventions hold for saving the image:
@@ -895,7 +895,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+92"/>
         <source>Saves a real, 2D dataObject as jpg-file or jp2-file (only jp2 supports 16bit but is not much known).
 
 The following conventions hold for saving the image:
@@ -926,7 +926,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+103"/>
         <source>Saves a real, 2D dataObject as png-file (portable network graphic).
 
 The following conventions hold for saving the image:
@@ -958,7 +958,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+112"/>
         <source>Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only).
 
 The following conventions hold for saving the image:
@@ -989,7 +989,7 @@ This filters uses Qt to save the image. In the format xbm, a threshold at 128 is
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+93"/>
         <source>Saves a real, 2D dataObject as bmp-file or dip-file (bitmap, 8bit only).
 
 The following conventions hold for saving the image:
@@ -1020,7 +1020,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+92"/>
         <source>Saves a real, 2D dataObject as ppm-file (portable pixel map, 8bit only).
 
 The following conventions hold for saving the image:
@@ -1051,7 +1051,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+97"/>
         <source>Saves a real, 2D dataObject as pgm-file or pbm-file (portable gray map or portable bit map, 16bit only for pgm-format).
 
 The following conventions hold for saving the image:
@@ -1073,7 +1073,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+90"/>
         <source>Saves a real, 2D dataObject as sr-file or ras-file (Sun Raster, 8bit only).
 
 The following conventions hold for saving the image:
@@ -1104,7 +1104,7 @@ This filters uses OpenCV to save the image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+864"/>
+        <location line="+1040"/>
         <source>load the following image formats from a file to a 2D data object:
 
 * png: 8bit/16bit, color available, transparency available
@@ -1133,14 +1133,14 @@ All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+433"/>
+        <location line="+512"/>
         <source>Tries to load the given ido or idh-file as itom dataObject. Data in the given file
 must have been saved using `saveIDO` in a xml-compatible file format, whereas *.idh only
 contains meta information of a data object and *.ido contains the full object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+39"/>
         <source>The given dataObject of any size and data format is saved in an itom-specific xml-file (suffix: ido, idh).
 
 It is possible to define if only meta information (tags, scaling, offset...) should be saved in the xml-file (suffix: idh, itom data header)
@@ -1150,14 +1150,7 @@ can be reload using `loadIDO`.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+71"/>
-        <source>saves data to an ascii-based file like txt, csv, tsv or space separated values.
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+429"/>
+        <location line="+737"/>
         <source>loads an ascii-based data file like txt, csv, tsv or space separated values.
 
 The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines).
@@ -1165,7 +1158,7 @@ The full content of these ignored lines is then saved in the tag &apos;ignoredLi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+620"/>
+        <location line="+803"/>
         <source>saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).
 
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a
@@ -1175,7 +1168,7 @@ This filter uses the hex-code DF for the german Umlaut &apos;oe&apos; and F6 for
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+264"/>
         <source>Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0).
 
 The files are loaded in a unit16, int32 or float64 data format. The FRT file format provides further
@@ -1231,8 +1224,20 @@ Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be impleme
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-1699"/>
+        <source>saves data to an ascii-based file like txt, csv, tsv or space separated values.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../nanoscopeIII.cpp" line="-35"/>
         <source>This filter loads NanoscopeIII data from Veeco devices. This filter was tested with files from an AFM device &apos;Dimension3100&apos; using the file format 0x05310001. If a file of a other version is used no guarantee about scaling can be given.If a file of Version 4.3 is loaded, no information about the value units are available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../keyence.cpp" line="-36"/>
+        <source>This filter loads Keyence VK4 profilometry images from Keyence devices (e.g. laser scanning microscope).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1255,11 +1260,6 @@ The file format has been implemented based on the MetroPro Reference Guide, vers
         <source>load binary files from Avantes devices. The destinationObject is a RxN float32 data object, where R is the number of spectas in the file and N the number of pixels. Use the optional parameter &apos;dataType&apos; to decide which type of data should be loaded (including the calibration wavelength table of the grating).
 
 The description of the file format has been taken from &apos;AvaSoft 8 File Formats.pdf&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../keyence.cpp" line="-36"/>
-        <source>This filter loads Keyence VK4 profilometry images from Keyence devices (e.g. laser scanning microscope).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

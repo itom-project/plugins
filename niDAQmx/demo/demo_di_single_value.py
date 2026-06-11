@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Finite digital input task for single value input.
 
 Demo script for acquiring exactly one digital value

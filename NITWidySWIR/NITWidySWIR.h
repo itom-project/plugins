@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "NITWidySWIR" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -33,11 +33,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qmutex.h>
 
 namespace NITLibrary{
-	class NITException;//forward declaration
-	class NITCatalog;//forward declaration
-	class NITManager;//forward declaration
-	class NITDevice;//forward declaration
-	//class NITToolbox;
+    class NITException;//forward declaration
+    class NITCatalog;//forward declaration
+    class NITManager;//forward declaration
+    class NITDevice;//forward declaration
+    //class NITToolbox;
 }
 
 class NITWidySWIR;
@@ -68,27 +68,27 @@ class NITWidySWIRInterface : public ito::AddInInterfaceBase
 class NITWidySWIRObserver : public NITLibrary::NITObserver
 {
 public:
-	// Construct
-	NITWidySWIRObserver(NITWidySWIR *camera) :
-		m_pCamera(camera)
-	{
-	}
+    // Construct
+    NITWidySWIRObserver(NITWidySWIR *camera) :
+        m_pCamera(camera)
+    {
+    }
 
-	// Destruct
+    // Destruct
     ~NITWidySWIRObserver()
     {
     }
 
 protected:
-	// Implementation
-	void onStart(){ /*Initialisation, reset, ...*/ }
+    // Implementation
+    void onStart(){ /*Initialisation, reset, ...*/ }
 
-	void onNewFrame(const NITLibrary::NITFrame& frame, const NITLibrary::NITFrameInfo& info);
-	ito::RetVal checkFrame(ito::DataObject *externalDataObject);
-	void onStop(){/* Display capture result, statistics, ... */ }
+    void onNewFrame(const NITLibrary::NITFrame& frame, const NITLibrary::NITFrameInfo& info);
+    ito::RetVal checkFrame(ito::DataObject *externalDataObject);
+    void onStop(){/* Display capture result, statistics, ... */ }
 
 private:
-	NITWidySWIR *m_pCamera;
+    NITWidySWIR *m_pCamera;
 
 public slots:
 
@@ -100,21 +100,21 @@ public slots:
 class NITWidySWIRFilter : public NITLibrary::NITFilter
 {
 public:
-	// Construct
-	NITWidySWIRFilter(unsigned int fifoFrameSize = 10) : NITLibrary::NITFilter(fifoFrameSize)
-	{
-	}
+    // Construct
+    NITWidySWIRFilter(unsigned int fifoFrameSize = 10) : NITLibrary::NITFilter(fifoFrameSize)
+    {
+    }
 
-	// Destruct
-	~NITWidySWIRFilter()
-	{
-	}
+    // Destruct
+    ~NITWidySWIRFilter()
+    {
+    }
 
 protected:
-	// Implementation
-	void onNewFrame(const NITLibrary::NITFrame& frame, const NITLibrary::NITFrameInfo& info)
-	{
-	}
+    // Implementation
+    void onNewFrame(const NITLibrary::NITFrame& frame, const NITLibrary::NITFrameInfo& info)
+    {
+    }
 };
 
 
@@ -137,31 +137,31 @@ class NITWidySWIR : public ito::AddInGrabber
 
     public:
         friend class NITWidySWIRInterface;
-		friend class NITWidySWIRObserver;
+        friend class NITWidySWIRObserver;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-		enum GrabStatus { GrabIdle, GrabAcquisitionRunning, GrabFrameReceived };
+        enum GrabStatus { GrabIdle, GrabAcquisitionRunning, GrabFrameReceived };
 
 
     private:
-		QMutex m_mutex; //this mutex makes the access to m_grabbingStatus thread-safe
-		GrabStatus m_grabbingStatus;
-		NITLibrary::NITManager& m_camManager;
-		NITLibrary::NITDevice* m_camDevice;
-		NITWidySWIRObserver *m_frameObserver;
-		int m_deviceNumber;
-		int m_deviceCount = 0;
-		static int m_initNum;
-		static QList<int> m_initList;
+        QMutex m_mutex; //this mutex makes the access to m_grabbingStatus thread-safe
+        GrabStatus m_grabbingStatus;
+        NITLibrary::NITManager& m_camManager;
+        NITLibrary::NITDevice* m_camDevice;
+        NITWidySWIRObserver *m_frameObserver;
+        int m_deviceNumber;
+        int m_deviceCount = 0;
+        static int m_initNum;
+        static QList<int> m_initList;
         QString m_nucFilePath;
-		cv::Mat m_NUCDark; //already converted to float64
-		cv::Mat m_GainMap; //already converted to float64
-		int m_minBPP;
-		int m_maxBPP;
+        cv::Mat m_NUCDark; //already converted to float64
+        cv::Mat m_GainMap; //already converted to float64
+        int m_minBPP;
+        int m_maxBPP;
 
-		bool m_isgrabbing;
-		bool m_instanceInitialized;
+        bool m_isgrabbing;
+        bool m_instanceInitialized;
         bool m_pixelCorrection;
 
     public slots:
@@ -185,7 +185,7 @@ class NITWidySWIR : public ito::AddInGrabber
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-		ito::RetVal loadNUCFile(const QString &filePath, double integrationTime);
+        ito::RetVal loadNUCFile(const QString &filePath, double integrationTime);
 
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);

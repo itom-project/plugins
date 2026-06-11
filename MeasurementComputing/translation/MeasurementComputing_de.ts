@@ -73,7 +73,7 @@
     </message>
     <message>
         <location line="+14"/>
-        <source>samples per aquisition:</source>
+        <source>samples per acquisition:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -187,7 +187,7 @@
 <context>
     <name>MeasurementComputing</name>
     <message>
-        <location filename="../MeasurementComputing.cpp" line="+119"/>
+        <location filename="../MeasurementComputing.cpp" line="+117"/>
         <source>name of itom plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,12 +228,12 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>first analog output channel (See pin descirption of your device).</source>
+        <source>first analog output channel (See pin description of your device).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>last analog output channel (See pin descirption of your device).</source>
+        <source>last analog output channel (See pin description of your device).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -480,7 +480,7 @@
 <context>
     <name>MeasurementComputingInterface</name>
     <message>
-        <location line="-1366"/>
+        <location line="-1364"/>
         <source>MeasurementComputing Digital-Analog Converter Plugin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -498,12 +498,7 @@ Refer to http://www.mccdaq.com/execteam.html for the names, titles, and contact 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+22"/>
         <source>board number of the connected device. This number must be defined by the software &apos;InstaCal&apos;</source>
         <translation type="unfinished"></translation>
     </message>

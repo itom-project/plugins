@@ -85,36 +85,36 @@ class ThorlabsKCubePA : public ito::AddInDataIO
         bool m_async;
         bool m_opened;
         char m_serialNo[16];
-		ito::DataObject m_data;
-		bool m_isgrabbing;
+        ito::DataObject m_data;
+        bool m_isgrabbing;
         bool m_includeSumSignal;
 
         static QList<QByteArray> openedDevices;
 
-		ito::RetVal checkError(short value, const char* message);
-		ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal checkError(short value, const char* message);
+        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     public slots:
-		//!< Get Camera-Parameter
-		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
-		//!< Set Camera-Parameter
-		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
-		//!< Initialise board, load dll, allocate buffer
-		ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-		//!< Free buffer, delete board, unload dll
-		ito::RetVal close(ItomSharedSemaphore *waitCond);
+        //!< Get Camera-Parameter
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+        //!< Set Camera-Parameter
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
+        //!< Initialise board, load dll, allocate buffer
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        //!< Free buffer, delete board, unload dll
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-		//!< Start the camera to enable acquire-commands
-		ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
-		//!< Stop the camera to disable acquire-commands
-		ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
-		//!< Softwaretrigger for the camera
-		ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-		//!< Wait for acquired picture, copy the picture to dObj of right type and size
-		ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+        //!< Start the camera to enable acquire-commands
+        ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
+        //!< Stop the camera to disable acquire-commands
+        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+        //!< Softwaretrigger for the camera
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        //!< Wait for acquired picture, copy the picture to dObj of right type and size
+        ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-		ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+        ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );

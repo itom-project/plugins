@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport NanotecStepMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -65,11 +65,12 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     m_detaildescription = QObject::tr("NanotecStepMotor is an itom-plugin, which can be used to communicate with the Nanotec controllers SMCP.\nIt has been tested with one connected controller SMCP33 and 4 axis.");
-    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param param(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
@@ -93,4 +94,4 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class NanotecStepMotorInterface with the name NanotecStepMotorInterface as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class NanotecStepMotorInterface with the name NanotecStepMotorInterface as plugin for the Qt-System (see Qt-DOC)

@@ -35,7 +35,7 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*.
 
 **async**: {int}
-    asychronous (1) or sychronous (0) mode
+    asynchronous (1) or synchronous (0) mode
 **channel**: {seq. of int}, read-only
     Channel number of each axis.
 **controlMode**: {seq. of int}
@@ -115,4 +115,5 @@ Changelog
 * itom setup 3.2.1: This plugin has been compiled with Thorlabs Kinesis 1.14.15; it requires the Microsoft C++ Redistributable 2012
 * itom setup 4.0.0: This plugin has been compiled with Thorlabs Kinesis 1.14.23;
 * itom setup 4.1.0: This plugin has been compiled with Thorlabs Kinesis 1.14.25.
-* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.35.
+* itom setup 4.2.0: This plugin has been compiled with Thorlabs Kinesis 1.14.28.
+* itom setup 4.3.0: This plugin has been compiled with Thorlabs Kinesis 1.14.47.

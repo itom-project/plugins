@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport SMC100" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut f√ºr Technische Optik (ITO),
+    Universit√§t Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -62,7 +62,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call)
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the SMC100::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the SMC100::init. The widget window is created at this position.
 */
 SMC100::SMC100() :
     AddInActuator(),
@@ -78,7 +78,7 @@ SMC100::SMC100() :
     // Read only - Parameters
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
+    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("device information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("current_status", ito::ParamBase::IntArray, NULL, tr("Displays the current status in the Newport system.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -88,15 +88,15 @@ SMC100::SMC100() :
     m_params.insert(paramVal.getName(), paramVal);
 
     // Read/Write - Parameters
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous (1) or synchronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("calib_mode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("calib_mode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("config_state", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to data sheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("exec_calib", ito::ParamBase::IntArray, NULL, tr("Expects an array with the axis that should be calibrated ([1,3,4])").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -401,7 +401,7 @@ ito::RetVal SMC100::SMCLeaveConfigMode(const QVector<int> axis, ItomSharedSemaph
         }
     }
 
-    // Wait till movement is done and the release the semaphor
+    // Wait till movement is done and the release the semaphore
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -433,12 +433,12 @@ ito::RetVal SMC100::close(ItomSharedSemaphore *waitCond)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
 
     \param[in] *name        Name of parameter
     \param[out] val            New parameter value as double
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -576,14 +576,14 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels.
+    \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variables.
             This function is defined by the actuator class and overwritten at this position.
             If the "ctrl-type" is set, SMC100::SMCSwitchType is executed.
 
     \param[in] *name        Name of parameter
     \param[in] *val            String with parameter
     \param[in] len            Length of the string
-    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers thread
 
     \return retOk
 */
@@ -837,7 +837,7 @@ ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
                     break;
                 }
             }
-            // otherwise it¥s -1 and that means that the old status remains
+            // otherwise it's -1 and that means that the old status remains
         }
         else
         {
@@ -849,7 +849,7 @@ ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for one axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -862,7 +862,7 @@ ito::RetVal SMC100::calib(const int axis, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
+/*! \detail This function executes a calibration routine for a set of axis specified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
     \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
@@ -964,7 +964,7 @@ ito::RetVal SMC100::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
+/*! \detail Get the Position of a single axis specified by axis. The value in device independent in mm.
 
     \param [in] axis        Axisnumber
     \param [out] pos        Current position in mm
@@ -981,7 +981,7 @@ ito::RetVal SMC100::getPos(const int axis, QSharedPointer<double> pos, ItomShare
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm.
+/*! \detail Get the Position of a set of axis specified by "axis". The value in device independent in mm.
             In this case if more than one axis is specified this function returns an error.
 
     \param [in] axis        Vector with axis numbers
@@ -1019,7 +1019,7 @@ ito::RetVal SMC100::getPos(const QVector<int> axis, QSharedPointer<QVector<doubl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls SMC100::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis     axis number
@@ -1034,7 +1034,7 @@ ito::RetVal SMC100::setPosAbs(const int axis, const double pos, ItomSharedSemaph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls SMC100::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -1050,7 +1050,7 @@ ito::RetVal SMC100::setPosAbs(const QVector<int> axis, QVector<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the relative position of a one axis specified by "axis" to the position "pos" . The value in device independent in mm.
             This function calls SMC100::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
     \param [in] axis    axis number
@@ -1065,7 +1065,7 @@ ito::RetVal SMC100::setPosRel(const int axis, const double pos, ItomSharedSemaph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
+/*! \detail Set the absolute position of a number of axis specified by "axis" to the position "pos" . The value in device independent in mm.
             If the size of the vector is more then 1 element, this function returns an error.
             This function calls SMC100::SMCSetPos(axis, pos, "ABSOLUTCOMMAND")
 
@@ -1081,8 +1081,8 @@ ito::RetVal SMC100::setPosRel(const QVector<int> axis, QVector<double> pos, Itom
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-            It sends the current postion and the status to the world.
+/*! \detail This slot is triggered by the request signal from the dockingwidget dialog to update the position after ever positioning command.
+            It sends the current position and the status to the world.
 
     \sa SMCSetPos
     \return retOk
@@ -1169,7 +1169,7 @@ ito::RetVal SMC100::SMCSetVelocityAcceleration(bool vNota, const QVector<double>
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Array size doesn¥t match the number of axis").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Array size doesn't match the number of axis").toLatin1().data());
     }
     return retval;
 }
@@ -1193,12 +1193,12 @@ ito::RetVal SMC100::SMCCheckStatus(const QVector<int> axis)
             // This is a dummy read so that stage errors disappear
             SMCCheckError();
             ito::RetVal r = SMCSendCommand("TS?", false, m_addresses[a]);
-            QByteArray ans;
+            QByteArray answer;
             int len;
-            r += SMCReadString(ans, len, 200, false);
-            ans = ans.right(2);
+            r += SMCReadString(answer, len, 200, false);
+            answer = answer.right(2);
             bool ok = false;
-            int i = ans.toUInt(&ok, 16);
+            int i = answer.toUInt(&ok, 16);
             if (ok == true)
             {
                 if (i >= 10 && i < 19)
@@ -1503,7 +1503,7 @@ ito::RetVal SMC100::SMCSendQuestionWithAnswerString(const QByteArray &questionCo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm.
+/*! \detail Set the position (abs or rel) of a one axis specified by "axis" to the position "dpos". The value in device independent in mm.
             If the axisnumber is not 0, this function returns an error.
 
     \param [in] axis        axis number
@@ -1584,7 +1584,7 @@ ito::RetVal SMC100::SMCSetPos(const QVector<int> axis, const QVector<double> pos
 
         if (!retval.containsError())
         {
-            // release semaphor immediately
+            // release semaphore immediately
             if (m_async && waitCond && !released)
             {
                 waitCond->returnValue = retval;
@@ -1592,7 +1592,7 @@ ito::RetVal SMC100::SMCSetPos(const QVector<int> axis, const QVector<double> pos
                 released = true;
             }
             retval += waitForDone(100, axis);
-            // Wait till movement is done and the release the semaphor
+            // Wait till movement is done and the release the semaphore
             if (!m_async && waitCond && !released)
             {
                 waitCond->returnValue = retval;

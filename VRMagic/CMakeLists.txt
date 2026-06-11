@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name VRMagic)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -27,11 +26,11 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 if(NOT VRMAGIC_INCLUDE_DIR)
-	if(WIN32)
-		find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" "$ENV{VRMAGIC_ROOT}" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
-	else()
-		find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
-	endif()
+    if(WIN32)
+        find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" "$ENV{VRMAGIC_ROOT}" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
+    else()
+        find_path( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
+    endif()
 endif(NOT VRMAGIC_INCLUDE_DIR)
 
 if(VRMAGIC_INCLUDE_DIR)
@@ -43,7 +42,7 @@ if(VRMAGIC_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
-		${VRMAGIC_INCLUDE_DIR}
+        ${VRMAGIC_INCLUDE_DIR}
     )
 
     if(BUILD_TARGET64)
@@ -60,7 +59,7 @@ if(VRMAGIC_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogVRMagic.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVRMagic.h
         ${CMAKE_CURRENT_SOURCE_DIR}/VRMagic.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
     )
 
@@ -81,6 +80,9 @@ if(VRMAGIC_INCLUDE_DIR)
     if(MSVC)
         list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif()
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

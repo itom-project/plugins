@@ -49,24 +49,24 @@ __device__ unsigned short bps2cilut[BPSLUTSIZE];
 __global__
 void CalcBPS2CILutCUDA(unsigned char maxBits, unsigned short *d_tmpBps2cilut)
 {
-//	unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
-	unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
+//    unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
+    unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
 
-	int b, bitmask = 0, invert = 0;
+    int b, bitmask = 0, invert = 0;
 
-	b = y;
-	for (int i = maxBits; i >= 0; i-- )
-	{
-		bitmask = 1<<i;
-		if ( invert )
-			b = b ^ bitmask;
-		if ( y & bitmask )
-			invert = !invert;
-	}
-//	d_tmpBps2cilut[y] = b;
-	bps2cilut[y] = b;
+    b = y;
+    for (int i = maxBits; i >= 0; i-- )
+    {
+        bitmask = 1<<i;
+        if ( invert )
+            b = b ^ bitmask;
+        if ( y & bitmask )
+            invert = !invert;
+    }
+//    d_tmpBps2cilut[y] = b;
+    bps2cilut[y] = b;
 
-	return;
+    return;
 }
 
 extern "C" int CalcBPS2CILut(unsigned char numBits)
@@ -89,8 +89,8 @@ extern "C" int CalcBPS2CILut(unsigned char numBits)
 //        MessageBox(NULL, "Error invoke kernel calcBPSLut", "CDUA", MB_ICONEXCLAMATION|MB_OK);
         return cerror;
     }
-//	cudaMemcpy(h_tempBps2cilut, d_tempBps2cilut, BPSLUTSIZE*sizeof(unsigned short), cudaMemcpyDeviceToHost);
-//	cudaMemcpyToSymbol(bps2cilut, h_tempBps2cilut, BPSLUTSIZE*sizeof(unsigned short));
+//    cudaMemcpy(h_tempBps2cilut, d_tempBps2cilut, BPSLUTSIZE*sizeof(unsigned short), cudaMemcpyDeviceToHost);
+//    cudaMemcpyToSymbol(bps2cilut, h_tempBps2cilut, BPSLUTSIZE*sizeof(unsigned short));
     cudaThreadSynchronize();
     if ((cerror = cudaGetLastError()))
     {
@@ -156,7 +156,7 @@ void calcBPSGpu(float f_contThreas, struct cudaPitchedPtr pp_d_images, struct cu
             }
         }
 
-//		((unsigned short*)((char*)ui_d_BPS+y*pitchBPS))[x] = bitplanestack;
+//        ((unsigned short*)((char*)ui_d_BPS+y*pitchBPS))[x] = bitplanestack;
         ((short*)((char*)ui_d_BPS + y * pitchBPS))[x] = bps2cilut[bitplanestack];
     }
     else
@@ -395,7 +395,7 @@ void calcPhaseMapNGpu(unsigned char numImages, CFPTYPE *f_d_sines, CFPTYPE *f_d_
         }
     }
 
-//	((CFPTYPE*)((char*)f_d_modulationMap+pitchModulationMap*y))[x] = x;
+//    ((CFPTYPE*)((char*)f_d_modulationMap+pitchModulationMap*y))[x] = x;
     for (int n = 0; n < numImages; n++)
     {
          buf1 += Int[n] * f_d_sines[n];
@@ -518,7 +518,7 @@ void unwrapPhaseGrayGpu(float contThreas, unsigned short maxpha, int pitchCiMap,
     CFPTYPE rawPhase = ((CFPTYPE*)((char*)f_d_RawPhase + y * pitchRawPhase))[x];
 
     //Phase Unwrapping mit Codeindizes
-    //-Pi/2					//pi/2
+    //-Pi/2                    //pi/2
     if((rawPhase >= -CUDAPI2) && (rawPhase <= CUDAPI2))
     {
         if (((CFPTYPE*)((char*)f_d_ModulationMap + y * pitchModulationMap))[x] > contThreas)
@@ -660,8 +660,8 @@ extern "C" int InitCudaDevice(int num)
         return -1;
     }
 
-//	cerror = cudaSetDevice(num);
-//	cudadev = num;
+//    cerror = cudaSetDevice(num);
+//    cudadev = num;
 
     for (int r = 0; r < numdev; r++)
     {
@@ -680,7 +680,7 @@ extern "C" int InitCudaDevice(int num)
             return -1;
         }
     }
-//	cudaThreadExit();
+//    cudaThreadExit();
 
     return 0;
 }
@@ -694,33 +694,33 @@ extern "C" int CalcDimsVec(long length, dim3 *dimBlock, dim3 *dimGrid)
     struct cudaDeviceProp prop;
     cudaError_t cerror;
 
-//	cudaGetDevice(&devnum);
-//	cerror = cudaGetDeviceProperties(&prop, devnum);
-//	MaxBlocks = prop.maxThreadsPerBlock;
-//	maxbsize = (double)MaxBlocks;
-	(*dimBlock).y = MaxBlocks;
+//    cudaGetDevice(&devnum);
+//    cerror = cudaGetDeviceProperties(&prop, devnum);
+//    MaxBlocks = prop.maxThreadsPerBlock;
+//    maxbsize = (double)MaxBlocks;
+    (*dimBlock).y = MaxBlocks;
 /*
         for (int n = maxbsize; n > 0; n--)
-	{
+    {
             if ((floor((float)length / (float)n) == ((float)length / (float)n)) && (n))
             {
                 (*dimBlock).x = n;
                 break;
             }
-	}
+    }
 */
-	(*dimBlock).x = 1;
+    (*dimBlock).x = 1;
 
-	(*dimGrid).y = (length + (*dimBlock).y - 1) / (*dimBlock).y;
+    (*dimGrid).y = (length + (*dimBlock).y - 1) / (*dimBlock).y;
         //> make dims a multiple of 16 for faster calculation (see CUDA doku)
         (*dimGrid).y = ceil((*dimGrid).y / 16.0) * 16;
-	(*dimGrid).x = 1;
+    (*dimGrid).x = 1;
 /*
-	char buf[200];
-	sprintf(buf, "Len: %d\nMaxB: %d\nBlocks: %d\nGrid: %d", length, maxbsize, (*dimBlock).x, (*dimGrid).x);
-	MessageBox(NULL, buf, "", MB_OK);
+    char buf[200];
+    sprintf(buf, "Len: %d\nMaxB: %d\nBlocks: %d\nGrid: %d", length, maxbsize, (*dimBlock).x, (*dimGrid).x);
+    MessageBox(NULL, buf, "", MB_OK);
 */
-	return 0;
+    return 0;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -732,10 +732,10 @@ extern "C" int CalcDims(long width, long height, dim3 *dimBlock, dim3 *dimGrid)
     struct cudaDeviceProp prop;
     cudaError_t cerror;
 
-//	cudaGetDevice(&devnum);
-//	cerror = cudaGetDeviceProperties(&prop, devnum);
-//	MaxBlocks = prop.maxThreadsPerBlock;
-//	maxbsize = floor(sqrt((double)MaxBlocks));
+//    cudaGetDevice(&devnum);
+//    cerror = cudaGetDeviceProperties(&prop, devnum);
+//    MaxBlocks = prop.maxThreadsPerBlock;
+//    maxbsize = floor(sqrt((double)MaxBlocks));
 
     for (int n = maxbsize; n > 0; n--)
     {

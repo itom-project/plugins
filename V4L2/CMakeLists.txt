@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name V4L2)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -41,7 +40,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/V4L2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
@@ -61,7 +60,7 @@ set(PLUGIN_SOURCES
 set(PLUGIN_RCC
 )
 
-#Add version information to the plugIn-dll unter MSVC
+#Add version information to the plugIn-dll under MSVC
 if(MSVC)
 list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif()
@@ -70,6 +69,9 @@ find_library(V4LCONVERT_LIBRARY libv4lconvert v4lconvert PATHS "/usr/lib" "/usr/
 if(NOT V4LCONVERT_LIBRARY)
     message(SEND_ERROR "Library libv4lconvert could not be found.")
 endif()
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
 Plugin "DataObjectIO" for itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2018, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of a plugin for the measurement software itom.
 
@@ -158,7 +158,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
             {
                 col = curLine.data()+4;
                 col = strchr(col, ':');
-                if (!col || !isspace(col[1]))//ther must be a space after the colon
+                if (!col || !isspace(col[1]))//there must be a space after the colon
                 {
                     retval += ito::RetVal(ito::retError, 0, "Missing colon in header line");
                     break;
@@ -210,7 +210,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
         }
         if (numImage > imageCount - 1)
         {
-            retval += ito::RetVal(ito::retError, 0, "The optional paramter 'numberOfImage' is bigger than the number of images included in the file.");
+            retval += ito::RetVal(ito::retError, 0, "The optional parameter 'numberOfImage' is bigger than the number of images included in the file.");
         }
         if (numImage == -1)//print images in command of itom and exit
         {
@@ -223,7 +223,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
             foreach(iter, orderList)
             {
                 val = iter.first;
-                if (val.contains("Ciao image list"))//pick the selcted Image
+                if (val.contains("Ciao image list"))//pick the selected Image
                 {
                     retval += printOutInformation(&headerParts[val], count++);
                 }
@@ -306,7 +306,7 @@ ito::RetVal DataObjectIO::readNanoscopeIIIHeader(QFile &inFile, ito::DataObject 
                         {
                             continue;
                         }
-                        if (val.contains("Ciao image list") && ciaoImageCount == numImage)//pick the selcted Image
+                        if (val.contains("Ciao image list") && ciaoImageCount == numImage)//pick the selected Image
                         {
                             retval += mapToDataField(&headerParts[val], outObj, numColumns, numRows, isnonSquare, bpp, inFile, zScale, unit);
                         }
@@ -422,7 +422,7 @@ ito::RetVal DataObjectIO::mapToDataField(const QMap<QByteArray, QByteArray>* map
         old = true;
         if (!keyList.contains(QByteArray("Samps/line")) || !keyList.contains(QByteArray("Number of lines")) || !keyList.contains(QByteArray("Aspect ratio")) || !keyList.contains(QByteArray("Scan size")) || !keyList.contains("Data offset") || !keyList.contains("Data length") || !keyList.contains("Z scale"))
         {
-            retval += ito::RetVal(ito::retError, 0, "Header does not provide all required informations. Maybe the file is broken");
+            retval += ito::RetVal(ito::retError, 0, "Header does not provide all required information. Maybe the file is broken");
             return retval;
         }
     }

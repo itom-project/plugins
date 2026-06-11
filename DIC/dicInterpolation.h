@@ -18,9 +18,9 @@ copy it and distribute it without any license restrictions.
 #endif
 
 #ifdef USEOPENMP
-	#define USEOMP 1
+    #define USEOMP 1
 #else
-	#define USEOMP 0
+    #define USEOMP 0
 #endif
 
 struct MatT {

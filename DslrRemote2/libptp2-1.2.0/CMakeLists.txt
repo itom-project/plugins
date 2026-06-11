@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name libptp2)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
@@ -20,9 +19,6 @@ if(LibUSB_INCLUDE_DIRS)
     if(BUILD_UNICODE)
             endif(BUILD_UNICODE)
     add_definitions(-DPTP_DLL)
-
-
-
 
     message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 

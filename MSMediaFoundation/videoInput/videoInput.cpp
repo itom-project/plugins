@@ -114,7 +114,7 @@ VideoInput::VideoInput(QSharedPointer<DebugPrintOut> debugPrintOut):
 
     if (!m_accessToDevices)
     {
-        m_debugPrintOut->printOut("INITIALIZATION: Ther is not any suitable video device\n");
+        m_debugPrintOut->printOut("INITIALIZATION: There is not any suitable video device\n");
     }
 }
 

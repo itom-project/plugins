@@ -31,16 +31,16 @@ The following parameters are mandatory or optional for initializing an instance 
 Compilation
 ===========
 
-The Xenics Xeneth Software Development Kit is publicaly not available.
+The Xenics Xeneth Software Development Kit is publicly not available.
 Please contact Xenics to get access to the SDK https://www.xenics.com/
 
 Download the software and run the installation.
 
 The library should be fined via the CMAKE default settings, if not please set the CMake variable
 **XENETH_SDK_DIR** or the environment variable **XENETH_ROOT**
-to the directory that contains the header files of the SDK (e.g. D:\Program Files\Xeneth\Sdk).
+to the directory that contains the header files of the SDK (e.g. C:\Program Files\Xeneth\Sdk).
 
 Changelog
 ==========
 
-* itom setup 4.3.0: This plugin has been compiled with Xeneth SDK 2.7.0.
+* itom setup 4.3.0: This plugin has been compiled with Xeneth SDK 2.7.1.1173

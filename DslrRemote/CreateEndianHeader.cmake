@@ -1,5 +1,5 @@
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* This file is generated automatically by configure */\n\
+    "/* This file is generated automatically by configure */\n\
 /* It is valid only for the system type ${effective_target} */\n\
 \n\
 #ifndef __BYTEORDER_H\n\
@@ -12,52 +12,52 @@ TEST_BIG_ENDIAN(ENDIANNESS)
 if(ENDIANNESS)
 # big endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* No other byte swapping functions are available on this big-endian system */\n\
-#define swap16(x)	((uint16_t)(((x) << 8) | ((uint16_t)(x) >> 8)))\n\
-#define swap32(x)	((uint32_t)(((uint32_t)(x) << 24) & 0xff000000UL | \\\n\
-				    ((uint32_t)(x) << 8)  & 0x00ff0000UL | \\\n\
-				    ((x) >> 8)  & 0x0000ff00UL | \\\n\
-				    ((x) >> 24) & 0x000000ffUL))\n\
+    "/* No other byte swapping functions are available on this big-endian system */\n\
+#define swap16(x)    ((uint16_t)(((x) << 8) | ((uint16_t)(x) >> 8)))\n\
+#define swap32(x)    ((uint32_t)(((uint32_t)(x) << 24) & 0xff000000UL | \\\n\
+                    ((uint32_t)(x) << 8)  & 0x00ff0000UL | \\\n\
+                    ((x) >> 8)  & 0x0000ff00UL | \\\n\
+                    ((x) >> 24) & 0x000000ffUL))\n\
 #define swap64(x) ((uint64_t)(((uint64_t)(x) << 56) & 0xff00000000000000ULL | \\\n\
-			      ((uint64_t)(x) << 40) & 0x00ff000000000000ULL | \\\n\
-			      ((uint64_t)(x) << 24) & 0x0000ff0000000000ULL | \\\n\
-			      ((uint64_t)(x) << 8)  & 0x000000ff00000000ULL | \\\n\
-			      ((x) >> 8)  & 0x00000000ff000000ULL | \\\n\
-			      ((x) >> 24) & 0x0000000000ff0000ULL | \\\n\
-			      ((x) >> 40) & 0x000000000000ff00ULL | \\\n\
-			      ((x) >> 56) & 0x00000000000000ffULL))\n\
+                  ((uint64_t)(x) << 40) & 0x00ff000000000000ULL | \\\n\
+                  ((uint64_t)(x) << 24) & 0x0000ff0000000000ULL | \\\n\
+                  ((uint64_t)(x) << 8)  & 0x000000ff00000000ULL | \\\n\
+                  ((x) >> 8)  & 0x00000000ff000000ULL | \\\n\
+                  ((x) >> 24) & 0x0000000000ff0000ULL | \\\n\
+                  ((x) >> 40) & 0x000000000000ff00ULL | \\\n\
+                  ((x) >> 56) & 0x00000000000000ffULL))\n\
 \n" APPEND)
 else(ENDIANNESS)
 # little endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* Use these as generic byteswapping macros on this little endian system */\n\
+    "/* Use these as generic byteswapping macros on this little endian system */\n\
 /* on windows we might not have ntohs / ntohl without including winsock.dll,\n\
  * so use generic macros */\n\
 #ifdef __HAVE_NTOHL\n\
-# define swap16(x)	htons(x)\n\
-# define swap32(x)	htonl(x)\n\
+# define swap16(x)    htons(x)\n\
+# define swap32(x)    htonl(x)\n\
 #else\n\
-# define swap16(x)	((uint16_t)(((x) << 8) | ((uint16_t)(x) >> 8)))\n\
-# define swap32(x)	((uint32_t)((((uint32_t)(x) << 24) & 0xff000000UL) | \\\n\
-				    (((uint32_t)(x) << 8)  & 0x00ff0000UL) | \\\n\
-				    (((x) >> 8)  & 0x0000ff00UL) | \\\n\
-				    (((x) >> 24) & 0x000000ffUL)))\n\
+# define swap16(x)    ((uint16_t)(((x) << 8) | ((uint16_t)(x) >> 8)))\n\
+# define swap32(x)    ((uint32_t)((((uint32_t)(x) << 24) & 0xff000000UL) | \\\n\
+                    (((uint32_t)(x) << 8)  & 0x00ff0000UL) | \\\n\
+                    (((x) >> 8)  & 0x0000ff00UL) | \\\n\
+                    (((x) >> 24) & 0x000000ffUL)))\n\
 #endif\n\
 /* No optimized 64 bit byte swapping macro is available */\n\
 #define swap64(x) ((uint64_t)((((uint64_t)(x) << 56) & 0xff00000000000000ULL) | \\\n\
-			      (((uint64_t)(x) << 40) & 0x00ff000000000000ULL) | \\\n\
-			      (((uint64_t)(x) << 24) & 0x0000ff0000000000ULL) | \\\n\
-			      (((uint64_t)(x) << 8)  & 0x000000ff00000000ULL) | \\\n\
-			      (((x) >> 8)  & 0x00000000ff000000ULL) | \\\n\
-			      (((x) >> 24) & 0x0000000000ff0000ULL) | \\\n\
-			      (((x) >> 40) & 0x000000000000ff00ULL) | \\\n\
-			      (((x) >> 56) & 0x00000000000000ffULL)))\n\
+                  (((uint64_t)(x) << 40) & 0x00ff000000000000ULL) | \\\n\
+                  (((uint64_t)(x) << 24) & 0x0000ff0000000000ULL) | \\\n\
+                  (((uint64_t)(x) << 8)  & 0x000000ff00000000ULL) | \\\n\
+                  (((x) >> 8)  & 0x00000000ff000000ULL) | \\\n\
+                  (((x) >> 24) & 0x0000000000ff0000ULL) | \\\n\
+                  (((x) >> 40) & 0x000000000000ff00ULL) | \\\n\
+                  (((x) >> 56) & 0x00000000000000ffULL)))\n\
 \n" APPEND)
 
 endif(ENDIANNESS)
 
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* The byte swapping macros have the form: */\n\
+    "/* The byte swapping macros have the form: */\n\
 /*   EENN[a]toh or htoEENN[a] where EE is be (big endian) or */\n\
 /* le (little-endian), NN is 16 or 32 (number of bits) and a, */\n\
 /* if present, indicates that the endian side is a pointer to an */\n\
@@ -111,7 +111,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 if(ENDIANNESS)
 # big endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* Define our own extended byte swapping macros for big-endian machines */\n\
+    "/* Define our own extended byte swapping macros for big-endian machines */\n\
 #ifndef htole16\n\
 # define htole16(x)      swap16(x)\n\
 #endif\n\
@@ -148,7 +148,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 else(ENDIANNESS)
 # little endian
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* On little endian machines, these macros are null */\n\
+    "/* On little endian machines, these macros are null */\n\
 #ifndef htole16\n\
 # define htole16(x)      (x)\n\
 #endif\n\
@@ -189,7 +189,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 endif(ENDIANNESS)
 
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* Define the C99 standard length-specific integer types */\n\
+    "/* Define the C99 standard length-specific integer types */\n\
 #include <stdint.h>\n\
 \n" APPEND)
 
@@ -197,7 +197,7 @@ message(STATUS "PROC-TYPE: " ${CMAKE_SYSTEM_PROCESSOR})
 # this is for x86 platforms only but we simply include for the time being until the test
 # for the platform is included
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* Here are some macros to create integers from a byte array */\n\
+    "/* Here are some macros to create integers from a byte array */\n\
 /* These are used to get and put integers from/into a uint8_t array */\n\
 /* with a specific endianness.  This is the most portable way to generate */\n\
 /* and read messages to a network or serial device.  Each member of a */\n\
@@ -244,9 +244,9 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 #endif\n\
 \n" APPEND)
 
-# guess this is ambigious need to take a look at it ...
+# guess this is ambiguous need to take a look at it ...
 WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
-	"/* Here are some macros to create integers from a byte array */\n\
+    "/* Here are some macros to create integers from a byte array */\n\
 /* These are used to get and put integers from/into a uint8_t array */\n\
 /* with a specific endianness.  This is the most portable way to generate */\n\
 /* and read messages to a network or serial device.  Each member of a */\n\
@@ -255,7 +255,7 @@ WRITE_FILE("${CMAKE_CURRENT_BINARY_DIR}/gphoto2-endian.h"
 /* Non-optimized but portable macros */\n\
 /*#define be16atoh(x)     ((uint16_t)(((x)[0]<<8)|(x)[1]))\n\
 #define be32atoh(x)     ((uint32_t)(((x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3]))\n\
-#define be64atoh_x(x,off,shift) 	(((uint64_t)((x)[off]))<<shift)\n\
+#define be64atoh_x(x,off,shift)     (((uint64_t)((x)[off]))<<shift)\n\
 #define be64atoh(x)     ((uint64_t)(be64atoh_x(x,0,56)|be64atoh_x(x,1,48)|be64atoh_x(x,2,40)| \\\n\
         be64atoh_x(x,3,32)|be64atoh_x(x,4,24)|be64atoh_x(x,5,16)|be64atoh_x(x,6,8)|((x)[7])))\n\
 #define le16atoh(x)     ((uint16_t)(((x)[1]<<8)|(x)[0]))\n\

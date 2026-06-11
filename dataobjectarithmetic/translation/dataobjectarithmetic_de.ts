@@ -151,14 +151,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Stop criteria for the iterative approach. If the norm of the difference of the internal
-vector (a,b,c) (see referenced paper) is smaller than this tolerance, the iteration is stopped.
-The maximum iteration count is 20 in any case.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location line="+22"/>
         <source>If 1, NaN values in x and / or y are ignored.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -278,7 +271,14 @@ The maximum iteration count is 20 in any case.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+559"/>
+        <location line="+306"/>
+        <source>Stop criteria for the iterative approach. If the norm of the difference of the internal
+vector (a,b,c) (see referenced paper) is smaller than this tolerance, the iteration is stopped.
+The maximum iteration count is 20 in any case.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+253"/>
         <source>valid non-complex data object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -370,19 +370,15 @@ The maximum iteration count is 20 in any case.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-329"/>
+        <location line="-400"/>
+        <location line="+71"/>
         <location line="+159"/>
         <location line="+87"/>
         <location line="+42"/>
-        <source>Error: source image is NULL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-359"/>
-        <location line="+457"/>
+        <location line="+98"/>
         <location line="+145"/>
         <location line="+7"/>
-        <source>Error: source image is NULLL</source>
+        <source>Error: source image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -444,12 +440,7 @@ This plugin does not have any unusual dependencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+163"/>
+        <location line="+171"/>
         <source>This filter calculates the global minimum value and its first location within the dataObject.
 
 The returned value will be an integer for all fixed-point data types and float for all floating point types.
@@ -521,7 +512,15 @@ This method is implemented for all datatypes besides RGBA32, Complex64 and Compl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+428"/>
+        <location line="+57"/>
+        <source>Element-wise check if two dataObjects are equal.
+The filter returns 1 if all values of both objects are equal, else 0.
+
+The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <source>This filter calculates the center of gravity of a 2D real image.
 
 The return value contains the column and row position in pixel and physical coordinates.
@@ -611,15 +610,7 @@ values of the source objects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1673"/>
-        <source>Element-wise check if two dataObjects are equal.
-The filter returns 1 if all values of both objects are equal, else 0.
-
-The filter is implemented for all datatypes besides RGBA32, Complex64 and Complex128.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2141"/>
+        <location line="+468"/>
         <source>This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold.
 
 The return value contains the [x0,y0,width,height] of the minimum ROI.
@@ -635,7 +626,7 @@ implementation for fixed-point data types without an higher threshold (since ver
         <location line="+327"/>
         <source>This method determines the sub-pixel peak position of multiple spots in an image.
 
-This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developped with respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of &apos;searchStepSize&apos;.
+This algorithm is implemented for 2D or 3D input images of type uint8 or uint16 only and has been developed with respect to a fast implementation. At first, the image is analyzed line-wise with a line distancen of &apos;searchStepSize&apos;.
 In every line the coarse peak position of every 1D peak is analyzed. This can be done in two different ways (depending on the
 parameter &apos;mode&apos; (0, 2 or 4):
 

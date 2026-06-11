@@ -1,8 +1,8 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     Plugin "SuperlumBS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -85,14 +85,14 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
 
-    m_author = "J. Krauter, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef | ito::ParamBase::In, NULL, tr("An opened serial port (the right communication parameters will be set by this Superlum BroadSweeper).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
@@ -161,7 +161,7 @@ SuperlumBS::SuperlumBS() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandM
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("wavelength", ito::ParamBase::Double, 820.00, 870.00, 845.00, tr("operation wavelength [nm] in MANual Mode. Increment: 0.05 nm.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
+    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabled, (1) optical output is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     if (hasGuiSupport())
@@ -1292,7 +1292,7 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
                 retValue += ito::RetVal(ito::retError, 0, tr("Master Key is in position O!!! Turn the Master Key to I.").toLatin1().data());
                 m_params["master_key"].setVal<int>(0);
         }
-        else //If Remote Interlock ans Master Key OK
+        else //If Remote Interlock and Master Key OK
         {
             m_params["remote_interlock"].setVal<int>(1);
             m_params["master_key"].setVal<int>(1);
@@ -1376,8 +1376,8 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         retval += SendQuestionWithAnswerString(request, answer, 500);
         if (!retval.containsError())
         {
-            //ITO Superlum BroadSweeper indentification information
-            //A0: reponse code
+            //ITO Superlum BroadSweeper identification information
+            //A0: response code
             //6: this integer means that the type of the instrument is 6.
             //2: this integer means that it is a double-channel device.
             //8: this integer means that the firmware version is 4.

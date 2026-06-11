@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -27,8 +27,8 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetVRMagic::DockWidgetVRMagic(int uniqueID, ito::AddInDataIO *grabber) :
     AbstractAddInDockWidget(grabber),
-	m_inEditing(false),
-	m_firstRun(true)
+    m_inEditing(false),
+    m_firstRun(true)
 {
      ui.setupUi(this);
      identifierChanged(QString::number(uniqueID));
@@ -45,11 +45,11 @@ void DockWidgetVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun)
     {
-		ui.label_sensor->setText(params["name"].getVal<char*>());
-		ui.label_serial->setText(params["serial_number"].getVal<char*>());
-		ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
-		ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
-		ui.label_bits->setText(QString::number(params["bpp"].getVal<int>()));
+        ui.label_sensor->setText(params["name"].getVal<char*>());
+        ui.label_serial->setText(params["serial_number"].getVal<char*>());
+        ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
+        ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
+        ui.label_bits->setText(QString::number(params["bpp"].getVal<int>()));
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
 
@@ -108,8 +108,8 @@ void DockWidgetVRMagic::on_sliderWidget_contrast_valueChanged(double value)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVRMagic::enableWidget(bool enabled)
 {
-	ui.sliderWidget_brightness->setEnabled(enabled);
-	ui.sliderWidget_contrast->setEnabled(enabled);
+    ui.sliderWidget_brightness->setEnabled(enabled);
+    ui.sliderWidget_contrast->setEnabled(enabled);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

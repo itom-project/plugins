@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2021, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -72,42 +72,42 @@ protected:
 public:
     friend class DataObjectArithmeticInterface;
 
-    //*< filter function to calcuate the minimum Value of a dataObject */
+    //*< filter function to calculate the minimum Value of a dataObject */
     static const QString minValueDoc;
     static ito::RetVal minValue(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut);
 
-    //*< filter function to calcuate the maximum Value of a dataObject */
+    //*< filter function to calculate the maximum Value of a dataObject */
     static const QString maxValueDoc;
     static ito::RetVal maxValue(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut);
 
-    //*< filter function to calcuate the maximum and minimum Value of a dataObject */
+    //*< filter function to calculate the maximum and minimum Value of a dataObject */
     static const QString minMaxValueDoc;
     static ito::RetVal minMaxValue(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut);
 
-    //*< filter function to calcuate the mean Value of a dataObject */
+    //*< filter function to calculate the mean Value of a dataObject */
     static const QString meanValueDoc;
     static ito::RetVal meanValue(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut);
 
-    //*< filter function to calcuate the median Value of a dataObject */
+    //*< filter function to calculate the median Value of a dataObject */
     static const QString medianValueDoc;
     static ito::RetVal medianValue(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
         QVector<ito::ParamBase>* paramsOut);
 
-    //*< filter function to calcuate the standard deviation Value and the standard deviation of a dataObject */
+    //*< filter function to calculate the standard deviation Value and the standard deviation of a dataObject */
     static const QString devValueDoc;
     static ito::RetVal devValue(
         QVector<ito::ParamBase>* paramsMand,
@@ -158,7 +158,7 @@ public:
         QVector<ito::Param>* paramsOut);
 
     static const QString centerOfGravityDoc;
-    //*< filter function to calcuate the center of gravity of a dataObject in x and y */
+    //*< filter function to calculate the center of gravity of a dataObject in x and y */
     static ito::RetVal centerOfGravity(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
@@ -170,7 +170,7 @@ public:
         QVector<ito::Param>* paramsOut);
 
     static const QString localCenterOfGravityDoc;
-    //*< filter function to calcuate the center of gravity of a dataObject in x and y */
+    //*< filter function to calculate the center of gravity of a dataObject in x and y */
     static ito::RetVal localCenterOfGravity(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
@@ -182,7 +182,7 @@ public:
         QVector<ito::Param>* paramsOut);
 
     static const QString boundingBoxDoc;
-    //*< filter function to calcuate the center of gravity of a dataObject in x and y */
+    //*< filter function to calculate the center of gravity of a dataObject in x and y */
     static ito::RetVal boundingBox(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
@@ -194,7 +194,7 @@ public:
         QVector<ito::Param>* paramsOut);
 
     static const QString centerOfGravity1DimDoc;
-    //*< filter function to calcuate the center of gravity of a dataObject along the x or y axis*/
+    //*< filter function to calculate the center of gravity of a dataObject along the x or y axis*/
     static ito::RetVal centerOfGravity1Dim(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,
@@ -206,7 +206,7 @@ public:
         QVector<ito::Param>* paramsOut);
 
     static const QString gaussianFit1DimDoc;
-    //*< filter function to calcuate a Gaussian fit of a dataObject along the x or y axis*/
+    //*< filter function to calculate a Gaussian fit of a dataObject along the x or y axis*/
     static ito::RetVal gaussianFit1Dim(
         QVector<ito::ParamBase>* paramsMand,
         QVector<ito::ParamBase>* paramsOpt,

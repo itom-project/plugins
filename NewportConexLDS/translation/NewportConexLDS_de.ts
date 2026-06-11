@@ -180,11 +180,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../NewportConexLDS.cpp" line="314"/>
-        <source>Timestemp of measurement.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../NewportConexLDS.cpp" line="323"/>
         <source>Measure the position and laser power.</source>
         <translation type="unfinished"></translation>
@@ -197,16 +192,6 @@
     <message>
         <location filename="../NewportConexLDS.cpp" line="341"/>
         <source>Interval between measruement points in ms.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../NewportConexLDS.cpp" line="348"/>
-        <source>Timestemps corresponding to the measruement data.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../NewportConexLDS.cpp" line="356"/>
-        <source>Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestemps. Please note that this function blocks itom until the entire measurement has been carried out.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -269,8 +254,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../NewportConexLDS.cpp" line="314"/>
+        <source>TimeStamp of measurement.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../NewportConexLDS.cpp" line="348"/>
+        <source>TimeStamps corresponding to the measruement data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../NewportConexLDS.cpp" line="356"/>
+        <source>Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestamps. Please note that this function blocks itom until the entire measurement has been carried out.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../NewportConexLDS.cpp" line="1408"/>
-        <source>Error during getting calibration coeffients values.</source>
+        <source>Error during getting calibration coefficients values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -387,11 +387,6 @@
     <message>
         <location filename="../NewportConexLDS.cpp" line="50"/>
         <source>NewportConexLDS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../NewportConexLDS.cpp" line="71"/>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

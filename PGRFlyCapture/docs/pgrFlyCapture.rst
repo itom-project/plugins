@@ -183,7 +183,7 @@ old *libiomp5md.dll* but on the renamed version with the same content.
 This might resolve the name conflict with the same file (different version)
 shipped with Numpy+MKL.
 
-Then set the CMake variable *FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR** or the environment path vairable **FLIR_SDK_ROOT**
+Then set the CMake variable *FLYCAPTURE_PGRFLYCAP_INCLUDE_DIR** or the environment path variable **FLIR_SDK_ROOT**
 to the base directory of the pco.sensicam (e.g. C:\Program Files\Point Grey Research\FlyCapture2).
 
 
@@ -210,7 +210,7 @@ The tags are:
 If 'metadata' is 0 or if the camera model does not support this additional information,
 no tags are appended to each data object.
 Please consider, that the image information is embedded in the first pixels of
-each image (see https://www.ptgrey.com/tan/10563).
+each image.
 
 When camera property settings take effect
 ===========================================

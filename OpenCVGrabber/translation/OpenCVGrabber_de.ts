@@ -210,11 +210,6 @@ The parameters of this plugin are double values that are directly redirected to 
 For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter &apos;dump_grabs&apos; to set a number of images that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+19"/>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>dialogOpenCVGrabber</name>

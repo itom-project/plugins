@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PcoPixelFly" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -54,8 +54,8 @@
 
 //int PCOPixelFlyInterface::m_instCounter = 5;  // initialization starts with five due to normal boards are 0..4
 
-static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized board (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized PCO-Pixelfly-Board */
+static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successful initialized board (max = 5) */
+static char Initnum = 0;    /*!< Number of successful initialized PCO-Pixelfly-Board */
 
 static     HINSTANCE g_libcam = NULL;    /*!< Handle to the pccam.dll in windows\system32 */
 static  HINSTANCE g_libpcocnv = NULL;    /*!< Handle to the pcocnv.dll in .\plugins\PCO */
@@ -97,11 +97,11 @@ Please install first the necessary drivers for the camera and grabber board from
 drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates \
 on 64bit Windows systems.");
 
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH");
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
     ito::Param paramVal = ito::Param("boardNumber", ito::ParamBase::Int, 0, 3, 0, NULL);
@@ -226,7 +226,7 @@ ito::RetVal PCOPixelFly::PCOLoadLibrary(void)
         }
     }
 
-    if (!g_libcam && !Initnum)   // so no grabber is initialized yet, dll shoud not be loaded
+    if (!g_libcam && !Initnum)   // so no grabber is initialized yet, dll should not be loaded
     {
 
 #if UNICODE
@@ -387,7 +387,7 @@ ito::RetVal PCOPixelFly::PCOLoadLibrary(void)
         return retValue;
     }
 
-//    if (!g_libpcocnv && !Initnum)   // so no grabber is initialized yet, dll shoud not be loaded
+//    if (!g_libpcocnv && !Initnum)   // so no grabber is initialized yet, dll should not be loaded
 //    {
 //#if UNICODE
 //        if ((g_libpcocnv = LoadLibrary(L".\\plugins\\PCOPixelFly\\PCO\\pcocnv.dll")) == NULL)
@@ -566,7 +566,7 @@ ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
         {    -104,   QObject::tr("cannot match processhandle to a board").toLatin1().data()},
         {    -105,   QObject::tr("failed to init PCI").toLatin1().data()},
         {    -106,   QObject::tr("no board found").toLatin1().data()},
-        {    -107,   QObject::tr("read configuratuion registers failed").toLatin1().data()},
+        {    -107,   QObject::tr("read configuration registers failed").toLatin1().data()},
         {    -108,   QObject::tr("board has wrong configuration").toLatin1().data()},
         {    -109,   QObject::tr("memory allocation error").toLatin1().data()},
         {    -110,   QObject::tr("camera is busy").toLatin1().data()},
@@ -600,9 +600,9 @@ ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
         {    -165,   QObject::tr("no dma buffer found").toLatin1().data()},
         {    -166,   QObject::tr("locking of pages failed").toLatin1().data()},
         {    -167,   QObject::tr("unlocking of pages failed").toLatin1().data()},
-        {    -168,   QObject::tr("DMA buffersize to smal").toLatin1().data()},
+        {    -168,   QObject::tr("DMA buffersize to small").toLatin1().data()},
         {    -169,   QObject::tr("PCI-Bus error in DMA").toLatin1().data()},
-        {    -170,   QObject::tr("DMA is runnig, command not allowed").toLatin1().data()},
+        {    -170,   QObject::tr("DMA is running, command not allowed").toLatin1().data()},
         {    -228,   QObject::tr("get processor failed").toLatin1().data()},
         {    -229,   QObject::tr("reserved").toLatin1().data()},
         {    -230,   QObject::tr("wrong processor found").toLatin1().data()},
@@ -747,71 +747,71 @@ ito::RetVal PCOPixelFly::PCOAllocateBuffer(void)
     int maxxsize = 0;
     int maxysize = 0;
     int bitppix = 0;
-	int curxsize = 0;
-	int curysize = 0;
+    int curxsize = 0;
+    int curysize = 0;
     int lsize = 0;
     int i = 0;
     DWORD linadr = 0;
     DWORD handleflag[100] = {0};
     bool valid = false;
 
-	retValue += PCOChkError(getsizes(m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix));
+    retValue += PCOChkError(getsizes(m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix));
 
-	if (!retValue.containsError())
-	{
+    if (!retValue.containsError())
+    {
 
-		/*maxxsize = m_params["sizex"].getVal<int>();
-		maxysize = m_params["sizey"].getVal<int>();
-		bitppix = m_params["bpp"].getVal<int>();*/
+        /*maxxsize = m_params["sizex"].getVal<int>();
+        maxysize = m_params["sizey"].getVal<int>();
+        bitppix = m_params["bpp"].getVal<int>();*/
 
-		for (i = 0; i < BUFFERNUMBER; i++)
-		{
-			this->m_bufnumber[i] = -1;
-			lsize = (int)(curxsize * curysize * ceil(bitppix / 8.0));
-			iRetCode = allocate_buffer(this->m_hdriver, &this->m_bufnumber[i], (int *) &lsize);
-			if (iRetCode != 0)
-			{
-				retValue = this->PCOChkError(iRetCode);
-			}
-			Sleep(5);
-		}
+        for (i = 0; i < BUFFERNUMBER; i++)
+        {
+            this->m_bufnumber[i] = -1;
+            lsize = (int)(curxsize * curysize * ceil(bitppix / 8.0));
+            iRetCode = allocate_buffer(this->m_hdriver, &this->m_bufnumber[i], (int *) &lsize);
+            if (iRetCode != 0)
+            {
+                retValue = this->PCOChkError(iRetCode);
+            }
+            Sleep(5);
+        }
 
-		for (i = 0; i < BUFFERNUMBER; i++)
-		{
-			if (retValue != ito::retError)
-			{
+        for (i = 0; i < BUFFERNUMBER; i++)
+        {
+            if (retValue != ito::retError)
+            {
 #if _WIN64
-				map_buffer_ex(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &(m_pAdr[i]));
+                map_buffer_ex(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &(m_pAdr[i]));
 #else
-				iRetCode = map_buffer(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &linadr);
-				this->m_pAdr[i] = (void *) linadr;
+                iRetCode = map_buffer(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &linadr);
+                this->m_pAdr[i] = (void *) linadr;
 #endif
-				if (iRetCode != 0)
-				{
-					m_pAdr[i] = NULL;
-					retValue = this->PCOChkError(iRetCode);
-				}
+                if (iRetCode != 0)
+                {
+                    m_pAdr[i] = NULL;
+                    retValue = this->PCOChkError(iRetCode);
+                }
 
-			}
-			Sleep(5);
-		}
+            }
+            Sleep(5);
+        }
 
-		for (i = 0; i < BUFFERNUMBER; i++)
-		{
-			if (retValue != ito::retError)
-			{
-				iRetCode = setbuffer_event(this->m_hdriver, this->m_bufnumber[i], &this->m_event[i]);
-				if (iRetCode != 0)
-				{
-					retValue = this->PCOChkError(iRetCode);
-				}
-				valid = GetHandleInformation(this->m_event[i], &handleflag[0]);
-			}
-			Sleep(5);
-		}
+        for (i = 0; i < BUFFERNUMBER; i++)
+        {
+            if (retValue != ito::retError)
+            {
+                iRetCode = setbuffer_event(this->m_hdriver, this->m_bufnumber[i], &this->m_event[i]);
+                if (iRetCode != 0)
+                {
+                    retValue = this->PCOChkError(iRetCode);
+                }
+                valid = GetHandleInformation(this->m_event[i], &handleflag[0]);
+            }
+            Sleep(5);
+        }
 
-		this->m_nextbuf = 0;
-	}
+        this->m_nextbuf = 0;
+    }
 
     return retValue;
 }
@@ -876,7 +876,7 @@ ito::RetVal PCOPixelFly::PCOFreeAllocatedBuffer(void)
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
 
-    \param [in,out] val  is a input of type::tparam containing name, value and further informations
+    \param [in,out] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -925,7 +925,7 @@ ito::RetVal PCOPixelFly::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
 
-    \param [in] val  is a input of type::tparam containing name, value and further informations
+    \param [in] val  is a input of type::tparam containing name, value and further information
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
@@ -1402,12 +1402,12 @@ ito::RetVal PCOPixelFly::close(ItomSharedSemaphore *waitCond)
         goto endclose;
     }
 
-	if (grabberStartedCount() >= 1)
-	{
-		setGrabberStarted(1);
-		retValue += this->stopDevice(0);
-		Sleep(50);
-	}
+    if (grabberStartedCount() >= 1)
+    {
+        setGrabberStarted(1);
+        retValue += this->stopDevice(0);
+        Sleep(50);
+    }
 
     retValue += PCOFreeAllocatedBuffer();
 
@@ -1465,55 +1465,55 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
     DWORD status_v2;
     int result;
 
-	if (grabberStartedCount() == 0)
-	{
+    if (grabberStartedCount() == 0)
+    {
     //check if camera is already started
 #if PCO_DRIVER_V2 == 1
-		if (getboardval)
-		{
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
-			{
-				iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-			}
-			result = PCC_STATUS_CAM_RUN(status_v2);
-		}
-		else
-		{
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
-			{
-				iRetCode = getboardpar(m_hdriver, a, 20);
-			}
-			result = PCC_STATUS_CAM_RUN( (*((dword *)a+1)));
-		}
+        if (getboardval)
+        {
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+            {
+                iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+            }
+            result = PCC_STATUS_CAM_RUN(status_v2);
+        }
+        else
+        {
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+            {
+                iRetCode = getboardpar(m_hdriver, a, 20);
+            }
+            result = PCC_STATUS_CAM_RUN( (*((dword *)a+1)));
+        }
 #else
-		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
-		{
-			iRetCode = getboardpar(m_hdriver, a, 20);
-		}
-		result = PCC_CAM_RUN(a);
+        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+        {
+            iRetCode = getboardpar(m_hdriver, a, 20);
+        }
+        result = PCC_CAM_RUN(a);
 #endif
-		if (iRetCode != 0)
-		{
-			retValue += PCOChkError(iRetCode);
-		}
-		else
-		{
-			//this makro is out of pccamdef.h, where you can find other usefull makros
-			if (!result)
-			{
-				iter = 6;
-				iRetCode = -7;
-				while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-				{
-					iRetCode = start_camera(m_hdriver);
-				}
-				if (iRetCode != 0)
-				{
-					retValue += PCOChkError(iRetCode);
-				}
-			}
-		}
-	}
+        if (iRetCode != 0)
+        {
+            retValue += PCOChkError(iRetCode);
+        }
+        else
+        {
+            //this macro is out of pccamdef.h, where you can find other useful macros
+            if (!result)
+            {
+                iter = 6;
+                iRetCode = -7;
+                while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+                {
+                    iRetCode = start_camera(m_hdriver);
+                }
+                if (iRetCode != 0)
+                {
+                    retValue += PCOChkError(iRetCode);
+                }
+            }
+        }
+    }
 
     if (!retValue.containsError())
     {
@@ -1572,7 +1572,7 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
         }
         else
         {
-            //this makro is out of pccamdef.h, where you can find other useful makros
+            //this macro is out of pccamdef.h, where you can find other useful macros
             if (result) //camera is running, stop it
             {
                 iter = 6;
@@ -1592,20 +1592,20 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
             }
         }
 
-		if (!retValue.containsError())
-		{
-			decGrabberStarted();
-		}
+        if (!retValue.containsError())
+        {
+            decGrabberStarted();
+        }
     }
     else if (grabberStartedCount() <= 0)
     {
         setGrabberStarted(0);
         retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped.").toLatin1().data());
     }
-	else
-	{
-		decGrabberStarted();
-	}
+    else
+    {
+        decGrabberStarted();
+    }
 
     if (waitCond)
     {
@@ -1667,7 +1667,6 @@ ito::RetVal PCOPixelFly::retrieveData(ito::DataObject *externalDataObject)
     int iRetCode = 0;
     int iPicTimeOut = 2;
 
-    long lcopysize = 0;
     long lsrcstrpos = 0;
     int y  = 0;
     int maxxsize = (int)m_params["sizex"].getMax();
@@ -1715,7 +1714,7 @@ ito::RetVal PCOPixelFly::retrieveData(ito::DataObject *externalDataObject)
         this->m_waited[this->m_nextbuf] = 1;
 
         if (retValue != ito::retError)
-        {// Now we shoud have a picture in the camera buffer
+        {// Now we should have a picture in the camera buffer
 
             retValue += this->PCORemoveThisFromListIfError(this->m_bufnumber[this->m_nextbuf]);
 
@@ -1739,7 +1738,7 @@ ito::RetVal PCOPixelFly::retrieveData(ito::DataObject *externalDataObject)
                 case 12:
                     if (curxsize == maxxsize)
                     {
-						lsrcstrpos = y0 * maxxsize;
+                        lsrcstrpos = y0 * maxxsize;
                         if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) (this->m_pAdr[this->m_nextbuf])+lsrcstrpos, maxxsize, curysize);
                         if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) (this->m_pAdr[this->m_nextbuf])+lsrcstrpos, maxxsize, curysize);
                     }

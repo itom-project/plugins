@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 #here you give your project a unique name (replace ThorlabsFF by the desired project name of your plugin)
 set(target_name ThorlabsFF)
 
@@ -18,7 +17,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_KINESIS_DIRECTORY "" CACHE PATH "path to the install directory of Thorlabs Kinesis (e.g. C:/Program Files/Thorlabs/Kinesis for x64)")
 
 if(NOT THORLABS_KINESIS_DIRECTORY)
-	set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
+    set(THORLABS_KINESIS_DIRECTORY $ENV{THORLABS_KINESIS_ROOT})
 endif(NOT THORLABS_KINESIS_DIRECTORY)
 
 set(THORLABS_KINESIS_FF_LIBNAME "Thorlabs.MotionControl.FilterFlipper")
@@ -58,9 +57,9 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     set(PLUGIN_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/ThorlabsFF.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsFF.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -80,8 +79,11 @@ if(THORLABS_KINESIS_FF_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #add all (generated) header and source files to the library (these files are compiled then)
     add_library(${target_name} SHARED

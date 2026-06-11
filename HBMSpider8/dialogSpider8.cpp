@@ -246,7 +246,7 @@ void DialogSpider8::setRanges(const int unit)
         break;
 
         case 6:
-            ui.aiRangeCombo->addItem("1 °C", 70);
+            ui.aiRangeCombo->addItem("1 Â°C", 70);
         break;
     }
 }

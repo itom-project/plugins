@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "SuperlumBS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -59,7 +59,7 @@ void DialogSuperlumBS::parametersChanged(QMap<QString, ito::Param> params)
     if (m_firstRun)
     {
         //use params (identical to m_params of the plugin)
-        //__________________________________________________________________________________________________________ enable Widget, if Master_Key, Remote Interlock ans Remote is 1
+        //__________________________________________________________________________________________________________ enable Widget, if Master_Key, Remote Interlock and Remote is 1
         if (params["master_key"].getVal<int>() && params["remote_interlock"].getVal<int>() && params["local"].getVal<int>())
         {
             enableDialog(true);

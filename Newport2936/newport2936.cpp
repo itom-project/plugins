@@ -43,13 +43,11 @@ For compiling this plugin, you need to install the Newport USB Driver V 4.2.2";
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LPGL, uses Newport USB Driver software and driver (not covered by LPGL)");
+    m_minItomVer = PLUGIN_MIN_ITOM_VERSION;
+    m_maxItomVer = PLUGIN_MAX_ITOM_VERSION;
+    m_license = QObject::tr(PLUGIN_LICENCE);
     m_aboutThis = QObject::tr(GITVERSION);
 
-    //add mandatory and optional parameters for the initialization here.
-    //append them to m_initParamsMand or m_initParamsOpt.
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -88,19 +86,19 @@ Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "Newport2936", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Manufacturer name").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("model_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Model name").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("firmware_version", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware version #").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("firmware_date", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware date (mm/dd/yy)").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Controller serial number").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Manufacturer name").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("model_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Model name").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("firmware_version", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware version #").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("firmware_date", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Firmware date (mm/dd/yy)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Controller serial number").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("channels", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2, 2, tr("Number of channels (single: 1, dual: 2)").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("channels", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2, 2, tr("Number of channels (single: 1, dual: 2)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("wavelengthA", ito::ParamBase::Int | ito::ParamBase::In, NULL, tr("Wavelength [nm] for channel A").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -113,10 +111,10 @@ Newport2936::Newport2936() : AddInGrabber(), m_isgrabbing(false), m_faileIdx(0)
     paramVal = ito::Param("filterTypeB", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 3, tr("Filter type of channel B: (0) no filtering, (1) analog filter, (2) digital filter, (3) analog and digital filter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("wavelengthB", ito::ParamBase::Int | ito::ParamBase::In, NULL, tr("Wavelength [nm] for channel B").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("attenuatorB", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr("Attenuator enabled (1) or disabled (0) for channel B").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wavelengthB", ito::ParamBase::Int | ito::ParamBase::In, NULL, tr("Wavelength [nm] for channel B").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("attenuatorB", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0, 1), tr("Attenuator enabled (1) or disabled (0) for channel B").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offsetValueB", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, tr("Offset for zero value channel 2 [W]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -189,92 +187,92 @@ ito::RetVal Newport2936::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
 
 
-	if (deviceFound != 0) {
+    if (deviceFound != 0) {
 
-		retValue += ito::RetVal(ito::retError, 0, tr("No devices found.").toLatin1().data());
-	}
+        retValue += ito::RetVal(ito::retError, 0, tr("No devices found.").toLatin1().data());
+    }
 
-	if (!retValue.containsError())
-	{
+    if (!retValue.containsError())
+    {
 
-		newp_usb_get_device_info(strBuf);
+        newp_usb_get_device_info(strBuf);
 
-		char szDelimiters[] = ",;";
-		char* pToken = strtok(strBuf, szDelimiters);
-		int cnt = 0;
+        char szDelimiters[] = ",;";
+        char* pToken = strtok(strBuf, szDelimiters);
+        int cnt = 0;
 
 
-		// get device ID and its name from info buffer
-		while (pToken != NULL)
-		{
+        // get device ID and its name from info buffer
+        while (pToken != NULL)
+        {
 
-			cnt++;
+            cnt++;
 
-			if (cnt % 2 == 1) {
+            if (cnt % 2 == 1) {
 
                 retValue += charToInt(pToken, devID);
 
-			}
-			else
-			{
+            }
+            else
+            {
 
-				QString devName = pToken;
+                QString devName = pToken;
 
-				char* pTokenNew = strtok(pToken, " ");
+                char* pTokenNew = strtok(pToken, " ");
 
-				m_params["manufacturer_name"].setVal<char*>(pTokenNew);
-				pTokenNew = strtok(NULL, " ");
-				m_params["model_name"].setVal<char*>(pTokenNew);
-				pTokenNew = strtok(NULL, " ");
-				m_params["firmware_version"].setVal<char*>(pTokenNew);
-				pTokenNew = strtok(NULL, " ");
-				m_params["firmware_date"].setVal<char*>(pTokenNew);
-				pTokenNew = strtok(NULL, " \r");
-				m_params["serial_number"].setVal<char*>(pTokenNew);
+                m_params["manufacturer_name"].setVal<char*>(pTokenNew);
+                pTokenNew = strtok(NULL, " ");
+                m_params["model_name"].setVal<char*>(pTokenNew);
+                pTokenNew = strtok(NULL, " ");
+                m_params["firmware_version"].setVal<char*>(pTokenNew);
+                pTokenNew = strtok(NULL, " ");
+                m_params["firmware_date"].setVal<char*>(pTokenNew);
+                pTokenNew = strtok(NULL, " \r");
+                m_params["serial_number"].setVal<char*>(pTokenNew);
                 m_identifier = QString("%1 (SN:%2)").arg(m_params["model_name"].getVal<char*>()).arg(pTokenNew);
                 setIdentifier(m_identifier);
-			}
+            }
 
-			pToken = strtok(NULL, szDelimiters);
-		}
+            pToken = strtok(NULL, szDelimiters);
+        }
 
-	}
+    }
 
-	// Check number of channels
-	if (!retValue.containsError())
-	{
-		retValue += sendCommand(devID, "PM:CHAN 2");
-		char rBuffer[64];
-		retValue += sendCommand(devID, "PM:ERRors?");
-		retValue += readResponse(devID, rBuffer,64);
+    // Check number of channels
+    if (!retValue.containsError())
+    {
+        retValue += sendCommand(devID, "PM:CHAN 2");
+        char rBuffer[64];
+        retValue += sendCommand(devID, "PM:ERRors?");
+        retValue += readResponse(devID, rBuffer,64);
         int channel = 0;
         retValue += charToInt(rBuffer, channel);
-		if (!channel)
-		{
-			retValue += sendCommand(devID, "PM:CHAN 1");
-			retValue += m_params["channels"].setVal<int>(2);
+        if (!channel)
+        {
+            retValue += sendCommand(devID, "PM:CHAN 1");
+            retValue += m_params["channels"].setVal<int>(2);
 
 
-			retValue += checkData();
-		}
-		else
-		{
-			retValue += sendCommand(devID, "PM:CHAN 1");
-			retValue += m_params["channels"].setVal<int>(1);
+            retValue += checkData();
+        }
+        else
+        {
+            retValue += sendCommand(devID, "PM:CHAN 1");
+            retValue += m_params["channels"].setVal<int>(1);
             m_params["wavelengthB"].setFlags(ito::ParamBase::Readonly);
             m_params["filterTypeB"].setFlags(ito::ParamBase::Readonly);
             m_params["attenuatorB"].setFlags(ito::ParamBase::Readonly);
             m_params["offsetValueB"].setFlags(ito::ParamBase::Readonly);
 
-			retValue += checkData();
-		}
+            retValue += checkData();
+        }
 
-	}
+    }
 
-	if (!retValue.containsError())
-	{
-		retValue += synchronizeParams(bAll);
-	}
+    if (!retValue.containsError())
+    {
+        retValue += synchronizeParams(bAll);
+    }
 
     //steps todo:
     // - get all initialization parameters
@@ -316,10 +314,10 @@ ito::RetVal Newport2936::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-	newp_usb_uninit_system();
+    newp_usb_uninit_system();
 
 
-	newp_usb_uninit_system();
+    newp_usb_uninit_system();
 
     if (waitCond)
     {
@@ -534,7 +532,7 @@ ito::RetVal Newport2936::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 ito::RetVal Newport2936::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("startDevice not necessary.").toLatin1().data());
+    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("startDevice not necessary.").toLatin1().data());
 
     if (waitCond)
     {
@@ -548,7 +546,7 @@ ito::RetVal Newport2936::startDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal Newport2936::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("stopDevice not necessary.").toLatin1().data());
+    ito::RetVal retValue = ito::RetVal(ito::retWarning, 0, tr("stopDevice not necessary.").toLatin1().data());
 
     if (waitCond)
     {
@@ -564,20 +562,20 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-	char rBuffer[128];
-	retValue += sendCommand(devID, "PM:PWS?");
-	retValue += readResponse(devID, rBuffer,128);
+    char rBuffer[128];
+    retValue += sendCommand(devID, "PM:PWS?");
+    retValue += readResponse(devID, rBuffer,128);
 
-	char* pToken = strtok(rBuffer, " \r");
-	int cnt = 0;
+    char* pToken = strtok(rBuffer, " \r");
+    int cnt = 0;
 
-	if(!retValue.containsError())
-	{
-		while (pToken != NULL)
-		{
+    if(!retValue.containsError())
+    {
+        while (pToken != NULL)
+        {
 
-			if (cnt % 2 == 0)
-			{
+            if (cnt % 2 == 0)
+            {
                 if (m_params["channels"].getVal<int>() >= cnt)
                 {
                     double val;
@@ -587,18 +585,18 @@ ito::RetVal Newport2936::acquire(const int trigger, ItomSharedSemaphore *waitCon
                         m_data.at<ito::float64>(0, cnt / 2) = val;
                     }
                 }
-			}
+            }
 
-			pToken = strtok(NULL, " \r");
-			cnt++;
-		}
-	}
+            pToken = strtok(NULL, " \r");
+            cnt++;
+        }
+    }
 
-	if (!retValue.containsError())
-	{
-		m_isgrabbing = true;
-		m_data.setValueUnit("W");
-	}
+    if (!retValue.containsError())
+    {
+        m_isgrabbing = true;
+        m_data.setValueUnit("W");
+    }
 
 
 
@@ -634,88 +632,88 @@ ito::RetVal Newport2936::retrieveData(ito::DataObject *externalDataObject)
     //enhance it and adjust it for your needs
     ito::RetVal retValue(ito::retOk);
 
-	if (m_isgrabbing == false)
-	{
-		retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get data without acquisition.").toLatin1().data());
-		return retValue;
-	}
+    if (m_isgrabbing == false)
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get data without acquisition.").toLatin1().data());
+        return retValue;
+    }
 
-	m_isgrabbing = false;
+    m_isgrabbing = false;
 
-	if (externalDataObject == NULL)
-	{
-		return retValue;
-	}
-	else
-	{
-		retValue += checkData(externalDataObject);
+    if (externalDataObject == NULL)
+    {
+        return retValue;
+    }
+    else
+    {
+        retValue += checkData(externalDataObject);
 
-		if (!retValue.containsError())
-		{
-			retValue += m_data.deepCopyPartial(*externalDataObject);
-		}
-	}
+        if (!retValue.containsError())
+        {
+            retValue += m_data.deepCopyPartial(*externalDataObject);
+        }
+    }
 
-	return retValue;
+    return retValue;
 
 }
 
 ito::RetVal Newport2936::sendCommand(long DeviceID, const char* commandBuffer)
 {
-	ito::RetVal retValue(ito::retOk);
-	char szBuffer[64];
-	unsigned long commandLength = (unsigned long)strlen(commandBuffer) + 1;
+    ito::RetVal retValue(ito::retOk);
+    char szBuffer[64];
+    unsigned long commandLength = (unsigned long)strlen(commandBuffer) + 1;
 
-	strncpy(szBuffer, commandBuffer, commandLength);
+    strncpy(szBuffer, commandBuffer, commandLength);
 
-	try
-	{
-		newp_usb_send_ascii(DeviceID, szBuffer, commandLength);
-	}
-	catch (...)
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("Failed to send command.").toLatin1().data());
-	}
+    try
+    {
+        newp_usb_send_ascii(DeviceID, szBuffer, commandLength);
+    }
+    catch (...)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("Failed to send command.").toLatin1().data());
+    }
 
-	return retValue;
+    return retValue;
 }
 
 ito::RetVal Newport2936::readResponse(long DeviceID, char* responseBuffer, const unsigned long& length)
 {
-	ito::RetVal retValue(ito::retOk);
-	unsigned long lBytesRead = 0;
-	//unsigned long responseLength = (unsigned long)strlen(responseBuffer) + 1;
+    ito::RetVal retValue(ito::retOk);
+    unsigned long lBytesRead = 0;
+    //unsigned long responseLength = (unsigned long)strlen(responseBuffer) + 1;
 
-	try
-	{
-		newp_usb_get_ascii( DeviceID, responseBuffer, length, &lBytesRead);
-		int i = lBytesRead;
+    try
+    {
+        newp_usb_get_ascii( DeviceID, responseBuffer, length, &lBytesRead);
+        int i = lBytesRead;
 
-		while (--i >= 0)
-		{
-			if (responseBuffer[i] == '\n')
-			{
-				if (responseBuffer[i - 1] == '\r')
-				{
-					i--;
-				}
+        while (--i >= 0)
+        {
+            if (responseBuffer[i] == '\n')
+            {
+                if (responseBuffer[i - 1] == '\r')
+                {
+                    i--;
+                }
 
-				lBytesRead = i;
+                lBytesRead = i;
 
-				responseBuffer[i] = '\0';
-				break;
+                responseBuffer[i] = '\0';
+                break;
 
-			}
+            }
 
-		}
+        }
 
-	}
-	catch (...)
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("Failed to read response.").toLatin1().data());
-	}
+    }
+    catch (...)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("Failed to read response.").toLatin1().data());
+    }
 
-	return retValue;
+    return retValue;
 }
 
 ito::RetVal Newport2936::synchronizeParams(int what)
@@ -889,7 +887,7 @@ ito::RetVal Newport2936::synchronizeParams(int what)
 
     }
 
-	return retValue;
+    return retValue;
 
 }
 
@@ -909,46 +907,46 @@ ito::RetVal Newport2936::synchronizeParams(int what)
 ito::RetVal Newport2936::checkData(ito::DataObject *externalDataObject)
 {
 
-	int futureHeight = 1;
-	int futureWidth;
-	int futureType = ito::tFloat64;
-	ito::RetVal retval;
+    int futureHeight = 1;
+    int futureWidth;
+    int futureType = ito::tFloat64;
+    ito::RetVal retval;
 
-	if (m_params["channels"].getVal<int>() == 2)
-	{
-		futureWidth = 2;
-	}
-	else
-	{
-		futureWidth = 1;
-	}
+    if (m_params["channels"].getVal<int>() == 2)
+    {
+        futureWidth = 2;
+    }
+    else
+    {
+        futureWidth = 1;
+    }
 
 
-	if (externalDataObject == NULL)
-	{
-		if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
-		{
-			m_data = ito::DataObject(futureHeight, futureWidth, futureType);
-		}
-	}
-	else
-	{
-		int dims = externalDataObject->getDims();
-		if (externalDataObject->getDims() == 0)
-		{
-			*externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
-		}
-		else if (externalDataObject->calcNumMats() != 1)
-		{
-			return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());
-		}
-		else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
-		{
-			return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
-		}
-	}
+    if (externalDataObject == NULL)
+    {
+        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0)
+        {
+            *externalDataObject = ito::DataObject(futureHeight, futureWidth, futureType);
+        }
+        else if (externalDataObject->calcNumMats() != 1)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.").toLatin1().data());
+        }
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
+        }
+    }
 
-	return retval;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1069,7 +1067,7 @@ ito::RetVal Newport2936::zeroDeviceTo(double val, int channel,ItomSharedSemaphor
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method called to aqcuire and get a image
+//! method called to acquire and get a image
 /*!
 This method is invoked from the dock widget to get a value in the autograbbing mode.
 \param [in,out] QSharedPointer to return the measured value.
@@ -1150,7 +1148,7 @@ void Newport2936::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.

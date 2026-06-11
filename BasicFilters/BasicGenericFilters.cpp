@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -27,7 +27,7 @@
 \date 12.2013
 */
 
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
 
 #include "BasicFilters.h"
@@ -45,7 +45,7 @@
 //-----------------------------------------------------------------------------------------------
 /*! \fn Get
 \brief   This function copies a part of the cv:Mat plane to buf according to filterparameters
-\detail  This function copies data from an integer type cv::Mat to the int32-buffer buf. The number of elements to copie depends line size and the kernelsize.
+\detail  This function copies data from an integer type cv::Mat to the int32-buffer buf. The number of elements to copy depends line size and the kernelsize.
 After the copy procedure, the data is checked for invalids and if invalid are found, they are exchanged by the last valid value.
 \param[in]   plane     Inputdataplane
 \param[in]   x0  Startvalue of copyprocedure
@@ -364,7 +364,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for most of the genericfilter blocks to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
-\param[out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   paramsOpt   Optional parameters for the filter function
 \author ITO
 \sa  BasicFilters::genericLowPassFilter,
 \date
@@ -401,7 +401,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     if (!m_initialized)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initilization of all buffers").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initialization of all buffers").toLatin1().data());
     }
 
     if ((m_kernelSizeX == 0) || (m_kernelSizeY == 0) || (m_kernelSizeX >  m_dx) || (m_kernelSizeY >  m_dy))
@@ -534,7 +534,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! LowValueFilter
 * \brief   This function calculated the Lowfilter
-* \detail  The function calulates the LowFilter-function
+* \detail  The function calculates the LowFilter-function
 *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
 *          The actual work is done in the runFilter method.
 *
@@ -683,7 +683,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! HighValueFilter
  * \brief   This function calculated the Highfilter
- * \detail  The function calulates the HighFilter-function
+ * \detail  The function calculates the HighFilter-function
  *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
  *          The actual work is done in the runFilter method.
  *
@@ -830,7 +830,7 @@ template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 /*!
 \detail This function use the generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -1183,7 +1183,7 @@ ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *params
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \class MedianFilter
  * \brief   This class filters an input-image median
- * \detail  The class calulates the MedianFilter-function
+ * \detail  The class calculates the MedianFilter-function
  *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
  *          The actual work is done in the runFilter method.
  *
@@ -1287,7 +1287,7 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 //-----------------------------------------------------------------------------------------------
 /* ! MedianFilter
 *   \brief   This function calculats a medianfiltered image from data input
-*   \detail  The function calulates the lowpassfilter-function
+*   \detail  The function calculates the lowpassfilter-function
 *            for the data specified in cv::mat planeIn in the dogenericfilter-function.
 *
 *   \param   GenericFilter   Handle to the filter engine
@@ -1427,7 +1427,7 @@ and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -1722,7 +1722,7 @@ template<typename _Tp> /*ito::RetVal*/ void SobelOptFilter<_Tp>::filterFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for optimized Sobel filter.
 \param[out]   paramsMand  Mandatory parameters for the filter function
-\param[out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   paramsOpt   Optional parameters for the filter function
 \author ITO
 \sa  BasicFilters::genericLowPassFilter,
 \date
@@ -1747,9 +1747,9 @@ ito::RetVal BasicFilters::genericSobelOptParams(QVector<ito::Param> *paramsMand,
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-\detail This function uses the generic filter engine to run the optimized Sobel filter (s. J�hne Digitale Bildverarbeitung)
+\detail This function uses the generic filter engine to run the optimized Sobel filter (s. Jähne Digitale Bildverarbeitung)
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -2081,7 +2081,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -2666,7 +2666,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for most of the genericfilter blocks to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
-\param[out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   paramsOpt   Optional parameters for the filter function
 \author ITO
 \sa  BasicFilters::genericLowPassFilter,
 \date
@@ -2716,7 +2716,7 @@ and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -2918,7 +2918,7 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the standard parameters for most of the genericfilter blocks to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
-\param[out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   paramsOpt   Optional parameters for the filter function
 \author ITO
 \sa  BasicFilters::genericLowPassFilter,
 \date
@@ -2960,7 +2960,7 @@ with \n\
 \n\
 A = 1 / (2 * pi * sigmaX * sigmaY)) \n\
 \n\
-The size of the kernel is adjusted such that the limit values in x- and y-direction fullfill the following inequation: \n\
+The size of the kernel is adjusted such that the limit values in x- and y-direction fulfill the following inequation: \n\
 \n\
 f(x,y=0) = exp(-[(x-x0)^2/(2*sigmaX^2)]) / sqrt(2 * pi * sigmaX^2) >= epsilonX \n\
 f(x=0,y) = exp(-[(y-y0)^2/(2*sigmaY^2)]) / sqrt(2 * pi * sigmaY^2) >= epsilonY \n\
@@ -2975,7 +2975,7 @@ and type than the input image");
 /*!
 \detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -3167,7 +3167,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function gives the parameters for the spike filter to the addin-interface.
 \param[out]   paramsMand  Mandatory parameters for the filter function
-\param[out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   paramsOpt   Optional parameters for the filter function
 \author ITO
 \sa  BasicFilters::genericLowPassFilter,
 \date
@@ -3315,7 +3315,7 @@ This filter also works inplace (same source and destination).");
 /*!
 \detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO
@@ -3338,7 +3338,7 @@ This filter also works inplace (same source and destination).");
 /*!
 \detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
-\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[in|out]   paramsOpt   Optional parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
 \param[in]   lowHigh  Flag which toggles low or high filter
 \author ITO

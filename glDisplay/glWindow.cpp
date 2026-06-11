@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "GLDisplay" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -34,7 +34,7 @@
 #include "common/retVal.h"
 
 #include "glWindow.h"
-#define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
+#define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 #include "math.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@
 //! fragment and vertex shaders for gl v2 and gl v3
 //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
 //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a
-//! gamma correction can be applied using a simple lookup vektor (lutarr)
+//! gamma correction can be applied using a simple lookup vector (lutarr)
 const char *VERTEX_SHADER = "#version 130\n\
 \
 uniform mat4 MVP; \

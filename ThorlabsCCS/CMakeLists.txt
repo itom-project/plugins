@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name ThorlabsCCS)
 
 message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
@@ -21,7 +20,7 @@ endif(NOT EXISTS ${ITOM_SDK_DIR})
 set(THORLABS_IVI_VISA_SDK "" CACHE PATH "base path to the sdk of IVI Foundation, VISA (e.g. folder C:/Program Files/IVI Foundation/VISA/Win64 or C:/Program Files (x86)/IVI Foundation/VISA/WinNT, having subfolders include, lib, lib_x64...)")
 
 if(NOT THORLABS_IVI_VISA_SDK)
-	set(THORLABS_IVI_VISA_SDK $ENV{NI_VISA_ROOT})
+    set(THORLABS_IVI_VISA_SDK $ENV{NI_VISA_ROOT})
 endif(NOT THORLABS_IVI_VISA_SDK)
 
 find_path(THORLABS_IVI_VISA_INCLUDE_DIR "TLCCS.h" PATHS "${THORLABS_IVI_VISA_SDK}" PATH_SUFFIXES "include")
@@ -74,9 +73,9 @@ if(THORLABS_IVI_VISA_LIBRARIES)
         ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsCCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsCCS.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsCCS.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -98,8 +97,11 @@ if(THORLABS_IVI_VISA_LIBRARIES)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 

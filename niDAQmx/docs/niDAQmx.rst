@@ -40,7 +40,7 @@ The major part of this driver is usually installed under **C:/Program Files/Nati
 **C:/Windows/System32**, where they are found from the itom plugin.
 
 If you choose a different installation folder but the defaulft, please set the **NIDAQMX_ROOT**
-environment variable to the equivivalent "C:/Program Files (x86)/National Instruments"
+environment variable to the equivalent "C:/Program Files (x86)/National Instruments"
 folder.
 
 Please be aware that multiple driver versions exists, some of which lead to linker errors
@@ -49,7 +49,7 @@ during the build process. For the latest build the binary and header files at
 
 If you also want to compile the plugin, make sure that you enable the option
 **Applications Development Supports / ANSI C Support** in the installer. This can also be done
-by modifying the installation using the tab **Progam and Features** in the Windows Control Panel
+by modifying the installation using the tab **Program and Features** in the Windows Control Panel
 (see https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z000000P9udSAC ).
 
 The itom **niDAQmx** plugin has mainly been developed and tested using **NI-DAQmx 18.06.0**.
@@ -305,7 +305,7 @@ operation restarts at the first column once the last column of the dataObject ha
 
 For **finite output tasks**, it is possible to block the call of **setVal** until all samples have been
 written by setting **setValWaitForFinish** to 1. Else **setVal** will return immediately. The end of the task
-can then be continously checked by getting the parameter **taskStarted** and check if it drops to 0 again.
+can then be continuously checked by getting the parameter **taskStarted** and check if it drops to 0 again.
 
 Continuous output tasks will continuously write the columns and restart from the beginning until the task
 will be stopped via **stop**.
@@ -316,9 +316,9 @@ Reference Trigger
 The reference trigger can be configured in order to stop a task upon a certain trigger signal. This
 reference trigger can only be applied to finite input tasks. Although the parameter **refTriggerMode** can
 only be set to something else than **off** for finite input tasks, such a task will then behave like a continuous
-input task. That means, that the task will be started via **acquire** and data will be continously recorded
+input task. That means, that the task will be started via **acquire** and data will be continuously recorded
 until the stop trigger condition is fulfilled (or the internal buffer overflows). To avoid the latter, it is
-again necessary to continously get intermediate data via **getVal** / **copyVal** or enable a fast TDMS logging.
+again necessary to continuously get intermediate data via **getVal** / **copyVal** or enable a fast TDMS logging.
 
 The reference trigger listens to either a falling or raising edge of a digital line, or when an analog trigger
 input jumps over (or below) a certain threshold value. However the task is only stopped if three different conditions
@@ -590,7 +590,7 @@ Analog Input Tasks
     integrating different devices into the same measurement
     task or not. Many devices do not allow this.
 
-    Data from a continuous task can be obtained by regularily
+    Data from a continuous task can be obtained by regularly
     calling getVal / copyVal or by enabling the TDMS file logging
     technique.
 
@@ -696,7 +696,7 @@ Analog Input Tasks
     #    during a running task will be written into the TDMS file. It is
     #    also possible to get the values to python during logging (depending
     #    on the configuration). However, it is not necessary to continuously
-    #    getVal/copyVal values in order to not raise a timeout / unsufficient
+    #    getVal/copyVal values in order to not raise a timeout / insufficient
     #    buffer size error.
     #
     #    The logging is enabled via the parameters 'loggingMode',
@@ -866,7 +866,7 @@ Analog Input Tasks
 
     The stop trigger is given by a so called reference trigger. This
     can only be enabled for finite, input tasks. However, such a trigger
-    will implicitely let the finite task behave like a continuous task.
+    will implicitly let the finite task behave like a continuous task.
     This means, that you have to continuously retrieve the newest data using
     'getVal' or 'copyVal' such that the internal buffer does not overflow.
     The stop event for the task is defined by three conditions, that have
@@ -994,7 +994,7 @@ Analog Input Tasks
     integrating different devices into the same measurement
     task or not. Many devices do not allow this.
 
-    Data from a continuous task can be obtained by regularily
+    Data from a continuous task can be obtained by regularly
     calling getVal / copyVal or by enabling the TDMS file logging
     technique.
 
@@ -1092,7 +1092,7 @@ Analog Input Tasks
 
 
     # Step 2: choose another logging type. Usually it is recommended to
-    # stop the device before chaning the logging modes. However,
+    # stop the device before changing the logging modes. However,
     # it the device is still started if the logging parameters
     # will be changed, it will automatically be stopped and restarted
     # again.
@@ -1584,7 +1584,7 @@ Digital Input Tasks
     in the scripts demo_di_finite.py and demo_ai_continuous.py. Together, they are
     very similar to this script.
 
-    Data from a continuous task can be obtained by regularily
+    Data from a continuous task can be obtained by regularly
     calling getVal / copyVal or by enabling the TDMS file logging
     technique.
 
@@ -1633,7 +1633,7 @@ Digital Input Tasks
     #    during a running task will be written into the TDMS file. It is
     #    also possible to get the values to python during logging (depending
     #    on the configuration). However, it is not necessary to continuously
-    #    getVal/copyVal values in order to not raise a timeout / unsufficient
+    #    getVal/copyVal values in order to not raise a timeout / insufficient
     #    buffer size error.
     #
     #    The logging is enabled via the parameters 'loggingMode',
@@ -2172,4 +2172,4 @@ Changelog
 * itom setup 4.0.0: Complete renewed plugin implementation. This plugin is incompatible to earlier version of
   this plugin and provides much more features. It has been compiled using NI-DAQmx 19.6.0 (Windows)
 * itom setup 4.1.0: This plugin has been compiled using the NI-DAQmx 19.6.0 (Windows)
-* itom setup 4.3.0: This plugin has been compiled using the NI-DAQmx 22.5.0 (Windows)
+* itom setup 4.3.0: This plugin has been compiled using the NI-DAQmx 2024 Q1 (Windows)

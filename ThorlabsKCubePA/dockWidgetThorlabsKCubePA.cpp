@@ -32,10 +32,10 @@ DockWidgetThorlabsKCubePA::DockWidgetThorlabsKCubePA(ito::AddInDataIO *grabber) 
 
     QPointer<ito::AddInBase> plugin(grabber);
 
-	if (ui.editorWidget->property("collapsed").isValid())
-	{
-		ui.editorWidget->setProperty("collapsed", true);
-	}
+    if (ui.editorWidget->property("collapsed").isValid())
+    {
+        ui.editorWidget->setProperty("collapsed", true);
+    }
 
     ui.editorWidget->setPlugin(plugin);
 }

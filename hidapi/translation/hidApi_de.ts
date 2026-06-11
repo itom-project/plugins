@@ -315,11 +315,6 @@ Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die
 <context>
     <name>QObject</name>
     <message>
-        <location line="-10"/>
-        <source>licensed under LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
         <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>
     </message>
@@ -328,7 +323,7 @@ Die setVal- und getVal-Funktionen lesen und schreiben über die Konsole oder die
         <translation type="obsolete">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <source>Optinal paramers are NULL</source>
+        <source>Optional paramers are NULL</source>
         <translation type="obsolete">Optionaler Parameter ist NULL</translation>
     </message>
 </context>

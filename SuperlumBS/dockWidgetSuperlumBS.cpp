@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "SuperlumBS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -52,7 +52,7 @@ DockWidgetSuperlumBS::DockWidgetSuperlumBS(int uniqueID, ito::AddInBase *actuato
         ui.label_COM_Port->setText(QString::number(params["comPort"].getVal<int>()));
         ui.label_device_name->setText(QString((params)["name"].getVal<char*>()));
 
-        //__________________________________________________________________________________________________________ enable Widget, if Master_Key, Remote Interlock ans Remote is 1
+        //__________________________________________________________________________________________________________ enable Widget, if Master_Key, Remote Interlock and Remote is 1
         if (params["master_key"].getVal<int>() && params["remote_interlock"].getVal<int>() && params["local"].getVal<int>())
         {
             enableWidget(true);

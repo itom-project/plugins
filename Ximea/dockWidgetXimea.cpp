@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2018, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2018, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -28,8 +28,8 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetXimea::DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber) :
     AbstractAddInDockWidget(grabber),
-	m_inEditing(false),
-	m_firstRun(true)
+    m_inEditing(false),
+    m_firstRun(true)
 {
      ui.setupUi(this);
      identifierChanged(QString::number(uniqueID));
@@ -45,10 +45,10 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
     ui.sliderWidget_integrationtime->setVisible( !(params["integration_time"].getFlags() & ito::ParamBase::Readonly ));
     if (m_firstRun)
     {
-		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
-		ui.label_serial->setText(params["serial_number"].getVal<char*>());
-		ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
-		ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
+        ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
+        ui.label_serial->setText(params["serial_number"].getVal<char*>());
+        ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
+        ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
 
         if (params["bpp"].getVal<int>() == 32)
         {
@@ -119,7 +119,7 @@ void DockWidgetXimea::on_sliderWidget_integrationtime_valueChanged(double value)
     if (!m_inEditing)
     {
         m_inEditing = true;
-		value = value/1000;
+        value = value/1000;
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
@@ -129,8 +129,8 @@ void DockWidgetXimea::on_sliderWidget_integrationtime_valueChanged(double value)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetXimea::enableWidget(bool enabled)
 {
-	ui.sliderWidget_gain->setEnabled(enabled);
-	ui.sliderWidget_integrationtime->setEnabled(enabled);
+    ui.sliderWidget_gain->setEnabled(enabled);
+    ui.sliderWidget_integrationtime->setEnabled(enabled);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

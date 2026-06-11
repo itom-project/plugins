@@ -4,7 +4,7 @@
 <context>
     <name>BasicGPLFilters</name>
     <message>
-        <location filename="../BasicGPLFilters.cpp" line="+206"/>
+        <location filename="../BasicGPLFilters.cpp" line="+207"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-360"/>
+        <location line="-361"/>
         <source>filter-functions for dateObjects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -73,11 +73,6 @@
 * despeckle via histogramm and median derived from the GIMP 2.8 despeckle-filter by Michael Sweet
 
 This plugin does not have any unusual dependencies.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>GPL 3.0</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

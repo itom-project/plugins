@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8...3.24)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 set(target_name HBMSpider8) #->replace PCI6115 by the name of your plugin (one word)
 
@@ -48,11 +48,11 @@ ENDIF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h)
 
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
-	${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-	${OpenCV_DIR}/include       #include directory of OpenCV
-	${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
-	${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
+    ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
+    ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
+    ${OpenCV_DIR}/include       #include directory of OpenCV
+    ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended)
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
 )
 
 
@@ -60,28 +60,31 @@ set(PLUGIN_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/Spider8.h
 	${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.h
 	${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.h
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
 )
 
 set(PLUGIN_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/Spider8.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Spider8.cpp
 )
 
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+
 if(MSVC)
-	list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    list(APPEND PLUGIN_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 set(PLUGIN_UI
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.ui
-	${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogSpider8.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockSpider8.ui
 )
 
 set(PLUGIN_RCC
-	#add absolute pathes to any *.qrc resource files here
-	${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
+    #add absolute paths to any *.qrc resource files here
+    ${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
 )
 
 

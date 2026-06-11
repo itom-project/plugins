@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 project(libgphoto2_camlibs)
 
 option(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)

@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name ThorlabsPowerMeter)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
@@ -85,10 +84,10 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/thorlabsPowerMeter.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogThorlabsPowerMeter.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetThorlabsPowerMeter.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h
         #${CMAKE_CURRENT_SOURCE_DIR}/PM100source.h
-        #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+        #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
     )
 
     set(PLUGIN_SOURCES
@@ -109,8 +108,11 @@ if(THORLABS_PM100D_VISA_INCLUDE_DIR)
     )
 
     set(PLUGIN_RCC
-        #add absolute pathes to any *.qrc resource files here
+        #add absolute paths to any *.qrc resource files here
     )
+
+    #Define Version in pluginVersion.h
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
     #add all (generated) header and source files to the library (these files are compiled then)
     add_library(${target_name} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})

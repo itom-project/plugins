@@ -29,3 +29,9 @@ Detailed overview about all defined filters:
 
 .. pluginfilterlist::
     :plugin: FittingFilters
+
+
+Changelog
+==========
+
+* itom setup 1.2.0: Release
