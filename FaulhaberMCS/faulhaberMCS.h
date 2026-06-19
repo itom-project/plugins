@@ -146,6 +146,7 @@ private:
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
     const Register windingTemperature_register = {0x2326, 0x03};
+    const Register peakCurrent_register = {0x2329, 0x02};
     const Register loadInertia_register = {0x2329, 0x0A};
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
@@ -185,6 +186,7 @@ private:
     const Register velocityDeviationTime_register = {0x2344, 0x04};
     const Register velocityWarningThreshold_register = {0x2344, 0x05};
     const Register velocityIntegralPartOption = {0x2344, 0x06};
+
     // todo INTEGRAL PART OPTION
     // TODO UPDATE DOCS
 
@@ -374,35 +376,50 @@ private:
     ito::RetVal getCPUTemperature(ito::int16& temp);
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
     ito::RetVal getWindingTemperature(ito::int16& temp);
+
+    ito::RetVal getPeakCurrent(ito::uint16& current);
+    ito::RetVal setPeakCurrent(const ito::uint16& current);
+
     ito::RetVal getLoadInertia(ito::uint32& inertia);
     ito::RetVal setLoadInertia(const ito::uint32& inertia);
 
     // MOTION
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);
+
     ito::RetVal setPosAbsMCS(const ito::int32& pos);
     ito::RetVal setPosRelMCS(const ito::int32& pos);
+
     ito::RetVal getVelocityMCS(ito::int32& pos);
     ito::RetVal setVelocityMCS(const ito::int32& pos);
+
     ito::RetVal getTargetVelocityMCS(ito::int32& pos);
     ito::RetVal getTorqueMCS(ito::int16& torque);
-    ito::RetVal setTorqueMCS(const ito::int16 torque);
-    ito::RetVal getTargetTorqueMCS(ito::int16& torque);
+
+    ito::RetVal getTargetTorque(ito::int16& torque);
+    ito::RetVal setTargetTorque(const ito::int16 torque);
+
     ito::RetVal getVoltageMCS(ito::int16& current);
     ito::RetVal setVoltageMCS(ito::int16& current);
+    ito::RetVal getVelocityActualValueMCS(ito::int32& velocity);
 
     ito::RetVal getMotionProfileType(ito::int16& type);
     ito::RetVal setMotionProfileType(const ito::int16& type);
 
     // VOLTAGE MONITOR
     ito::RetVal getDeviceSupplyLowerThreshold(ito::uint16& voltage);
+
     ito::RetVal getMotorSupplyLowerThreshold(ito::uint16& voltage);
     ito::RetVal setMotorSupplyLowerThreshold(const ito::uint16& voltage);
+
     ito::RetVal getMotorSupplyMaxThreshold(ito::uint16& voltage);
+
     ito::RetVal getMotorSupplyUpperThreshold(ito::uint16& voltage);
     ito::RetVal setMotorSupplyUpperThreshold(const ito::uint16& voltage);
+
     ito::RetVal getVoltageErrorDelayTime(ito::uint16& time);
     ito::RetVal setVoltageErrorDelayTime(const ito::uint16& time);
+
     ito::RetVal getDeviceSupplyVoltage(ito::uint16& voltage);
     ito::RetVal getMotorSupplyVoltage(ito::uint16& voltage);
 

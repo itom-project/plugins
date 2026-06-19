@@ -388,6 +388,18 @@ FaulhaberMCS::FaulhaberMCS() :
         "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("peakCurrent", ito::ParamBase::Int,
+        0,
+        tr("Peak current in relative scaling. Register '%1'.")
+            .arg(convertHexToString(peakCurrent_register))
+            .toUtf8().data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::int16>::min(),
+        std::numeric_limits<ito::int16>::max(),
+        1,
+        "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param(
         "loadInertia",
         ito::ParamBase::Double,
@@ -782,6 +794,16 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("targetTorque",
+        ito::ParamBase::Int,
+        0,
+        tr("Set-point of the torque in relative scaling. Register '%1'.")
+            .arg(convertHexToString(torqueTargetValue_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(std::numeric_limits<ito::int16>::min(), std::numeric_limits<ito::int16>::max(), 1, "Motion control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     int softwareLimits[] = {
         std::numeric_limits<ito::int32>::min(), std::numeric_limits<ito::int32>::max()};
     paramVal = ito::Param(
@@ -811,6 +833,16 @@ FaulhaberMCS::FaulhaberMCS() :
             .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Motion control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("velocityActualValue",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Actual velocity in 1/min. Register '%1'.")
+            .arg(convertHexToString(velocityActualValue_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(std::numeric_limits<ito::int32>::min(), std::numeric_limits<ito::int32>::max(), 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category voltage monitor---------------------------//
@@ -1168,6 +1200,9 @@ ito::RetVal FaulhaberMCS::init(
     }
 
     if (!retValue.containsError())
+        retValue += initIntParam("peakCurrent", &FaulhaberMCS::getPeakCurrent);
+
+    if (!retValue.containsError())
         retValue += initIntParam("positionWindow", &FaulhaberMCS::getPositionWindow);
 
     if (!retValue.containsError())
@@ -1310,7 +1345,7 @@ ito::RetVal FaulhaberMCS::init(
 
         for (int i = 0; i < m_numOfAxes; i++)
         {
-            retValue += readPosForCurrentMode(pos, &target);
+            retValue += getPosMCS(pos);
             m_currentPos[i] = static_cast<double>(pos);
             m_targetPos[i] = static_cast<double>(target);
             m_currentStatus[i] =
@@ -1415,6 +1450,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             {
                 retValue += it->setVal<int>(static_cast<int>(temp));
             }
+        }
+        else if (key == "peakCurrent")
+        {
+        ito::uint16 current;
+        retValue += getPeakCurrent(current);
+        if (!retValue.containsError())
+        {
+            retValue += it->setVal<int>(static_cast<int>(current));
+        }
         }
         else if (key == "loadInertia")
         {
@@ -1555,6 +1599,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(static_cast<int>(current));
+            }
+        }
+        else if (key == "velocityActualValue")
+        {
+            ito::int32 velocity;
+            retValue += getVelocityActualValueMCS(velocity);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(velocity));
             }
         }
         else if (key == "torqueLimits")
@@ -1698,6 +1751,11 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             ito::uint16 voltage;
             retValue += getMotorSupplyVoltage(voltage);
         }
+        else if (key == "targetTorque")
+        {
+            ito::int16 torque;
+            retValue += getTargetTorque(torque);
+        }
         *val = it.value();
     }
 
@@ -1814,6 +1872,10 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "quickStopDeceleration")
         {
             retValue += setQuickStopDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
+        }
+        else if (key == "peakCurrent")
+        {
+            retValue += setPeakCurrent(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "loadInertia")
         {
@@ -1936,6 +1998,10 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "voltageErrorDelayTime")
         {
             retValue += setVoltageErrorDelayTime(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "targetTorque")
+        {
+            retValue += setTargetTorque(static_cast<ito::int16>(val->getVal<int>()));
         }
 
         if (!retValue.containsError())
@@ -2084,7 +2150,7 @@ ito::RetVal FaulhaberMCS::readPosForCurrentMode(ito::int32& current, ito::int32*
         current = static_cast<ito::int32>(torque);
         if (target)
         {
-            retVal += getTargetTorqueMCS(torque);
+            retVal += getTargetTorque(torque);
             *target = static_cast<ito::int32>(torque);
         }
         break;
@@ -2775,7 +2841,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
                     retValue += setVelocityMCS(newVal);
                     break;
                 case 10: // cyclic synchronous torque control
-                    retValue += setTorqueMCS(newVal);
+                    retValue += setTargetTorque(newVal);
                     break;
                 }
 
@@ -3048,6 +3114,20 @@ ito::RetVal FaulhaberMCS::getWindingTemperature(ito::int16& temp)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPeakCurrent(ito::uint16& current)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        peakCurrent_register.index, peakCurrent_register.subindex, current);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPeakCurrent(const ito::uint16& current)
+{
+    return setRegister<ito::uint16>(
+        peakCurrent_register.index, peakCurrent_register.subindex, current, sizeof(current));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getLoadInertia(ito::uint32& inertia)
 {
     return readRegisterWithParsedResponse<ito::uint32>(
@@ -3243,7 +3323,7 @@ ito::RetVal FaulhaberMCS::getTorqueMCS(ito::int16& torque)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTorqueMCS(const ito::int16 torque)
+ito::RetVal FaulhaberMCS::setTargetTorque(const ito::int16 torque)
 {
     return setRegister<ito::int16>(
         torqueTargetValue_register.index,
@@ -3253,7 +3333,7 @@ ito::RetVal FaulhaberMCS::setTorqueMCS(const ito::int16 torque)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getTargetTorqueMCS(ito::int16& torque)
+ito::RetVal FaulhaberMCS::getTargetTorque(ito::int16& torque)
 {
     return readRegisterWithParsedResponse<ito::int16>(
         torqueTargetValue_register.index, torqueTargetValue_register.subindex, torque);
@@ -3271,6 +3351,13 @@ ito::RetVal FaulhaberMCS::setVoltageMCS(ito::int16& current)
 {
     return setRegister<ito::int16>(
         voltageValue_register.index, voltageValue_register.subindex, current, sizeof(current));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityActualValueMCS(ito::int32& velocity)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        velocityActualValue_register.index, velocityActualValue_register.subindex, velocity);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
