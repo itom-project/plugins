@@ -813,6 +813,80 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
+    //------------------------------- category voltage monitor---------------------------//
+    paramVal = ito::Param(
+        "deviceSupplyLowerThreshold",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Lower threshold value of the power supply of the device. Register '%1'.")
+            .arg(convertHexToString(deviceSupplyLowerThreshold))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(
+        new ito::IntMeta(0, 50, 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("motorSupplyLowerThreshold",
+        ito::ParamBase::Int,
+        0,
+        tr("Lower threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyLowerThreshold))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("motorSupplyMaxThreshold",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Maximum threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyMaxThreshold))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("motorSupplyUpperThreshold",
+        ito::ParamBase::Int,
+        0,
+        tr("Upper threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyUpperThreshold))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("voltageErrorDelayTime",
+        ito::ParamBase::Int,
+        0,
+        tr("Delay time in ms until a voltage error is signaled. Register '%1'.")
+            .arg(convertHexToString(voltageErrorDelayTime))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("deviceSupplyVoltage",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Current power supply of the electronics. Register '%1'.")
+            .arg(convertHexToString(deviceSupplyVoltage))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("motorSupplyVoltage",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Current power supply of the motor. Register '%1'.")
+            .arg(convertHexToString(motorSupplyVoltage))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(
+        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     //------------------------------------------------- EXEC FUNCTIONS
     QVector<ito::Param> pMand = QVector<ito::Param>();
     QVector<ito::Param> pOpt = QVector<ito::Param>();
@@ -1208,6 +1282,26 @@ ito::RetVal FaulhaberMCS::init(
         retValue += initIntParam("current", &FaulhaberMCS::getCurrent);
 
     if (!retValue.containsError())
+        retValue += initIntParam("deviceSupplyLowerThreshold", &FaulhaberMCS::getDeviceSupplyLowerThreshold);
+
+    if (!retValue.containsError())
+        retValue +=
+            initIntParam("motorSupplyLowerThreshold", &FaulhaberMCS::getMotorSupplyLowerThreshold);
+
+    if (!retValue.containsError())
+        retValue +=
+            initIntParam("motorSupplyUpperThreshold", &FaulhaberMCS::getMotorSupplyUpperThreshold);
+
+    if (!retValue.containsError())
+        retValue += initIntParam("voltageErrorDelayTime", &FaulhaberMCS::getVoltageErrorDelayTime);
+
+    if (!retValue.containsError())
+        retValue += initIntParam("deviceSupplyVoltage", &FaulhaberMCS::getDeviceSupplyVoltage);
+
+    if (!retValue.containsError())
+        retValue += initIntParam("motorSupplyVoltage", &FaulhaberMCS::getMotorSupplyVoltage);
+
+    if (!retValue.containsError())
     {
         retValue += updateStatus();
 
@@ -1569,6 +1663,41 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             ito::int16 mode;
             retValue += getMotionProfileType(mode);
         }
+        else if (key == "deviceSupplyLowerThreshold")
+        {
+            ito::uint16 threshold;
+            retValue += getDeviceSupplyLowerThreshold(threshold);
+        }
+        else if (key == "motorSupplyLowerThreshold")
+        {
+            ito::uint16 threshold;
+            retValue += getMotorSupplyLowerThreshold(threshold);
+        }
+        else if (key == "motorSupplyMaxThreshold")
+        {
+            ito::uint16 threshold;
+            retValue += getMotorSupplyMaxThreshold(threshold);
+        }
+        else if (key == "motorSupplyUpperThreshold")
+        {
+            ito::uint16 threshold;
+            retValue += getMotorSupplyUpperThreshold(threshold);
+        }
+        else if (key =="voltageErrorDelayTime")
+        {
+            ito::uint16 time;
+            retValue += getVoltageErrorDelayTime(time);
+        }
+        else if (key == "deviceSupplyVoltage")
+        {
+            ito::uint16 voltage;
+            retValue += getDeviceSupplyVoltage(voltage);
+        }
+        else if (key == "motorSupplyVoltage")
+        {
+            ito::uint16 voltage;
+            retValue += getMotorSupplyVoltage(voltage);
+        }
         *val = it.value();
     }
 
@@ -1795,6 +1924,18 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "motionProfile")
         {
             retValue += setMotionProfileType(static_cast<ito::int16>(val->getVal<int>()));
+        }
+        else if (key == "motorSupplyLowerThreshold")
+        {
+            retValue += setMotorSupplyLowerThreshold(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "motorSupplyUpperThreshold")
+        {
+            retValue += setMotorSupplyUpperThreshold(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "voltageErrorDelayTime")
+        {
+            retValue += setVoltageErrorDelayTime(static_cast<ito::uint16>(val->getVal<int>()));
         }
 
         if (!retValue.containsError())
@@ -3144,6 +3285,81 @@ ito::RetVal FaulhaberMCS::setMotionProfileType(const ito::int16& type)
 {
     return setRegister<ito::int16>(
         motionProfileType_register.index, motionProfileType_register.subindex, type, sizeof(type));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getDeviceSupplyLowerThreshold(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        deviceSupplyLowerThreshold.index, deviceSupplyLowerThreshold.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMotorSupplyLowerThreshold(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        motorSupplyLowerThreshold.index, motorSupplyLowerThreshold.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setMotorSupplyLowerThreshold(const ito::uint16& voltage)
+{
+    return setRegister<ito::uint16>(
+        motorSupplyLowerThreshold.index, motorSupplyLowerThreshold.subindex, voltage, sizeof(voltage));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMotorSupplyMaxThreshold(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        motorSupplyMaxThreshold.index, motorSupplyMaxThreshold.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMotorSupplyUpperThreshold(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        motorSupplyUpperThreshold.index, motorSupplyUpperThreshold.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setMotorSupplyUpperThreshold(const ito::uint16& voltage)
+{
+    return setRegister<ito::uint16>(
+        motorSupplyUpperThreshold.index,
+        motorSupplyUpperThreshold.subindex,
+        voltage,
+        sizeof(voltage));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVoltageErrorDelayTime(ito::uint16& time)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        voltageErrorDelayTime.index, voltageErrorDelayTime.subindex, time);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setVoltageErrorDelayTime(const ito::uint16& time)
+{
+    return setRegister<ito::uint16>(
+        voltageErrorDelayTime.index, voltageErrorDelayTime.subindex,
+        time,
+        sizeof(time));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getDeviceSupplyVoltage(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        deviceSupplyVoltage.index, deviceSupplyVoltage.subindex, voltage);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getMotorSupplyVoltage(ito::uint16& voltage)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        motorSupplyVoltage.index, motorSupplyVoltage.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

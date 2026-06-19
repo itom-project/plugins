@@ -197,6 +197,14 @@ private:
     const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
     const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
 
+    const Register deviceSupplyLowerThreshold = {0x2325, 0x01};
+    const Register motorSupplyLowerThreshold = {0x2325, 0x02};
+    const Register motorSupplyMaxThreshold = {0x2325, 0x03};
+    const Register motorSupplyUpperThreshold = {0x2325, 0x04};
+    const Register voltageErrorDelayTime = {0x2325, 0x05};
+    const Register deviceSupplyVoltage = {0x2325, 0x06};
+    const Register motorSupplyVoltage = {0x2325, 0x07};
+
     const Register nominalVoltage_register = {0x2604, 0x00};
 
     const ito::uint8 shutDown_register = 0x06;
@@ -385,6 +393,18 @@ private:
 
     ito::RetVal getMotionProfileType(ito::int16& type);
     ito::RetVal setMotionProfileType(const ito::int16& type);
+
+    // VOLTAGE MONITOR
+    ito::RetVal getDeviceSupplyLowerThreshold(ito::uint16& voltage);
+    ito::RetVal getMotorSupplyLowerThreshold(ito::uint16& voltage);
+    ito::RetVal setMotorSupplyLowerThreshold(const ito::uint16& voltage);
+    ito::RetVal getMotorSupplyMaxThreshold(ito::uint16& voltage);
+    ito::RetVal getMotorSupplyUpperThreshold(ito::uint16& voltage);
+    ito::RetVal setMotorSupplyUpperThreshold(const ito::uint16& voltage);
+    ito::RetVal getVoltageErrorDelayTime(ito::uint16& time);
+    ito::RetVal setVoltageErrorDelayTime(const ito::uint16& time);
+    ito::RetVal getDeviceSupplyVoltage(ito::uint16& voltage);
+    ito::RetVal getMotorSupplyVoltage(ito::uint16& voltage);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);
