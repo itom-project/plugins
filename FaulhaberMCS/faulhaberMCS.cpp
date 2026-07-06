@@ -108,7 +108,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 FaulhaberMCS::FaulhaberMCS() :
     AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0x0000), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
-    m_waitForMCSTimeout(3000), m_nodeAppended(false), m_serialBufferSize(100)
+    m_waitForMCSTimeout(30000), m_nodeAppended(false), m_serialBufferSize(100)
 {
     m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
         delete[] ptr; // Custom deleter to release the array properly
@@ -981,8 +981,8 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         30000,
         50,
-        tr("Speed during search for zero. Register '%1'.")
-            .arg(convertHexToString(homingAcceleration_register))
+        tr("Acceleration in 1/s². Register '%1'.")
+            .arg(convertHexToString(acceleration_register))
             .toUtf8()
             .data());
     pOpt.append(paramVal);
