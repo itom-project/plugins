@@ -33,7 +33,7 @@ if(FFTW_FOUND)
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${ITOM_SDK_INCLUDE_DIRS}
-            ${FFTW_INCLUDE_DIR}
+        ${FFTW_INCLUDE_DIR}
     )
 
     set(PLUGIN_HEADERS

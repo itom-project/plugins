@@ -172,7 +172,7 @@
 <context>
     <name>UhlRegister</name>
     <message>
-        <location filename="../UhlRegister.cpp" line="+170"/>
+        <location filename="../UhlRegister.cpp" line="+171"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -347,12 +347,17 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
 <context>
     <name>UhlRegisterInterface</name>
     <message>
-        <location line="-1429"/>
+        <location line="-1430"/>
         <source>DLL for old 2-3 axis Uhl-Controller</source>
         <translation>DLL für alte 2-3 achsige Uhltische</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+20"/>
+        <source>An initialized SerialIO</source>
+        <translation>Eine initialisierte SerialIO-Instanz</translation>
+    </message>
+    <message>
+        <location line="-19"/>
         <source>The UhlRegister is a plugin, which can be used to control the 2-3 axis
 stepper motor devices from Uhl (F9S-x)
 
@@ -361,36 +366,15 @@ It is initialized by actuator(&quot;UhlRegister&quot;, SerialIO, ...).
 WARNING: There are different controller versions with different
 command languages. This DLL is for F9S Register devices.
 WARNING: The calibration direction of the stages differs according to motor / controller.
-Check calibration direction before usage.
+Check calibration direction before usage. 
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG</source>
-        <translation>UhlRegister ist ein itom-Plugin, welches zur Steuerung für 2-3 achsige Schrittmotorgeräten von Uhl (F9S-x) verwendet werden kann.
-
-Die Initialisierung erfolg über &apos;actuator(&quot;UhlRegister&quot;, SerialIO, ...)&apos;.
-
-WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für F9S Geräte.
-WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
-
-Dieses Plugin wurde mit der Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>LGPL</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>N.A.</source>
-        <translation type="vanished">Nicht verfügbar.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>An initialized SerialIO</source>
-        <translation>Eine initialisierte SerialIO-Instanz</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>1 -&gt; calibration during initilization</source>
-        <translation>1 -&gt; Kalibrierung während der Initialisierung</translation>
+        <location line="+23"/>
+        <source>1 -&gt; calibration during initialization</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>

@@ -85,7 +85,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+160"/>
+        <location filename="../DummyMotor.cpp" line="+161"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -95,16 +95,7 @@
         <translation type="unfinished">Motorname hinzufügen</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Print the current positions of the specified axis to the consol</source>
-        <translation type="unfinished">Schreibt die aktuelle Position der spezifischen Achse in die Konsole</translation>
-    </message>
-    <message>
-        <source>Number of Axis attached to this stage</source>
-        <translation type="obsolete">Anzahl Achsen entsprechend des Geräts</translation>
-    </message>
-    <message>
-        <location line="+27"/>
+        <location line="+29"/>
         <source>Speed of the axis between 0.1 and 100000 mm/s</source>
         <translation type="unfinished">Geschwindigkeit der Achse zwischen 0,1 und 100000 mm/s</translation>
     </message>
@@ -141,7 +132,12 @@
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-496"/>
+        <location line="-502"/>
+        <source>Print the current positions of the specified axis to the console</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Axis number for jogging</source>
         <translation type="unfinished">Die Anzahl Achsen für das Rütteln</translation>
     </message>
@@ -232,10 +228,6 @@
 <context>
     <name>DummyMotorInterface</name>
     <message>
-        <source>N.A.</source>
-        <translation type="obsolete">Nicht verfügbar.</translation>
-    </message>
-    <message>
         <location line="-583"/>
         <source>Number of axis for this motor</source>
         <translation type="unfinished">Anzahl der Achsen des Motors</translation>
@@ -264,23 +256,16 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-31"/>
+        <location line="-32"/>
         <source>A virtual motor to test real actuators.</source>
         <translation type="unfinished">Ein virtueller Motor um echte Aktuatoren zu testen.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes.
+        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. 
 
 The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
-        <translation type="unfinished">Der DummyMotor ist ein virtuelles Motor-Plugin, welches bis zu 10 lineare Achsen simuliert.
-
-Die tatsächliche Anzahl der simulierten Achsen werden bei der Inizialisierung mit dem Parameter &apos;numAxis&apos; angegeben werden. Dieses Plugin kann zur Simulation oder Entwicklung eines Messsystems an anderen Computern genutzt werden. Wann immer der Positionsbefehl ausgeführt wird, wartet das Plugin die benötigte Fahrtzeit bis zum Erreichen der Position (mit berücksichtigter Geschwindigkeit der Achse) ab.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Licensed under LPGL.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
