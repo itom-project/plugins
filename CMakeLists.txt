@@ -355,6 +355,12 @@ if(PLUGIN_OphirPowermeter)
     add_subdirectory(OphirPowermeter)
 endif(PLUGIN_OphirPowermeter)
 
+# OpticalInspection
+itom_plugin_option(PLUGIN_OpticalInspection)
+if(PLUGIN_OpticalInspection)
+    add_subdirectory(OpticalInspection)
+endif(PLUGIN_OpticalInspection)
+
 # PclTools
 if(BUILD_WITH_PCL)
     itom_plugin_option(PLUGIN_PclTools)
