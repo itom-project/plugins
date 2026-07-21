@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "SmarActMCS2" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2025, TRUMPF Lasersystems for Semiconductor Manufacturing SE,´Germany
+    Copyright (C) 2025, TRUMPF Lasersystems for Semiconductor Manufacturing SE,ï¿½Germany
 
     This file is part of a plugin for the measurement software itom.
 
@@ -329,7 +329,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     char* ptr;
     char* snBuf = nullptr;
-   
+
     if (!retValue.containsError())
     {
         snBuf = strtok_s(deviceList, "\n", &ptr);
@@ -358,7 +358,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
 
     if (!retValue.containsError())
-    {        
+    {
         result = SA_CTL_Open(&m_insrumentHdl, snBuf, "");
         if (result != SA_CTL_ERROR_NONE)
         {
@@ -378,13 +378,13 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         char buf[SA_CTL_STRING_MAX_LENGTH + 1];
         size_t ioStringSize = sizeof(buf);
-        
+
         result =
             SA_CTL_GetProperty_s(m_insrumentHdl, 0, SA_CTL_PKEY_DEVICE_NAME, buf, &ioStringSize);
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
             m_params["deviceName"].setVal<char*>(buf);
@@ -396,7 +396,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
         {
@@ -414,7 +414,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
             m_params["noOfBusModules"].setVal<int>(noOfBusModules);
@@ -427,7 +427,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
         {
@@ -474,7 +474,7 @@ ito::RetVal SmarActMCS2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
 
     if (!retValue.containsError())
-    {        
+    {
         SA_CTL_Result_t result;
         char buf[SA_CTL_STRING_MAX_LENGTH + 1];
         size_t ioStringSize = sizeof(buf);
@@ -975,7 +975,7 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                         retValue += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("MCS2 failed to set positioner type of channel \"%1\". Please make shure that the given positioner type exists (according to the manual)\n")
+                            tr("MCS2 failed to set positioner type of channel \"%1\". Please make sure that the given positioner type exists (according to the manual)\n")
                                 .arg(i)
                                 .toLatin1()
                                 .data());
@@ -1027,7 +1027,7 @@ ito::RetVal SmarActMCS2::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                         .data());
             }
         }
-        
+
         if (!retValue.containsError())
         {
             //all parameters that don't need further checks can simply be assigned
@@ -1810,7 +1810,7 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
                 retVal += ito::RetVal(
                     ito::retError,
                     0,
-                    tr("MCS2 error occured during check state\n")
+                    tr("MCS2 error occurred during check state\n")
                         .toLatin1()
                         .data());
             }
@@ -1838,7 +1838,7 @@ ito::RetVal SmarActMCS2::waitForDone(const int timeoutMS, const QVector<int> axi
                             .data());
                 }
             }
-            
+
             //set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
@@ -2000,7 +2000,7 @@ ito::RetVal SmarActMCS2::execFunc(
             }
         }
 
-        
+
 
         SA_CTL_Result_t result;
 

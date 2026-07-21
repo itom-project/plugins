@@ -138,35 +138,48 @@ private:
     const Register productCode_register = {0x1018, 0x02};
     const Register revisionNumber_register = {0x1018, 0x03};
     const Register firmwareVersion_register = {0x100A, 0x00};
+
     const Register operationMode_register = {0x6060, 0x00};
+
     const Register nodeID_register = {0x2400, 0x03};
     const Register netMode_ignoreCRC = {0x2400, 0x04};
     const Register netMode_register = {0x2400, 0x05};
     const Register deviceID_register = {0x2400, 0x08};
+
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
     const Register windingTemperature_register = {0x2326, 0x03};
+
     const Register peakCurrent_register = {0x2329, 0x02};
     const Register loadInertia_register = {0x2329, 0x0A};
+
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
     const Register positionAbsolutValue_register = {0x607a, 0x00};
     const Register positionRelativeValue_register = {0x607a, 0x00};
+
     const Register velocityActualValue_register = {0x606c, 0x00};
     const Register velocityTargetValue_register = {0x60FF, 0x00};
     const Register voltageValue_register = {0x2341, 0x00};
+
     const Register torqueTargetValue_register = {0x6071, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
+
     const Register currentActualValue_register = {0x6078, 0x00};
+
     const Register statusWord_register = {0x6041, 0x00};
     const Register controlWord_register = {0x6040, 0x00};
     const Register maxMotorSpeed_register = {0x6080, 0x00};
+
     const Register acceleration_register = {0x6083, 0x00};
     const Register deceleration_register = {0x6084, 0x00};
+
     const Register profileVelocity_register = {0x6081, 0x00};
     const Register quickStopDeceleration_register = {0x6085, 0x00};
     const Register maxTorqueLimit_register = {0x6072, 0x00};
+
     const Register communicationSettings_register = {0x2400, 0x04};
+
     const Register error_register = {0x2320, 0x00};
     const Register positiveTorqueLimit_register = {0x60E0, 0x00};
     const Register negativeTorqueLimit_register = {0x60E1, 0x00};
@@ -178,14 +191,20 @@ private:
 
     const Register torqueGainControl_register = {0x2342, 0x01};
     const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
+
     const Register fluxGainControl_register = {0x2343, 0x01};
     const Register fluxIntegralTimeControl_register = {0x2343, 0x02};
+
     const Register velocityGainControl_register = {0x2344, 0x01};
     const Register velocityIntegralTimeControl_register = {0x2344, 0x02};
     const Register velocityDeviationThreshold_register = {0x2344, 0x03};
     const Register velocityDeviationTime_register = {0x2344, 0x04};
     const Register velocityWarningThreshold_register = {0x2344, 0x05};
     const Register velocityIntegralPartOption = {0x2344, 0x06};
+
+    const Register positionControlGain_register = {0x2348, 0x01};
+
+    const Register actualVelocityFilter = {0x2345, 0x01};
 
     // todo INTEGRAL PART OPTION
     // TODO UPDATE DOCS
@@ -365,6 +384,12 @@ private:
 
     ito::RetVal getVelocityIntegralPartOption(ito::uint8& option);
     ito::RetVal setVelocityIntegralPartOption(const ito::uint8 option);
+
+    ito::RetVal getActualVelocityFilter(ito::uint16& filter);
+    ito::RetVal setActualVelocityFilter(const ito::uint16 filter);
+
+    ito::RetVal getPositionControlGain(ito::uint8& gain);
+    ito::RetVal setPositionControlGain(const ito::uint8 gain);
 
     ito::RetVal getPositionWindow(ito::uint32& window);
     ito::RetVal setPositionWindow(const ito::uint32 window);

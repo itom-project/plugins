@@ -203,10 +203,10 @@ ito::RetVal DialogThorlabsElliptec::observeInvocation(ItomSharedSemaphore* waitC
     {
         aliveCounter--;
 
-        // alive is interally reset once it is requested. Therefore the or operator...
-        alive |= (m_pluginPointer->isAlive() > 0); 
-        
-        if (aliveCounter <= 0 && alive == false) 
+        // alive is internally reset once it is requested. Therefore the or operator...
+        alive |= (m_pluginPointer->isAlive() > 0);
+
+        if (aliveCounter <= 0 && alive == false)
         {
             retval += ito::RetVal(
                 ito::retError,

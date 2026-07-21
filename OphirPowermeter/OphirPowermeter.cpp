@@ -114,13 +114,13 @@ Download page: https://www.ophiropt.com/laser--measurement/software/com-object")
            "be printed and the first device that is detected will be opened.")
             .toLatin1()
             .data()));
-    
+
     m_initParamsOpt.append(ito::Param(
         "channelNo",
         ito::ParamBase::Int,
         0,
         new ito::IntMeta(0, 3),
-        tr("Channel to read for multichannel devices. If empty, the fist cahnnel (index 0) will be "
+        tr("Channel to read for multichannel devices. If empty, the fist channel (index 0) will be "
            "used")
             .toLatin1()
             .data()));
@@ -326,8 +326,8 @@ OphirPowermeter::OphirPowermeter() :
     paramVal = ito::Param(
         "channelNo",
         ito::ParamBase::Int,
-        0, // min Val 
-        4, // max Val 
+        0, // min Val
+        4, // max Val
         0, // Default
         tr("Channel to read from. (0 based, use 0 for single channel devices").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -877,7 +877,7 @@ ito::RetVal OphirPowermeter::init(
         {
             m_connection = connectionType::USB;
             m_params["connection"].setVal<const char*>("USB");
-            
+
 
             // creates instance of OphirLMMeasurement
             try
@@ -991,7 +991,7 @@ ito::RetVal OphirPowermeter::init(
             }
             if (!retval.containsError())
             {
-                retval += this->getMeasurementHeadInfo(); 
+                retval += this->getMeasurementHeadInfo();
             }
             if (!retval.containsError())
             {
@@ -1028,7 +1028,7 @@ ito::RetVal OphirPowermeter::init(
             {
                 retval += this->setupStream();
             }
-            
+
 
             if (!retval.containsError()) // set some default values
             {
@@ -1136,10 +1136,10 @@ ito::RetVal OphirPowermeter::getMeasurementMode()
 }
 
 ito::RetVal OphirPowermeter::getWavelengthInfo()
-{   
+{
     ito::RetVal retval = ito::RetVal(ito::retOk);
     // get wavelengths
-    if (!retval.containsError()) 
+    if (!retval.containsError())
     {
         bool modifiable;
         long waveMin;
