@@ -43,8 +43,16 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
-#if CV_MAJOR_VERSION >= 4
-#include "opencv2//imgcodecs/legacy/constants_c.h"
+#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION == 4)
+#include "opencv2/imgcodecs/legacy/constants_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc/types_c.h"
+#elif defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION >= 5)
+// OpenCV 5 removed many legacy C headers — include modern C++ headers instead
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#else
+// Fallback for older OpenCV versions
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/types_c.h"
 #endif
