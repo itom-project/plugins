@@ -51,10 +51,14 @@
 // OpenCV 5 removed many legacy C headers — include modern C++ headers instead
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
+#elif !defined(CV_MAJOR_VERSION)
+// Build without OpenCV version macro defined; assume modern C++ headers are available.
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 #else
 // Fallback for older OpenCV versions
-#include "opencv2/imgproc/imgproc_c.h"
-#include "opencv2/imgproc/types_c.h"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 #endif
 
 #include "common/sharedFunctionsQt.h"
