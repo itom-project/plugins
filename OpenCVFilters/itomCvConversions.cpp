@@ -226,7 +226,13 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
                 }
                 else
                 {
-                    *dObj = ito::DataObject(mat_.dims, mat_.size, cameraMatrixType, &mat_, 1);
+                    const int* sizes_ptr = 
+#if (CV_MAJOR_VERSION >= 5)
+                     mat_.size.data();
+#else
+                     mat_.size;
+#endif
+                    *dObj = ito::DataObject(mat_.dims, sizes_ptr, cameraMatrixType, &mat_, 1);
                 }
             }
         }

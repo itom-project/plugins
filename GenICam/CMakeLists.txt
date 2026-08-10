@@ -20,7 +20,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(GenICam QUIET) #located in CMAKE_CURRENT_SOURCE_DIR
-find_package(OpenCV COMPONENTS imgproc REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS imgproc REQUIRED)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 include(ItomBuildMacros)
 itom_init_cmake_policy(3.12)

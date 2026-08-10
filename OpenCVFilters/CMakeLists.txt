@@ -22,47 +22,23 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIR
 
 # Require minimal OpenCV modules and probe optional ones (OpenCV 5 may not provide
 # every module; enable source files conditionally).
-find_package(OpenCV COMPONENTS core imgproc REQUIRED)
-# Probe optional modules; QUIET so CMake won't fail if they're missing
-find_package(OpenCV COMPONENTS calib3d flann features2d QUIET)
+# calib3d and features2d are standard OpenCV modules that ship with every
+# regular OpenCV 3.0 - 5.0 distribution, so no optional detection is needed.
+# They are NOT requested as explicit COMPONENTS here on purpose: OpenCV 5.0
+# (and other "world" builds) only export the bundled opencv_world target and
+# would fail a `REQUIRED COMPONENTS calib3d features2d` check even though the
+# functionality is present. Requesting only core/imgproc resolves OpenCV_LIBS
+# and OpenCV_INCLUDE_DIRS correctly for both component-based and world builds.
+find_package(OpenCV REQUIRED COMPONENTS core imgproc)
 
-# Configure which optional modules are present
-set(OPENCV_HAVE_CALIB3D OFF)
-set(OPENCV_HAVE_FEATURES2D OFF)
-set(OPENCV_HAVE_FLANN OFF)
-if(TARGET OpenCV::calib3d)
-    set(OPENCV_HAVE_CALIB3D ON)
-endif()
-if(TARGET OpenCV::features2d)
-    set(OPENCV_HAVE_FEATURES2D ON)
-endif()
-if(TARGET OpenCV::flann)
-    set(OPENCV_HAVE_FLANN ON)
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
 endif()
 
-# Build list of OpenCV targets to link
-set(OPENCV_TARGETS OpenCV::core OpenCV::imgproc)
-if(OPENCV_HAVE_CALIB3D)
-    list(APPEND OPENCV_TARGETS OpenCV::calib3d)
-endif()
-if(OPENCV_HAVE_FEATURES2D)
-    list(APPEND OPENCV_TARGETS OpenCV::features2d)
-endif()
-if(OPENCV_HAVE_FLANN)
-    list(APPEND OPENCV_TARGETS OpenCV::flann)
-endif()
-
-# Prefer imported OpenCV targets when available; otherwise fall back to
-# the legacy `${OpenCV_LIBS}` variable. Also add include dirs if provided.
-if(TARGET OpenCV::core)
-    set(OPENCV_LINK_LIBS ${OPENCV_TARGETS})
-else()
-    if(DEFINED OpenCV_LIBS)
-        set(OPENCV_LINK_LIBS ${OpenCV_LIBS})
-    else()
-        set(OPENCV_LINK_LIBS "")
-    endif()
-endif()
+# Use the OpenCV_LIBS variable, which OpenCVConfig always populates correctly
+# for both component-based and "world" builds (e.g. OpenCV 5.0).
+set(OPENCV_LINK_LIBS ${OpenCV_LIBS})
 
 if(DEFINED OpenCV_INCLUDE_DIRS)
     include_directories(${OpenCV_INCLUDE_DIRS})
@@ -92,19 +68,9 @@ set(PLUGIN_HEADERS
 set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCvConversions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/calib3d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/features2d.cpp
 )
-
-# Add optional source files only if their OpenCV modules are available
-if(OPENCV_HAVE_CALIB3D)
-    list(APPEND PLUGIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/calib3d.cpp)
-else()
-    message(WARNING "OpenCV calib3d module not found; skipping calib3d-based filters")
-endif()
-if(OPENCV_HAVE_FEATURES2D)
-    list(APPEND PLUGIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/features2d.cpp)
-else()
-    message(WARNING "OpenCV features2d module not found; skipping features2d-based filters")
-endif()
 
 #Define Version in pluginVersion.h
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
