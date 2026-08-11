@@ -1014,27 +1014,13 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         }
 
 #ifdef _DEBUG
-#ifdef cv::CAP_PROP_FOCUS
         qDebug() << "cv::CAP_PROP_FOCUS" << m_pCam->get(cv::CAP_PROP_FOCUS);
-#endif
-#ifdef cv::CAP_PROP_IRIS
         qDebug() << "cv::CAP_PROP_IRIS" << m_pCam->get(cv::CAP_PROP_IRIS);
-#endif
-#ifdef cv::CAP_PROP_ZOOM
         qDebug() << "cv::CAP_PROP_ZOOM" << m_pCam->get(cv::CAP_PROP_ZOOM);
-#endif
-#ifdef cv::CAP_PROP_ROLL
         qDebug() << "cv::CAP_PROP_ROLL" << m_pCam->get(cv::CAP_PROP_ROLL);
-#endif
-#ifdef cv::CAP_PROP_TILT
         qDebug() << "cv::CAP_PROP_TILT" << m_pCam->get(cv::CAP_PROP_TILT);
-#endif
-#ifdef cv::CAP_PROP_PAN
         qDebug() << "cv::CAP_PROP_PAN" << m_pCam->get(cv::CAP_PROP_PAN);
-#endif
-#ifdef cv::CAP_PROP_BACKLIGHT
         qDebug() << "cv::CAP_PROP_BACKLIGHT" << m_pCam->get(cv::CAP_PROP_BACKLIGHT);
-#endif
         qDebug() << "cv::CAP_PROP_EXPOSURE" << m_pCam->get(cv::CAP_PROP_EXPOSURE);
         qDebug() << "cv::CAP_PROP_GAIN" << m_pCam->get(cv::CAP_PROP_GAIN);
         qDebug() << "v::CAP_PROP_WHITE_BALANCE_BLUE_U" << m_pCam->get(cv::CAP_PROP_WHITE_BALANCE_BLUE_U);
