@@ -34,19 +34,14 @@ Many of them are directly initialized by the parameters of the constructor.
 During the runtime of an instance, the value of these parameters is obtained by
 the method *getParam*, writeable parameters can be changed using *setParam*.
 
-.. attention::
-    It is strongly recommended to set the overvoltage control!
-    Use the plugin parameter "motorSupplyUpperThreshold" to set the overvoltage control.
-    Using the device with ``24V`` supply voltage, the overvoltage control should be set to ``27.5V`` to prevent damage of the device.
-
-.. hint::
-    It is recommended to set the parameter ``loadInertia`` for a better performance of the control loop.
-    The load inertia can be calculated by using the Faulhaber Motion Manager. The load inertia must be set in [gcm²].
-
 **acceleration**: int
     Acceleration in 1/s². Register '0x6083.00'.
 
-    *Value range: [1, 30000], Default: 4250*
+    *Value range: [1, 30000], Default: 3919*
+**actualVelocityFilter**: int
+    Actual velocity filter time Tf [100µs]. Register '0x2345.01'.
+
+    *Value range: [0, 65535], Default: 5*
 **async**: int, read-only
     Asynchronous move (1), synchronous (0) [default]. Only synchronous operation is
     implemented.
@@ -55,11 +50,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **current**: int, read-only
     Actual value of the current in relative scaling. Register '0x6078.00'.
 
-    *Value range: [-32768, 32767], Default: 74*
+    *Value range: [-32768, 32767], Default: 31*
 **deceleration**: int
     Deceleration in 1/s². Register '0x6084.00'.
 
-    *Value range: [1, 30000], Default: 1280*
+    *Value range: [1, 30000], Default: 1179*
 **deviceID**: int
     Explicit device ID. Register '0x2400.08'
 
@@ -69,13 +64,13 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Match: "", Default: "MCS 3242 BX4 ET"*
 **deviceSupplyLowerThreshold**: int, read-only
-    Device supply lower threshold in mV. Register '0x2325.01'.
+    Lower threshold value of the power supply of the device. Register '0x2325.01'.
 
-    *Value range: [0, 65535], Default: 1180*
+    *Value range: [0, 50], Default: 1180*
 **deviceSupplyVoltage**: int, read-only
-    Device supply voltage in mV. Register '0x2325.06'.
+    Current power supply of the electronics. Register '0x2325.06'.
 
-    *Value range: [0, 65535], Default: 2397*
+    *Value range: [0, 65535], Default: 2418*
 **fault**: int, read-only
     1: Error present, 0: No error present (Bit 3).
 
@@ -83,13 +78,13 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **firmware**: str, read-only
     Firmware version. Register '0x100A.00'
 
-    *Match: "", Default: "0111.02O"*
+    *Match: "", Default: "0111.02N"*
 **fluxGainControl**: int
-    Flux control gain parameter [mOm]. Register '0x2342.01'.
+    Flux control gain parameter [mOm]. Register '0x2343.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [0, inf], Default: 1834*
 **fluxIntegralTimeControl**: int
-    Flux control integral time control parameter [µs]. Register '0x2342.01'.
+    Flux control integral time control parameter [µs]. Register '0x2343.02'.
 
     *Value range: [150, 2600], Default: 150*
 **followingError**: int, read-only
@@ -113,7 +108,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **loadInertia**: float
     Load inertia in [gcm²]. Register '0x2329.0A'.
 
-    *Value range: [0:0.1:4.29497e+09], Default: 0*
+    *Value range: [0:0.1:4.29497e+09], Default: 35*
 **maxMotorSpeed**: int
     Max motor speed in 1/min. Register '0x6080.00'.
 
@@ -128,27 +123,27 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 1], Default: 0*
 **motorSupplyLowerThreshold**: int
-    Motor supply lower threshold in mV. Register '0x2325.02'.
+    Lower threshold value of the motor power supply. Register '0x2325.02'.
 
-    *Value range: [0, 65535], Default: 800*
+    *Value range: [0, 5000], Default: 800*
 **motorSupplyMaxThreshold**: int, read-only
-    Motor supply max threshold in mV. Register '0x2325.03'.
+    Maximum threshold value of the motor power supply. Register '0x2325.03'.
 
-    *Value range: [0, 65535], Default: 5200*
+    *Value range: [0, 5000], Default: 0*
 **motorSupplyUpperThreshold**: int
-    Motor supply upper threshold in mV. Register '0x2325.04'.
+    Upper threshold value of the motor power supply. Register '0x2325.04'.
 
-    *Value range: [0, 5200], Default: 5200*
+    *Value range: [0, 5000], Default: 2750*
 **motorSupplyVoltage**: int, read-only
-    Motor supply voltage in mV. Register '0x2325.07'.
+    Current power supply of the motor. Register '0x2325.07'.
 
-    *Value range: [0, 65535], Default: 2389*
+    *Value range: [0, 65535], Default: 2410*
 **moveTimeout**: int
     Timeout for movement in ms.
 
     *Value range: [0, inf], Default: 60000*
 **name**: str, read-only
-    FaulhaberMCS
+    "FaulhaberMCS" (name of the plugin)
 
 **netMode**: int
     RS232 net mode. Register '0x2400.05'.
@@ -178,6 +173,14 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Register '0x6060.00'.
 
     *Value range: [-4, 10], Default: 1*
+**peakCurrent**: int
+    Peak current in relative scaling. Register '0x2329.02'.
+
+    *Value range: [-32768, 32767], Default: 1500*
+**positionControlGain**: int
+    Position control gain Kv parameter [1/s]. Register '0x2348.01'.
+
+    *Value range: [0, 255], Default: 45*
 **positionLimits**: Sequence[int]
     Lower/ upper limit of the position range in userdefined uints. Register lower limit
     '0x607D.01', upper limit '0x607D.02'.
@@ -220,11 +223,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **revisionNumber**: str, read-only
     Revision number. Register '0x1018.03'
 
-    *Match: "", Default: "15"*
+    *Match: "", Default: "14"*
 **serialNumber**: str, read-only
     Serial number of device. Register '0x2400.03'.
 
-    *Match: "", Default: "202400191"*
+    *Match: "", Default: "482400318"*
 **setPointAcknowledged**: int, read-only
     1: New set-point has been loaded, 0: Previous set-point being changed or already reached
     (Bit 12).
@@ -242,18 +245,22 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     1: Target has reached, 0: is moving (Bit 10).
 
     *Value range: [0, 1], Default: 1*
+**targetTorque**: int
+    Set-point of the torque in relative scaling. Register '0x6071.00'.
+
+    *Value range: [-32768, 32767], Default: 0*
 **temperatureCPU**: int, read-only
     CPU temperature in [°C]. Register '0x2326.01'.
 
-    *Value range: [0, 32767], Default: 39*
+    *Value range: [0, 32767], Default: 41*
 **temperaturePowerStage**: int, read-only
     Power stage temperature in [°C]. Register '0x2326.02'.
 
-    *Value range: [0, 32767], Default: 32*
+    *Value range: [0, 32767], Default: 34*
 **temperatureWinding**: int, read-only
     Winding temperature in [°C]. Register '0x2326.03'.
 
-    *Value range: [0, 32767], Default: 21*
+    *Value range: [0, 32767], Default: 30*
 **torque**: int, read-only
     Actual value of the torque in relative scaling. Register '0x6077.00'.
 
@@ -261,9 +268,9 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **torqueGainControl**: int
     Torque control gain parameter [mOm]. Register '0x2342.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [0, inf], Default: 1834*
 **torqueIntegralTimeControl**: int
-    Torque control integral time control parameter [µs]. Register '0x2342.01'.
+    Torque control integral time control parameter [µs]. Register '0x2342.02'.
 
     *Value range: [150, 2600], Default: 150*
 **torqueLimits**: Sequence[int]
@@ -271,7 +278,11 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
     Register negative limit '0x60E1.00', positive limit '0x60E0.00'.
 
     *Allowed number of values: 0 - 18446744073709551615, Value range: [0, 6000], Default:
-    [6000, 6000]*
+    [1500, 1500]*
+**velocityActualValue**: int, read-only
+    Actual velocity in 1/min. Register '0x606C.00'.
+
+    *All values allowed, Default: 0*
 **velocityDeviationThresholdControl**: int
     Velocity deviation threshold control parameter. Register '0x2344.03'.
 
@@ -281,9 +292,9 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 65535], Default: 100*
 **velocityGainControl**: int
-    Velocity gain control parameter [As 1e-6]. Register '0x2342.01'.
+    Velocity gain control parameter [As 1e-6]. Register '0x2344.01'.
 
-    *Value range: [-1, 0], Default: 1835*
+    *Value range: [0, inf], Default: 1724*
 **velocityIntegralPartOption**: int
     Velocity integral part option. Configuration of the speed control loop. '0': integral
     component active, '1': stopped integral component in the position windoed (in PP mode),
@@ -293,7 +304,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **velocityIntegralTimeControl**: int
     Velocity integral time control parameter [µs]. Register '0x2344.02'.
 
-    *Value range: [0, 65535], Default: 23*
+    *Value range: [0, 65535], Default: 34*
 **velocityWarningThresholdControl**: int
     Velocity warning threshold control parameter. Register '0x2344.05'.
 
@@ -307,7 +318,7 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 
     *Value range: [0, 1], Default: 0*
 **voltageErrorDelayTime**: int
-    Voltage error delay time in ms. Register '0x2325.05'.
+    Delay time in ms until a voltage error is signaled. Register '0x2325.05'.
 
     *Value range: [0, 65535], Default: 200*
 **warning**: int, read-only
@@ -325,7 +336,8 @@ By using the following execFunctions you execute homing according the homing met
 
     In most of the cases before position control is to be used, the drive must perform a reference run to align the position used by the drive to the mechanic setup.
 
-    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mechanical limit stop is set as reference. Register '0x6098.00'.
+    :param method: Homing method. Methods 1…34: A limit switch or an additional reference switch is used as reference. Method 37: The position is set to 0 without reference run. Methods –1…–4: A mecha
+... nical limit stop is set as reference. Register '0x6098.00'.
     :type method: int
     :param offset: Offset of the zero position relative to the position of the reference switch in userdefined units. Register '0x607C.00'.
     :type offset: int - optional
@@ -335,7 +347,8 @@ By using the following execFunctions you execute homing according the homing met
     :type homingSpeed: int - optional
     :param acceleration: Speed during search for zero. Register '0x609A.00'.
     :type acceleration: int - optional
-    :param limitCheckDelayTime: Delay time until blockage detection [ms]. Register '0x2324.02'.
+    :param limitCheckDelayTime: Delay time until blockage detection [ms]. Should be longer than the velocity ramp time to avoid spurious blockage detection during the initial acceleration. Register '0
+... x2324.02'.
     :type limitCheckDelayTime: int - optional
     :param torqueLimits: Upper/ lower limit values for the reference run in 1/1000 of the rated motor torque. Register negative limit '0x2350.00', positive limit '0x2351.00'.
     :type torqueLimits: Sequence[int] - optional

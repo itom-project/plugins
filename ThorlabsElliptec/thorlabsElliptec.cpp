@@ -126,7 +126,7 @@ ThorlabsElliptec::ThorlabsElliptec() :
     m_serialBufferSize(200),
     m_requestTimeOutMS(1000),
     m_waitForDoneTimeoutMS(180000),
-    m_serialMutexLocked(false), 
+    m_serialMutexLocked(false),
     m_async(0)
 {
     // init some static data and LUTs.
@@ -279,7 +279,7 @@ ThorlabsElliptec::ThorlabsElliptec() :
             .data());
     paramVal.getMetaT<ito::IntMeta>()->setCategory("MotorSettings");
     paramVal.getMetaT<ito::IntMeta>()->setUnit("Hz");
-    
+
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -398,7 +398,7 @@ ito::RetVal ThorlabsElliptec::init(
     m_currentPos << 0.0;
     m_currentStatus << (ito::actuatorAtTarget | ito::actuatorEnabled | ito::actuatorAvailable);
     m_targetPos << 0.0;
-    
+
     if (m_pSerialIO->getBasePlugin()->getType() &
         (ito::typeDataIO | ito::typeRawIO))
     {
@@ -463,7 +463,7 @@ ito::RetVal ThorlabsElliptec::init(
 
         // ignore any status errors, to finish the initialization, even if the stage is currently at
         // the end of its travel range (among others)
-        getStatus(status, nullptr); 
+        getStatus(status, nullptr);
         QSharedPointer<double> pos(new double);
         retValue += getPos(0, pos, nullptr);
 
@@ -695,7 +695,7 @@ ito::RetVal ThorlabsElliptec::identifyDevices()
         int pulses = byteArrayToInt(response.mid(25 - 3, 8));
 
         m_params["travelRange"].setVal<int>(travelRange);
-        
+
 
         foreach(const auto & model, elliptecModels)
         {
@@ -810,7 +810,7 @@ ito::RetVal ThorlabsElliptec::updateMotorFrequencies()
             ;
         }
     }
-    
+
     return retValue;
 }
 
@@ -1397,7 +1397,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
             retValue +=
                 sendCommandAndGetResponse(m_address, "b2", period, m_requestTimeOutMS, response);
         }
-        
+
         retValue += updateMotorFrequencies();
         retValue += saveUserData();
 
@@ -1421,7 +1421,7 @@ ito::RetVal ThorlabsElliptec::execFunc(
                 retValue += sendCommandAndGetResponse(
                     m_address, "om", "", 10 * m_waitForDoneTimeoutMS, response);
             }
-            
+
         }
         else
         {

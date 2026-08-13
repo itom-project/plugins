@@ -30,12 +30,12 @@
 #include "gitVersion.h"
 #include "pluginVersion.h"
 
+#include <qdatetime.h>
+#include <qelapsedtimer.h>
 #include <qplugin.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qwaitcondition.h>
-#include <qelapsedtimer.h>
-#include <qdatetime.h>
 
 #include "dockWidgetFaulhaberMCS.h"
 
@@ -108,7 +108,7 @@ ito::RetVal FaulhaberMCSInterface::closeThisInst(ito::AddInBase** addInInst)
 FaulhaberMCS::FaulhaberMCS() :
     AddInActuator(), m_delayAfterSendCommandMS(50), m_async(0), m_numOfAxes(1), m_node(1),
     m_statusWord(0x0000), m_requestTimeOutMS(5000), m_waitForDoneTimeout(60000),
-    m_waitForMCSTimeout(3000), m_nodeAppended(false), m_serialBufferSize(100)
+    m_waitForMCSTimeout(30000), m_nodeAppended(false), m_serialBufferSize(100)
 {
     m_serialBuffer = QSharedPointer<char>(new char[m_serialBufferSize], [](char* ptr) {
         delete[] ptr; // Custom deleter to release the array properly
@@ -118,13 +118,11 @@ FaulhaberMCS::FaulhaberMCS() :
     // Clear the buffer initially
     std::memset(m_serialBuffer.data(), '\0', m_serialBufferSize);
 
-    ito::Param paramVal = ito::Param(
+    ito::Param paramVal(
         "name",
         ito::ParamBase::String | ito::ParamBase::Readonly,
-        "",
-        tr("FaulhaberMCS")
-            .toUtf8()
-            .data());
+        tr("FaulhaberMCS").toLatin1().data(),
+        nullptr);
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category general device parameter
@@ -201,8 +199,11 @@ FaulhaberMCS::FaulhaberMCS() :
         -4,
         10,
         1,
-        tr("Operation Mode. -4: Analog Torque Control Mode, -3: Analog Veclocity Control Mode, -2: Analog Position Control Mode, -1: Voltage mode, 0: Controller not "
-           "activated, 1: Profile Position Mode (default), 3: Profile Velocity Mode, 6: Homing, 8: Cyclic Synchronous Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic Synchronous Torque Mode. Register '%1'.")
+        tr("Operation Mode. -4: Analog Torque Control Mode, -3: Analog Veclocity Control Mode, -2: "
+           "Analog Position Control Mode, -1: Voltage mode, 0: Controller not "
+           "activated, 1: Profile Position Mode (default), 3: Profile Velocity Mode, 6: Homing, 8: "
+           "Cyclic Synchronous Position Mode, 9: Cyclic Synchronouse Velocity Mode, 10: Cyclic "
+           "Synchronous Torque Mode. Register '%1'.")
             .arg(convertHexToString(operationMode_register))
             .toUtf8()
             .data());
@@ -236,9 +237,7 @@ FaulhaberMCS::FaulhaberMCS() :
         "nodeID",
         ito::ParamBase::Int,
         0,
-        tr("Node number. Register '%1'.")
-            .arg(convertHexToString(nodeID_register)).toUtf8()
-            .data());
+        tr("Node number. Register '%1'.").arg(convertHexToString(nodeID_register)).toUtf8().data());
     paramVal.setMeta(new ito::IntMeta(
         std::numeric_limits<ito::uint8>::min(),
         std::numeric_limits<ito::uint8>::max(),
@@ -390,6 +389,21 @@ FaulhaberMCS::FaulhaberMCS() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
+        "peakCurrent",
+        ito::ParamBase::Int,
+        0,
+        tr("Peak current in relative scaling. Register '%1'.")
+            .arg(convertHexToString(peakCurrent_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::int16>::min(),
+        std::numeric_limits<ito::int16>::max(),
+        1,
+        "Movement"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
         "loadInertia",
         ito::ParamBase::Double,
         0,
@@ -397,7 +411,8 @@ FaulhaberMCS::FaulhaberMCS() :
             .arg(convertHexToString(loadInertia_register))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::DoubleMeta(0.0, std::numeric_limits<ito::uint32>::max(), 0.1, "Movement"));
+    paramVal.setMeta(
+        new ito::DoubleMeta(0.0, std::numeric_limits<ito::uint32>::max(), 0.1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -416,7 +431,10 @@ FaulhaberMCS::FaulhaberMCS() :
         0,
         48,
         std::numeric_limits<ito::uint16>::max(),
-        tr("Minimum residence time within the corridor in PP operating mode, until the target position is reported as achieved.").toUtf8().data());
+        tr("Minimum residence time within the corridor in PP operating mode, until the target "
+           "position is reported as achieved.")
+            .toUtf8()
+            .data());
     paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Movement"));
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -429,11 +447,7 @@ FaulhaberMCS::FaulhaberMCS() :
             .arg(convertHexToString(torqueGainControl_register))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(
-        std::numeric_limits<ito::uint32>::min(),
-        std::numeric_limits<ito::uint32>::max(),
-        1,
-        "Control"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int32>::max(), 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -441,7 +455,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Torque control integral time control parameter [µs]. Register '%1'.")
-            .arg(convertHexToString(torqueGainControl_register))
+            .arg(convertHexToString(torqueIntegralTimeControl_register))
             .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
@@ -452,14 +466,10 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Flux control gain parameter [mOm]. Register '%1'.")
-            .arg(convertHexToString(torqueGainControl_register))
+            .arg(convertHexToString(fluxGainControl_register))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(
-        std::numeric_limits<ito::uint32>::min(),
-        std::numeric_limits<ito::uint32>::max(),
-        1,
-        "Control"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int32>::max(), 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -467,7 +477,7 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Flux control integral time control parameter [µs]. Register '%1'.")
-            .arg(convertHexToString(torqueGainControl_register))
+            .arg(convertHexToString(fluxIntegralTimeControl_register))
             .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(150, 2600, 1, "Control"));
@@ -478,14 +488,10 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int,
         0,
         tr("Velocity gain control parameter [As 1e-6]. Register '%1'.")
-            .arg(convertHexToString(torqueGainControl_register))
+            .arg(convertHexToString(velocityGainControl_register))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(
-        std::numeric_limits<ito::uint32>::min(),
-        std::numeric_limits<ito::uint32>::max(),
-        1,
-        "Control"));
+    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::int32>::max(), 1, "Control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
@@ -559,6 +565,36 @@ FaulhaberMCS::FaulhaberMCS() :
             .toUtf8()
             .data());
     paramVal.setMeta(new ito::IntMeta(0, 2, 1, "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "positionControlGain",
+        ito::ParamBase::Int,
+        0,
+        tr("Position control gain Kv parameter [1/s]. Register '%1'.")
+            .arg(convertHexToString(positionControlGain_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint8>::min(),
+        std::numeric_limits<ito::uint8>::max(),
+        1,
+        "Control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param(
+        "actualVelocityFilter",
+        ito::ParamBase::Int,
+        0,
+        tr("Actual velocity filter time Tf [100µs]. Register '%1'.")
+            .arg(convertHexToString(actualVelocityFilter))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::uint16>::min(),
+        std::numeric_limits<ito::uint16>::max(),
+        1,
+        "Control"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------- category Statusword ---------------------------//
@@ -779,13 +815,28 @@ FaulhaberMCS::FaulhaberMCS() :
             .data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param(
+        "targetTorque",
+        ito::ParamBase::Int,
+        0,
+        tr("Set-point of the torque in relative scaling. Register '%1'.")
+            .arg(convertHexToString(torqueTargetValue_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::int16>::min(),
+        std::numeric_limits<ito::int16>::max(),
+        1,
+        "Motion control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
     int softwareLimits[] = {
         std::numeric_limits<ito::int32>::min(), std::numeric_limits<ito::int32>::max()};
     paramVal = ito::Param(
         "positionLimits",
         ito::ParamBase::IntArray | ito::ParamBase::In,
         2,
-        torqueLimits,
+        softwareLimits,
         new ito::IntArrayMeta(
             std::numeric_limits<ito::int32>::min(),
             std::numeric_limits<ito::int32>::max(),
@@ -810,101 +861,100 @@ FaulhaberMCS::FaulhaberMCS() :
     paramVal.setMeta(new ito::IntMeta(0, 1, 1, "Motion control"));
     m_params.insert(paramVal.getName(), paramVal);
 
-    //------------------------------------------------- VOLTAGE
+    paramVal = ito::Param(
+        "velocityActualValue",
+        ito::ParamBase::Int | ito::ParamBase::Readonly,
+        0,
+        tr("Actual velocity in 1/min. Register '%1'.")
+            .arg(convertHexToString(velocityActualValue_register))
+            .toUtf8()
+            .data());
+    paramVal.setMeta(new ito::IntMeta(
+        std::numeric_limits<ito::int32>::min(),
+        std::numeric_limits<ito::int32>::max(),
+        1,
+        "Motion control"));
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //------------------------------- category voltage monitor---------------------------//
     paramVal = ito::Param(
         "deviceSupplyLowerThreshold",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        tr("Device supply lower threshold in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_deviceSupplyLowerThreshold_register))
+        tr("Lower threshold value of the power supply of the device. Register '%1'.")
+            .arg(convertHexToString(deviceSupplyLowerThreshold))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(
-        0,
-        std::numeric_limits<ito::uint16>::max(),
-        1,
-        "Voltage Monitor"));
+    paramVal.setMeta(new ito::IntMeta(0, 50, 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "motorSupplyLowerThreshold",
         ito::ParamBase::Int,
         0,
-        1200,
-        std::numeric_limits<ito::uint16>::max(),
-        tr("Motor supply lower threshold in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_motorSupplyLowerThreshold_register))
+        tr("Lower threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyLowerThreshold))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(),
-        1,
-        "Voltage Monitor"));
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "motorSupplyMaxThreshold",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        tr("Motor supply max threshold in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_motorSupplyMaxThreshold_register))
+        tr("Maximum threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyMaxThreshold))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(),
-        1,
-        "Voltage Monitor"));
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "motorSupplyUpperThreshold",
-        ito::ParamBase::Int ,
+        ito::ParamBase::Int,
         0,
-        tr("Motor supply upper threshold in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_motorSupplyUpperThreshold_register))
+        tr("Upper threshold value of the motor power supply. Register '%1'.")
+            .arg(convertHexToString(motorSupplyUpperThreshold))
             .toUtf8()
             .data());
-    paramVal.setMeta(new ito::IntMeta(
-        0,
-        5200,
-        1,
-        "Voltage Monitor"));
+    paramVal.setMeta(new ito::IntMeta(0, 5000, 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "voltageErrorDelayTime",
         ito::ParamBase::Int,
         0,
-        200,
-        std::numeric_limits<ito::uint16>::max(),
-        tr("Voltage error delay time in ms. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_voltageErrorDelayTime_register))
+        tr("Delay time in ms until a voltage error is signaled. Register '%1'.")
+            .arg(convertHexToString(voltageErrorDelayTime))
             .toUtf8()
             .data());
     paramVal.setMeta(
-        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage Monitor"));
+        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "deviceSupplyVoltage",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        tr("Device supply voltage in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_deviceSupplyVoltage_register))
+        tr("Current power supply of the electronics. Register '%1'.")
+            .arg(convertHexToString(deviceSupplyVoltage))
             .toUtf8()
             .data());
     paramVal.setMeta(
-        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage Monitor"));
+        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param(
         "motorSupplyVoltage",
         ito::ParamBase::Int | ito::ParamBase::Readonly,
         0,
-        tr("Motor supply voltage in mV. Register '%1'.")
-            .arg(convertHexToString(voltageMonitor_motorSupplyVoltage_register))
+        tr("Current power supply of the motor. Register '%1'.")
+            .arg(convertHexToString(motorSupplyVoltage))
             .toUtf8()
             .data());
     paramVal.setMeta(
-        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage Monitor"));
+        new ito::IntMeta(0, std::numeric_limits<ito::uint16>::max(), 1, "Voltage monitor"));
     m_params.insert(paramVal.getName(), paramVal);
 
     //------------------------------------------------- EXEC FUNCTIONS
@@ -969,8 +1019,8 @@ FaulhaberMCS::FaulhaberMCS() :
         1,
         30000,
         50,
-        tr("Speed during search for zero. Register '%1'.")
-            .arg(convertHexToString(homingAcceleration_register))
+        tr("Acceleration in 1/s². Register '%1'.")
+            .arg(convertHexToString(acceleration_register))
             .toUtf8()
             .data());
     pOpt.append(paramVal);
@@ -980,8 +1030,10 @@ FaulhaberMCS::FaulhaberMCS() :
         ito::ParamBase::Int | ito::ParamBase::In,
         0,
         32750,
-        10,
-        tr("Delay time until blockage detection [ms]. Register '%1'.")
+        200,
+        tr("Delay time until blockage detection [ms]. Should be longer than the velocity ramp "
+           "time to avoid spurious blockage detection during the initial acceleration. "
+           "Register '%1'.")
             .arg(convertHexToString(homingLimitCheckDelayTime_register))
             .toUtf8()
             .data());
@@ -1145,106 +1197,36 @@ ito::RetVal FaulhaberMCS::init(
     }
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getSerialNumber(answerString);
-        if (!retValue.containsError())
-#
-        {
-            m_params["serialNumber"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("serialNumber", &FaulhaberMCS::getSerialNumber);
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getDeviceName(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["deviceName"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("deviceName", &FaulhaberMCS::getDeviceName);
 
     if (!retValue.containsError())
-    {
-        ito::uint8 mode;
-        retValue += getNetMode(mode);
-        if (!retValue.containsError())
-        {
-            m_params["netMode"].setVal<int>(static_cast<int>(mode));
-        }
-    }
+        retValue += initIntParam("netMode", &FaulhaberMCS::getNetMode);
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getVendorID(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["vendorID"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("vendorID", &FaulhaberMCS::getVendorID);
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getProductCode(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["productCode"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("productCode", &FaulhaberMCS::getProductCode);
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getRevisionNumber(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["revisionNumber"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("revisionNumber", &FaulhaberMCS::getRevisionNumber);
 
     if (!retValue.containsError())
-    {
-        QString answerString;
-        retValue += getFirmware(answerString);
-        if (!retValue.containsError())
-        {
-            m_params["firmware"].setVal<char*>(answerString.toLatin1().data());
-        }
-    }
+        retValue += initStringParam("firmware", &FaulhaberMCS::getFirmware);
 
     if (!retValue.containsError())
-    {
-        ito::int16 temp;
-        retValue += getCPUTemperature(temp);
-        if (!retValue.containsError())
-        {
-            m_params["temperatureCPU"].setVal<int>(temp);
-        }
-    }
+        retValue += initIntParam("temperatureCPU", &FaulhaberMCS::getCPUTemperature);
 
     if (!retValue.containsError())
-    {
-        ito::int16 temp;
-        retValue += getPowerStageTemperature(temp);
-        if (!retValue.containsError())
-        {
-            m_params["temperaturePowerStage"].setVal<int>(temp);
-        }
-    }
+        retValue += initIntParam("temperaturePowerStage", &FaulhaberMCS::getPowerStageTemperature);
 
     if (!retValue.containsError())
-    {
-        ito::int16 temp;
-        retValue += getWindingTemperature(temp);
-        if (!retValue.containsError())
-        {
-            m_params["temperatureWinding"].setVal<int>(temp);
-        }
-    }
+        retValue += initIntParam("temperatureWinding", &FaulhaberMCS::getWindingTemperature);
 
+    // loadInertia: read uint32 but store as double with custom transform.
     if (!retValue.containsError())
     {
         ito::uint32 load;
@@ -1256,25 +1238,15 @@ ito::RetVal FaulhaberMCS::init(
     }
 
     if (!retValue.containsError())
-    {
-        ito::uint32 window;
-        retValue += getPositionWindow(window);
-        if (!retValue.containsError())
-        {
-            m_params["positionWindow"].setVal<int>(window);
-        }
-    }
+        retValue += initIntParam("peakCurrent", &FaulhaberMCS::getPeakCurrent);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 time;
-        retValue += getPositionWindowTime(time);
-        if (!retValue.containsError())
-        {
-            m_params["positionWindowTime"].setVal<int>(time);
-        }
-    }
+        retValue += initIntParam("positionWindow", &FaulhaberMCS::getPositionWindow);
 
+    if (!retValue.containsError())
+        retValue += initIntParam("positionWindowTime", &FaulhaberMCS::getPositionWindowTime);
+
+    // operationMode: write the user-configured setpoint first, then read back.
     if (!retValue.containsError())
     {
         ito::int8 mode;
@@ -1291,75 +1263,27 @@ ito::RetVal FaulhaberMCS::init(
     }
 
     if (!retValue.containsError())
-    {
-        ito::uint32 speed;
-        retValue += getMaxMotorSpeed(speed);
-        if (!retValue.containsError())
-        {
-            m_params["maxMotorSpeed"].setVal<int>(speed);
-        }
-    }
+        retValue += initIntParam("maxMotorSpeed", &FaulhaberMCS::getMaxMotorSpeed);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 acceleration;
-        retValue += getAcceleration(acceleration);
-        if (!retValue.containsError())
-        {
-            m_params["acceleration"].setVal<int>(acceleration);
-        }
-    }
+        retValue += initIntParam("acceleration", &FaulhaberMCS::getAcceleration);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 deceleration;
-        retValue += getDeceleration(deceleration);
-        if (!retValue.containsError())
-        {
-            m_params["deceleration"].setVal<int>(deceleration);
-        }
-    }
+        retValue += initIntParam("deceleration", &FaulhaberMCS::getDeceleration);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 speed;
-        retValue += getProfileVelocity(speed);
-        if (!retValue.containsError())
-        {
-            m_params["profileVelocity"].setVal<int>(speed);
-        }
-    }
+        retValue += initIntParam("profileVelocity", &FaulhaberMCS::getProfileVelocity);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 id;
-        retValue += getExplicitDeviceID(id);
-        if (!retValue.containsError())
-        {
-            m_params["deviceID"].setVal<int>(id);
-        }
-    }
+        retValue += initIntParam("deviceID", &FaulhaberMCS::getExplicitDeviceID);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 quick;
-        retValue += getQuickStopDeceleration(quick);
-        if (!retValue.containsError())
-        {
-            m_params["quickStopDeceleration"].setVal<int>(quick);
-        }
-    }
+        retValue += initIntParam("quickStopDeceleration", &FaulhaberMCS::getQuickStopDeceleration);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 limit;
-        retValue += getMaxTorqueLimit(limit);
-        if (!retValue.containsError())
-        {
-            m_params["maxTorqueLimit"].setVal<int>(limit);
-        }
-    }
+        retValue += initIntParam("maxTorqueLimit", &FaulhaberMCS::getMaxTorqueLimit);
 
+    // torqueLimits / positionLimits: two reads packed into an int[2] array.
     if (!retValue.containsError())
     {
         ito::uint16 nlimit, pLimit;
@@ -1387,184 +1311,71 @@ ito::RetVal FaulhaberMCS::init(
     }
 
     if (!retValue.containsError())
-    {
-        ito::uint32 torque;
-        retValue += getTorqueGainControl(torque);
-        if (!retValue.containsError())
-        {
-            m_params["torqueGainControl"].setVal<int>(torque);
-        }
-    }
+        retValue += initIntParam("torqueGainControl", &FaulhaberMCS::getTorqueGainControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 torque;
-        retValue += getTorqueIntegralTimeControl(torque);
-        if (!retValue.containsError())
-        {
-            m_params["torqueIntegralTimeControl"].setVal<int>(torque);
-        }
-    }
+        retValue +=
+            initIntParam("torqueIntegralTimeControl", &FaulhaberMCS::getTorqueIntegralTimeControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 flux;
-        retValue += getFluxGainControl(flux);
-        if (!retValue.containsError())
-        {
-            m_params["fluxGainControl"].setVal<int>(flux);
-        }
-    }
+        retValue += initIntParam("fluxGainControl", &FaulhaberMCS::getFluxGainControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 flux;
-        retValue += getTorqueIntegralTimeControl(flux);
-        if (!retValue.containsError())
-        {
-            m_params["fluxIntegralTimeControl"].setVal<int>(flux);
-        }
-    }
+        retValue +=
+            initIntParam("fluxIntegralTimeControl", &FaulhaberMCS::getFluxIntegralTimeControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint32 gain;
-        retValue += getFluxGainControl(gain);
-        if (!retValue.containsError())
-        {
-            m_params["velocityGainControl"].setVal<int>(gain);
-        }
-    }
+        retValue += initIntParam("velocityGainControl", &FaulhaberMCS::getVelocityGainControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 time;
-        retValue += getVelocityIntegralTimeControl(time);
-        if (!retValue.containsError())
-        {
-            m_params["velocityIntegralTimeControl"].setVal<int>(time);
-        }
-    }
+        retValue += initIntParam(
+            "velocityIntegralTimeControl", &FaulhaberMCS::getVelocityIntegralTimeControl);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 threshold;
-        retValue += getVelocityDeviationThreshold(threshold);
-        if (!retValue.containsError())
-        {
-            m_params["velocityDeviationThresholdControl"].setVal<int>(threshold);
-        }
-    }
+        retValue += initIntParam(
+            "velocityDeviationThresholdControl", &FaulhaberMCS::getVelocityDeviationThreshold);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 velocitytime;
-        retValue += getVelocityDeviationTime(velocitytime);
-        if (!retValue.containsError())
-        {
-            m_params["velocityDeviationTimeControl"].setVal<int>(velocitytime);
-        }
-    }
+        retValue +=
+            initIntParam("velocityDeviationTimeControl", &FaulhaberMCS::getVelocityDeviationTime);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 warning;
-        retValue += getVelocityWarningThreshold(warning);
-        if (!retValue.containsError())
-        {
-            m_params["velocityWarningThresholdControl"].setVal<int>(warning);
-        }
-    }
+        retValue += initIntParam(
+            "velocityWarningThresholdControl", &FaulhaberMCS::getVelocityWarningThreshold);
 
     if (!retValue.containsError())
-    {
-        ito::uint8 option;
-        retValue += getVelocityIntegralPartOption(option);
-        if (!retValue.containsError())
-        {
-            m_params["velocityIntegralPartOption"].setVal<int>(option);
-        }
-    }
+        retValue += initIntParam(
+            "velocityIntegralPartOption", &FaulhaberMCS::getVelocityIntegralPartOption);
 
     if (!retValue.containsError())
-    {
-        ito::int16 current;
-        retValue += getCurrent(current);
-        if (!retValue.containsError())
-        {
-            m_params["current"].setVal<int>(current);
-        }
-    }
+        retValue += initIntParam("actualVelocityFilter", &FaulhaberMCS::getActualVelocityFilter);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getDeviceSupplyLowerThreshold(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["deviceSupplyLowerThreshold"].setVal<int>(voltage);
-        }
-    }
+        retValue += initIntParam("positionControlGain", &FaulhaberMCS::getPositionControlGain);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getMotorSupplyLowerThreshold(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["motorSupplyLowerThreshold"].setVal<int>(voltage);
-        }
-    }
+        retValue += initIntParam("current", &FaulhaberMCS::getCurrent);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getMotorSupplyMaxThreshold(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["motorSupplyMaxThreshold"].setVal<int>(voltage);
-        }
-    }
+        retValue += initIntParam(
+            "deviceSupplyLowerThreshold", &FaulhaberMCS::getDeviceSupplyLowerThreshold);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getMotorSupplyUpperThreshold(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["motorSupplyUpperThreshold"].setVal<int>(voltage);
-        }
-    }
+        retValue +=
+            initIntParam("motorSupplyLowerThreshold", &FaulhaberMCS::getMotorSupplyLowerThreshold);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getVoltageErrorDelayTime(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["voltageErrorDelayTime"].setVal<int>(voltage);
-        }
-    }
+        retValue +=
+            initIntParam("motorSupplyUpperThreshold", &FaulhaberMCS::getMotorSupplyUpperThreshold);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getDeviceSupplyVoltage(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["deviceSupplyVoltage"].setVal<int>(voltage);
-        }
-    }
+        retValue += initIntParam("voltageErrorDelayTime", &FaulhaberMCS::getVoltageErrorDelayTime);
 
     if (!retValue.containsError())
-    {
-        ito::uint16 voltage;
-        retValue += getMotorSupplyVoltage(voltage);
-        if (!retValue.containsError())
-        {
-            m_params["motorSupplyVoltage"].setVal<int>(voltage);
-        }
-    }
+        retValue += initIntParam("deviceSupplyVoltage", &FaulhaberMCS::getDeviceSupplyVoltage);
+
+    if (!retValue.containsError())
+        retValue += initIntParam("motorSupplyVoltage", &FaulhaberMCS::getMotorSupplyVoltage);
 
     if (!retValue.containsError())
     {
@@ -1575,31 +1386,7 @@ ito::RetVal FaulhaberMCS::init(
 
         for (int i = 0; i < m_numOfAxes; i++)
         {
-            switch (m_params["operationMode"].getVal<int>())
-            {
-            case -1:
-                ito::int16 voltage;
-                retValue += getVoltageMCS(voltage);
-                pos = static_cast<int>(voltage);
-                target = pos;
-                break;
-            case 1: // position mode
-                retValue += getPosMCS(pos);
-                retValue += getTargetPosMCS(target);
-                break;
-            case 3: // velocity mode
-                retValue += getVelocityMCS(pos);
-                retValue += getTargetVelocityMCS(target);
-                break;
-            case 10: // cyclic synch torque mode
-                ito::int16 torque;
-                retValue += getTorqueMCS(torque);
-                pos = static_cast<int>(torque);
-
-                retValue += getTargetTorqueMCS(torque);
-                target = static_cast<int>(torque);
-                break;
-            }
+            retValue += getPosMCS(pos);
             m_currentPos[i] = static_cast<double>(pos);
             m_targetPos[i] = static_cast<double>(target);
             m_currentStatus[i] =
@@ -1630,7 +1417,7 @@ ito::RetVal FaulhaberMCS::close(ItomSharedSemaphore* waitCond)
     if (m_nodeAppended)
     {
         openedNodes[m_port].removeOne(m_node);
-        if (openedNodes.isEmpty())
+        if (openedNodes[m_port].isEmpty())
         {
             retValue += shutDownSequence();
             m_serialBuffer.clear();
@@ -1703,6 +1490,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(static_cast<int>(temp));
+            }
+        }
+        else if (key == "peakCurrent")
+        {
+            ito::uint16 current;
+            retValue += getPeakCurrent(current);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(current));
             }
         }
         else if (key == "loadInertia")
@@ -1846,6 +1642,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(current));
             }
         }
+        else if (key == "velocityActualValue")
+        {
+            ito::int32 velocity;
+            retValue += getVelocityActualValueMCS(velocity);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(velocity));
+            }
+        }
         else if (key == "torqueLimits")
         {
             ito::uint16 nlimit, pLimit;
@@ -1942,6 +1747,24 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
                 retValue += it->setVal<int>(static_cast<int>(option));
             }
         }
+        else if (key == "actualVelocityFilter")
+        {
+            ito::uint16 filter;
+            retValue += getActualVelocityFilter(filter);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(filter));
+            }
+        }
+        else if (key == "positionControlGain")
+        {
+            ito::uint8 gain;
+            retValue += getPositionControlGain(gain);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(gain));
+            }
+        }
         else if (key == "nominalVoltage")
         {
             ito::uint16 voltage;
@@ -1962,47 +1785,47 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
         }
         else if (key == "deviceSupplyLowerThreshold")
         {
-            ito::uint16 voltage;
-            retValue += getDeviceSupplyLowerThreshold(voltage);
+            ito::uint16 threshold;
+            retValue += getDeviceSupplyLowerThreshold(threshold);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(static_cast<int>(voltage));
+                retValue += it->setVal<int>(static_cast<int>(threshold));
             }
         }
         else if (key == "motorSupplyLowerThreshold")
         {
-            ito::uint16 voltage;
-            retValue += getMotorSupplyLowerThreshold(voltage);
+            ito::uint16 threshold;
+            retValue += getMotorSupplyLowerThreshold(threshold);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(static_cast<int>(voltage));
+                retValue += it->setVal<int>(static_cast<int>(threshold));
             }
         }
         else if (key == "motorSupplyMaxThreshold")
         {
-            ito::uint16 voltage;
-            retValue += getMotorSupplyMaxThreshold(voltage);
+            ito::uint16 threshold;
+            retValue += getMotorSupplyMaxThreshold(threshold);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(static_cast<int>(voltage));
+                retValue += it->setVal<int>(static_cast<int>(threshold));
             }
         }
         else if (key == "motorSupplyUpperThreshold")
         {
-            ito::uint16 voltage;
-            retValue += getMotorSupplyUpperThreshold(voltage);
+            ito::uint16 threshold;
+            retValue += getMotorSupplyUpperThreshold(threshold);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(static_cast<int>(voltage));
+                retValue += it->setVal<int>(static_cast<int>(threshold));
             }
         }
         else if (key == "voltageErrorDelayTime")
         {
-            ito::uint16 voltage;
-            retValue += getVoltageErrorDelayTime(voltage);
+            ito::uint16 time;
+            retValue += getVoltageErrorDelayTime(time);
             if (!retValue.containsError())
             {
-                retValue += it->setVal<int>(static_cast<int>(voltage));
+                retValue += it->setVal<int>(static_cast<int>(time));
             }
         }
         else if (key == "deviceSupplyVoltage")
@@ -2021,6 +1844,15 @@ ito::RetVal FaulhaberMCS::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
             if (!retValue.containsError())
             {
                 retValue += it->setVal<int>(static_cast<int>(voltage));
+            }
+        }
+        else if (key == "targetTorque")
+        {
+            ito::int16 torque;
+            retValue += getTargetTorque(torque);
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(static_cast<int>(torque));
             }
         }
         *val = it.value();
@@ -2140,9 +1972,13 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             retValue += setQuickStopDeceleration(static_cast<ito::uint32>(val->getVal<int>()));
         }
+        else if (key == "peakCurrent")
+        {
+            retValue += setPeakCurrent(static_cast<ito::uint16>(val->getVal<int>()));
+        }
         else if (key == "loadInertia")
         {
-            retValue += setLoadInertia(static_cast<ito::uint32>(val->getVal<double>()*1000));
+            retValue += setLoadInertia(static_cast<ito::uint32>(val->getVal<double>() * 1000));
         }
         else if (key == "positionWindow")
         {
@@ -2151,18 +1987,6 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "positionWindowTime")
         {
             retValue += setPositionWindowTime(static_cast<ito::uint16>(val->getVal<int>()));
-        }
-        else if (key == "motorSupplyLowerThreshold")
-        {
-            retValue += setMotorSupplyLowerThreshold(static_cast<ito::uint16>(val->getVal<int>()));
-        }
-        else if (key == "motorSupplyUpperThreshold")
-        {
-            retValue += setMotorSupplyUpperThreshold(static_cast<ito::uint16>(val->getVal<int>()));
-        }
-        else if (key == "voltageErrorDelayTime")
-        {
-            retValue += setVoltageErrorDelayTime(static_cast<ito::uint16>(val->getVal<int>()));
         }
         else if (key == "moveTimeout")
         {
@@ -2254,6 +2078,14 @@ ito::RetVal FaulhaberMCS::setParam(
         {
             retValue += setVelocityIntegralPartOption(static_cast<ito::uint8>(val->getVal<int>()));
         }
+        else if (key == "actualVelocityFilter")
+        {
+            retValue += setActualVelocityFilter(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "positionControlGain")
+        {
+            retValue += setPositionControlGain(static_cast<ito::uint8>(val->getVal<int>()));
+        }
         else if (key == "nominalVoltage")
         {
             retValue += setNominalVoltage(static_cast<ito::uint16>(val->getVal<int>()));
@@ -2261,6 +2093,22 @@ ito::RetVal FaulhaberMCS::setParam(
         else if (key == "motionProfile")
         {
             retValue += setMotionProfileType(static_cast<ito::int16>(val->getVal<int>()));
+        }
+        else if (key == "motorSupplyLowerThreshold")
+        {
+            retValue += setMotorSupplyLowerThreshold(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "motorSupplyUpperThreshold")
+        {
+            retValue += setMotorSupplyUpperThreshold(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "voltageErrorDelayTime")
+        {
+            retValue += setVoltageErrorDelayTime(static_cast<ito::uint16>(val->getVal<int>()));
+        }
+        else if (key == "targetTorque")
+        {
+            retValue += setTargetTorque(static_cast<ito::int16>(val->getVal<int>()));
         }
 
         if (!retValue.containsError())
@@ -2368,6 +2216,57 @@ void FaulhaberMCS::quickStop()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::initStringParam(
+    const char* name, ito::RetVal (FaulhaberMCS::*getter)(QString&))
+{
+    QString v;
+    ito::RetVal rv = (this->*getter)(v);
+    if (!rv.containsError())
+        m_params[name].setVal<char*>(v.toLatin1().data());
+    return rv;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::readPosForCurrentMode(ito::int32& current, ito::int32* target)
+{
+    ito::RetVal retVal = ito::retOk;
+    switch (m_params["operationMode"].getVal<int>())
+    {
+    case -1: {
+        ito::int16 voltage;
+        retVal += getVoltageMCS(voltage);
+        current = static_cast<ito::int32>(voltage);
+        if (target)
+            *target = current;
+        break;
+    }
+    case 1: // position mode
+        retVal += getPosMCS(current);
+        if (target)
+            retVal += getTargetPosMCS(*target);
+        break;
+    case 3: // velocity mode
+        retVal += getVelocityMCS(current);
+        if (target)
+            retVal += getTargetVelocityMCS(*target);
+        break;
+    case 10: // cyclic synchronous torque mode
+    {
+        ito::int16 torque;
+        retVal += getTorqueMCS(torque);
+        current = static_cast<ito::int32>(torque);
+        if (target)
+        {
+            retVal += getTargetTorque(torque);
+            *target = static_cast<ito::int32>(torque);
+        }
+        break;
+    }
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::homingCurrentPosToZero(const int& axis)
 {
     ito::RetVal retValue = ito::retOk;
@@ -2447,7 +2346,7 @@ ito::RetVal FaulhaberMCS::performHoming(
     const ito::uint32& homingSpeed,
     const ito::uint32& acceleration,
     const ito::uint16& limitCheckDelayTime,
-    const ito::uint16 *torqueLimits,
+    const ito::uint16* torqueLimits,
     const ito::uint16& timeoutTime)
 {
     ito::RetVal retValue(ito::retOk);
@@ -2461,9 +2360,8 @@ ito::RetVal FaulhaberMCS::performHoming(
     {
         resetInterrupt();
         bool homingComplete = false;
-        int setPoint;
-        int target;
         bool timeout = false;
+        bool interrupted = false;
         QElapsedTimer timer;
         QMutex waitMutex;
         QWaitCondition waitCondition;
@@ -2471,97 +2369,375 @@ ito::RetVal FaulhaberMCS::performHoming(
         ito::int8 currentOperation;
         retValue += getOperationMode(currentOperation);
 
-        retValue += setOperationMode(OperationMode::Homing); // change to homing mode
-
-        // set parameters
-        retValue += setHomingTorqueLimits(torqueLimits);
-        retValue += setHomingOffset(offset);
-        retValue += setHomingMode(method);
-        retValue += setHomingSeekVelocity(switchSeekVelocity);
-        retValue += setHomingSpeed(homingSpeed);
-        retValue += setHomingAcceleration(acceleration);
-        retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
-
-        setControlWord(0x000F); // homing operation start
-        setControlWord(0x001F);
-
-        for (int i = 0; i < m_numOfAxes; i++)
+        // --- Step 0a: Configure 0x233F "Operation mode options" for homing.
+        // Per Faulhaber documentation §5.1, two bits in this bitfield are
+        // critical for homing:
+        //   * Bit 5 "Use homing torque limits during homing": when 0, the
+        //     drive ignores the values we wrote to 0x2350/0x2351 and uses
+        //     the regular torque limits (0x60E0/0x60E1) instead.
+        //   * Bit 4 "Ignore Position Limits during homing": defensive —
+        //     prevents narrow software position limits from blocking the
+        //     reference run.
+        // We OR-in mask 0x30 and preserve all other bits exactly as the
+        // user has them. The original value is restored at the end so
+        // nothing changes for subsequent operations.
+        ito::uint16 originalModeOptions = 0;
+        bool modeOptionsChanged = false;
+        if (!retValue.containsError())
         {
-            setStatus(
-                m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        }
-        sendStatusUpdate();
-
-        timer.start();
-        while (!homingComplete && !timeout)
-        {
-            if (isInterrupted())
+            retValue +=
+                readRegisterWithParsedResponse<ito::uint16>(0x233F, 0x00, originalModeOptions);
+            if (!retValue.containsError())
             {
-                retValue += setOperationMode(
-                    currentOperation); // changing into position mode stops homing operation
-                for (int i = 0; i < m_numOfAxes; i++)
+                ito::uint16 homingModeOptions = originalModeOptions | 0x0030;
+                if (homingModeOptions != originalModeOptions)
                 {
-                    replaceStatus(
-                        m_currentStatus[i], ito::actuatorMoving, ito::actuatorInterrupted);
+                    retValue += setRegister<ito::uint16>(
+                        0x233F, 0x00, homingModeOptions, sizeof(homingModeOptions));
+                    modeOptionsChanged = !retValue.containsError();
                 }
-                sendStatusUpdate();
-                retValue += ito::RetVal(
-                    ito::retError, 0, tr("Interrupt occurred during homing.").toLatin1().data());
-                return retValue;
             }
+        }
 
-            retValue += updateStatus();
-            setPoint = m_params["setPointAcknowledged"].getVal<int>();
-            target = m_params["targetReached"].getVal<int>();
-            if (setPoint && target)
+        // --- Step 1: Ensure the drive is in Operation Enabled (precondition
+        // per Faulhaber documentation §5.4.4). startupSequence() is a no-op
+        // when the drive is already enabled.
+        if (!retValue.containsError())
+        {
+            retValue += startupSequence();
+        }
+
+        // --- Step 1b: Clear controlword bit 4 BEFORE the mode switch.
+        // After a PPM move the controlword is left at 0x003F (bit 4 = 1 =
+        // "new setpoint" in PPM context). Switching into homing mode with
+        // bit 4 already high means the drive never sees a 0->1 transition,
+        // which makes the subsequent trigger unreliable.
+        if (!retValue.containsError())
+        {
+            setControlWord(0x000F); // bits 0..3 = Enable Operation, bit 4 = 0
+        }
+
+        // --- Step 2: Switch operation mode to Homing (0x6060 = 6) and wait
+        // for the device to confirm the switch via 0x6061 (Modes of
+        // Operation Display).
+        if (!retValue.containsError())
+        {
+            retValue += setOperationMode(OperationMode::Homing);
+        }
+
+        if (!retValue.containsError())
+        {
+            QElapsedTimer modeTimer;
+            QMutex modeMutex;
+            QWaitCondition modeCondition;
+            modeTimer.start();
+            ito::int8 activeMode = 0;
+            while (!modeTimer.hasExpired(m_waitForMCSTimeout))
             {
-                homingComplete = true;
-                m_params["homed"].setVal<int>(1);
-                break;
+                retValue += getOperationMode(activeMode);
+                if (retValue.containsError() ||
+                    activeMode == static_cast<ito::int8>(OperationMode::Homing))
+                    break;
+                modeMutex.lock();
+                modeCondition.wait(&modeMutex, m_delayAfterSendCommandMS);
+                modeMutex.unlock();
+                setAlive();
             }
-            // short delay of 10ms
-            waitMutex.lock();
-            waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
-            waitMutex.unlock();
-            setAlive();
-
-            if (timer.hasExpired(timeoutTime)) // timeout during movement
+            if (!retValue.containsError() &&
+                activeMode != static_cast<ito::int8>(OperationMode::Homing))
             {
-                timeout = true;
                 retValue += ito::RetVal(
                     ito::retError,
-                    9999,
-                    "Timeout occurred during homing. If necessary increase the parameter "
-                    "'timeoutTime'.");
-                for (int i = 0; i < m_numOfAxes; i++)
-                {
-                    replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorTimeout);
-                }
-                sendStatusUpdate(true);
+                    0,
+                    tr("Timeout waiting for device to switch to Homing mode.").toLatin1().data());
+            }
+        }
 
-                quickStop();
+        // --- Step 3: Set homing parameters ---
+        if (!retValue.containsError())
+        {
+            retValue += setHomingTorqueLimits(torqueLimits);
+            retValue += setHomingOffset(offset);
+            retValue += setHomingMode(method);
+            retValue += setHomingSeekVelocity(switchSeekVelocity);
+            retValue += setHomingSpeed(homingSpeed);
+            retValue += setHomingAcceleration(acceleration);
+            retValue += setHomingLimitCheckDelayTime(limitCheckDelayTime);
+        }
+
+        // --- Step 3c: Reset the drive's controller state by walking the CiA
+        // 402 state machine down to "Ready to switch on" (controlword 0x06)
+        // and back up to "Operation enabled" (controlword 0x0F). This is the
+        // same mechanism Faulhaber's own Motion Manager uses before each
+        // homing trigger.
+        //
+        // Why this is needed: when we enter performHoming the drive has been
+        // actively HOLDING the rotor at its last setpoint with full torque.
+        // The position/velocity/torque controller integrators are wound up
+        // against the load. Triggering homing in that state means the new
+        // torque setpoint adds onto an already saturated controller, so the
+        // rotor may not actually move within limitCheckDelayTime and the
+        // drive declares an instant (false) "block detected" — particularly
+        // problematic for methods -4..-1 (mechanical-stop detection).
+        //
+        // Dropping to "Ready to switch on" de-energises the motor briefly
+        // (~200 ms), resetting the controller integrators. Re-enabling
+        // walks back through "Switched on" to "Operation enabled" with a
+        // fresh controller, so the trigger sees torque ramp from zero.
+        //
+        // Safety note: this briefly removes holding torque. For non-self-
+        // locking axes (e.g. vertical loads without a mechanical brake) the
+        // load may drift during this window.
+        if (!retValue.containsError())
+        {
+            shutDown(); // controlword 0x06 -> Ready to switch on (no torque)
+
+            QElapsedTimer downTimer;
+            QMutex downMutex;
+            QWaitCondition downCondition;
+            downTimer.start();
+            bool downConfirmed = false;
+            while (!downTimer.hasExpired(m_waitForMCSTimeout))
+            {
+                retValue += updateStatus();
+                if (retValue.containsError())
+                    break;
+                if (!m_statusWord[2]) // OperationEnabled cleared
+                {
+                    downConfirmed = true;
+                    break;
+                }
+                downMutex.lock();
+                downCondition.wait(&downMutex, m_delayAfterSendCommandMS);
+                downMutex.unlock();
+                setAlive();
+            }
+            if (!retValue.containsError() && !downConfirmed)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Timeout waiting for drive to reach Ready-to-switch-on state.")
+                        .toLatin1()
+                        .data());
+            }
+
+            if (!retValue.containsError())
+            {
+                enableOperation(); // controlword 0x0F -> Operation enabled
+
+                QElapsedTimer upTimer;
+                QMutex upMutex;
+                QWaitCondition upCondition;
+                upTimer.start();
+                bool upConfirmed = false;
+                while (!upTimer.hasExpired(m_waitForMCSTimeout))
+                {
+                    retValue += updateStatus();
+                    if (retValue.containsError())
+                        break;
+                    if (m_statusWord[2]) // OperationEnabled set
+                    {
+                        upConfirmed = true;
+                        break;
+                    }
+                    upMutex.lock();
+                    upCondition.wait(&upMutex, m_delayAfterSendCommandMS);
+                    upMutex.unlock();
+                    setAlive();
+                }
+                if (!retValue.containsError() && !upConfirmed)
+                {
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Timeout waiting for drive to return to Operation-enabled "
+                           "state after controller reset.")
+                            .toLatin1()
+                            .data());
+                }
+            }
+        }
+
+        // --- Step 3b: Snapshot the homing-relevant statusword bits (10/12/13)
+        // BEFORE triggering. Used in Step 4a to detect whether the drive
+        // actually processed the trigger (any bit change vs. snapshot
+        // proves the drive responded).
+        bool snapBit10 = false;
+        bool snapBit12 = false;
+        bool snapBit13 = false;
+        if (!retValue.containsError())
+        {
+            retValue += updateStatus();
+            snapBit10 = m_statusWord[10];
+            snapBit12 = m_statusWord[12];
+            snapBit13 = m_statusWord[13];
+        }
+
+        // --- Step 4: Trigger homing via a rising edge on controlword bit 4 ---
+        // Bit 4 is already 0 (see Step 1b), so 0x001F produces a clean 0->1
+        // edge that the drive in homing mode unambiguously interprets as
+        // "start homing operation".
+        if (!retValue.containsError())
+        {
+            setControlWord(0x001F);
+        }
+
+        // --- Step 4a: Wait until the drive has acknowledged the trigger by
+        // changing any of the homing-relevant statusword bits relative to
+        // the snapshot taken in Step 3b. Catches cases where the trigger
+        // SDO didn't take effect.
+        if (!retValue.containsError())
+        {
+            QElapsedTimer ackTimer;
+            QMutex ackMutex;
+            QWaitCondition ackCondition;
+            ackTimer.start();
+            bool homingAcknowledged = false;
+            while (!ackTimer.hasExpired(m_waitForMCSTimeout))
+            {
+                retValue += updateStatus();
+                if (retValue.containsError())
+                    break;
+                if (m_statusWord[10] != snapBit10 || m_statusWord[12] != snapBit12 ||
+                    m_statusWord[13] != snapBit13)
+                {
+                    homingAcknowledged = true;
+                    break;
+                }
+                ackMutex.lock();
+                ackCondition.wait(&ackMutex, m_delayAfterSendCommandMS);
+                ackMutex.unlock();
+                setAlive();
+            }
+            if (!retValue.containsError() && !homingAcknowledged)
+            {
+                retValue += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("Timeout waiting for drive to acknowledge homing trigger "
+                       "(statusword bits 10/12/13 did not change). The drive did "
+                       "not process the homing start command.")
+                        .toLatin1()
+                        .data());
+            }
+        }
+
+        // --- Step 5: Poll until homing completes, errors out, or times out ---
+        if (!retValue.containsError())
+        {
+            for (int i = 0; i < m_numOfAxes; i++)
+            {
+                setStatus(
+                    m_currentStatus[i],
+                    ito::actuatorMoving,
+                    ito::actSwitchesMask | ito::actStatusMask);
+            }
+            sendStatusUpdate();
+
+            timer.start();
+            while (!retValue.containsError() && !homingComplete && !timeout)
+            {
+                if (isInterrupted())
+                {
+                    interrupted = true;
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Interrupt occurred during homing.").toLatin1().data());
+                    break;
+                }
+
+                retValue += updateStatus();
+                if (retValue.containsError())
+                {
+                    break;
+                }
+
+                if (m_statusWord[13])
+                {
+                    retValue += ito::RetVal(
+                        ito::retError, 0, tr("Error occurs during homing").toLatin1().data());
+                    break;
+                }
+                // Per Faulhaber §5.4.4, the drive sets both bit 12 (Homing
+                // Attained) and bit 10 (Target Reached) of the statusword
+                // once the reference run is complete. Require both.
+                if (m_statusWord[12] && m_statusWord[10])
+                {
+                    homingComplete = true;
+                    m_params["homed"].setVal<int>(1);
+                    break;
+                }
+                waitMutex.lock();
+                waitCondition.wait(&waitMutex, m_delayAfterSendCommandMS);
+                waitMutex.unlock();
+                setAlive();
+
+                if (timer.hasExpired(timeoutTime))
+                {
+                    timeout = true;
+                    retValue += ito::RetVal(
+                        ito::retError,
+                        9999,
+                        "Timeout occurred during homing. If necessary increase the parameter "
+                        "'timeout'.");
+                    for (int i = 0; i < m_numOfAxes; i++)
+                    {
+                        replaceStatus(
+                            m_currentStatus[i], ito::actuatorMoving, ito::actuatorTimeout);
+                    }
+                    sendStatusUpdate(true);
+
+                    quickStop();
+                    for (int i = 0; i < m_numOfAxes; i++)
+                    {
+                        replaceStatus(
+                            m_currentStatus[i], ito::actuatorMoving, ito::actuatorInterrupted);
+                    }
+                    retValue += startupSequence();
+                    sendStatusUpdate();
+                }
+            }
+
+            if (interrupted)
+            {
                 for (int i = 0; i < m_numOfAxes; i++)
                 {
                     replaceStatus(
                         m_currentStatus[i], ito::actuatorMoving, ito::actuatorInterrupted);
                 }
-                retValue += startupSequence();
-                sendStatusUpdate();
+            }
+
+            if (!retValue.containsError() && homingComplete)
+            {
+                // Clear bit 4 cleanly to end the homing operation while
+                // keeping the drive in Operation Enabled. Required so that
+                // subsequent operation-mode changes are not triggered by a
+                // leftover edge.
+                setControlWord(0x000F);
+
+                ito::int32 pos;
+                for (int i = 0; i < m_numOfAxes; i++)
+                {
+                    retValue += getPosMCS(pos);
+                    m_currentPos[i] = static_cast<double>(pos);
+                    m_targetPos[i] = static_cast<double>(0);
+
+                    replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
+                }
             }
         }
 
-
-        ito::int32 pos;
-        for (int i = 0; i < m_numOfAxes; i++)
-        {
-            retValue += getPosMCS(pos);
-            m_currentPos[i] = static_cast<double>(pos);
-            m_targetPos[i] = static_cast<double>(0);
-
-            replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
-        }
-
+        // Restore the previous operation mode and the pre-homing value of
+        // 0x233F so nothing changes for the user's subsequent operations.
         retValue += setOperationMode(currentOperation);
+
+        if (modeOptionsChanged)
+        {
+            retValue += setRegister<ito::uint16>(
+                0x233F, 0x00, originalModeOptions, sizeof(originalModeOptions));
+        }
     }
 
     sendStatusUpdate();
@@ -2772,7 +2948,7 @@ ito::RetVal FaulhaberMCS::setPosAbs(
                     retValue += setVelocityMCS(newVal);
                     break;
                 case 10: // cyclic synchronous torque control
-                    retValue += setTorqueMCS(newVal);
+                    retValue += setTargetTorque(newVal);
                     break;
                 }
 
@@ -3045,6 +3221,20 @@ ito::RetVal FaulhaberMCS::getWindingTemperature(ito::int16& temp)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPeakCurrent(ito::uint16& current)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        peakCurrent_register.index, peakCurrent_register.subindex, current);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPeakCurrent(const ito::uint16& current)
+{
+    return setRegister<ito::uint16>(
+        peakCurrent_register.index, peakCurrent_register.subindex, current, sizeof(current));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getLoadInertia(ito::uint32& inertia)
 {
     return readRegisterWithParsedResponse<ito::uint32>(
@@ -3240,7 +3430,7 @@ ito::RetVal FaulhaberMCS::getTorqueMCS(ito::int16& torque)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setTorqueMCS(const ito::int16 torque)
+ito::RetVal FaulhaberMCS::setTargetTorque(const ito::int16 torque)
 {
     return setRegister<ito::int16>(
         torqueTargetValue_register.index,
@@ -3250,7 +3440,7 @@ ito::RetVal FaulhaberMCS::setTorqueMCS(const ito::int16 torque)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getTargetTorqueMCS(ito::int16& torque)
+ito::RetVal FaulhaberMCS::getTargetTorque(ito::int16& torque)
 {
     return readRegisterWithParsedResponse<ito::int16>(
         torqueTargetValue_register.index, torqueTargetValue_register.subindex, torque);
@@ -3271,6 +3461,13 @@ ito::RetVal FaulhaberMCS::setVoltageMCS(ito::int16& current)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getVelocityActualValueMCS(ito::int32& velocity)
+{
+    return readRegisterWithParsedResponse<ito::int32>(
+        velocityActualValue_register.index, velocityActualValue_register.subindex, velocity);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getMotionProfileType(ito::int16& type)
 {
     return readRegisterWithParsedResponse<ito::int16>(
@@ -3281,102 +3478,83 @@ ito::RetVal FaulhaberMCS::getMotionProfileType(ito::int16& type)
 ito::RetVal FaulhaberMCS::setMotionProfileType(const ito::int16& type)
 {
     return setRegister<ito::int16>(
-        motionProfileType_register.index,
-        motionProfileType_register.subindex,
-        type, sizeof(type));
+        motionProfileType_register.index, motionProfileType_register.subindex, type, sizeof(type));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getDeviceSupplyLowerThreshold(ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::getDeviceSupplyLowerThreshold(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_deviceSupplyLowerThreshold_register.index,
-        voltageMonitor_deviceSupplyLowerThreshold_register.subindex,
-        threshold);
+        deviceSupplyLowerThreshold.index, deviceSupplyLowerThreshold.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getMotorSupplyLowerThreshold(ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::getMotorSupplyLowerThreshold(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_motorSupplyLowerThreshold_register.index,
-        voltageMonitor_motorSupplyLowerThreshold_register.subindex,
-        threshold);
+        motorSupplyLowerThreshold.index, motorSupplyLowerThreshold.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setMotorSupplyLowerThreshold(const ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::setMotorSupplyLowerThreshold(const ito::uint16& voltage)
 {
-    return setRegister<ito::int16>(
-        voltageMonitor_motorSupplyLowerThreshold_register.index,
-        voltageMonitor_motorSupplyLowerThreshold_register.subindex,
-        threshold,
-        sizeof(threshold));
+    return setRegister<ito::uint16>(
+        motorSupplyLowerThreshold.index,
+        motorSupplyLowerThreshold.subindex,
+        voltage,
+        sizeof(voltage));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getMotorSupplyMaxThreshold(ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::getMotorSupplyMaxThreshold(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_motorSupplyMaxThreshold_register.index,
-        voltageMonitor_motorSupplyMaxThreshold_register.subindex,
-        threshold);
+        motorSupplyMaxThreshold.index, motorSupplyMaxThreshold.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::getMotorSupplyUpperThreshold(ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::getMotorSupplyUpperThreshold(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_motorSupplyUpperThreshold_register.index,
-        voltageMonitor_motorSupplyUpperThreshold_register.subindex,
-        threshold);
+        motorSupplyUpperThreshold.index, motorSupplyUpperThreshold.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal FaulhaberMCS::setMotorSupplyUpperThreshold(const ito::uint16& threshold)
+ito::RetVal FaulhaberMCS::setMotorSupplyUpperThreshold(const ito::uint16& voltage)
 {
-    return setRegister<ito::int16>(
-        voltageMonitor_motorSupplyUpperThreshold_register.index,
-        voltageMonitor_motorSupplyUpperThreshold_register.subindex,
-        threshold,
-        sizeof(threshold));
+    return setRegister<ito::uint16>(
+        motorSupplyUpperThreshold.index,
+        motorSupplyUpperThreshold.subindex,
+        voltage,
+        sizeof(voltage));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getVoltageErrorDelayTime(ito::uint16& time)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_voltageErrorDelayTime_register.index,
-        voltageMonitor_voltageErrorDelayTime_register.subindex,
-        time);
+        voltageErrorDelayTime.index, voltageErrorDelayTime.subindex, time);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::setVoltageErrorDelayTime(const ito::uint16& time)
 {
-    return setRegister<ito::int16>(
-        voltageMonitor_voltageErrorDelayTime_register.index,
-        voltageMonitor_voltageErrorDelayTime_register.subindex,
-        time,
-        sizeof(time));
+    return setRegister<ito::uint16>(
+        voltageErrorDelayTime.index, voltageErrorDelayTime.subindex, time, sizeof(time));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getDeviceSupplyVoltage(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_deviceSupplyVoltage_register.index,
-        voltageMonitor_deviceSupplyVoltage_register.subindex,
-        voltage);
+        deviceSupplyVoltage.index, deviceSupplyVoltage.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getMotorSupplyVoltage(ito::uint16& voltage)
 {
     return readRegisterWithParsedResponse<ito::uint16>(
-        voltageMonitor_motorSupplyVoltage_register.index,
-        voltageMonitor_motorSupplyVoltage_register.subindex,
-        voltage);
+        motorSupplyVoltage.index, motorSupplyVoltage.subindex, voltage);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3660,10 +3838,41 @@ ito::RetVal FaulhaberMCS::setVelocityIntegralPartOption(const ito::uint8 option)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getActualVelocityFilter(ito::uint16& filter)
+{
+    return readRegisterWithParsedResponse<ito::uint16>(
+        actualVelocityFilter.index, actualVelocityFilter.subindex, filter);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setActualVelocityFilter(const ito::uint16 filter)
+{
+    return setRegister<ito::uint16>(
+        actualVelocityFilter.index, actualVelocityFilter.subindex, filter, sizeof(filter));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::getPositionControlGain(ito::uint8& option)
+{
+    return readRegisterWithParsedResponse<ito::uint8>(
+        positionControlGain_register.index, positionControlGain_register.subindex, option);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FaulhaberMCS::setPositionControlGain(const ito::uint8 option)
+{
+    return setRegister<ito::uint8>(
+        positionControlGain_register.index,
+        positionControlGain_register.subindex,
+        option,
+        sizeof(option));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FaulhaberMCS::getPositionWindow(ito::uint32& window)
 {
     return readRegisterWithParsedResponse<ito::uint32>(
-        positionWindow_register.index, positionWindowTime_register.subindex, window);
+        positionWindow_register.index, positionWindow_register.subindex, window);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3684,7 +3893,10 @@ ito::RetVal FaulhaberMCS::getPositionWindowTime(ito::uint16& time)
 ito::RetVal FaulhaberMCS::setPositionWindowTime(const ito::uint16 time)
 {
     return setRegister<ito::uint16>(
-        positionWindowTime_register.index, positionWindowTime_register.subindex, time, sizeof(time));
+        positionWindowTime_register.index,
+        positionWindowTime_register.subindex,
+        time,
+        sizeof(time));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4187,7 +4399,7 @@ ito::RetVal FaulhaberMCS::interpretCIA402Error(const QByteArray& errorBytes)
     ito::uint8 addCodeHB = static_cast<ito::uint8>(errorBytes[8]);
     ito::uint8 errorCode = static_cast<ito::uint8>(errorBytes[9]);
     ito::uint8 errorClass = static_cast<ito::uint8>(errorBytes[10]);
-    ito::uint8 additionalCode = addCodeLB | (addCodeHB << 8);
+    ito::uint16 additionalCode = addCodeLB | (addCodeHB << 8);
 
     QMap<uint8_t, QMap<uint8_t, QMap<uint16_t, QString>>> errorMap;
     QString errorMessage;
@@ -4258,8 +4470,8 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
     ito::RetVal retVal(ito::retOk);
     bool done = false;
     bool timeout = false;
-    int currentPos = 0;
-    int targetPos = 0;
+    ito::int32 currentPos = 0;
+    ito::int32 targetPos = 0;
     QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
@@ -4297,30 +4509,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
 
         for (const auto& i : axis)
         {
-            switch (m_params["operationMode"].getVal<int>())
-            {
-            case -1:
-                ito::int16 voltage;
-                retVal += getVoltageMCS(voltage);
-                currentPos = static_cast<int>(voltage);
-                targetPos = currentPos;
-                break;
-            case 1:
-                retVal += getPosMCS(currentPos);
-                retVal += getTargetPosMCS(targetPos);
-                break;
-            case 3:
-                retVal += getVelocityMCS(currentPos);
-                retVal += getTargetVelocityMCS(targetPos);
-                break;
-            case 10:
-                ito::int16 torque;
-                retVal += getTorqueMCS(torque);
-                currentPos = static_cast<int>(torque);
-                retVal += getTargetTorqueMCS(torque);
-                targetPos = static_cast<int>(torque);
-                break;
-            }
+            retVal += readPosForCurrentMode(currentPos, &targetPos);
 
             m_currentPos[i] = static_cast<double>(currentPos);
             m_targetPos[i] = static_cast<double>(targetPos);
@@ -4328,7 +4517,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
             retVal += updateStatus();
             int mode = m_params["operationMode"].getVal<int>();
 
-            if (m_statusWord[10] || m_statusWord[11])  // target flag
+            if (m_statusWord[10] || m_statusWord[11]) // target flag
             {
                 setStatus(
                     m_currentStatus[i],
@@ -4336,7 +4525,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
             }
-            else if (m_statusWord[13])  // error flag
+            else if (m_statusWord[13]) // error flag
             {
                 setStatus(
                     m_currentStatus[i],
@@ -4344,7 +4533,7 @@ ito::RetVal FaulhaberMCS::waitForDone(const int timeoutMS, const QVector<int> ax
                     ito::actSwitchesMask | ito::actStatusMask);
                 done = true;
             }
-            else if (mode != 1)  // no target flag for other mode than position control mode
+            else if (mode != 1) // no target flag for other mode than position control mode
             {
                 setStatus(
                     m_currentStatus[i],
@@ -4397,25 +4586,7 @@ ito::RetVal FaulhaberMCS::updateStatus()
         m_currentStatus[i] = m_currentStatus[i] | ito::actuatorAvailable;
 
         ito::int32 intPos = 0;
-        switch (m_params["operationMode"].getVal<int>())
-        {
-        case -1:
-            ito::int16 voltage;
-            retVal += getVoltageMCS(voltage);
-            intPos = static_cast<int>(voltage);
-            break;
-        case 1: // position mode
-            retVal += getPosMCS(intPos);
-            break;
-        case 3: // velocity mode
-            retVal += getVelocityMCS(intPos);
-            break;
-        case 10: // cyclic synch torque mode
-            ito::int16 torque;
-            retVal += getTorqueMCS(torque);
-            intPos = static_cast<int>(torque);
-            break;
-        }
+        retVal += readPosForCurrentMode(intPos);
         m_currentPos[i] = static_cast<double>(intPos);
 
         if (m_params["targetReached"].getVal<int>())

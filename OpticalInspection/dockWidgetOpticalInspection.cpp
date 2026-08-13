@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "OpticalInspection" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,10 +20,10 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetDummyGrabber.h"
+#include "dockWidgetOpticalInspection.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
+dockWidgetOpticalInspection::dockWidgetOpticalInspection(ito::AddInDataIO *dataIO) :
     AbstractAddInDockWidget(dataIO),
     m_inEditing(false),
     m_firstRun(true)
@@ -32,7 +32,7 @@ DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
+ void dockWidgetOpticalInspection::parametersChanged(QMap<QString, ito::Param> params)
  {
     ui.spinBpp->setValue(params["bpp"].getVal<int>());
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
@@ -68,13 +68,13 @@ DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *dataIO) :
  }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::identifierChanged(const QString &identifier)
+void dockWidgetOpticalInspection::identifierChanged(const QString &identifier)
 {
     ui.lblID->setText(identifier);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int d)
+void dockWidgetOpticalInspection::on_spinBox_gain_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -86,7 +86,7 @@ void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int d)
+void dockWidgetOpticalInspection::on_spinBox_offset_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -98,7 +98,7 @@ void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyGrabber::on_doubleSpinBox_integration_time_valueChanged(double d)
+void dockWidgetOpticalInspection::on_doubleSpinBox_integration_time_valueChanged(double d)
 {
     if (!m_inEditing)
     {
