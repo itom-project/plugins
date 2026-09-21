@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -28,9 +28,7 @@
 #include "gitVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/core/core.hpp"
-#if (CV_MAJOR_VERSION >= 3)
     #include "opencv2/videoio/videoio.hpp"
-#endif
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declarations of PI constant
 
@@ -329,10 +327,9 @@ const ito::RetVal OpenCVGrabber::showConfDialog(void)
 {
 #if (CV_MAJOR_VERSION >= 4)
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), m_pCam->open(cv::CAP_DSHOW)));
-#elif (CV_MAJOR_VERSION >= 2 && CV_MAJOR_VERSION < 4)
-    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW));
 #else
-    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), false));
+    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW));
+
 #endif
 }
 
@@ -1017,33 +1014,16 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         }
 
 #ifdef _DEBUG
-#ifdef cv::CAP_PROP_FOCUS
         qDebug() << "cv::CAP_PROP_FOCUS" << m_pCam->get(cv::CAP_PROP_FOCUS);
-#endif
-#ifdef cv::CAP_PROP_IRIS
         qDebug() << "cv::CAP_PROP_IRIS" << m_pCam->get(cv::CAP_PROP_IRIS);
-#endif
-#ifdef cv::CAP_PROP_ZOOM
         qDebug() << "cv::CAP_PROP_ZOOM" << m_pCam->get(cv::CAP_PROP_ZOOM);
-#endif
-#ifdef cv::CAP_PROP_ROLL
         qDebug() << "cv::CAP_PROP_ROLL" << m_pCam->get(cv::CAP_PROP_ROLL);
-#endif
-#ifdef cv::CAP_PROP_TILT
         qDebug() << "cv::CAP_PROP_TILT" << m_pCam->get(cv::CAP_PROP_TILT);
-#endif
-#ifdef cv::CAP_PROP_PAN
         qDebug() << "cv::CAP_PROP_PAN" << m_pCam->get(cv::CAP_PROP_PAN);
-#endif
-#ifdef cv::CAP_PROP_BACKLIGHT
         qDebug() << "cv::CAP_PROP_BACKLIGHT" << m_pCam->get(cv::CAP_PROP_BACKLIGHT);
-#endif
         qDebug() << "cv::CAP_PROP_EXPOSURE" << m_pCam->get(cv::CAP_PROP_EXPOSURE);
         qDebug() << "cv::CAP_PROP_GAIN" << m_pCam->get(cv::CAP_PROP_GAIN);
         qDebug() << "v::CAP_PROP_WHITE_BALANCE_BLUE_U" << m_pCam->get(cv::CAP_PROP_WHITE_BALANCE_BLUE_U);
-#if (CV_MAJOR_VERSION < 3)
-        qDebug() << "cv::CAP_PROP_MONOCROME" << m_pCam->get(cv::CAP_PROP_MONOCROME);
-#endif
         qDebug() << "cv::CAP_PROP_GAMMA" << m_pCam->get(cv::CAP_PROP_GAMMA);
         qDebug() << "cv::CAP_PROP_SHARPNESS" << m_pCam->get(cv::CAP_PROP_SHARPNESS);
         qDebug() << "cv::CAP_PROP_SATURATION" << m_pCam->get(cv::CAP_PROP_SATURATION);
@@ -1582,9 +1562,8 @@ bool OpenCVGrabber::showNativeSettingsDialog()
 {
 #if (CV_MAJOR_VERSION >= 4)
     return m_pCam->set(cv::CAP_PROP_SETTINGS, 0.0);
-#elif(CV_MAJOR_VERSION > 2 && CV_MAJOR_VERSION < 4)
-    return m_pCam->set(CV_CAP_PROP_SETTINGS, 0.0);
 #else
-    return false;
+    return m_pCam->set(CV_CAP_PROP_SETTINGS, 0.0);
+
 #endif
 }

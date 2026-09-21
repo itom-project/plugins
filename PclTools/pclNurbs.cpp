@@ -23,7 +23,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #if PCLHASSURFACENURBS
 
 #include "pclTools.h"
-#define EIGEN_QT_SUPPORT
+//EIGEN_QT_SUPPORT is intentionally not defined: it only enables the optional
+//Eigen::Transform <-> QMatrix / QTransform conversions. QMatrix has been removed
+//in Qt6 and these conversions are not used here, hence omitting the define keeps
+//this plugin compatible with Qt5.12 up to Qt6.x.
 
 #include "DataObject/dataobj.h"
 #include "common/helperCommon.h"

@@ -25,7 +25,7 @@
 
 #include "common/addInInterface.h"
 
-#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc.hpp"
 #include "pluginVersion.h"
 #include <qsharedpointer.h>
 
@@ -255,7 +255,6 @@ public:
         QVector<ito::Param>* paramsOpt,
         QVector<ito::Param>* paramsOut);
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
     static const QString cvFindCirclesDoc;
     static ito::RetVal cvFindCircles(
         QVector<ito::ParamBase>* paramsMand,
@@ -451,7 +450,7 @@ public:
         QVector<ito::Param>* paramsMand,
         QVector<ito::Param>* paramsOpt,
         QVector<ito::Param>* paramsOut);
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
     static const QString cvCannyEdgeDoc;
     static ito::RetVal cvCannyEdge(
         QVector<ito::ParamBase>* paramsMand,

@@ -23,7 +23,12 @@ SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built librar
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-find_package(OpenCV COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
+find_package(OpenCV REQUIRED COMPONENTS core imgproc REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 #try to enable OpenMP (e.g. not available with VS Express)
 find_package(OpenMP QUIET)
