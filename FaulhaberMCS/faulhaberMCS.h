@@ -138,34 +138,48 @@ private:
     const Register productCode_register = {0x1018, 0x02};
     const Register revisionNumber_register = {0x1018, 0x03};
     const Register firmwareVersion_register = {0x100A, 0x00};
+
     const Register operationMode_register = {0x6060, 0x00};
+
     const Register nodeID_register = {0x2400, 0x03};
     const Register netMode_ignoreCRC = {0x2400, 0x04};
     const Register netMode_register = {0x2400, 0x05};
     const Register deviceID_register = {0x2400, 0x08};
+
     const Register CPUTemperature_register = {0x2326, 0x01};
     const Register powerStageTemperature_register = {0x2326, 0x02};
     const Register windingTemperature_register = {0x2326, 0x03};
+
+    const Register peakCurrent_register = {0x2329, 0x02};
     const Register loadInertia_register = {0x2329, 0x0A};
+
     const Register positionActualValue_register = {0x6064, 0x00};
     const Register positionTargetValue_register = {0x6062, 0x00};
     const Register positionAbsolutValue_register = {0x607a, 0x00};
     const Register positionRelativeValue_register = {0x607a, 0x00};
+
     const Register velocityActualValue_register = {0x606c, 0x00};
     const Register velocityTargetValue_register = {0x60FF, 0x00};
     const Register voltageValue_register = {0x2341, 0x00};
+
     const Register torqueTargetValue_register = {0x6071, 0x00};
     const Register torqueActualValue_register = {0x6077, 0x00};
+
     const Register currentActualValue_register = {0x6078, 0x00};
+
     const Register statusWord_register = {0x6041, 0x00};
     const Register controlWord_register = {0x6040, 0x00};
     const Register maxMotorSpeed_register = {0x6080, 0x00};
+
     const Register acceleration_register = {0x6083, 0x00};
     const Register deceleration_register = {0x6084, 0x00};
+
     const Register profileVelocity_register = {0x6081, 0x00};
     const Register quickStopDeceleration_register = {0x6085, 0x00};
     const Register maxTorqueLimit_register = {0x6072, 0x00};
+
     const Register communicationSettings_register = {0x2400, 0x04};
+
     const Register error_register = {0x2320, 0x00};
     const Register positiveTorqueLimit_register = {0x60E0, 0x00};
     const Register negativeTorqueLimit_register = {0x60E1, 0x00};
@@ -177,14 +191,21 @@ private:
 
     const Register torqueGainControl_register = {0x2342, 0x01};
     const Register torqueIntegralTimeControl_register = {0x2342, 0x02};
+
     const Register fluxGainControl_register = {0x2343, 0x01};
     const Register fluxIntegralTimeControl_register = {0x2343, 0x02};
+
     const Register velocityGainControl_register = {0x2344, 0x01};
     const Register velocityIntegralTimeControl_register = {0x2344, 0x02};
     const Register velocityDeviationThreshold_register = {0x2344, 0x03};
     const Register velocityDeviationTime_register = {0x2344, 0x04};
     const Register velocityWarningThreshold_register = {0x2344, 0x05};
     const Register velocityIntegralPartOption = {0x2344, 0x06};
+
+    const Register positionControlGain_register = {0x2348, 0x01};
+
+    const Register actualVelocityFilter = {0x2345, 0x01};
+
     // todo INTEGRAL PART OPTION
     // TODO UPDATE DOCS
 
@@ -196,6 +217,14 @@ private:
     const Register homingLimitCheckDelayTime_register = {0x2324, 0x02};
     const Register homingNegativeTorqueLimit_register = {0x2350, 0x00};
     const Register homingPositiveTorqueLimit_register = {0x2351, 0x00};
+
+    const Register deviceSupplyLowerThreshold = {0x2325, 0x01};
+    const Register motorSupplyLowerThreshold = {0x2325, 0x02};
+    const Register motorSupplyMaxThreshold = {0x2325, 0x03};
+    const Register motorSupplyUpperThreshold = {0x2325, 0x04};
+    const Register voltageErrorDelayTime = {0x2325, 0x05};
+    const Register deviceSupplyVoltage = {0x2325, 0x06};
+    const Register motorSupplyVoltage = {0x2325, 0x07};
 
     const Register nominalVoltage_register = {0x2604, 0x00};
 
@@ -356,6 +385,12 @@ private:
     ito::RetVal getVelocityIntegralPartOption(ito::uint8& option);
     ito::RetVal setVelocityIntegralPartOption(const ito::uint8 option);
 
+    ito::RetVal getActualVelocityFilter(ito::uint16& filter);
+    ito::RetVal setActualVelocityFilter(const ito::uint16 filter);
+
+    ito::RetVal getPositionControlGain(ito::uint8& gain);
+    ito::RetVal setPositionControlGain(const ito::uint8 gain);
+
     ito::RetVal getPositionWindow(ito::uint32& window);
     ito::RetVal setPositionWindow(const ito::uint32 window);
 
@@ -366,25 +401,52 @@ private:
     ito::RetVal getCPUTemperature(ito::int16& temp);
     ito::RetVal getPowerStageTemperature(ito::int16& temp);
     ito::RetVal getWindingTemperature(ito::int16& temp);
+
+    ito::RetVal getPeakCurrent(ito::uint16& current);
+    ito::RetVal setPeakCurrent(const ito::uint16& current);
+
     ito::RetVal getLoadInertia(ito::uint32& inertia);
     ito::RetVal setLoadInertia(const ito::uint32& inertia);
 
     // MOTION
     ito::RetVal getPosMCS(ito::int32& pos);
     ito::RetVal getTargetPosMCS(ito::int32& pos);
+
     ito::RetVal setPosAbsMCS(const ito::int32& pos);
     ito::RetVal setPosRelMCS(const ito::int32& pos);
+
     ito::RetVal getVelocityMCS(ito::int32& pos);
     ito::RetVal setVelocityMCS(const ito::int32& pos);
+
     ito::RetVal getTargetVelocityMCS(ito::int32& pos);
     ito::RetVal getTorqueMCS(ito::int16& torque);
-    ito::RetVal setTorqueMCS(const ito::int16 torque);
-    ito::RetVal getTargetTorqueMCS(ito::int16& torque);
+
+    ito::RetVal getTargetTorque(ito::int16& torque);
+    ito::RetVal setTargetTorque(const ito::int16 torque);
+
     ito::RetVal getVoltageMCS(ito::int16& current);
     ito::RetVal setVoltageMCS(ito::int16& current);
+    ito::RetVal getVelocityActualValueMCS(ito::int32& velocity);
 
     ito::RetVal getMotionProfileType(ito::int16& type);
     ito::RetVal setMotionProfileType(const ito::int16& type);
+
+    // VOLTAGE MONITOR
+    ito::RetVal getDeviceSupplyLowerThreshold(ito::uint16& voltage);
+
+    ito::RetVal getMotorSupplyLowerThreshold(ito::uint16& voltage);
+    ito::RetVal setMotorSupplyLowerThreshold(const ito::uint16& voltage);
+
+    ito::RetVal getMotorSupplyMaxThreshold(ito::uint16& voltage);
+
+    ito::RetVal getMotorSupplyUpperThreshold(ito::uint16& voltage);
+    ito::RetVal setMotorSupplyUpperThreshold(const ito::uint16& voltage);
+
+    ito::RetVal getVoltageErrorDelayTime(ito::uint16& time);
+    ito::RetVal setVoltageErrorDelayTime(const ito::uint16& time);
+
+    ito::RetVal getDeviceSupplyVoltage(ito::uint16& voltage);
+    ito::RetVal getMotorSupplyVoltage(ito::uint16& voltage);
 
     // HOMING
     ito::RetVal setHomingMode(const ito::int8& mode);

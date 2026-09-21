@@ -1,7 +1,7 @@
 #ifndef TUCSENCONST_H
 #define TUCSENCONST_H
 
-static char m_strArrProp[][128] = { 
+static char m_strArrProp[][128] = {
 "TUIDP_GLOBALGAIN      : [Global Gain]                ",
 "TUIDP_EXPOSURETM      : [Exposure Time]              ",
 "TUIDP_BRIGHTNESS      : [Brightness(Auto Exposure)]  ",

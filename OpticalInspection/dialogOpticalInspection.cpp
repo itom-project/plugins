@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "OpticalInspection" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2018, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -20,15 +20,14 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dialogDummyGrabber.h"
+#include "dialogOpticalInspection.h"
 
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogDummyGrabber::DialogDummyGrabber(ito::AddInBase *grabber) :
+DialogOpticalInspection::DialogOpticalInspection(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
@@ -38,9 +37,8 @@ DialogDummyGrabber::DialogDummyGrabber(ito::AddInBase *grabber) :
     enableDialog(false);
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
+void DialogOpticalInspection::parametersChanged(QMap<QString, ito::Param> params)
 {
     m_currentParameters = params;
 
@@ -140,7 +138,7 @@ void DialogDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogDummyGrabber::applyParameters()
+ito::RetVal DialogOpticalInspection::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -235,7 +233,7 @@ ito::RetVal DialogDummyGrabber::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogOpticalInspection::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -256,7 +254,7 @@ void DialogDummyGrabber::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::enableDialog(bool enabled)
+void DialogOpticalInspection::enableDialog(bool enabled)
 {
     ui.groupBoxBinning->setEnabled(enabled);
     ui.groupBoxIntegration->setEnabled(enabled);
@@ -264,19 +262,19 @@ void DialogDummyGrabber::enableDialog(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::on_rangeX01_valuesChanged(int minValue, int maxValue)
+void DialogOpticalInspection::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
     ui.spinSizeX->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::on_rangeY01_valuesChanged(int minValue, int maxValue)
+void DialogOpticalInspection::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
     ui.spinSizeY->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogDummyGrabber::on_btnFullROI_clicked()
+void DialogOpticalInspection::on_btnFullROI_clicked()
 {
     if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
     {

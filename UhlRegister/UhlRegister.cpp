@@ -19,20 +19,20 @@
 
 enum uhlCmdReg {
     XPOS        =   0,      // traverse paths
-//    YPOS        =   1,
-//    ZPOS        =   2,
+//  YPOS        =   1,
+//  ZPOS        =   2,
     XABSPOS     =   3,
     STATUS      =   6,
     COMMAND     =   7,      // command register
     RAMP        =   8,      // acceleration [0..99]
     REVSPEED    =   9,      // revolution speed in .1 rps [0..90]
-//    CURRENT     =   10,     // electrical current in idle mode [0..10]
+//  CURRENT     =   10,     // electrical current in idle mode [0..10]
     MASK        =   11,     // active axis
     SDELAY      =   12,     // delay of answers of control the serial interface by 2ms steps, 0..18ms
     XPERIOD     =   27,     // partition period X
     READ        =   64,     // offset write register -> read register
     START       =   80,
-//    SCALEREG    =   103,
+//  SCALEREG    =   103,
     POSREG      =   107
 };
 
@@ -44,7 +44,7 @@ enum uhlCmd {
     GOABSEXTCLK =   'e',
     GORELEXTCLK =   'g',
     JOYON       =   'j',
-//    JOYON2      =   's',
+//  JOYON2      =   's',
     GOEND       =   'l',
     GOABSINTCLK =   'r',
     GORELINTCLK =   'v'

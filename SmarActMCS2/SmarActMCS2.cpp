@@ -385,7 +385,7 @@ ito::RetVal SmarActMCS2::init(
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
             m_params["deviceName"].setVal<char*>(buf);
@@ -397,7 +397,7 @@ ito::RetVal SmarActMCS2::init(
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
         {
@@ -415,7 +415,7 @@ ito::RetVal SmarActMCS2::init(
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
             m_params["noOfBusModules"].setVal<int>(noOfBusModules);
@@ -428,7 +428,7 @@ ito::RetVal SmarActMCS2::init(
         if (result != SA_CTL_ERROR_NONE)
         {
             retValue += ito::RetVal(
-                ito::retError, 0, tr("MCS2 error getting devive information.\n").toLatin1().data());
+                ito::retError, 0, tr("MCS2 error getting device information.\n").toLatin1().data());
         }
         else
         {
