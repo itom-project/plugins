@@ -139,7 +139,7 @@ Tucsen::Tucsen() :
     paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 3647, 3647, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 #endif
-    
+
     //paramVal = ito::Param("binning", ito::ParamBase::Int | ito::ParamBase::In, 101, 101, 101, tr("binning (horizontal_factor * 100 + vertical_factor)").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
 
@@ -364,7 +364,7 @@ ito::RetVal Tucsen::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     TUCAM_Capa_GetValue(m_opCam.hIdxTUCam, TUIDC_BITOFDEPTH, &capaVal);
     //m_params["bpp"].setMeta(new ito::IntMeta(8, 16, 8), true);
     m_params["bpp"].setVal<ito::int32>(capaVal);
-    
+
 
     if (!retValue.containsError())
     {
@@ -843,7 +843,7 @@ ito::RetVal Tucsen::retrieveData(ito::DataObject* externalDataObject)
                 {
                     if (copyExternal)
                     {
-                        retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) 
+                        retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)
                             m_frame.pBuffer, bufferWidth, bufferHeight);
                     }
                     if (!copyExternal || hasListeners)

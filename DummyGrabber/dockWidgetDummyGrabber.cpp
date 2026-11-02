@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "QuantumComposer" for itom software
+    Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2022, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany

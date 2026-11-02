@@ -37,73 +37,73 @@ the method *getParam*, writeable parameters can be changed using *setParam*.
 **address**: int
     Address of stage, 0x0 - 0xF. The address can be changed by setting the parameter later
     on.
-    
+
     *Value range: [0x0, 0xf], Default: 0x0*
 **async**: int
     Toggles if motor has to wait until end of movement (0:sync) or not (1:async)
-    
+
     *Value range: [0, 1], Default: 0*
 **autoSaveSettings**: int
     If 1, motor frequency settings (search, optimization, manual adjustment...) are
     automatically stored to the device. See also the 'saveUserData' exec function.
-    
+
     *Value range: [0, 1], Default: 1*
 **axisType**: int, read-only
     Axis type: -1: indexed, 0: rotatory, 1: linear
-    
+
     *Value range: [-1, 1], Default: 0*
 **backwardFrequency1**: int
     The backward frequency for the first motor in Hz
-    
+
     *Value range: [4, inf], Unit: Hz, Default: 99595*
 **backwardFrequency2**: int
     The backward frequency for the second motor in Hz (if available)
-    
+
     *Value range: [4, inf], Unit: Hz, Default: 98926*
 **calibDirection**: int, read-only
     The direction for the calib / homeing operation. 0: clockwise, 1: counter-clockwise.
     Only relevant for rotary stages.
-    
+
     *Value range: [0, 1], Default: 0*
 **comPort**: int, read-only
-    
+
     *Value range: [1, inf], Default: 11*
 **description**: str, read-only
-    
+
     *Match: "General", Default: "Rotation Stage"*
 **forwardFrequency1**: int
     The forward frequency for the first motor in Hz
-    
+
     *Value range: [4, inf], Unit: Hz, Default: 80989*
 **forwardFrequency2**: int
     The forward frequency for the second motor in Hz (if available)
-    
+
     *Value range: [4, inf], Unit: Hz, Default: 81889*
 **model**: str, read-only
-    
+
     *Match: "General", Default: "ELL18"*
 **name**: str, read-only
-    
+
     *Match: "General", Default: "ThorlabsElliptec"*
 **numMotors**: int, read-only
     number of piezo actuators to move the stage
-    
+
     *Value range: [0, 3], Default: 2*
 **numaxis**: int, read-only
     Number of axes attached to this stage: Here always 1. Multiple axes, connected to one
     bus driver, must init multiple objects with the same serial object.
-    
+
     *Value range: [1, 1], Default: 1*
 **pulsesPerUnit**: int, read-only
     Pulses per unit (mm or deg) / -1 for indexed position devices
-    
+
     *Value range: [-1, inf], Default: 398*
 **serial**: str, read-only
-    
+
     *Match: "Communication", Default: "11800036"*
 **travelRange**: int, read-only
     Travel range of the axis
-    
+
     *All values allowed, Unit: ° or mm, Default: 360*
 
 
@@ -141,7 +141,7 @@ Exemplary usage from Python
 ===========================
 
 .. code-block:: python
-    
+
     # initialization of the device at its internal address 0x0.
     # Address can be in the range 0x0-0xF.
     serial = dataIO("SerialIO", port=1, baud=9600, endline="\r\n")
@@ -169,9 +169,9 @@ Exemplary usage from Python
 
     # the frequency will be adjusted to the next allowed value when it is changed.
 
-    # Depending on the type of stage, several additional methods are available 
-    # as 'exec' functions. They can mainly be used to clean the mechanics or 
-    # automatically tune the frequencies. Cleaning the motor of optimizing the 
+    # Depending on the type of stage, several additional methods are available
+    # as 'exec' functions. They can mainly be used to clean the mechanics or
+    # automatically tune the frequencies. Cleaning the motor of optimizing the
     # frequencies might take very long (20-40min):
 
     # reset all frequencies to their defaults
@@ -184,7 +184,7 @@ Exemplary usage from Python
     elliptec.exec("cleanMechanics")
     elliptec.exec("optimizeMotors")
 
-    # interrupting the cleaning and optimization runs can be done by triggering 
+    # interrupting the cleaning and optimization runs can be done by triggering
     # the KeyboardInterrupt of Python.
 
 Changelog

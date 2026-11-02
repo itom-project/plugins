@@ -26,7 +26,12 @@ itom_init_plugin_library(${target_name}) #Start the project, init compiler setti
 itom_find_package_qt(ON Core Widgets Xml LinguistTools)
 
 #run once so we get the installed opencv version
-find_package(OpenCV COMPONENTS core highgui REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core highgui REQUIRED)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 if(OpenCV_VERSION_MAJOR GREATER 2)
     # for opencv >= 3 we need the imgcodecs module which is not present in opencv < 3 so run again
     find_package(OpenCV COMPONENTS core highgui imgcodecs REQUIRED)

@@ -19,7 +19,7 @@ if(NOT EXISTS ${THORLABS_PM100D_VISA_DIR})
     if(EXISTS $ENV{NI_VISA_ROOT})
         set(THORLABS_PM100D_VISA_DIR "$ENV{NI_VISA_ROOT}" CACHE PATH "path to the install directory of Thorlabs PM100D VISA (e.g. C:/Program Files/IVI Foundation/VISA/Win64 for x64)")
     else(EXISTS $ENV{NI_VISA_ROOT})
-        set(THORLABS_PM100D_VISA_DIR "AVTVIMBA_INCLUDE_DIR_NOTFOUND" CACHE PATH "path to the install directory of Thorlabs PM100D VISA (e.g. C:/Program Files/IVI Foundation/VISA/Win64 for x64)")
+        set(THORLABS_PM100D_VISA_DIR "THORLABS_PM100D_VISA_DIR_NOTFOUND" CACHE PATH "path to the install directory of Thorlabs PM100D VISA (e.g. C:/Program Files/IVI Foundation/VISA/Win64 for x64)")
     endif(EXISTS $ENV{NI_VISA_ROOT})
 endif(NOT EXISTS ${THORLABS_PM100D_VISA_DIR})
 

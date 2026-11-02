@@ -29,6 +29,12 @@
 #include "itomCvConversions.h"
 #include <math.h>
 
+#include "opencv2/imgproc.hpp"
+#if (CV_MAJOR_VERSION >= 5)
+// OpenCV 5.0 moved geometric transform helpers (e.g. getRotationMatrix2D)
+// out of imgproc.hpp into a dedicated geometry header.
+#include "opencv2/geometry/2d.hpp"
+#endif
 #include "DataObject/dataObjectFuncs.h"
 #include "DataObject/dataobj.h"
 #include "common/numeric.h"
@@ -3670,7 +3676,14 @@ When you want to use the cvWarpAffine method with this rotation matrix your cent
     itomtype = ito::guessDataTypeFromCVMat(&rotMat, retval);
     if (!retval.containsError())
     {
-        *rotDObj = ito::DataObject(2, rotMat.size, itomtype, &rotMat, 1);
+        const int* sizes_ptr =
+#if (CV_MAJOR_VERSION >= 5)
+        rotMat.size.data();
+#else
+        rotMat.size;
+#endif
+        *rotDObj = ito::DataObject(2, sizes_ptr, itomtype, &rotMat, 1);
+
         rotDObj->addToProtocol(
             std::string(tr("Rotation Matrix for %1 deg angle with scale factor of %2")
                             .arg(angle)
@@ -3944,7 +3957,13 @@ of the target object differ from each other depending on the algorithm parameter
     ito::tDataType itomtype = ito::guessDataTypeFromCVMat(&dest, retval);
     if (!retval.containsError())
     {
-        *dObjDst = ito::DataObject(2, dest.size, itomtype, &dest, 1);
+        const int* sizes_ptr =
+#if (CV_MAJOR_VERSION >= 5)
+            dest.size.data();
+#else
+            dest.size;
+#endif
+        *dObjDst = ito::DataObject(2, sizes_ptr, itomtype, &dest, 1);
         //dObjSrc->copyAxisTagsTo(*dObjDst);
         //dObjSrc->copyTagMapTo(*dObjDst);
     }
@@ -4033,8 +4052,6 @@ ito::RetVal OpenCVFilters::init(
 
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams,
     cvCalcHistDoc); m_filterList.insert("cvCalcHistogram", filter);*/
-
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(
         OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, cvFindCirclesDoc);
@@ -4132,8 +4149,6 @@ ito::RetVal OpenCVFilters::init(
     filter =
         new FilterDef(OpenCVFilters::cvThreshold, OpenCVFilters::cvThresholdParams, cvThresholdDoc);
     m_filterList.insert("cvThreshold", filter);
-
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(
         OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, cvFlipUpDownDoc);

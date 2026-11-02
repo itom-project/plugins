@@ -26,7 +26,10 @@
 #include "pclTools.h"
 #include "pluginVersion.h"
 #include "gitVersion.h"
-#define EIGEN_QT_SUPPORT
+//EIGEN_QT_SUPPORT is intentionally not defined: it only enables the optional
+//Eigen::Transform <-> QMatrix / QTransform conversions. QMatrix has been removed
+//in Qt6 and these conversions are not used here, hence omitting the define keeps
+//this plugin compatible with Qt5.12 up to Qt6.x.
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 //before we defined #define EIGEN2_SUPPORT, which also set the #define above.
 //However, EIGEN2_SUPPORT leads to errors using newer Eigen libraries (Eigen2 support has been removed there)
@@ -75,8 +78,12 @@
 #elif PCL_VERSION_COMPARE(>=, 1, 10, 0) && PCL_VERSION_COMPARE(<, 1, 11, 0)
     #include <pcl/recognition/auxiliary.h>
     #include <pcl/recognition/trimmed_icp.h>
-#elif PCL_VERSION_COMPARE(>=, 1, 11, 0)
+#elif PCL_VERSION_COMPARE(>=, 1, 11, 0) && PCL_VERSION_COMPARE(<, 1, 15, 0)
     #include <pcl/recognition/trimmed_icp.h>
+    #include <pcl/common/common.h>
+#elif PCL_VERSION_COMPARE(>=, 1, 15, 0)
+    //the forwarding header pcl/recognition/trimmed_icp.h has been removed in PCL 1.15
+    #include <pcl/recognition/ransac_based/trimmed_icp.h>
     #include <pcl/common/common.h>
 #endif
 

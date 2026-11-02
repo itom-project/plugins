@@ -28,13 +28,7 @@
 #include <qnumeric.h>
 #include <QList>
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-    #if (CV_MAJOR_VERSION == 2)
-        #include "opencv2/features2d/features2d.hpp"
-    #else
-        #include "opencv2/features2d.hpp"
-    #endif
+#include "opencv2/features2d.hpp"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString OpenCVFilters::cvFlannBasedMatcherDoc = QObject::tr("This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
@@ -447,4 +441,3 @@ This function draws matches of keypoints from two images in the output image. Ma
     return retval;
 }
 
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
