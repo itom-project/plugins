@@ -308,7 +308,7 @@
     </message>
     <message>
         <location line="+9"/>
-        <source>velocity of the stage for the controller type C663 in mm per s</source>
+        <source>velocity of the stage for the controller type C663 and C863 in mm per s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -597,7 +597,7 @@
         <source>PI actuators following the GCS2 command set (e.g. E753)
 This plugin is developed for single axis controllers following the GCS2 commandset.
 
-Tested with E753 and C663, don&apos;t work with E-662 and E-665!
+Tested with E753, C663 and C863, don&apos;t work with E-662 and E-665!
 
 For the initialization you can connect to the device (if possible) via a USB port, a serial port
 or a TCP/IP connection. Depending on the connection you should use the initialization parameters

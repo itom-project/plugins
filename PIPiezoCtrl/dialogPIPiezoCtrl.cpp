@@ -47,7 +47,7 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
 
     QString m_ctrlType = params["ctrlType"].getVal<char*>();
 
-    if (QString::compare(m_ctrlType, "C663") == 0)
+    if (QString::compare(m_ctrlType, "C663") == 0 || QString::compare(m_ctrlType, "C863") == 0)
     {
         m_scale = 1.0f;
         m_unit = u8" mm";
