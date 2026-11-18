@@ -1,300 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogIDS</name>
     <message>
-        <location filename="../dialogIDS.ui"/>
+        <location filename="../dialogXeneth.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Color Mode and Bits per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Binning (horizontal, vertical)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
+        <location line="+41"/>
+        <location line="+63"/>
+        <location line="+40"/>
+        <location line="+13"/>
         <source> %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-150"/>
         <source>auto blacklevel correction (offset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>gain boost (analog hardware gain)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Master Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Green Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>enable long integration time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Red Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Pixel Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source> Mhz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Blue Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+29"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>full ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DialogIDS.cpp" line="+50"/>
-        <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DockWidgetIDS</name>
     <message>
-        <location filename="../dockWidgetIDS.ui"/>
+        <location filename="../dockWidgetXeneth.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Camera Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+61"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-7"/>
         <source>Sensor:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Camera Model:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-40"/>
         <source>Camera ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-13"/>
         <source>[Model]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>[Sensor]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+68"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+37"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-46"/>
+        <location line="+33"/>
+        <location line="+20"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+23"/>
         <source>Camera Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+41"/>
         <source>Exposure:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-27"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+46"/>
         <source>Offset:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+91"/>
         <source>Gain Green:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Gain Red:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-130"/>
         <source>Gain Blue:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>IDSInterface</name>
+    <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+100"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>initial color model of camera (&apos;gray&apos;, &apos;color&apos; or &apos;auto&apos; (default)). &apos;color&apos; is only possible for color cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)</source>
+        <location filename="../XenethInterface.cpp" line="+52"/>
+        <source>Xeneth camera family Bobcat</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>IDSuEye</name>
+    <name>Xeneth</name>
     <message>
-        <location filename="../IDSuEye.cpp" line="+57"/>
+        <location filename="../Xeneth.cpp" line="+54"/>
         <source>Exposure time of chip (in seconds).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>If long exposure time is available, this parameter let you enable this. If this value is changed, the range and value of integration_time might change, too.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Pixel clock in MHz. If the pixel clock is too high, data packages might be lost. A change of the pixel clock might influence the exposure time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -314,22 +286,7 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>RGB-gain values (normalized value 0..1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>enables / disables an additional analog hardware gain (gain boost). Readonly if not supported.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>Offset (leads to blacklevel offset) (normalized value 0..1). Readonly if not adjustable.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>If the camera supports an auto blacklevel correction (auto offset in addition to offset), this feature can be enabled / disabled by this parameter.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -343,82 +300,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+2"/>
+        <source>bit depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>timeout in seconds for image acquisition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>left end of the ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>right end of the ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>upper end of the ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>downer end of the ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Index of left boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Index of top boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Index of right boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Index of bottom boundary pixel within ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>trigger modes for starting a new image acquisition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Model identifier of the attached camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>ID of the camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sensor type of the attached camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>color_mode: &apos;gray&apos; (default) or &apos;color&apos; if color camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Bitdepth of each pixel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Timeout for acquiring images in seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+775"/>
-        <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
+        <location line="+428"/>
+        <source>StopDevice of Xeneth can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+34"/>
-        <source>Acquire of IDSuEye can not be executed, since camera has not been started.</source>
+        <source>Acquire of Xeneth can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>no valid camera memory has been allocated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+66"/>
+        <location line="+70"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -428,21 +355,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+713"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <location line="+33"/>
+        <source>image could not be obtained since no image has been acquired.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>QObject</name>
+    <name>XenethInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-38"/>
-        <source>IDS uEye grabber.</source>
+        <location filename="../XenethInterface.cpp" line="+14"/>
+        <source>camera device name to be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

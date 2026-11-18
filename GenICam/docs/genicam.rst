@@ -126,6 +126,22 @@ In the example of an Active Silicon CoaXPress framegrabber, you have to set the 
 **Fg_IncomingHeight** to the **Height** of the camera and **Fg_IncomingPixelFormat** to the current pixel format of the camera. Then adjust the
 values **Fg_Width**, **Fg_Height** and **Fg_PixelFormat** to suitable values, since these values are read by itom to configure a proper image acquisition.
 
+IDS Imaging Development Systems specific adaptions
+==================================================
+
+We recognized, that the device ID of IDS camera is not persistent and might change, e.g. after a re-initialization. Therefore, it is more convenient to
+start such a camera, as well as all other cameras, by their serial number instead of the device ID. To do this, use the deviceID initialization parameter
+and write "Serial:<your serial number>". If the prefix "Serial:" is recognized, the rest of the string is used to detect a camera with this specific
+serial number instead of the device ID.
+
+Additionally, IDS provides some easy cameras, which do (only) support IDS specific pixel formats, e.g. BayerRG10g40IDS (see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/basics-raw-bayer-pixel-formats.html).
+itom supports the IDS specific color format BayerRG10g40IDS. Some camera sensors of IDS cameras have another specific behaviour, such that they
+deliver a certain amount of additional black lines at the beginning of every image. These additional lines are skipped by this plugin, such that
+the real requested image size is provided. The following rules are implemented:
+
+* cameras, whose model name starts with U3-38J: 38 lines are skipped (see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html)
+* cameras, whose model name starts with U3-33F: 65 lines are skipped (see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html)
+
 Compilation
 ===========
 

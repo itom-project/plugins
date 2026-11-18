@@ -70,10 +70,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ok (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -198,19 +194,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Parameter value out of range:
-    channel: %1 [0 ... 7]
-    mode: %2 [0 ... 3]
-    level: %3 [-32769 ... 32767]
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>received wrong identifier while reading data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>received more data than requested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parameter value out of range:
+	channel: %1 [0 ... 7]
+	mode: %2 [0 ... 3]
+	level: %3 [-32769 ... 32767]
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -385,15 +381,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, leve: -32769 ... 32767</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>0: clear data on second read out, 1: clear data on first read out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>number of samples for one measurment cycle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -489,20 +477,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>insufficent parameters or command wrong formated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning occurred while starting read task.
- Code: %i</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error occurred while starting read task.
- Code: %i</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tried to get values without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -532,6 +506,28 @@
     </message>
     <message>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>trigger for starting measurement with trigger condition ( acquire(3) ) [Channel,Mode,Level], Mode - 0: above level, 1: below level, positive edge, negative edge, level: -32769 ... 32767</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number of samples for one measurement cycle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>insufficient parameters or command wrong formatted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning occurred while starting read task.
+ Code: %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error occurred while starting read task.
+ Code: %i</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

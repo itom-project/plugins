@@ -303,12 +303,7 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+130"/>
-        <source>Licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-27"/>
+        <location filename="../IDSInterface.cpp" line="+103"/>
         <source>This plugin supports IDS uEye cameras and has currently been tested with the following models:
 
 * UI145xSE-C (colored, USB2)
@@ -351,7 +346,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
 <context>
     <name>IDSuEye</name>
     <message>
-        <location filename="../IDSuEye.cpp" line="+62"/>
+        <location filename="../IDSuEye.cpp" line="+60"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -446,7 +441,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2102"/>
+        <location line="+2101"/>
         <source>Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,7 +457,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2223"/>
+        <location line="-2222"/>
         <source>Model identifier of the attached camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -502,7 +497,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+901"/>
+        <location line="+902"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -512,7 +507,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+118"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +522,7 @@ Note on supported sensor bit depths on monochrome cameras: The plugin may list a
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+895"/>
+        <location line="+918"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>

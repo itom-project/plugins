@@ -37,18 +37,19 @@
 #include <qdialogbuttonbox.h>
 #include <qmetaobject.h>
 
+#include "paramEditorWidget.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogDummyMotor::DialogDummyMotor(ito::AddInBase *actuator) :
-    AbstractAddInConfigDialog(actuator),
-    m_actuator(actuator),
-    m_firstRun(true),
-    m_numaxis(0)
+DialogDummyMotor::DialogDummyMotor(ito::AddInBase* actuator) :
+    AbstractAddInConfigDialog(actuator), m_actuator(actuator), m_firstRun(true), m_numaxis(0),
+    m_pluginPointer(actuator)
 {
     ui.setupUi(this);
     memset(m_enable, 0, 10 * sizeof(int));
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableGUI(false);
+    ui.paramEditor->setPlugin(m_pluginPointer);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -89,19 +90,6 @@ void DialogDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
         ui.checkBox_EnableX->setChecked(1);
     }
 
-    ui.doubleSpinBox_Speed->setMaximum(params["speed"].getMax());
-    ui.doubleSpinBox_Speed->setMinimum(params["speed"].getMin());
-    ui.doubleSpinBox_Speed->setValue(params["speed"].getVal<double>());
-    ui.doubleSpinBox_Speed->setDisabled(params["speed"].getFlags() & ito::ParamBase::Readonly);
-
-    ui.doubleSpinBox_Accel->setMaximum(params["accel"].getMax());
-    ui.doubleSpinBox_Accel->setMinimum(params["accel"].getMin());
-    ui.doubleSpinBox_Accel->setValue(params["accel"].getVal<double>());
-    ui.doubleSpinBox_Accel->setDisabled(params["accel"].getFlags() & ito::ParamBase::Readonly);
-
-    // set ui to new parameters
-    ui.checkAsync->setChecked(params["async"].getVal<int>());
-
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableGUI(true);
 
@@ -111,26 +99,8 @@ void DialogDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogDummyMotor::applyParameters()
 {
-    ito::RetVal retValue(ito::retOk);
-    QVector<QSharedPointer<ito::ParamBase> > values;
-
-    if (ui.checkAsync->isChecked() != (m_currentParameters["async"].getVal<int>() > 0))
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked() ? 1 : 0)));
-    }
-
-    if (qAbs(ui.doubleSpinBox_Speed->value() - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, ui.doubleSpinBox_Speed->value())));
-    }
-
-    if (qAbs(ui.doubleSpinBox_Accel->value() - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, ui.doubleSpinBox_Accel->value())));
-    }
-
-    retValue += setPluginParameters(values, msgLevelWarningAndError);
-    return retValue;
+    QVector<QSharedPointer<ito::ParamBase>> values = ui.paramEditor->getAndResetChangedParameters();
+    return setPluginParameters(values, msgLevelWarningAndError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -196,6 +166,5 @@ void DialogDummyMotor::on_buttonBox_clicked(QAbstractButton* btn)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogDummyMotor::enableGUI(bool enabled)
 {
-    ui.groupBoxProperties->setEnabled(enabled);
-    ui.groupBoxAxis->setEnabled(enabled);
+    ui.paramEditor->setEnabled(enabled);
 }

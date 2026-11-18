@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -43,10 +43,22 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
-#if CV_MAJOR_VERSION >= 4
-#include "opencv2//imgcodecs/legacy/constants_c.h"
+#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION == 4)
+#include "opencv2/imgcodecs/legacy/constants_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/types_c.h"
+#elif defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION >= 5)
+// OpenCV 5 removed many legacy C headers — include modern C++ headers instead
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#elif !defined(CV_MAJOR_VERSION)
+// Build without OpenCV version macro defined; assume modern C++ headers are available.
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#else
+// Fallback for older OpenCV versions
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 #endif
 
 #include "common/sharedFunctionsQt.h"
@@ -3003,7 +3015,7 @@ ito::RetVal DataObjectIO::readDataBlock(
 //! saveTifParams
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString DataObjectIO::saveTiffDoc = QObject::tr(
-    "Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). \n\
+    "Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit as well as rgba supported). \n\
 \n\
 The following conventions hold for saving the image: \n\
 \n\
@@ -3898,7 +3910,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
         break;
 
     case DataObjectIO::ppmFormat:
-        save_params.push_back(CV_IMWRITE_PXM_BINARY);
+        save_params.push_back(cv::IMWRITE_PXM_BINARY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "ppm");
         gray16Supported = false;
@@ -3907,7 +3919,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
 
     case DataObjectIO::pgmFormat:
 
-        save_params.push_back(CV_IMWRITE_PXM_BINARY);
+        save_params.push_back(cv::IMWRITE_PXM_BINARY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         gray16Supported = true;
         colorSupported = false;
@@ -3920,7 +3932,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
 
     case DataObjectIO::jpgFormat:
     case DataObjectIO::jp2000Format:
-        save_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+        save_params.push_back(cv::IMWRITE_JPEG_QUALITY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "jpg", "jpeg", "jp2");
 
@@ -3942,7 +3954,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
         break;
 
     case DataObjectIO::pngFormat:
-        save_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+        save_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "png");
         addAlpha = (*paramsOpt)[1].getVal<int>() != 0 ? true : false;
@@ -4724,7 +4736,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(
     QObject::tr("load the following image formats from a file to a 2D data object: \n\
 \n\
 * png: 8bit/16bit, color available, transparency available \n\
-* tiff/tif: 8bit/16bit, color available \n\
+* tiff/tif: unsigned and signed 8bit/16bit, float32, float64 and rgb (color) \n\
 * jpg: 8bit, color available\n\
 * jp2: 8bit/16bit, color available\n\
 * ras/sr: 8bit, color available \n\
@@ -4739,7 +4751,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(
 The file format only provides color or transparency data if indicated above. \n\
 \n\
 You can choose which channel (colorElement) of the loaded file should be used for the data object. \n\
-`asIs` loads the file as it is: monochrome formats are loaded as uint8 or uint16 data object, while \n\
+`asIs` loads the file as it is: monochrome formats are loaded as (u)int8 or (u)int16, float32 or float64 data object, while \n\
 colored file formats are loaded as rgba32 data object. The color elements `alpha`, `R`, `G`, `B`, `RGB`, \n\
 `RGBA` are only available for colored file formats are only load the selected channels to either a uint8/uint16 data object \n\
 or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it \n\
@@ -4848,13 +4860,13 @@ ito::RetVal DataObjectIO::loadImage(
 
         if (colorFormat.isEmpty() || colorFormat.compare("asIs", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = false;
         }
         else if (colorFormat.compare("alpha", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_COLOR | cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = true;
         }
@@ -4863,7 +4875,7 @@ ito::RetVal DataObjectIO::loadImage(
             colorFormat.compare("G", Qt::CaseInsensitive) == 0 ||
             colorFormat.compare("B", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_COLOR | cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = true;
         }
@@ -4871,14 +4883,14 @@ ito::RetVal DataObjectIO::loadImage(
             colorFormat.compare("gray", Qt::CaseInsensitive) == 0 ||
             colorFormat.compare("grey", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH;
 
             reduceChannel = false;
         }
         else
         {
             reduceChannel = false;
-            flags = CV_LOAD_IMAGE_COLOR;
+            flags = cv::IMREAD_COLOR;
             flags *= -1;
         }
 
@@ -4923,8 +4935,20 @@ ito::RetVal DataObjectIO::loadImage(
             case CV_8U:
                 imageType = ito::tUInt8;
                 break;
+            case CV_8S:
+                imageType = ito::tInt8;
+                break;
             case CV_16U:
                 imageType = ito::tUInt16;
+                break;
+            case CV_16S:
+                imageType = ito::tInt16;
+                break;
+            case CV_32FC1:
+                imageType = ito::tFloat32;
+                break;
+            case CV_64FC1:
+                imageType = ito::tFloat64;
                 break;
             case CV_8UC3:
                 if (reduceChannel)

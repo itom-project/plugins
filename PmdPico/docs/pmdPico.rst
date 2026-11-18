@@ -82,6 +82,9 @@ https://pmdtec.com/
 
 Make sure that the path to the royale.dll is added to your system path variables.
 
+For Windows open the command line interface with administrator privileges.
+Use **setx** to permanently change the System **PATH** Variable (eg. "setx / M PATH "%PATH;C:\Program Files\royale\4.24.0.1201\bin").
+
 Set the CMAKE variable **PmdPico_ROYALE_DIR** or the environment variable **PMD_ROYALE_ROOT**
 to the PMD Royale SDK installation folder (e.g. C:\Program Files\royale\4.24.0.1201)
 

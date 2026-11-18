@@ -4,7 +4,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../x3pio.cpp" line="+250"/>
+        <location filename="../x3pio.cpp" line="+248"/>
         <source>x3p Import/Export</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13,12 +13,7 @@
         <translation type="obsolete">Speichert Datenobjekte im X3P-Dateiformat</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>LGPL / ISO5436-2 XML under LPGL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+42"/>
+        <location line="+50"/>
         <source>loads dataObject from x3p file</source>
         <translation type="unfinished">Läd Datenobjekte im X3P-Dateiformat</translation>
     </message>
@@ -28,7 +23,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-621"/>
+        <location line="-616"/>
         <source>This plugin provides methods to save and load dataObjects in/from the file format &apos;x3p&apos;. This format is specified in ISO 25178 - Geometrical product specification (GPS).
 
 The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources,
@@ -37,7 +32,7 @@ of the library itself see www.opengps.eu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+45"/>
         <source>saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, µm or nm they are correctly converted to m.</source>
         <translation type="unfinished"></translation>
     </message>

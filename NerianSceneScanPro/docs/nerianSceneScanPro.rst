@@ -126,6 +126,7 @@ Installation
 NerianSceneScanPro is currently only build with Version 7.0 of the SDK.
 Install the visiontransfer software on your computer from https://nerian.de/support/downloadarchiv/
 and add the visiontransfer.dll directory to your path variables.
+(eg. "setx / M PATH "%PATH;C:\Program Files\Nerian Vision Software 10.6.0\cpp\lib64\Release").
 
 In visiontransfer 7.0 there is unfortunately a bug in the DLL, so the application can only be used in release (to be fixed in later versions).
 

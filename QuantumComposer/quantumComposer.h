@@ -70,6 +70,8 @@ private:
     int m_requestTimeOutMS;
     int m_numChannels = 8;
 
+    const char* m_counter_query = ":PULSE0:COUN:COUN?";
+
     ito::RetVal SendCommand(const QByteArray& command);
     ito::RetVal ReadString(QByteArray& result, int& len, const int timeoutMS);
     ito::RetVal SendQuestionWithAnswerString(

@@ -23,10 +23,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This plugin provides wrappers for various OpenCV algorithms from its section non-free.</source>
         <translation type="unfinished"></translation>
     </message>

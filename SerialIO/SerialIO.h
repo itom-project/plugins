@@ -115,7 +115,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
         QByteArray m_preBuf;
 
     signals:
-        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void serialLog(QByteArray data, QByteArray endline, bool incomingData);
         void uniqueIDChanged(const int);
         //void parametersChanged(QMap<QString, ito::tParam>); (defined in AddInBase)
 

@@ -3,23 +3,23 @@
 ===========================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`OpenCV-Filters-Nonfree`
-**Type**:       :plugintype:`OpenCV-Filters-Nonfree`
-**License**:    :pluginlicense:`OpenCV-Filters-Nonfree`
+**Summary**:    :pluginsummary:`OpenCVFiltersNonfree`
+**Type**:       :plugintype:`OpenCVFiltersNonfree`
+**License**:    :pluginlicense:`OpenCVFiltersNonfree`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`OpenCV-Filters-Nonfree`
+**Author**:     :pluginauthor:`OpenCVFiltersNonfree`
 =============== ========================================================================================================
 
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: OpenCV-Filters-Nonfree
+    :plugin: OpenCVFiltersNonfree
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: OpenCV-Filters-Nonfree
+    :plugin: OpenCVFiltersNonfree
     :overviewonly:
 
 Filters
@@ -28,4 +28,4 @@ Filters
 Detailed overview about all defined filters:
 
 .. pluginfilterlist::
-    :plugin: OpenCV-Filters-Nonfree
+    :plugin: OpenCVFiltersNonfree

@@ -117,7 +117,7 @@ endif()
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
 
     #documentation
-    itom_configure_plugin_documentation(${target_name} dslrRemote)
+    itom_configure_plugin_documentation(${target_name} DslrRemote)
 
     # COPY SECTION
     set(COPY_SOURCES "")

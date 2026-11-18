@@ -36,6 +36,15 @@ Dependencies
 FireGrabber plugin depends on LibUSB.
 
 
+Installation
+============
+
+For using this plugin, please install the AVT FirePackage available at:
+https://www.alliedvision.com/de/support/software-downloads/
+
+Decompress the zip file and install the necessary drivers.
+
+
 Parameters
 ===========
 
@@ -85,3 +94,4 @@ Changelog
 ==========
 
 * itom setup 1.2.0: Release
+* itom setup 4.3.0: plugin runs with AVTFirePackage3_1_1

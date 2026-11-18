@@ -95,11 +95,6 @@
 <context>
     <name>DslrRemoteInterface</name>
     <message>
-        <source>!!! Important !!!
-To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Width of virtual sensor chip</source>
         <translation type="unfinished"></translation>
     </message>
@@ -116,18 +111,6 @@ To use this plugin under windows OS you probably will need to install libusb dev
     <name>QObject</name>
     <message>
         <source>A virtual white noise grabber</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Library to remote control some DSLR cameras.
-
-!!! Important !!!
-To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -266,10 +249,6 @@ Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sorry, your camera does not support Nikon DirectCapture! Do not buy from %1!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ERROR: Could not capture.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -367,6 +346,14 @@ Try changing usb driver for camera divce using zadig (http://zadig.akeo.ie/)</so
     </message>
     <message>
         <source>usb_ptp_device_reset()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Library to remote control some DSLR cameras.
+
+**Important**
+To use this plugin under windows OS you probably will need to install libusb devcice driver.Check http://www.libusb.org/wiki/windows_backend and http://zadig.akeo.ie/ for instructions.
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

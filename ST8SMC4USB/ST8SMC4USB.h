@@ -65,7 +65,6 @@ class ST8SMC4USB : public ito::AddInActuator
         device_t m_device;
          engine_settings_t m_engine_settings;
         double m_unitPerSteps; //number of mm or degree per stepper motor full step
-        bool m_homed = false;
 
         QSharedPointer<ito::Param> endlineParam;
 

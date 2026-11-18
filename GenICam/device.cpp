@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -42,12 +42,21 @@ using namespace GENICAM_NAMESPACE;
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-GenTLDevice::GenTLDevice(QSharedPointer<QLibrary> lib, GenTL::DEV_HANDLE devHandle, QByteArray deviceID, const QByteArray &identifier, int verbose, ito::RetVal &retval) :
+GenTLDevice::GenTLDevice(
+    QSharedPointer<QLibrary> lib,
+    GenTL::DEV_HANDLE devHandle,
+    const QByteArray &deviceID,
+    const QByteArray& modelName,
+    const QByteArray &identifier,
+    const QByteArray& serialNumber,
+    int verbose,
+    ito::RetVal &retval) :
     BasePort(lib, BasePort::TypeCamera, verbose, retval),
     m_cameraHandle(devHandle),
     m_deviceID(deviceID),
+    m_modelName(modelName),
     m_identifier(identifier),
-
+    m_serialNumber(serialNumber),
     m_errorEvent(GENTL_INVALID_HANDLE)
 {
     if (!retval.containsError())
@@ -160,7 +169,7 @@ QSharedPointer<GenTLDataStream> GenTLDevice::getDataStream(ito::int32 streamInde
                         std::cout << "OK\n" << std::endl;
                     }
 
-                    stream = QSharedPointer<GenTLDataStream>(new GenTLDataStream(m_lib, streamHandle, m_verbose, retval));
+                    stream = QSharedPointer<GenTLDataStream>(new GenTLDataStream(m_lib, streamHandle, m_modelName, m_verbose, retval));
                     if (retval.containsError())
                     {
                         stream.clear();

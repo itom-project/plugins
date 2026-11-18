@@ -34,10 +34,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ThorlabsKCubePA</source>
         <translation type="unfinished"></translation>
     </message>

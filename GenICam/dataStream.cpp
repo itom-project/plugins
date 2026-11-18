@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -36,11 +36,12 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GenTLDataStream::GenTLDataStream(
-    QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, int verbose, ito::RetVal& retval) :
+    QSharedPointer<QLibrary> lib, GenTL::DS_HANDLE handle, const QByteArray& modelName, int verbose, ito::RetVal& retval) :
     m_handle(handle),
     m_lib(lib), m_newBufferEvent(GENTL_INVALID_HANDLE), m_errorEvent(GENTL_INVALID_HANDLE),
     m_acquisitionStarted(false), m_payloadSize(0), m_timeoutMS(0), m_usePreAllocatedBuffer(-1),
-    m_endianessChanged(true), m_verbose(verbose), m_flushAllBuffersToInput(false)
+    m_endianessChanged(true), m_verbose(verbose), m_flushAllBuffersToInput(false),
+    m_modelName(modelName), m_specialModelType(NoSpecialType)
 {
     GCRegisterEvent = (GenTL::PGCRegisterEvent)m_lib->resolve("GCRegisterEvent");
     GCUnregisterEvent = (GenTL::PGCUnregisterEvent)m_lib->resolve("GCUnregisterEvent");
@@ -53,6 +54,7 @@ GenTLDataStream::GenTLDataStream(
     DSGetBufferInfo = (GenTL::PDSGetBufferInfo)m_lib->resolve("DSGetBufferInfo");
     DSStartAcquisition = (GenTL::PDSStartAcquisition)m_lib->resolve("DSStartAcquisition");
     DSStopAcquisition = (GenTL::PDSStopAcquisition)m_lib->resolve("DSStopAcquisition");
+    DSGetBufferChunkData = (GenTL::PDSGetBufferChunkData)m_lib->resolve("DSGetBufferChunkData");
     DSGetInfo = (GenTL::PDSGetInfo)m_lib->resolve("DSGetInfo");
     DSAllocAndAnnounceBuffer =
         (GenTL::PDSAllocAndAnnounceBuffer)m_lib->resolve("DSAllocAndAnnounceBuffer");
@@ -114,6 +116,43 @@ GenTLDataStream::GenTLDataStream(
     if (!retval.containsError())
     {
         // check how much memory the event need to have and allocate it
+    }
+
+    // some camera models require some special data treatment. For a fast lookup for this is the
+    // often called data conversion methods, the model name is analyzed here and transformed to a
+    // enum value, that can be accessed in a fast switch case
+    if (m_modelName.startsWith("U3-38J"))
+    {
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+        m_specialModelType = IDS_U3_38Jx;
+
+        // this camera supports the following image formats:
+        //
+        // U3-38J6XLE-C-HQ:
+        // BayerRG10g40IDS
+        // BayerRG12g24IDS (not supported by this plugin)
+        //
+        // U3-38J6XLE-M-GL:
+        // Mono10g40IDS (not supported by this plugin)
+        // Mono12g24IDS (not supported by this plugin)
+
+    }
+    else if (m_modelName.startsWith("U3-33F"))
+    {
+        // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+        m_specialModelType = IDS_U3_33Fx;
+
+        // this camera supports the following image formats:
+        //
+        // U3-33F4XLS-M-GL:
+        // Mono8
+        // Mono10g40IDS (not supported by this plugin)
+        // Mono12g24IDS (not supported by this plugin)
+        //
+        // U3-33F4XLS-C-HQ:
+        // BayerRG8
+        // BayerRG10g40IDS
+        // BayerRG12g24IDS (not supported by this plugin)
     }
 }
 
@@ -1153,6 +1192,49 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
     pSize = sizeof(height);
     auto errHeight =
         DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_HEIGHT, &dtype, &height, &pSize);
+
+    /*size_t ttt;
+    pSize = sizeof(ttt);
+    auto errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_XOFFSET, &dtype, &ttt, &pSize);
+    pSize = sizeof(ttt);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_YOFFSET, &dtype, &ttt, &pSize);
+    pSize = sizeof(ttt);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_XPADDING, &dtype, &ttt, &pSize);
+    pSize = sizeof(ttt);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_YPADDING, &dtype, &ttt, &pSize);
+    bool containsChunkdata;
+    pSize = sizeof(containsChunkdata);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_CONTAINS_CHUNKDATA, &dtype, &containsChunkdata, &pSize);
+
+    if (containsChunkdata)
+    {
+        size_t chunkListSize = 0;
+        errrr = DSGetBufferChunkData(m_handle, buffer, 0, &chunkListSize);
+
+        if (errrr == GenTL::GC_ERR_SUCCESS && chunkListSize > 0)
+        {
+            GenTL::SINGLE_CHUNK_DATA *chunkdata = new GenTL::SINGLE_CHUNK_DATA[chunkListSize];
+
+            errrr = DSGetBufferChunkData(m_handle, buffer, chunkdata, &chunkListSize);
+
+            delete[] chunkdata;
+        }
+    }
+
+    pSize = sizeof(ttt);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_DELIVERED_IMAGEHEIGHT, &dtype, &ttt, &pSize);
+    pSize = sizeof(ttt);
+    errrr =
+        DSGetBufferInfo(m_handle, buffer, GenTL::BUFFER_INFO_DELIVERED_CHUNKPAYLOADSIZE, &dtype, &ttt, &pSize);*/
+
+    int dims = dobj.getDims();
+
     if (errWidth == GenTL::GC_ERR_NOT_AVAILABLE || errWidth == GenTL::GC_ERR_NO_DATA ||
         errHeight == GenTL::GC_ERR_NOT_AVAILABLE || errHeight == GenTL::GC_ERR_NO_DATA)
     {
@@ -1160,12 +1242,15 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
         // available, although the image is properly acquired. It might be that this occurs
         // mainly, if chunk data is enabled. Then, the payload type is also not image but
         // chunk.
-        int dims = dobj.getDims();
         width = dobj.getSize(dims - 1);
         height = dobj.getSize(dims - 2);
     }
     else
     {
+        // hint: height can be higher than requested, since there are some models (e.g. from IDS),
+        // where a certain number of first lines have to be skipped.
+        // e.g. see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+        // or https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
         retval += checkGCError(errWidth, "request width of image buffer");
         retval += checkGCError(errHeight, "request height of image buffer");
     }
@@ -1208,6 +1293,11 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 "request pointer of image buffer: returned value is not of expected type (ptr)");
         }
     }
+
+    /*QFile file("D:/temp/ids_data.dat");
+    file.open(QIODeviceBase::WriteOnly);
+    file.write(ptr, size);
+    file.close();*/
 
     if (!retval.containsError())
     {
@@ -1353,7 +1443,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 dobj);
             break;
         case PFNC_RGB8:
-            retval += copyRGB8ToDataObject(
+            retval += copyRGB8ToColorDataObject(
                 ptr + buffer_offset,
                 width,
                 height,
@@ -1361,7 +1451,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 dobj);
             break;
         case PFNC_BGR8:
-            retval += copyBGR8ToDataObject(
+            retval += copyBGR8ToColorDataObject(
                 ptr + buffer_offset,
                 width,
                 height,
@@ -1369,7 +1459,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 dobj);
             break;
         case PFNC_YCbCr422_8:
-            retval += copyYCbCr422ToDataObject(
+            retval += copyYCbCr422ToColorDataObject(
                 ptr + buffer_offset,
                 width,
                 height,
@@ -1377,7 +1467,7 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 dobj);
             break;
         case PFNC_BayerRG8:
-            retval += copyBayerRG8ToDataObject(
+            retval += copyBayerRG8ToColorDataObject(
                 ptr + buffer_offset,
                 width,
                 height,
@@ -1439,6 +1529,16 @@ ito::RetVal GenTLDataStream::copyBufferToDataObject(
                 endianness == GenTL::PIXELENDIANNESS_LITTLE,
                 dobj);
             break;
+        case PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS:
+            // please consider that height must be reduced for IDS U3-33Fx by 65 lines
+            // and U3-38Jx by 38 lines.
+            retval += copyBayerRG10G40IDSToColorDataObject(
+                ptr + buffer_offset,
+                width,
+                height,
+                endianness == GenTL::PIXELENDIANNESS_LITTLE,
+                dobj);
+            break;
         case PFNC_BGR10p:
             retval += copyMono10pToDataObject(
                 ptr + buffer_offset,
@@ -1467,14 +1567,42 @@ ito::RetVal GenTLDataStream::copyMono8ToDataObject(
     const size_t& width,
     const size_t& height,
     bool littleEndian,
-    ito::DataObject& dobj)
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
 {
+    size_t real_height = height;
+
+    if (considerModelWorkarounds)
+    {
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width * 5 / 4;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width * 5 / 4;
+            break;
+        default:
+            break;
+        }
+    }
+
     // little or big endian is idle for mono8:
-    return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, height);
+    return dobj.copyFromData2D<ito::uint8>((const ito::uint8*)ptr, width, real_height);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyRGB8ToDataObject(
+ito::RetVal GenTLDataStream::copyRGB8ToColorDataObject(
     const char* ptr,
     const size_t& width,
     const size_t& height,
@@ -1511,7 +1639,7 @@ ito::RetVal GenTLDataStream::copyRGB8ToDataObject(
 }
 
 // BGR8 data to RGBa8 DataObject output
-ito::RetVal GenTLDataStream::copyBGR8ToDataObject(
+ito::RetVal GenTLDataStream::copyBGR8ToColorDataObject(
     const char* ptr,
     const size_t& width,
     const size_t& height,
@@ -1546,8 +1674,8 @@ ito::RetVal GenTLDataStream::copyBGR8ToDataObject(
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(
+//-------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyYCbCr422ToColorDataObject(
     const char* ptr,
     const size_t& width,
     const size_t& height,
@@ -1599,17 +1727,45 @@ ito::RetVal GenTLDataStream::copyYCbCr422ToDataObject(
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
+//-------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyBayerRG8ToColorDataObject(
     const char* ptr,
     const size_t& width,
     const size_t& height,
     bool littleEndian,
-    ito::DataObject& dobj)
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
 {
     ito::RetVal retVal = ito::retOk;
+    size_t real_height = height;
 
-    cv::Mat sourceImage = cv::Mat(height, width, CV_8UC1, (void*)ptr);
+    if (considerModelWorkarounds)
+    {
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width;
+            break;
+        default:
+            break;
+        }
+    }
+
+    cv::Mat sourceImage = cv::Mat(real_height, width, CV_8UC1, (void*)ptr);
+
     cv::Mat rgbImage;
 #if (CV_MAJOR_VERSION > 3)
     cv::cvtColor(sourceImage, rgbImage, cv::COLOR_BayerRG2BGR, 3);
@@ -1621,7 +1777,7 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
     ito::RgbaBase32* rowPtrDst;
     const cv::Vec3b* rowPtrSrc = rgbImage.ptr<cv::Vec3b>(0);
 
-    for (int y = 0; y < height; y++)
+    for (int y = 0; y < real_height; y++)
     {
         rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
@@ -1638,7 +1794,77 @@ ito::RetVal GenTLDataStream::copyBayerRG8ToDataObject(
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+ito::RetVal GenTLDataStream::copyBayerRG10G40IDSToColorDataObject(
+    const char* ptr,
+    const size_t& width,
+    const size_t& height,
+    bool littleEndian,
+    ito::DataObject& dobj,
+    bool considerModelWorkarounds /*= true*/)
+{
+    // see https://www.1stvision.com/cameras/IDS/IDS-manuals/en/basics-raw-bayer-pixel-formats.html
+
+    int real_height = height;
+
+    if (considerModelWorkarounds)
+    {
+        // some IDS camera models have additional image lines at the front, which are black and
+        // are skipped by IDS Peak. Here, we have to do this manually!
+        switch (m_specialModelType)
+        {
+        case IDS_U3_38Jx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-38jx.html
+            // real_height -= 38;
+            real_height = dobj.getSize(0); // safer
+            ptr += 38 * width * 5 / 4;
+            break;
+        case IDS_U3_33Fx:
+            // see
+            // https://www.1stvision.com/cameras/IDS/IDS-manuals/en/application-notes-u3-33fx.html
+            // real_height -= 65;
+            real_height = dobj.getSize(0); // safer
+            ptr += 65 * width * 5 / 4;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (m_charBuffer_cache.size() < width * real_height)
+    {
+        m_charBuffer_cache.resize(width * real_height);
+    }
+
+    const char* bayerRG8PtrStart = m_charBuffer_cache.data();
+    char* bayerRG8Ptr = (char*)bayerRG8PtrStart;
+
+    // The input ptr has the following form: [R1_8bit, G2_8bit, R3_8bit, G4_8bit, RG14_2bit, G5_8bit, B6_8bit, G7_8bit, B8_8bit, GB58_2bit...]
+    // RG14_2bit are the two LSB bits of R1, G2, R3, G4...
+    // here: we are reducing the 10bit bitdepth to 8bit, therefore the RG14_2bit, GB58_2bit value is ignored (since LSB).
+    int num_40bit_packages = width * real_height / 4;
+
+    for (int i = 0; i < num_40bit_packages; ++i)
+    {
+        // slower:
+        /*bayerRG8Ptr[i * 4] = ptr[i * 5];
+        bayerRG8Ptr[i * 4 + 1] = ptr[i * 5 + 1];
+        bayerRG8Ptr[i * 4 + 2] = ptr[i * 5 + 2];
+        bayerRG8Ptr[i * 4 + 3] = ptr[i * 5 + 3];*/
+        // faster:
+        memcpy(bayerRG8Ptr, ptr, 4 * sizeof(char));
+        bayerRG8Ptr += 4;
+        ptr += 5;
+    }
+
+    // do not allow model modifications, since already considered in this method
+    auto retVal = copyBayerRG8ToColorDataObject(bayerRG8PtrStart, width, real_height, littleEndian, dobj, false);
+
+    return retVal;
+}
+
+//-------------------------------------------------------------------------------------
 void msb_to_lsb_16bit(const ito::uint16* source, ito::uint16* dest, size_t n)
 {
     const ito::uint16* end = source + n;
@@ -1651,7 +1877,7 @@ void msb_to_lsb_16bit(const ito::uint16* source, ito::uint16* dest, size_t n)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(
     const char* ptr,
     const size_t& width,
@@ -1672,7 +1898,7 @@ ito::RetVal GenTLDataStream::copyMono10to16ToDataObject(
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void unpack_12Packed_into_16_lsb(ito::uint16* dest, const ito::uint8* source, size_t n)
 {
     // http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html
@@ -1693,7 +1919,7 @@ void unpack_12Packed_into_16_lsb(ito::uint16* dest, const ito::uint8* source, si
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void unpack_12p_into_16_lsb(ito::uint16* dest, const ito::uint8* source, size_t n)
 {
     // http://softwareservices.ptgrey.com/BFS-PGE-16S2/latest/Model/public/ImageFormatControl.html

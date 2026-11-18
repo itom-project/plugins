@@ -102,6 +102,10 @@ class OphirPowermeter : public ito::AddInDataIO
         char* TCharToChar(const TCHAR* message);
 
         ito::RetVal checkError(const int &e, const char *message);
+        ito::RetVal getMeasurementHeadInfo();
+        ito::RetVal getWavelengthInfo();
+        ito::RetVal getMeasurementMode();
+        ito::RetVal setupStream();
 
     public slots:
         //!< Get Camera-Parameter
@@ -148,7 +152,7 @@ protected:
 
 public:
     OphirPowermeterInterface();
-    ~OphirPowermeterInterface() {};
+    ~OphirPowermeterInterface();
     ito::RetVal getAddInInst(ito::AddInBase **addInInst);
 
 private:

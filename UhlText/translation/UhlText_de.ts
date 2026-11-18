@@ -218,6 +218,10 @@
         <translation type="unfinished">Uhl &apos;setPos&apos;: Achse %1 am Endanschlag</translation>
     </message>
     <message>
+        <source>Joystick is activ. Programming error?</source>
+        <translation type="obsolete">Joystick ist aktiv. Programmierfehler?</translation>
+    </message>
+    <message>
         <location line="+25"/>
         <source>Unexpected Answer. S or @ expected, but got chr(%1)</source>
         <translation type="unfinished">Unerwartete Antwort. S oder @ erwartet, aber chr(%1) bekommen</translation>
@@ -231,6 +235,10 @@
         <location line="+31"/>
         <source>timeout occurred</source>
         <translation type="unfinished">Zeitüberschreitung</translation>
+    </message>
+    <message>
+        <source>Accelaration of all axis in mm/s^2</source>
+        <translation type="obsolete">Beschleunigung für alle Achsen in mm/s^2</translation>
     </message>
     <message>
         <location line="+207"/>
@@ -381,12 +389,12 @@
     <message>
         <location line="+306"/>
         <source>Joystick is active. Programming error?</source>
-        <translation type="unfinished"></translation>
+        <translation>Joystick ist aktiv. Programmierfehler?</translation>
     </message>
     <message>
         <location line="+277"/>
         <source>Acceleration of all axis in mm/s^2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Beschleunigung aller Achsen in mm/s^2</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -553,9 +561,49 @@
         <translation type="unfinished">DLL für 2-4 achsige Uhltische / LStep-Kontroller</translation>
     </message>
     <message>
+        <source>The UhlText is a iTom-PlugIn, which can be used to control the 2-4 axis
+stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
+It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
+WARNING: There are different controller versions with different
+command languages. This DLL is for ??? devices.
+WARNING: The calibration direction of the stages differes according to motor / controller.
+Check calibration direction before usage.</source>
+        <translation type="obsolete">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für ??? Geräte.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.</translation>
+    </message>
+    <message>
+        <source>The UhlText is a plugin, which can be used to control the 2-4 axis
+stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
+It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
+
+WARNING: There are different controller versions with different
+command languages. This DLL is for devices that are controlled by ASCII commands via the RS232 port.
+WARNING: The calibration direction of the stages differs according to motor / controller.
+Check calibration direction before usage.
+
+This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
+        <translation type="obsolete">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
+
+Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
+    </message>
+    <message>
+        <source>N.A.</source>
+        <translation type="vanished">Nicht verfügbar.</translation>
+    </message>
+    <message>
         <location line="+20"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished">Eine initialisierte SerialIO-Instanz</translation>
+    </message>
+    <message>
+        <source>1 -&gt; calibration during initilization</source>
+        <translation type="obsolete">1 -&gt; Kalibrierung während der Initialisierung</translation>
     </message>
     <message>
         <location line="-19"/>
@@ -566,15 +614,21 @@ It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
 WARNING: There are different controller versions with different
 command languages. This DLL is for devices that are controlled by ASCII commands via the RS232 port.
 WARNING: The calibration direction of the stages differs according to motor / controller.
-Check calibration direction before usage. 
+Check calibration direction before usage.
 
 This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
+
+WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für Geräte, die über ASCII-Befehle via RS232 Port gesteuert werden.
+WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.
+
+Dieses Plugin wurde mit Erlaubnis der Firma Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG, veröffentlicht.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>1 -&gt; calibration during initialization</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1 -&gt; Kalibrierung während der Initialisierung</translation>
     </message>
     <message>
         <location line="+2"/>

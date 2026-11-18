@@ -637,26 +637,46 @@ ito::RetVal FringeProj::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(FringeProj::calcCiMap, FringeProj::calcCiMapParams, tr("Calculate the indexmap for graycode image stack"));
+    filter = new FilterDef(
+        FringeProj::calcCiMap, FringeProj::calcCiMapParams, tr("Calculate the indexmap for graycode image stack"));
     m_filterList.insert("calcCiMap", filter);
 
-    filter = new FilterDef(FringeProj::calcPhaseMapN, FringeProj::calcPhaseMapNParams, tr("Reconstructs wrapped phase from N phaseshifted images with a shift of 2pi / N. The definition of the phase is equal to calcPhaseMap4."));
+    filter = new FilterDef(
+        FringeProj::calcPhaseMapN,
+        FringeProj::calcPhaseMapNParams,
+        tr("Reconstructs wrapped phase from N phaseshifted images with a shift of 2pi / N. The definition of the phase is equal to calcPhaseMap4."));
     m_filterList.insert("calcPhaseMapN", filter);
 
-    filter = new FilterDef(FringeProj::calcPhaseMap4, FringeProj::calcPhaseMap4Params, tr("Reconstructs wrapped phase from four 90degree phase shifted images. The phase value is determined using the Carré algorithm: atan2(I3-I1,I2-I0)."));
+    filter = new FilterDef(
+        FringeProj::calcPhaseMap4,
+        FringeProj::calcPhaseMap4Params,
+        tr("Reconstructs wrapped phase from four 90degree phase shifted images. The phase value is determined using the Carré algorithm: atan2(I3-I1,I2-I0)."));
     m_filterList.insert("calcPhaseMap4", filter);
 
-    filter = new FilterDef(FringeProj::unwrapPhaseGray, FringeProj::unwrapPhaseGrayParams, tr("Unwrapped phase by Graycode (CiMap)"));
+    filter = new FilterDef(
+        FringeProj::unwrapPhaseGray,
+        FringeProj::unwrapPhaseGrayParams,
+        tr("Unwrapped phase by Graycode (CiMap)"));
     m_filterList.insert("unwrapPhaseGray", filter);
 
-    filter = new FilterDef(FringeProj::createXYMaps, FringeProj::createXYMapsParams, tr("Creates the X- and Y-Map for the given disparity map. The values consider the given scaling factor and the disparity-dependent shift due to the tilted illumination."));
+    filter = new FilterDef(
+        FringeProj::createXYMaps,
+        FringeProj::createXYMapsParams,
+        tr("Creates the X- and Y-Map for the given disparity map. The values consider the given scaling factor and the disparity-dependent shift due to the tilted illumination."));
     m_filterList.insert("createXYMaps", filter);
 
-    filter = new FilterDef(FringeProj::gray2DecLookup, FringeProj::gray2DecLookupParams, gray2DecLookupDoc);
+    filter = new FilterDef(
+        FringeProj::gray2DecLookup,
+        FringeProj::gray2DecLookupParams,
+        gray2DecLookupDoc);
     m_filterList.insert("gray2DecLookup", filter);
 
-    filter = new FilterDef(FringeProj::genGraycodePattern, FringeProj::genGraycodePatternParams, genGraycodePatternDoc);
+    filter = new FilterDef(
+        FringeProj::genGraycodePattern,
+        FringeProj::genGraycodePatternParams,
+        genGraycodePatternDoc);
     m_filterList.insert("genGraycodePattern", filter);
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }

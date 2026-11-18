@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "GenICam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -79,9 +79,16 @@ Indicate the right interface or leave 'interface' empty, in order to get a list 
 In order to keep this plugin compatible to other camera plugins, the additional parameters 'integration_time', 'roi', 'sizex', 'sizey', \n\
 and 'bpp' are added to the plugin are kept synchronized with 'ExposureTime', 'Width', 'Height', 'OffsetX', 'OffsetY' or 'PixelFormat'. \n\
 \n\
-Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p, BayerRG8. \n\
+Up to now the following pixel formats are supported: Mono8, Mono10, Mono10p, Mono10Packed, Mono12, Mono12p, Mono12Packed, Mono14, Mono16, \n\
+YCbCr422_8, RGB8, BGR8, BGR10p, BGR12p, BayerRG8, BayerRG10g40IDS (IDS specific). \n\
 In order to operate framegrabber-based cameras (CoaXPress, Camera Link) with this plugin, please read the additional information in the \n\
 documentation of this plugin. \n\
+Colored pixel formats, with a single-color bitdepth of more than 8 bit are reduced to 8bit per color, since rgba32 is the single color \n\
+datatype of itom.dataObject. \n\
+\n\
+Please notice, that some cameras require more than one allocator buffer (see parameter 'numBuffers'). Sometimes, it is better to \n\
+set the parameter 'AcquisitionMode' to 'SingleFrame' instead of 'Continuous'. If a camera is not robustly working, try to change \n\
+these parameters before starting the device. \n\
 \n\
 This plugin has been tested with the following cameras: \n\
 \n\
@@ -98,7 +105,10 @@ This plugin has been tested with the following cameras: \n\
 * Ximea (USB3) \n\
 * IDS Imaging, U3-3200SE-M-GL (USB3) \n\
 * IDS Imaging, U3-3800SE-M-GL (USB3) \n\
-* IDS Imaging, UI-5880CP-M-GL (GigE)";
+* IDS Imaging, UI-5880CP-M-GL (GigE) \n\
+* IDS Imaging, U3-38J0XLE-C-HQ (USB3, only format BayerRG10g40IDS) \n\
+* IDS Imaging, U3-3280CP-C-HQ Rev 2.2 (USB3) \n\
+* IDS Imaging, U3-3280CP-M-GL Rev 2.2 (USB3)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = PLUGIN_AUTHOR;
@@ -124,7 +134,9 @@ a list of all auto-detected vendors and models is returned.");
 
     paramVal = ito::Param("deviceID", ito::ParamBase::String, "",
         tr("name of the device to be opened. Leave empty to open first detected device of given "
-            "transport layer and interface.").toLatin1().constData());
+            "transport layer and interface. Some cameras don't have a persistent device ID. "
+            "Then, it is better to identify them with their serial number. If this is desired "
+            "this parameter can also be set to 'Serial:your_serial_number'.").toLatin1().constData());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("streamIndex", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0,
@@ -166,10 +178,6 @@ GenICamInterface::~GenICamInterface()
     m_initParamsOpt.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GenICamClass::GenICamClass() : AddInGrabber(),
@@ -234,10 +242,6 @@ GenICamClass::GenICamClass() : AddInGrabber(),
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("resyncAllParameters", pMand, pOpt, pOut, tr("Forces a resychroniziation of all camera parameters."));
-
-    //registerExecFunc("special1", pMand, pOpt, pOut, tr("Test for CoaXPress camera with Active Silicon FireBird."));
-    //registerExecFunc("special2", pMand, pOpt, pOut, tr("Test for CoaXPress camera with Active Silicon FireBird."));
-
 
     if (hasGuiSupport())
     {

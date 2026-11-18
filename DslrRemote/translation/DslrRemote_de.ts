@@ -116,9 +116,5 @@ You can initialize this camera either as a 2D sensor with a width and height &gt
 This plugin can also be used as template for other grabber.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Licensed under LPGL.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>

@@ -14,6 +14,8 @@
 Overview
 ========
 
+Enables usage of USB Plug&Play Cameras for Linux based Operating system based on Video4Linux.
+
 .. pluginsummaryextended::
     :plugin: V4L2
 
@@ -50,3 +52,9 @@ An instance of this plugin has the following internal parameters:
     bpp
 **colorMode**: {str}
     color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)
+
+
+Changelog
+==========
+
+* itom setup 4.3.0: Release

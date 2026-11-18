@@ -94,10 +94,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>indicates whether depth data (0), gray value (1) or confidence map (2) is transfered when using copyVal, getVal or the live image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>x-coordinate map of the same shape as the current image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -135,10 +131,6 @@
     </message>
     <message>
         <source>getCoordinates requires two dataObjects as argument.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>the incomming dataObject is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -201,15 +193,19 @@
         <source>no data on device available</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>indicates whether depth data (0), gray value (1) or confidence map (2) is transferred when using copyVal, getVal or the live image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the incoming dataObject is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>PmdPico Grabber</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LPGL, uses royale software and driver (not covered by LPGL)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

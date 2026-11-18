@@ -4,7 +4,7 @@
 <context>
     <name>CMU1394</name>
     <message>
-        <location filename="../cmu1394.cpp" line="+173"/>
+        <location filename="../cmu1394.cpp" line="+174"/>
         <location line="+44"/>
         <source>Error in copyFromData2D. Size of Buffer unequal size of DataObject</source>
         <translation type="unfinished"></translation>
@@ -248,7 +248,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+43"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -266,7 +266,7 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1273"/>
+        <location line="-1272"/>
         <source>Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -332,7 +332,7 @@ time out!</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../cmu1394.cpp" line="-39"/>
+        <location filename="../cmu1394.cpp" line="-40"/>
         <source>Firewire via generic CMU-Driver</source>
         <translation type="unfinished"></translation>
     </message>
@@ -340,12 +340,7 @@ time out!</source>
         <location line="+12"/>
         <source>This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications &lt;= v1.30.This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.
 
-In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder of this plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>itom-plugin under LGPL / CMU1394 driver under LGPL</source>
+In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin at compile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder of this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

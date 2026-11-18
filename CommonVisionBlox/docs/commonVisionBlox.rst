@@ -64,12 +64,12 @@ An instance of this plugin has the following internal parameters:
 **roi**: {int seq.}
     ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
 
-Compilation
-===========
-Set the CMAKE variable **CVB_DIR** or the environment variable **CVB_ROOT** to the installation directory of the CommmonVisionBlox SDK (e.g. C:\Program Files\STEMMER IMAGING\Common Vision Blox)
 
 Usage
 =====
+
+For Windows use open the command line interface with administrator privileges.
+Use **setx** to permanently change the System **PATH** Variable (eg. "setx / M PATH "%PATH;C:\Program Files\STEMMER IMAGING\Common Vision Blox").
 
 Until now, only monochrome cameras with pixel format Mono8, Mono10, .. Mono16 are supported. Only the parameter integration_time
 is created as plugin parameter (redirected to ExposureTime or ExposureTimeAbs with an assumed time base of micro seconds, integration_time

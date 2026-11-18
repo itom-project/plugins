@@ -51,7 +51,11 @@
     <message>
         <location line="+11"/>
         <source>ignore empty messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Leere Nachrichten ignorieren</translation>
+    </message>
+    <message>
+        <source>ignor empty messages</source>
+        <translation type="vanished">Leere Nachrichten ignorieren</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -72,6 +76,58 @@
         <translation>Wenn aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
     </message>
     <message>
+        <source>Clears the input buffer of serial port</source>
+        <translation type="vanished">Löscht den Eingabe- (0) oder Ausgabe- (1) Puffer</translation>
+    </message>
+    <message>
+        <source>Clears the output buffer of serial port</source>
+        <translation type="vanished">Löscht den Ausgabepuffer der seriellen Schnittstelle</translation>
+    </message>
+    <message>
+        <source>Clears input (0) or output (1) buffer</source>
+        <translation type="vanished">Löscht den Eingabe- (0) oder Ausgabe- (1) Puffer</translation>
+    </message>
+    <message>
+        <source>Clears the input or output buffer of serial port</source>
+        <translation type="vanished">Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
+    </message>
+    <message>
+        <source>name of requested parameter is empty.</source>
+        <translation type="vanished">Name des angeforderten Parameters ist leer.</translation>
+    </message>
+    <message>
+        <source>parameter not found in m_params.</source>
+        <translation type="vanished">Parameter nicht in m_params gefunden.</translation>
+    </message>
+    <message>
+        <source>name of given parameter is empty.</source>
+        <translation type="vanished">Name des Parameters ist leer.</translation>
+    </message>
+    <message>
+        <source>Parameter is read only, input ignored</source>
+        <translation type="vanished">Parameter ist schreibgeschützt, Eingabe wurde ignoriert</translation>
+    </message>
+    <message>
+        <source>New value is larger than parameter range, input ignored</source>
+        <translation type="vanished">Wert ist größer als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
+    </message>
+    <message>
+        <source>New value is smaller than parameter range, input ignored</source>
+        <translation type="vanished">Wert ist kleiner als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
+    </message>
+    <message>
+        <source>Parameter type conflict</source>
+        <translation type="vanished">Konflikt mit Parametertyp</translation>
+    </message>
+    <message>
+        <source>Parameter not found</source>
+        <translation type="vanished">Parameter wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <source>Try to open device directly failed!</source>
+        <translation type="vanished">Der Versuch, das Gerät direkt zu öffnen, schlug fehl!</translation>
+    </message>
+    <message>
         <location line="+2"/>
         <source>Endpoint index for reading operations. The used index is LIBUSB_ENDPOINT_IN + endpoint_read, with LIBUSB_ENDPOINT_IN = %1 (default: initialization parameter &apos;endpoint&apos;)</source>
         <translation type="unfinished">Endpoint-Index für Leseoperationen. Der benutzte Index entspricht LIBUSB_ENDPOINT_IN + endpoint_read, mit LIBUSB_ENDPOINT_IN = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
@@ -89,7 +145,7 @@
     <message>
         <location line="+25"/>
         <source>no of the %1 devices that fit to the vendor and product ID can be opened since they are already in use.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Keines der %1 Geräte, das zu dieser Vendor- und Produkt-ID passt, kann geöffnet werden, da bereits alle in Gebraucht sind.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -133,7 +189,13 @@ The plugin is implemented for Windows, but Linux should be possible due to libUS
 To connect to a device you need the vendor id and the product id.
 
 The setVal and getVal functions will write and read on the specified endpoint.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">LibUSB ist ein itom-Plugin, das über einen seriellen Port eine Direct/Row-Verbindung zu einem Gerät herstellt.
+Es kann von Plugins genutzt werden, die analog über einen Seriellen Port kommunizieren.
+Das Plugin wurde für Windows erstellt, sollte aber auch mit Linux benutzt werden können, da libUSB auch unter Linux verfügbar ist.
+
+Um eine Verbindung zu einem Gerät aufbauen zu können wird eine Vendor- und eine Produkt-ID benötigt.
+
+Die Funktionen setVal und getVal schreiben und lesen auf dem angegebenen Endgerät.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -164,6 +226,40 @@ The setVal and getVal functions will write and read on the specified endpoint.</
         <location line="+2"/>
         <source>If true, all information about connected devices is print to the console.</source>
         <translation type="unfinished">Wenn aktiviert, werden alle Informationen über das verbundene Gerät über die Konsole ausgegeben.</translation>
+    </message>
+    <message>
+        <source>Initialised &apos;debug&apos;-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget</source>
+        <translation type="obsolete">Initialisiert den &apos;Debug&apos;-Parameter mit dem übergebenen Wert. Ist dieser &apos;True&apos;, wird die gesammte Ein- und Ausgabekommunikation im DockWidget protokolliert</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
+        <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>
+    </message>
+    <message>
+        <source>Mandatory paramers are NULL</source>
+        <translation type="obsolete">Pflichtparameter ist NULL</translation>
+    </message>
+    <message>
+        <source>Optional paramers are NULL</source>
+        <translation type="obsolete">Optionaler Parameter ist NULL</translation>
+    </message>
+</context>
+<context>
+    <name>ito::AddInAlgo</name>
+    <message>
+        <source>uninitialized vector for mandatory parameters!</source>
+        <translation type="vanished">Uninitialisierte Vektoren für Pflichtparameter!</translation>
+    </message>
+    <message>
+        <source>uninitialized vector for optional parameters!</source>
+        <translation type="vanished">Uninitialisierte Vektoren für optionale Parameter!</translation>
+    </message>
+    <message>
+        <source>uninitialized vector for output parameters!</source>
+        <translation type="vanished">Uninitialisierte Vektoren für Ausgabeparameter!</translation>
     </message>
 </context>
 </TS>

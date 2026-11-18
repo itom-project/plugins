@@ -15,7 +15,7 @@ Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MyGrabber
+    :plugin: Newport2936
 
 This plugin enables the user of the Newport 2936-R is a Dual Channel Optical Power and Energy Meter within ITOM.
 
@@ -25,7 +25,7 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
 
     .. plugininitparams::
-        :plugin: MyGrabber
+        :plugin: Newport2936
 
 Parameters
 ==========

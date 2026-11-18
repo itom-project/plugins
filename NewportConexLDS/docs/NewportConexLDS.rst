@@ -120,7 +120,7 @@ The plugin execFunctions are:
 .. py:function::  instance.exec('getPositionAndPowerMeasurement', data [,interval])
 
     Measure the position and laser power. It will fill the input dataObject with positions, laser power and timestamps.
-    ... Please note that this function blocks itom until the entire measurement has been carried out.
+    Please note that this function blocks itom until the entire measurement has been carried out.
 
     :param data: Measruement data X, Y, position and laser power.
     :type data: itom.dataObject
@@ -146,7 +146,7 @@ COM port must be adapted.
     try:
         conex
     except NameError:
-        serial = dataIO("SerialIO", comPort, 921600, "\r\n", enableDebug=True)
+        serial = dataIO("SerialIO", comPort, 921600, "\r\n")
         conex = dataIO("NewportConexLDS", serial)
 
     conex.getParamListInfo()
@@ -241,4 +241,4 @@ Create 2 dimensional plot of data. First data points below a laser power level o
 Changelog
 ==========
 
-* itom setup 4.3.0 - v1.1.0: Renamed timeStemp to timeStamp
+* itom setup 4.3.0 release - v1.1.0: Renamed timeStemp to timeStamp

@@ -1659,7 +1659,7 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
 
     if (m_debugMode)
     {
-        emit serialLog(QByteArray(data.data(),*length), "", '<');
+        emit serialLog(QByteArray(data.data(),*length), "", true);
     }
 
     if (waitCond)
@@ -1682,7 +1682,7 @@ ito::RetVal SerialIO::setVal(const char *data, const int datalength, ItomSharedS
     m_serport.getendline(endline);
     if (m_debugMode)
     {
-        emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
+        emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), false);
     }
     retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
 
@@ -1738,13 +1738,21 @@ void SerialIO::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-            connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
+            connect(
+                this,
+                SIGNAL(serialLog(QByteArray, QByteArray, bool)),
+                dw,
+                SLOT(serialLog(QByteArray, QByteArray, bool)));
             emit parametersChanged(m_params);
         }
         else
         {
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-            disconnect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
+            disconnect(
+                this,
+                SIGNAL(serialLog(QByteArray, QByteArray, bool)),
+                dw,
+                SLOT(serialLog(QByteArray, QByteArray, bool)));
         }
     }
 }

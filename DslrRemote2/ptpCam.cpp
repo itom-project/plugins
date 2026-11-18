@@ -19,7 +19,7 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 #include "common/retVal.h"
-#include "DslrRemote.h"
+#include "DslrRemote2.h"
 #include "ptpCam.h"
 
 #include <qobject.h>

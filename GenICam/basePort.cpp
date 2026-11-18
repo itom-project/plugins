@@ -278,7 +278,7 @@ ito::RetVal BasePort::connectToGenApi(ito::uint32 portIndex)
 
     if (url.toLower().startsWith("local:"))
     {
-        QRegularExpression regExp("^local:(///)?([a-zA-Z0-9\\._\\- "
+        QRegularExpression regExp("^local:(///)?([a-zA-Z0-9@\\._\\- "
             "]+);([A-Fa-f0-9]+);([A-Fa-f0-9]+)(\\?SchemaVersion=.+)?$",
             QRegularExpression::CaseInsensitiveOption);
 
@@ -1448,20 +1448,33 @@ ito::RetVal BasePort::syncImageParameters(QMap<QString, ito::Param> &params, QSh
             pEnum->GetEntries(nodes);
             QByteArray val;
             bool found = false;
+            CEnumEntryPtr enumItem;
+            EAccessMode enumAccessMode;
+
             for (int i = 0; i < nodes.size(); ++i)
             {
-                val = ((CEnumEntryPtr)nodes[i])->GetSymbolic();
-                if (m_supportedFormatsNames.contains(val))
+                enumItem = (CEnumEntryPtr)nodes[i];
+
+                if (enumItem)
                 {
-                    *pEnum = val.constData();
-                    //pEnum->SetIntValue(((CEnumEntryPtr)nodes[i])->GetNumericValue());
-                    idx = m_supportedFormatsNames.indexOf(QLatin1String(val));
-                    it->setVal<int>(m_supportedFormatsBpp[idx]);
-                    intMeta->setMin(m_supportedFormatsBpp[idx]);
-                    intMeta->setMax(m_supportedFormatsBpp[idx]);
-                    itColor->setVal<int>(m_supportedFormatsColor[idx]);
-                    found = true;
-                    break;
+                    val = enumItem->GetSymbolic();
+                    enumAccessMode = enumItem->GetAccessMode();
+
+                    if (enumAccessMode > NA)
+                    {
+                        if (m_supportedFormatsNames.contains(val))
+                        {
+                            *pEnum = val.constData();
+                            //pEnum->SetIntValue(((CEnumEntryPtr)nodes[i])->GetNumericValue());
+                            idx = m_supportedFormatsNames.indexOf(QLatin1String(val));
+                            it->setVal<int>(m_supportedFormatsBpp[idx]);
+                            intMeta->setMin(m_supportedFormatsBpp[idx]);
+                            intMeta->setMax(m_supportedFormatsBpp[idx]);
+                            itColor->setVal<int>(m_supportedFormatsColor[idx]);
+                            found = true;
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -1517,6 +1530,11 @@ QVector<PfncFormat> BasePort::supportedImageFormats(QVector<int> *bitdepths /*= 
         m_supportedFormats      << Mono8 << Mono10 << Mono10Packed << Mono10p << Mono12 << Mono12Packed << Mono12p << Mono14 << Mono16 << RGB8 << YCbCr422_8 << BGR8 << BGR10p << BGR12p << BayerRG8;
         m_supportedFormatsBpp   << 8     << 10     << 10           << 10      << 12     << 12           << 12      << 14     << 16     << 8    << 8          << 8    << 10     << 12     << 8;
         m_supportedFormatsColor << 0     << 0      << 0            << 0       << 0      << 0            << 0       << 0      << 0      << 1    << 1          << 1    << 1      << 1      << 1;
+
+        // add IDS imaging specific values
+        m_supportedFormats << PEAK_IPL_PIXEL_FORMAT_BAYER_RG_10_GROUPED_40_IDS;
+        m_supportedFormatsBpp << 10;
+        m_supportedFormatsColor << 1;
 
         for (int i = 0; i < m_supportedFormats.size(); ++i)
         {

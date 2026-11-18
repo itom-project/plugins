@@ -162,10 +162,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Target speed in %; range: 0.0..100.0 %</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,6 +217,10 @@
         <source>Name of the plugin</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FirgelliLACInterface</name>
@@ -259,10 +259,6 @@ Please indicate the correct working distance of the connected motor (e.g. 20mm) 
 plugin might deliver wrong values. At startup, the motor is always moved to its zero-position
 in order to be able to subsequently provide right position values. This behaviour is mandatory
 and cannot be changed (due to the driver of the controller board).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

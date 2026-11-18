@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogThorlabsElliptec</class>
+ <widget class="QDialog" name="DialogThorlabsElliptec">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>546</width>
+    <height>665</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Thorlabs Elliptec</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="ParamEditorWidget" name="paramEditor"/>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Homing</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QPushButton" name="cmdHome">
+          <property name="toolTip">
+           <string>Move the stage to the 0-position</string>
+          </property>
+          <property name="text">
+           <string>Home Motor</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Allow Clean &amp; Optimize</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QPushButton" name="cmdOptimizeMotors">
+          <property name="toolTip">
+           <string>Optimizes the motor parameters. Caution: this might take several minutes</string>
+          </property>
+          <property name="text">
+           <string>Clean and Optimize</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="cmdCleanMechanics">
+          <property name="toolTip">
+           <string>cleans the mechanics. Caution: this might take several minutes</string>
+          </property>
+          <property name="text">
+           <string>Clean Mechanics</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="cmdCancelCleaning">
+          <property name="toolTip">
+           <string>cleans the mechanics. Caution: this might take several minutes</string>
+          </property>
+          <property name="text">
+           <string>Cancel Cleaning or Optimization</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupActions">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 1</string>
+       </property>
+       <property name="title">
+        <string>Motor Frequency Adjustments</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="btnSearch1">
+            <property name="toolTip">
+             <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 1</string>
+            </property>
+            <property name="text">
+             <string>Frequency Search Motor 1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSearch2">
+            <property name="toolTip">
+             <string>Requests a frequency search to optimize the operating frequencies for backward and forward movement of motor 2</string>
+            </property>
+            <property name="text">
+             <string>Frequency Search Motor 2</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnResetDefaults">
+            <property name="toolTip">
+             <string>Reset all frequencies to the default values</string>
+            </property>
+            <property name="text">
+             <string>Reset Defaults</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdSaveUserData">
+       <property name="toolTip">
+        <string>Permanently save motor parameters</string>
+       </property>
+       <property name="text">
+        <string>Save User Data</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="maximum">
+        <number>0</number>
+       </property>
+       <property name="value">
+        <number>-1</number>
+       </property>
+       <property name="textVisible">
+        <bool>false</bool>
+       </property>
+       <property name="format">
+        <string>Running. Please wait.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblProgress">
+       <property name="text">
+        <string>Progress...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="German" country="Germany"/>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ParamEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>paramEditorWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

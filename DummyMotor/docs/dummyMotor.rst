@@ -38,6 +38,10 @@ An instance of this plugin has the following parameters:
     Toggles if motor has to wait until end of movement (0:sync) or not (1:async)
 
     *Value range: [0, 1], Default: 0*
+**homed**: Sequence[int], read-only
+    If 0, the axis is not homed. 1: homed.
+
+    *Allowed number of values: 0 - 1, Value range: [0, 1], Default: [0]*
 **limitNeg**: Sequence[float]
     negative limits of axes
 
@@ -69,3 +73,4 @@ Changelog
 ==========
 
 * itom setup 1.2.0: Release
+* itom setup 4.3.0: Added parameter **homed**

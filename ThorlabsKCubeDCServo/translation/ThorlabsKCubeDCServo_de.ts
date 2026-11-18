@@ -2,13 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DialogThorlabsKCubeIM</name>
+    <name>DialogThorlabsKCubeDCServo</name>
     <message>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Thorlabs KCube Inertial Motor</source>
+        <source>Thorlabs KCube DC Servo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -28,11 +24,51 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Timeout:</source>
+        <source>Firmware:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hardware:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lock FrontPanel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Motor settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> mm/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> mm²/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -44,58 +80,26 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Firmware:</source>
+        <source>set current position to zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Software:</source>
+        <source>home / make calibration move</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>set current positions to zero</source>
+        <source>cancel home move</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>axis 0:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>axis 1:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>axis 2:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>axis 3:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Step rate settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lock FrontPanel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum voltage settings</source>
+        <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DockWidgetThorlabsKCubeIM</name>
+    <name>DockWidgetThorlabsKCubeDCServo</name>
     <message>
-        <source>Thorlabs KCube Inertial Motor</source>
+        <source>Thorlabs KCube DC Servo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -123,53 +127,45 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mot1</source>
+        <source>Stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mot2</source>
+        <source>home / make calibration move</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mot3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mot4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>set current Positions to zero</source>
+        <source>cancel home move</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <source>ThorlabsKCubeIM</source>
+        <source>ThorlabsKCubeDCServo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ThorlabsKCubeIM is an acutator plugin to control the following integrated devices from Thorlabs:
+        <source>ThorlabsKCubeDCServo is an acutator plugin to control the following integrated devices from Thorlabs:
 
-* K-Cube Controller for Piezo Inertia Stages and Actuators (e.g. KIM101)
+* K-Cube Controller for Brushed DC Servo Motors (e.g. KDC101)
 
-It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.KCube.InertialMotor.
+It requires the new Kinesis driver package from Thorlabs and implements the interface Thorlabs.MotionControl.KCube.DCServo.
 
 Please install the Kinesis driver package in advance with the same bit-version (32/64bit) than itom.
 
-This plugin has been tested with the cage rotator KIM101.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>licensed under LGPL</source>
+This plugin has been tested with the motorized translation stage MTS25-Z8.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsKCubeIM</name>
+    <name>ThorlabsKCubeDCServo</name>
     <message>
         <source>Name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -181,7 +177,27 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) mode</source>
+        <source>Firmware version of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hardware version of the device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 if actuator supports a home drive, else 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>acceleration in real world units (e.g. mm/s^2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>speed in real world units (e.g. mm/s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>synchronous (0, default) or asynchronous (1) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -189,19 +205,15 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>1 to lock the front panel, else 0</source>
+        <source>1 to lock the front panel, else 0 (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>motor is running. Additional actions are not possible.</source>
+        <source>If enabled (1, default), power is applied to the motor so it is fixed in position. Else (0), the motor can be freely moved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>axis %i not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>motor is running. Further action is not possible</source>
+        <source>motor is running. Additional actions are not possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -213,34 +225,18 @@ This plugin has been tested with the cage rotator KIM101.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>number of axes (channels), default 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>maximum voltage of axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>step rate in Steps/s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Firmware version of the device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Software version of the device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>acceleration Steps/s<byte value="x0"/>x5E2</source>
+        <source>axis %i not available</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThorlabsKCubeIMInterface</name>
+    <name>ThorlabsKCubeDCServoInterface</name>
     <message>
         <source>Serial number of the device to be loaded, if empty, the first device that can be opened will be opened</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 1, a connection to the running Kinesis Simulator is established before starting to search for devices.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

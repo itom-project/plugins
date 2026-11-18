@@ -52,11 +52,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Decceleration</source>
+        <source>revert the changed configurations of this axis.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>revert the changed configurations of this axis.</source>
+        <source>Deceleration</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -72,10 +72,6 @@
     </message>
     <message>
         <source>Controller name:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Contoller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -132,6 +128,10 @@
     </message>
     <message>
         <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controller</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -222,10 +222,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>asynchronous (1) or sychronous (0) [default] mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>micro steps for motor [1, 2, 4, 5, 8, 10, 16, 32, 64]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -305,6 +301,10 @@
         <source>Name of the plugin</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>asynchronous (1) or synchronous (0) [default] mode</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NanotecStepMotorInterface</name>
@@ -334,10 +334,6 @@
     <message>
         <source>NanotecStepMotor is an itom-plugin, which can be used to communicate with the Nanotec controllers SMCP.
 It has been tested with one connected controller SMCP33 and 4 axis.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
