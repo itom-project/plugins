@@ -27,11 +27,14 @@
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
 
-#if (CV_MAJOR_VERSION >= 2) //calib3d only available for OpenCV Version > 2.0
+#if (CV_MAJOR_VERSION >= 5)
+    #include "opencv2/calib3d.hpp"
+#else
     #include "opencv2/calib3d/calib3d.hpp"
+#endif
 
 #if (CV_MAJOR_VERSION >= 4)
-    #include "opencv2/highgui.hpp"
+#include "opencv2/highgui.hpp"
 #else
     #include "opencv/highgui.h"
 #endif
@@ -109,13 +112,8 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
         const cv::Mat *cvplaneIn = input.getCvPlaneMat(0);
 
         // Declare the output vector to hold the circle coordinates and radii
-#if (CV_MAJOR_VERSION >= 3)
         std::vector<cv::Vec3f> circles;
         int method = cv::HOUGH_GRADIENT;
-#else
-        cv::vector<cv::Vec3f> circles;
-        int method = CV_HOUGH_GRADIENT;
-#endif
 
         /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
             dp : Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
@@ -1414,4 +1412,3 @@ ito::RetVal OpenCVFilters::cvProjectPoints(QVector<ito::ParamBase> *paramsMand, 
 //
 //}
 
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)

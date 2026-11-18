@@ -43,65 +43,65 @@ the method ``getParam``, writeable parameters can be changed using ``setParam``.
 
 **acceleration**: Sequence[float]
     Acceleration of each axis, default 100 mm/s^2.
-    
+
     *Allowed number of values: number of channels, Value range: [0:0.001:100], Default: [100, 100, 100, ...]*
 **async**: int
     asynchronous move (1), synchronous (0) [default]
-    
+
     *Value range: [0, 1], Default: 0*
 **baseUnit**: Sequence[int], read-only
     Baseunit of Channel: (0) for none, (1) for millimeter and (2) for degree.
-    
+
     *Allowed number of values: number of channels, Value range: [0, 1], Default: [0, 0, 0, ...]*
 **deviceName**: str, read-only
     Device Name.
-    
+
     *Match: "", Default: "MCS2-00011725"*
 **interfaceType**: str, read-only
     Interface Type (USB or ETHERNET).
-    
+
     *Match: "", Default: "ETHERNET"*
 **limitLower**: Sequence[float]
     Lower limits of axes.
-    
+
     *Allowed number of values: number of channels, Value range: [-inf:0.001:inf], Default: [-inf, -inf, -inf, ...]*
 **limitUpper**: Sequence[float]
     Upper limits of axes.
-    
+
     *Allowed number of values: number of channels, Value range: [-inf:0.001:inf], Default: [inf, inf, inf, ...]*
 **name**: str, read-only
     Plugin Name.
-    
+
     *Match: "", Default: "SmarActMCS2"*
 **noOfBusModules**: int, read-only
     Number of Bus Modules.
-    
+
     *Value range: [0, inf], Default: 1*
 **noOfChannels**: int, read-only
     Number of Channels.
-    
+
     *Value range: [0, inf], Default: 3*
 **positionerType**: Sequence[int]
     Positionertype number of Channel according to Smaract Manual.
-    
+
     *Allowed number of values: number of channels, Value range: [0, 10000], Default: [0, 0, 0, ...]*
 **positionerTypeName**: Sequence[str], read-only
     Positionertype name of Channel.
 **sensorPresent**: Sequence[int], read-only
     Show if sensor is present (1) or not (0).
-    
+
     *Allowed number of values: number of channels, Value range: [0, 1], Default: [0, 0, 0, ...]*
 **serialNumber**: str, read-only
     Serial number.
-    
+
     *Match: "", Default: "network:sn:MCS2-00011725"*
 **useLimits**: Sequence[int]
     Use axes limits of axis (1) or not (0).
-    
+
     *Allowed number of values: number of channels, Value range: [0, 1], Default: [0, 0, 0, ...]*
 **velocity**: Sequence[float]
     Velocity of each axis, default 10 mm/s.
-    
+
     *Allowed number of values: number of channels, Value range: [0:0.001:100], Default: [10, 10, 10, ...]*
 
 

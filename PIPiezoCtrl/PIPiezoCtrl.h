@@ -74,7 +74,15 @@ class PIPiezoCtrl : public ito::AddInActuator
 
     private:
 
-        enum tControllerType { E662Family, C663Family, E625Family, E753Family, EUnknown };
+        enum tControllerType
+        {
+            E662Family,
+            C663Family,
+            E625Family,
+            E753Family,
+            C863Family,
+            EUnknown
+        };
 
         bool m_useOnTarget;
         bool m_getStatusInScan;

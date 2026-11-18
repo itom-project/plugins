@@ -24,7 +24,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetSmarActMCS2::DockWidgetSmarActMCS2(ito::AddInActuator* actuator) :
-    AbstractAddInDockWidget(actuator), m_inEditing(false), m_pActuator(actuator), 
+    AbstractAddInDockWidget(actuator), m_inEditing(false), m_pActuator(actuator),
     m_firstRun(true)
 {
     ui.setupUi(this);

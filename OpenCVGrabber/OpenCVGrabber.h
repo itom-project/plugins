@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -82,7 +82,6 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
             VideoCaptureItom() : cv::VideoCapture() {}
             VideoCaptureItom(const std::string& filename) : cv::VideoCapture(filename) {}
             VideoCaptureItom(int device) : cv::VideoCapture(device) {}
-            cv::Ptr<CvCapture> getDevice() const { return cap; };
         };
 
         VideoCaptureItom *m_pCam;    /*!< Handle to the openCV-Cam-Class */

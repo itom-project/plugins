@@ -43,10 +43,22 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
-#if CV_MAJOR_VERSION >= 4
-#include "opencv2//imgcodecs/legacy/constants_c.h"
+#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION == 4)
+#include "opencv2/imgcodecs/legacy/constants_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/imgproc/types_c.h"
+#elif defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION >= 5)
+// OpenCV 5 removed many legacy C headers — include modern C++ headers instead
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#elif !defined(CV_MAJOR_VERSION)
+// Build without OpenCV version macro defined; assume modern C++ headers are available.
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#else
+// Fallback for older OpenCV versions
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 #endif
 
 #include "common/sharedFunctionsQt.h"
@@ -3898,7 +3910,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
         break;
 
     case DataObjectIO::ppmFormat:
-        save_params.push_back(CV_IMWRITE_PXM_BINARY);
+        save_params.push_back(cv::IMWRITE_PXM_BINARY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "ppm");
         gray16Supported = false;
@@ -3907,7 +3919,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
 
     case DataObjectIO::pgmFormat:
 
-        save_params.push_back(CV_IMWRITE_PXM_BINARY);
+        save_params.push_back(cv::IMWRITE_PXM_BINARY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         gray16Supported = true;
         colorSupported = false;
@@ -3920,7 +3932,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
 
     case DataObjectIO::jpgFormat:
     case DataObjectIO::jp2000Format:
-        save_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+        save_params.push_back(cv::IMWRITE_JPEG_QUALITY);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "jpg", "jpeg", "jp2");
 
@@ -3942,7 +3954,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(
         break;
 
     case DataObjectIO::pngFormat:
-        save_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+        save_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
         save_params.push_back((*paramsOpt)[0].getVal<int>());
         checkAndModifyFilenameSuffix(fileName, "png");
         addAlpha = (*paramsOpt)[1].getVal<int>() != 0 ? true : false;
@@ -4848,13 +4860,13 @@ ito::RetVal DataObjectIO::loadImage(
 
         if (colorFormat.isEmpty() || colorFormat.compare("asIs", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = false;
         }
         else if (colorFormat.compare("alpha", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_COLOR | cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = true;
         }
@@ -4863,7 +4875,7 @@ ito::RetVal DataObjectIO::loadImage(
             colorFormat.compare("G", Qt::CaseInsensitive) == 0 ||
             colorFormat.compare("B", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_COLOR | cv::IMREAD_ANYDEPTH;
             flags *= -1;
             reduceChannel = true;
         }
@@ -4871,14 +4883,14 @@ ito::RetVal DataObjectIO::loadImage(
             colorFormat.compare("gray", Qt::CaseInsensitive) == 0 ||
             colorFormat.compare("grey", Qt::CaseInsensitive) == 0)
         {
-            flags = CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH;
+            flags = cv::IMREAD_GRAYSCALE | cv::IMREAD_ANYDEPTH;
 
             reduceChannel = false;
         }
         else
         {
             reduceChannel = false;
-            flags = CV_LOAD_IMAGE_COLOR;
+            flags = cv::IMREAD_COLOR;
             flags *= -1;
         }
 

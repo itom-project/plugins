@@ -135,7 +135,6 @@ void DialogDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinBox_frame_time->setSingleStep(1.0);
     ui.doubleSpinBox_frame_time->setValue(params["frame_time"].getVal<double>() *1000.0);
 
-
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 }
